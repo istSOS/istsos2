@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sos:GetObservation
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://schemas.opengis.net/sos/1.0.0/sosAll.xsd"
+   xmlns:sos="http://www.opengis.net/sos/1.0"
+   xmlns:gml="http://www.opengis.net/gml/3.2"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:om="http://www.opengis.net/om/1.0" 
+   service="SOS" version='1.0.0'>
+    <!--
+        Get an Observation: 
+            - last observation (omitting the optional eventTime definition)
+            - with EPSG code (1 Optional)
+            - from an offering (1 Mandatory)
+            - from a specific mobile procedure (1-many Optional)
+    -->
+    <offering>urn:x-ist::offering:temporary</offering>
+    <procedure>urn:ogc:object:procedure:x-ist::LimnoGPS1</procedure>
+    <eventTime>
+        <gml:TimeInstant>
+           <gml:timePosition>2010-02-10T16:30:00+01</gml:timePosition>
+        </gml:TimeInstant>
+    </eventTime>
+    <responseFormat>text/xml;subtype='sensorML/1.0.0'</responseFormat>
+    <observedProperty>urn:ogc:def:property:x-ist::nitrogen_concentration</observedProperty>
+</sos:GetObservation>
+
+

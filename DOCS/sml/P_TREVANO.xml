@@ -1,0 +1,164 @@
+<SensorML xmlns:sml="http://www.opengis.net/sensorML/1.0.1"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:swe="http://www.opengis.net/swe/1.0.1"
+ xmlns:gml="http://www.opengis.net/gml"
+ xmlns:xlink="http://www.w3.org/1999/xlink"
+ xsi:schemaLocation="http://www.opengis.net/sensorML/1.0.1 http://schemas.opengis.net/sensorML/1.0.1/sensorML.xsd"
+ version="1.0.1">
+ <member xlink:arcrole="urn:ist:def:process:detector">
+   <Component gml:id="1">
+     <gml:name>PG20</gml:name>
+     <gml:description>tipping bucket</gml:description>
+     <!--~~~~~keywords~~~~-->
+     <keywords>
+       <KeywordList codeSpace="urn:ist:def:keywords">
+         <keyword>IST</keyword>
+         <keyword>sensor</keyword>
+         <keyword>hydro</keyword>
+         <keyword>network</keyword>
+       </KeywordList>
+     </keywords>
+     <!--~~~~~validTime~~~~-->
+     <!--~~~~~position~~~~-->
+     <position name="actualPosition">
+       <swe:Position fixed="Ture" referenceFrame="urn:ogc:crs:epsg:21781">
+         <swe:location>
+           <swe:Vector>
+             <swe:coordinate name="x">
+               <swe:Quantity>
+                 <swe:value>682250.0</swe:value>
+               </swe:Quantity>
+             </swe:coordinate>
+             <swe:coordinate name="y">
+               <swe:Quantity>
+                 <swe:value>151020.0</swe:value>
+               </swe:Quantity>
+             </swe:coordinate>
+           </swe:Vector>
+         </swe:location>
+       </swe:Position>
+     </position>
+     <!--~~~~~identification~~~~-->
+     <identification>
+       <IdentifierList>
+         <identifier name="Short Name">
+           <Term definition="urn:ist:def:identifier:shorthname">
+             <value>PG20</value>
+           </Term>
+         </identifier>
+         <identifier name="Long Name">
+           <Term definition="urn:ist:def:identifier:longname">
+             <value>rainfall</value>
+           </Term>
+         </identifier>
+         <identifier name="Owner">
+           <Term definition="urn:ist:def:identifier:owner">
+             <value>IST-Canton TI</value>
+           </Term>
+         </identifier>
+         <identifier name="Manufacturer">
+           <Term definition="urn:ist:def:identifier:manufacturer">
+             <value>SEBA</value>
+           </Term>
+         </identifier>
+         <identifier name="Model Number">
+           <Term definition="urn:ist:def:identifier:modelNumber">
+             <value>RG50</value>
+           </Term>
+         </identifier>
+       </IdentifierList>
+     </identification>
+     <!--~~~~~classification~~~~-->
+     <classification>
+       <ClassifierList>
+         <sml:classifier name="Phenomenon">
+           <Term definition="urn:ist:def:phenomenon">
+             <value>rainfall</value>
+           </Term>
+         </sml:classifier>
+         <sml:classifier name="Sensor Type">
+           <Term definition="urn:ist:def:sensorType">
+             <value>pluviometer</value>
+           </Term>
+         </sml:classifier>
+       </ClassifierList>
+     </classification>
+     <!--~~~~~characteristics~~~~-->
+     <characteristics>
+       <swe:DataRecord>
+         <swe:field name="collecting area">
+           <swe:Quantity definition="urn:ist:def:property:surface">
+             <swe:uom code="cm^2"/>
+             <swe:value>200.000000</swe:value>
+           </swe:Quantity>
+         </swe:field>
+         <swe:field name="resolution">
+           <swe:Quantity definition="urn:ist:def:property:rainfall">
+             <swe:uom code="mm"/>
+             <swe:value>0.100000</swe:value>
+           </swe:Quantity>
+         </swe:field>
+       </swe:DataRecord>
+     </characteristics>
+     <!--~~~~~capabilities~~~~-->
+     <capabilities name="Measurement Properties">
+       <swe:DataRecord>
+         <swe:field name="connection">
+           <swe:Text definition="urn:ist:def:property:none">
+             <swe:value>dial network</swe:value>
+           </swe:Text>
+         </swe:field>
+         <swe:field name="modem">
+           <swe:Text definition="urn:ist:def:property:none">
+             <swe:value>Conexant D850 56K</swe:value>
+           </swe:Text>
+         </swe:field>
+         <swe:field name="datalogger">
+           <swe:Text definition="urn:ist:def:property:none">
+             <swe:value>Campbell CR510</swe:value>
+           </swe:Text>
+         </swe:field>
+         <swe:field name="heating">
+           <swe:Text definition="urn:ist:def:property:none">
+             <swe:value>yes</swe:value>
+           </swe:Text>
+         </swe:field>
+         <swe:field name="power">
+           <swe:Text definition="urn:ist:def:property:none">
+             <swe:value>230 V</swe:value>
+           </swe:Text>
+         </swe:field>
+       </swe:DataRecord>
+     </capabilities>
+     <!--~~~~~documentation~~~~-->
+     <documentation xlink:arcrole="urn:ist:role:specificationSheet">
+       <Document>
+         <format>pdf</format>
+         <onlineResource xlink:href="http://istgeo.ist.supsi.ch/istSOSdocs/SEBA.pdf"/>
+       </Document>
+     </documentation>
+     <documentation xlink:arcrole="urn:ist:role:image">
+       <Document>
+         <format>JPG</format>
+         <onlineResource xlink:href="http://istgeo.ist.supsi.ch/istSOSdocs/bedr_on1.JPG"/>
+       </Document>
+     </documentation>
+     <!--~~~~~inputs~~~~-->
+     <inputs>
+       <InputList>
+         <input name="rainfall">
+           <swe:ObservableProperty definition="urn:ist:def:property:rainfall"/>
+         </input>
+       </InputList>
+     </inputs>
+     <!--~~~~~outputs~~~~-->
+     <outputs>
+       <OutputList>
+         <output name="Measured rainfall">
+           <swe:ObservableProperty definition="urn:ist:def:property:rainfall"/>
+         </output>
+       </OutputList>
+     </outputs>
+  </Component>
+</member>
+</SensorML>

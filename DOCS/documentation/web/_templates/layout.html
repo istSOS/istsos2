@@ -1,0 +1,25 @@
+{% extends "!layout.html" %}
+
+
+{% block rootrellink %}
+        <li><a href="{{ pathto('index') }}">home</a>|&nbsp;</li>
+        <li><a href="{{ pathto('documentation/index') }}">documentation </a> |&nbsp;</li>
+        <li><a href="{{ pathto('download/index') }}">download </a> |&nbsp;</li>
+        <li><a href="{{ pathto('tutorial/index') }}">tutorial </a> |&nbsp;</li>
+        <li><a href="{{ pathto('search') }}">search</a>|&nbsp;</li>
+        <li><a href="{{ pathto('licence/index') }}">licence </a> |&nbsp;</li>
+{% endblock %}
+
+
+{% block relbar1 %}
+
+<div style="background-color: white; text-align: center; padding: 10px 10px 15px 15px">
+<a href="{{ pathto('index') }}"><img src="{{ pathto("_static/istsos_small_logo.png", 1) }}" border="0" alt="istSOS" align="centre"/></a>
+</div>
+{{ super() }}
+{% endblock %}
+
+{# put the sidebar before the body #}
+{% block sidebar1 %}{{ sidebar() }}{% endblock %}
+{% block sidebar2 %} {% endblock %}
+

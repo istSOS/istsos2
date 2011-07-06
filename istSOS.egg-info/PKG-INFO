@@ -1,0 +1,18 @@
+Metadata-Version: 1.0
+Name: istSOS
+Version: 1.0-rc2
+Summary: A Sensor Observation Service (SOS) implementation
+Home-page: http://istgeo.ist.supsi.ch/istSOS/
+Author: Massimiliano Cannata, Milan Antonovic
+Author-email: istSOS@gmail.com
+License: GPLv2
+Description: istSOS - istituto scienze della terra Sensor Observation Service
+        
+        This is an implementation of the OGC Sensor Observation Service in python.
+        
+        For instalation and configuration read the INSTALL file.
+        nn
+Keywords: SOS OGC
+Platform: UNKNOWN
+Classifier: Programming Language :: Python
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
