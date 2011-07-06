@@ -1,7 +1,13 @@
+=================================================================
 istSOS - istituto scienze della terra Sensor Observation Service
 
-http://istgeo.ist.supsi.ch/
+http://www.ist.supsi.ch/
+=================================================================
 
-This is an implementation of the OGC Sensor Observation Service version 1.0 entirely written in python.
+This software is an implementation of the OGC Sensor Observation Service version 1.0 entirely written in python.
+
+=================================================================
 
 For instalation and configuration read the INSTALL file.
+
+=================================================================

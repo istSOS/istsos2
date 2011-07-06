@@ -8,7 +8,7 @@ long_description = open(README).read() + 'nn'
 
 setup(name='istSOS',
       version=version,
-      description=("A Sensor Observation Service (SOS) implementation"),
+      description=("A Sensor Observation Service V 1.0 (SOS) implementation"),
       long_description=long_description,
       classifiers=[
         "Programming Language :: Python",
