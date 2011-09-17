@@ -56,10 +56,10 @@ class sosGFfilter(f.sosFilter):
         #**************************
         if method == "GET":
             #---FeatureOfInterest
-            if not requestObject.has_key("featureOfInterest"):
-                raise sosException.SOSException(1,"Parameter \"featureOfInterest\" is required with multiplicity 1")
+            if not requestObject.has_key("FeatureOfInterestId"):
+                raise sosException.SOSException(1,"Parameter \"FeatureOfInterestId\" is required with multiplicity 1")
             else:
-                self.featureOfInterest = get_name_from_urn(requestObject["featureOfInterest"],"feature") #one-many ID
+                self.featureOfInterest = get_name_from_urn(requestObject["FeatureOfInterestId"],"feature") #one-many ID
             #---srsName
             if requestObject.has_key("srsName"):
                 self.srsName = get_name_from_urn(requestObject["srsName"],"refsystem")
@@ -69,7 +69,7 @@ class sosGFfilter(f.sosFilter):
                 self.srsName = sosConfig.parameters["GO_srs"][0]
         if method == "POST":
             #---FeatureOfInterest
-            fets = requestObject.getElementsByTagName('featureOfInterest')
+            fets = requestObject.getElementsByTagName('FeatureOfInterestId')
             if len(fets)==1:
                 try:
                     self.featureOfInterest = get_name_from_urn(getElemAtt(fets[0],"xlink:href"),"feature")
@@ -77,10 +77,10 @@ class sosGFfilter(f.sosFilter):
                     try:
                         self.featureOfInterest = get_name_from_urn(getElemTxt(fets[0]),"feature")
                     except:
-                        err_txt = "XML parsing error (get value: featureOfInterest)"
+                        err_txt = "XML parsing error (get value: FeatureOfInterestId)"
                         raise sosException.SOSException(1,err_txt)
             else:
-                err_txt = "parameter \"featureOfInterest\" is mandatory with multiplicity 1"
+                err_txt = "parameter \"FeatureOfInterestId\" is mandatory with multiplicity 1"
                 raise sosException.SOSException(1,err_txt)
 
             #---srsName
