@@ -189,7 +189,7 @@ def BuildOffObsPrList(pgdb,id):
     except:
         raise sosException.SOSException(1,"sql: %s"%(sql))
     for row in rows:
-        list.append(sosConfig.urn["property"] + row["name_opr"])
+        list.append(row["name_opr"])
     return list
 
 def BuildOffFoiList(pgdb,id):
