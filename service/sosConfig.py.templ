@@ -33,13 +33,13 @@ sos_allowedEPSG = [istSOSepsg,"4326"]
 sensorMLpath = "/var/www/sos/sml/"
 
 #define virtual process folders if required
-#virtual_processes_folder = "/home/ist/Desktop/istSOS-SVN/trunk/virtProc"
-#virtual_HQ_folder = "/home/ist/Desktop/istSOS-SVN/trunk/virtProc/HQ_curves"
+virtual_processes_folder = "/home/ist/Desktop/istSOS-SVN/trunk/virtProc"
+virtual_HQ_folder = "/home/ist/Desktop/istSOS-SVN/trunk/virtProc/HQ_curves"
 
 #define the http address of the service
 serviceUrl = {
-              "get" : "http://localhost/sos/istsos.py",
-              "post" : "http://localhost/sos/istsos.py"
+              "get" : "http://localhost/sos/sos.py",
+              "post" : "http://localhost/sos/sos.py"
               }
 
 #identify the service
@@ -134,5 +134,3 @@ serviceType={
 service = "SOS"
 
 version = "1.0.0"
-
-

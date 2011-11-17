@@ -35,6 +35,7 @@ def sosFactoryFilter(environ):
         rect = parse_qs(environ['QUERY_STRING'])
         requestObject = {}
         for key in rect.keys():
+            # requestObject[key.lower()] = rect[key][0]
             requestObject[key] = rect[key][0]
 
         #raise sosException.SOSException(1,"%s -- %s -- %s" %(environ['QUERY_STRING'],parse_qs(environ['QUERY_STRING']),requestObject))
@@ -57,8 +58,9 @@ def sosFactoryFilter(environ):
         
         #raise sosException.SOSException(1,"%s" % environ.get('wsgi.post_form'))
 
+        content = environ['wsgi.input'].read(request_body_size)
         if content_type.startswith("application/x-www-form-urlencoded"):
-            form = cgi.parse_qs(environ['wsgi.input'].read(request_body_size))
+            form = cgi.parse_qs(content)
             if form.has_key("request"):
                 xmldoc = minidom.parseString(form["request"][0])
                 requestObject = xmldoc.firstChild
@@ -67,7 +69,7 @@ def sosFactoryFilter(environ):
                 raise sosException.SOSException(3,"NO request found in mod_python req.form object!")
 
         else:
-            xmldoc = minidom.parseString(environ['wsgi.input'].read(request_body_size))
+            xmldoc = minidom.parseString(content)
             requestObject = xmldoc.firstChild
             sosRequest = requestObject.localName.lower()
         """

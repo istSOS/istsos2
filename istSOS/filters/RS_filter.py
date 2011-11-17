@@ -130,7 +130,7 @@ class sosRSfilter(f.sosFilter):
                 self.beginPosition = 'NULL'
 
 
-            cf = oprs[0].getElementsByTagName('swe:CompositPhenomenon')
+            cf = oprs[0].getElementsByTagName('swe:CompositePhenomenon')
             
             if len(cf)==1:
                 comp = cf[0].getElementsByTagName('swe:component')
@@ -167,7 +167,7 @@ class sosRSfilter(f.sosFilter):
                     else:
                         self.oprDesc.append("NULL")
             else:
-                raise sosException.SOSException(1,"swe:CompositPhenomenon tag is allowed with multiplicity 1")
+                raise sosException.SOSException(1,"swe:CompositePhenomenon tag is allowed with multiplicity 1")
             
             #-------samplingTime
             samplT = obs[0].getElementsByTagName("om:samplingTime")

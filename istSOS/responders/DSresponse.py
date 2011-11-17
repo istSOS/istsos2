@@ -15,9 +15,11 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 
+import string
 import psycopg2 # @TODO the right library
 import psycopg2.extras
 import os
+import os.path
 
 import sosConfig
 from istSOS import sosDatabase
@@ -39,7 +41,15 @@ class DescribeSensorResponse:
                 path = sosConfig.sensorMLpath
                 if path[-1] != '/':
                     path += '/'
-                self.smlFile = path+filter.procedure+".xml"
+                # self.smlFile = path+filter.procedure+".xml"
+
+                # clean up the procedure name to produce a valid file name
+                filename = filter.procedure
+                valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
+                filename = ''.join(c for c in filename if c in valid_chars)
+                filename += '.xml'
+
+                self.smlFile = os.path.join(sosConfig.sensorMLpath, filename)
                 # check if file exist                
                 if not os.path.isfile(self.smlFile):
                     raise sosException.SOSException(1,"SensorML file for procedure '%s' not found!"%(filter.procedure))

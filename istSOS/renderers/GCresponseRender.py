@@ -18,13 +18,18 @@ import isodate as iso
 
 def render(GC):
     r = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-    r += "<sos:Capabilities\n"
-    r += "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-    r += "  xmlns:ows=\"http://www.opengis.net/ows/1.1\"\n"
-    r += "  xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n"
+    r += "<Capabilities\n"
     r += "  xmlns:gml=\"http://www.opengis.net/gml\"\n" 
+    r += "  xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n"
     r += "  xmlns:swe=\"http://www.opengis.net/swe/1.0.1\"\n" 
+    r += "  xmlns:om=\"http://www.opengis.net/om/1.0\"\n" 
+    r += "  xmlns=\"http://www.opengis.net/sos/1.0\"\n" 
     r += "  xmlns:sos=\"http://www.opengis.net/sos/1.0\"\n" 
+    r += "  xmlns:ows=\"http://www.opengis.net/ows/1.1\"\n"
+    r += "  xmlns:ogc=\"http://www.opengis.net/ogc\"\n"
+    r += "  xmlns:tml=\"http://www.opengis.net/tml\"\n"
+    r += "  xmlns:sml=\"http://www.opengis.net/sensorML/1.0.1\"\n"
+    r += "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
     r += "  xsi:schemaLocation=\"http://www.opengis.net/sos/1.0 http://schemas.opengis.net/sos/1.0.0/sosGetCapabilities.xsd\"\n"
     r += "  version=\"1.0.0\">\n"
     
@@ -89,7 +94,8 @@ def render(GC):
             r += "        </ows:HTTP>\n"
             r += "      </ows:DCP>\n"
             for p in o.parameters:
-                r += "    <ows:Parameter name=\"" + p.name + "\" use=\"" + p.use + "\">\n"
+                # r += "    <ows:Parameter name=\"" + p.name + "\" use=\"" + p.use + "\">\n"
+                r += "    <ows:Parameter name=\"" + p.name + "\">\n"
                 r += "      <ows:AllowedValues>\n"
                 if len(p.allowedValues)>0:
                     for a in p.allowedValues:
@@ -118,24 +124,30 @@ def render(GC):
         r += "  <!--~~~~~~~~~~~~~~~~~~-->\n"
         r += "  <!-- Contents Section -->\n"
         r += "  <!--~~~~~~~~~~~~~~~~~~-->\n"
-        r += "  <sos:Contents>\n"
-        r += "    <sos:ObservationOfferingList>\n"
+        r += "  <Contents>\n"
+        r += "    <ObservationOfferingList>\n"
         for ofl in GC.ObservationOfferingList.offerings:
-            r += "      <sos:ObservationOffering gml:id=\"" + str(ofl.id) + "\">\n"
-            r += "        <gml:name>" + ofl.name + "</gml:name>\n"
+            r += "      <ObservationOffering gml:id=\"" + str(ofl.id) + "\">\n"
             r += "        <gml:description>" + ofl.desc + "</gml:description>\n"
+            r += "        <gml:name>" + ofl.name + "</gml:name>\n"
+
             if ofl.boundedBy:
                 r += "        <gml:boundedBy>\n"
-                r += "          " + str(ofl.boundedBy) + "\n"
+                r += "          <gml:Envelope>\n"
+                r += "            " + str(ofl.boundedBy) + "\n"
+                r += "          </gml:Envelope>\n"
                 r += "        </gml:boundedBy>\n"
+
             
             if ofl.beginPosition and ofl.endPosition :
-                r += "        <sos:eventTime>\n"
+                r += "        <time>\n"
                 r += "          <gml:TimePeriod>\n"
                 r += "            <gml:beginPosition>" + iso.datetime_isoformat(ofl.beginPosition) + "</gml:beginPosition>\n"
                 r += "            <gml:endPosition>" + iso.datetime_isoformat(ofl.endPosition) + "</gml:endPosition>\n"
                 r += "          </gml:TimePeriod>\n"
-                r += "        </sos:eventTime>\n"
+                r += "        </time>\n"
+            else:
+                r += "        <sos:time />\n"
                 
             for pr in ofl.procedures:
                 r += "        <sos:procedure xlink:href=\"" + pr + "\" />\n"
@@ -146,21 +158,21 @@ def render(GC):
             for fo in ofl.fois:
                 r += "        <sos:featureOfInterest xlink:href=\"" + fo + "\" />\n"
             
-            r += "        </sos:ObservationOffering>\n"
             
-        for ef in GC.ObservationOfferingList.responseFormat:
-            r += "        <sos:responseFormat>" + ef + "</sos:responseFormat>\n"
-            
-        for rm in GC.ObservationOfferingList.responseMode:
-            r += "        <sos:responseMode>" + rm + "</sos:responseMode>\n"
-            
-        for rmd in GC.ObservationOfferingList.resultModel:
-            r += "        <sos:resultModel>" + rmd + "</sos:resultModel>\n"
+            for ef in GC.ObservationOfferingList.responseFormat:
+                r += "        <sos:responseFormat>" + ef + "</sos:responseFormat>\n"
                 
+            for rmd in GC.ObservationOfferingList.resultModel:
+                r += "        <sos:resultModel>" + rmd + "</sos:resultModel>\n"
+                
+            for rm in GC.ObservationOfferingList.responseMode:
+                r += "        <sos:responseMode>" + rm + "</sos:responseMode>\n"
+
+        r += "        </ObservationOffering>\n"
         
-        r += "      </sos:ObservationOfferingList>\n"
-        r += "      </sos:Contents>\n"
-    r += "    </sos:Capabilities>\n"
+        r += "      </ObservationOfferingList>\n"
+        r += "      </Contents>\n"
+    r += "    </Capabilities>\n"
     return r
     
 

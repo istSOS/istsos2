@@ -52,8 +52,8 @@ class sosGOfilter(f.sosFilter):
                 self.observedProperty = []
                 oprs = requestObject["observedProperty"].split(",")
                 for opr in oprs:
-                    #oprName = get_name_from_urn(opr,"property")
-                    oprName = opr
+                    oprName = get_name_from_urn(opr,"property")
+                    #oprName = opr
                     self.observedProperty.append(oprName) #one-many ID 
             else:
                 raise sosException.SOSException(1,"Parameter \"observedProperty\" is mandatory with multiplicity N")
@@ -198,6 +198,7 @@ class sosGOfilter(f.sosFilter):
                 err_txt = "Parameter \"offering\" is mandatory with multiplicity 1"
                 raise sosException.SOSException(1,err_txt)
             
+            
             #---------- THE OBSERVED PROPERTY
             obsProps = requestObject.getElementsByTagName('observedProperty')
             self.observedProperty = []
@@ -205,8 +206,8 @@ class sosGOfilter(f.sosFilter):
                 for obsProp in obsProps:
                     val = obsProp.firstChild
                     if val.nodeType == val.TEXT_NODE:
-                        #self.observedProperty.append(get_name_from_urn(str(val.data),"property"))
-                        self.observedProperty.append(str(val.data))
+                        self.observedProperty.append(get_name_from_urn(str(val.data),"property"))
+                        #self.observedProperty.append(str(val.data))
                     else:
                         err_txt = "XML parsing error (get value: observedProperty)"
                         raise sosException.SOSException(1,err_txt)

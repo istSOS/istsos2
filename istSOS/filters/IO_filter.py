@@ -129,7 +129,7 @@ class sosIOfilter(f.sosFilter):
             oprs = obs[0].getElementsByTagName('om:observedProperty')
             if not len(oprs)==1:
                 raise sosException.SOSException(1,"om:observedProperty tag is mandatory with multiplicity 1")
-            cf = oprs[0].getElementsByTagName('swe:CompositPhenomenon')
+            cf = oprs[0].getElementsByTagName('swe:CompositePhenomenon')
             if len(cf)==1:
                 comp = cf[0].getElementsByTagName('swe:component')
                 for co in comp:
@@ -151,7 +151,7 @@ class sosIOfilter(f.sosFilter):
                     else:
                         raise sosException.SOSException(1,"om:observedProperty Name is missing: 'xlink:href' or 'gml:name' required")
             else:
-                raise sosException.SOSException(1,"swe:CompositPhenomenon tag is allowed with multiplicity 1")
+                raise sosException.SOSException(1,"swe:CompositePhenomenon tag is allowed with multiplicity 1")
 
             logTxt += "\n observedProperty: %s" % self.oprName
             

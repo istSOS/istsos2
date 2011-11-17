@@ -32,7 +32,6 @@ class ServiceIdentification:
         self.serviceTypeVersion=sosConfig.serviceType["version"]
         self.fees=sosConfig.serviceIdentification["fees"]
         self.accessconstrains=sosConfig.serviceIdentification["accessConstrains"]
-        pass
     
 class ServiceProvider:
     def __init__(self):
@@ -48,7 +47,6 @@ class ServiceProvider:
         self.contactPostCode=sosConfig.serviceProvider["serviceContact"]["contactInfo"]["postalCode"]
         self.contactCountry=sosConfig.serviceProvider["serviceContact"]["contactInfo"]["country"]
         self.contactMail=sosConfig.serviceProvider["serviceContact"]["contactInfo"]["email"]
-        pass
 
 class Parameter:
     def __init__(self,name,use="optional",allowedValues=[],range=[]):
@@ -56,7 +54,6 @@ class Parameter:
         self.use=use
         self.allowedValues=allowedValues
         self.range=range
-        pass
 
 class Operation:
     def __init__(self,name,get="",post=""):
@@ -64,10 +61,8 @@ class Operation:
         self.get=get
         self.post=post
         self.parameters=[]
-        pass
     def addParameter(self,name,use="optional",allowedValues=[],range=[]):
         self.parameters.append(Parameter(name,use,allowedValues,range))
-        pass
     
 def BuildSensorIdList(pgdb):
     list=[]
@@ -141,10 +136,23 @@ def BuildOffEnvelope(pgdb,id):
     except:
         raise sosException.SOSException(1,"sql: %s" %(sql))
         
+    # Retrieve any of the gml:* elements below to go inside the gml:Envelope tag.
+    # Unfortunately, xml.etree.ElementTree.fromstring cannot parse xml elements with
+    # an unknown prefix, so I have to revert to string manipulation.
+    result = "<gml:Null>Not Applicable</gml:Null>"
     if rows:
-        return rows[0]["ext"]
-    else:
-        return "<gml:null>inapplicable</gml:null>"
+        gml = rows[0]["ext"]
+        # TODO: a better solution would be to parse these from the schema definition.
+        for element in ['gml:coordinates','gml:lowerCorner', 'gml:coord', 'gml:pos']:
+            open_tag = '<%s>' % element
+            close_tag = '</%s>' % element
+            pos = gml.find(open_tag)
+            if pos:
+                gml = gml[pos:]
+                pos = gml.find(close_tag)
+                result = gml[:pos+len(close_tag)]
+                break
+    return result
 
 
 def BuildOffTimePeriod(pgdb,id):
@@ -285,7 +293,6 @@ class OperationsMetadata:
         resultModel QName Zero or one (Optional)
         responseMode (inline, out-of-band, attached, resultTemplate) Zero or one (Optional)
         """
-        pass
 
 class Offering:
     def __init__(self):
@@ -310,7 +317,7 @@ class ObservationOfferingList:
         self.responseMode = sosConfig.parameters["GO_responseMode"]
 
         #get offering list
-        sql = "SELECT id_off,name_off,desc_off from %s.offerings ORDER BY name_off" %(sosConfig.schema)
+        sql = "SELECT id_off,name_off,desc_off from %s.offerings where active_off = false ORDER BY name_off" %(sosConfig.schema)
         rows=pgdb.select(sql)
         for row in rows:
             off = Offering()
@@ -351,7 +358,6 @@ class GetCapabilitiesResponse():
                 self.ObservationOfferingList = ObservationOfferingList(pgdb)
             else:
                 self.ObservationOfferingList = []
-        pass
 
     
     

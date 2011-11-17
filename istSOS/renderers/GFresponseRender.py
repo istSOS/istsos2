@@ -63,7 +63,7 @@ def render(GF):
             ii=1
         elif GF.obsType[i] == "mobilepoint":
             ii=4
-        r += "      <swe:CompositPhenomenon id=\"comp_" + str(GF.idPrc[i]) + "\" dimension=\"" + str(len(GF.properties[i])+ii) + "\">\n"
+        r += "      <swe:CompositePhenomenon id=\"comp_" + str(GF.idPrc[i]) + "\" dimension=\"" + str(len(GF.properties[i])+ii) + "\">\n"
         r += "        <swe:component xlink:href=\"" + sosConfig.urn["parameter"] + "time:iso8601" + " \" />\n" 
         #if ob.procedureType == "fixpoint":
             
@@ -75,7 +75,7 @@ def render(GF):
         for c in range(len(GF.properties[i])):
             r += "        <swe:component xlink:href=\"" + sosConfig.urn["parameter"] + GF.properties[i][c] + "\"/>\n"
             
-        r += "      </swe:CompositPhenomenon>\n"
+        r += "      </swe:CompositePhenomenon>\n"
         
         #FEATURE OF INTEREST
         r += "    <om:featureOfInterest xlink:href=\"" + sosConfig.urn["feature"] + GF.type + ":" + GF.name + "\"/>\n"

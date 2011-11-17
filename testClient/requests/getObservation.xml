@@ -15,8 +15,8 @@
             - from an offering (1 mandatory)
             
     -->
-    <offering>urn:x-ist::offering:temporary</offering>
-    <procedure>urn:ogc:object:procedure:x-ist::thermo1</procedure>
+    <offering>urn:x-ist:1.0.0:offering:wet_data</offering>
+    <procedure>urn:ogc:object:procedure:x-ist:1.0.0:AWS_at_PE01</procedure>
     <eventTime>
         <gml:TimePeriod>
            <gml:beginPosition>2010-02-10T16:00:00+01</gml:beginPosition>
@@ -27,5 +27,5 @@
         </gml:TimeInstant>
     </eventTime>
     <responseFormat>text/xml;subtype='sensorML/1.0.0'</responseFormat>
-    <observedProperty>urn:ogc:def:parameter:x-ist::meteo:air:temperature</observedProperty>
+    <observedProperty>urn:ogc:def:property:x-ist:1.0.0:meteo:air:air_temp_ave</observedProperty>
 </sos:GetObservation>

@@ -30,17 +30,12 @@ def render(GO):
         raise Exception("not supported format: %s, try one of text/xml;subtype='sensorML/1.0.0' - text/csv - image/png")
 
 def XMLformat(GO):
-    r = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
- 
-    r += "<om:ObservationCollection\n"
-    r += "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \n"
-    r += "xmlns:swe=\"http://www.opengis.net/swe/1.0.1\" \n"
-    r += "xmlns:gml=\"http://www.opengis.net/gml\" \n"
-    r += "xmlns:om=\"http://www.opengis.net/om/1.0\" \n"
-    r += "xmlns:xlink=\"http://www.w3.org/1999/xlink\" \n"
-    r += "xmlns:sa=\"http://www.opengis.net/sampling/1.0\" \n" 
-    r += "xsi:schemaLocation=\"http://www.opengis.net/om/1.0 http://www.opengis.net/sampling/1.0 http://schemas.opengis.net/om/1.0.0/om.xsd\"> \n"
-
+    r = """<om:ObservationCollection xmlns:sos="http://www.opengis.net/sos/1.0"
+  xmlns:om="http://www.opengis.net/om/1.0" xmlns:swe="http://www.opengis.net/swe/1.0.1"
+  xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/om/1.0  http://schemas.opengis.net/om/1.0.0/om.xsd">
+"""
     r += "<gml:name>" + GO.offInfo.name + "</gml:name>\n"
     r += "<gml:description>" + GO.offInfo.desc + "</gml:description>\n"
     
@@ -81,7 +76,7 @@ def XMLformat(GO):
             ii=1
             
         r += "    <om:observedProperty>\n"
-        r += "      <swe:CompositPhenomenon id=\"comp_" + str(ob.id_prc) + "\" dimension=\"" + str(len(ob.opr_urn)+ii) + "\">\n"
+        r += "      <swe:CompositePhenomenon id=\"comp_" + str(ob.id_prc) + "\" dimension=\"" + str(len(ob.opr_urn)+ii) + "\">\n"
         r += "        <swe:component xlink:href=\"" + ob.timedef + "\"/>"
             
         if ob.procedureType=="mobilepoint":
@@ -92,7 +87,7 @@ def XMLformat(GO):
 
         for urn in ob.opr_urn:    
             r += "        <swe:component xlink:href=\"" + urn + "\"/>"
-        r += "      </swe:CompositPhenomenon>\n"
+        r += "      </swe:CompositePhenomenon>\n"
         r += "    </om:observedProperty>\n"      
     
         #FEATURE OF INTEREST
@@ -221,7 +216,7 @@ def JSONformat(GO):
             ii=1
         
         r +=        ", \"observedProperty\" : {"
-        r +=            "  \"CompositPhenomenon\" : {"
+        r +=            "  \"CompositePhenomenon\" : {"
         r +=                    "  \"id\" : \"comp_%s\"" % str(ob.id_prc)
         r +=                    ", \" dimension\" : \"%s\" }" % str(len(ob.opr_urn)+ii)
         r +=                    ", \" component\" : ["
