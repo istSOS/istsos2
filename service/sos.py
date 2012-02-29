@@ -1,17 +1,4 @@
-import sys
-from os import path
 
-#from mod_python import util, apache, psp
-import urllib
-import cStringIO
-import traceback
-import decimal
-
-import istSOS
-from istSOS import sosDatabase
-from istSOS import sosException
-
-from cgi import parse_qs, escape
 """
 class bufferProxy:
     # Adapted from
@@ -29,10 +16,29 @@ class bufferProxy:
         start_response(status, response_headers)   
 """        
 def application(environ, start_response):
+    import sys
+    from os import path
+
+    #from mod_python import util, apache, psp
+    import urllib
+    import cStringIO
+    import traceback
+    import decimal
+
     outputBuffer = cStringIO.StringIO()
     root_path = path.abspath(path.dirname(__file__))
     sys.path.append(root_path)
     import sosConfig
+    
+    if not sosConfig.istSOS_librarypath=="" or sosCOnfig.istSOS_librarypath==None:
+        sys.path.append(sosConfig.istSOS_librarypath)
+    import istSOS
+    from istSOS import sosDatabase
+    from istSOS import sosException
+
+    from cgi import parse_qs, escape
+    
+    
     
     # Always escape user input to avoid script injection
     # age = escape(parse_qs(environ['QUERY_STRING'])['age'])
