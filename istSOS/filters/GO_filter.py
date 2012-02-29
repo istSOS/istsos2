@@ -145,7 +145,6 @@ class sosGOfilter(f.sosFilter):
             #---------- AGGREGATE INTERVAL
             # In ISO 8601 duration format
             if requestObject.has_key("aggregateInterval"):
-
                 # Check on the eventTime parameter: it must be only one interval: 2010-01-01T00:00:00+00/2011-01-01T00:00:01+00
                 exeMsg = "Using aggregate functions, the event time must exist with an interval composed by a begin and an end date (ISO8601)"
                 if self.eventTime == None or len(self.eventTime)!=1 or len(self.eventTime[0])!=2:
@@ -168,6 +167,15 @@ class sosGOfilter(f.sosFilter):
                     raise sosException.SOSException(2,"Available aggregation functions: avg, count, max, min, sum.")
             else:
                 self.aggregate_function = None
+                
+            #---------- AGGREGATE NODATA
+            # value
+            if requestObject.has_key("aggregateNodata"):
+                if self.aggregate_interval==None or self.aggregate_function==None:
+                    raise sosException.SOSException(2,"Using aggregateNodata parameter requires both \"aggregate_interval\" and \"aggregate_function\"")
+                self.aggregate_nodata = requestObject["aggregateNodata"]
+            else:
+                self.aggregate_nodata = -99999
 
             #------------ QUALITY INDEX
             self.qualityIndex=False

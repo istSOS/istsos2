@@ -317,7 +317,7 @@ class ObservationOfferingList:
         self.responseMode = sosConfig.parameters["GO_responseMode"]
 
         #get offering list
-        sql = "SELECT id_off,name_off,desc_off from %s.offerings where active_off = false ORDER BY name_off" %(sosConfig.schema)
+        sql = "SELECT id_off,name_off,desc_off from %s.offerings where active_off != false ORDER BY name_off" %(sosConfig.schema)
         rows=pgdb.select(sql)
         for row in rows:
             off = Offering()

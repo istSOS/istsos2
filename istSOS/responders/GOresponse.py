@@ -387,7 +387,7 @@ class observation:
                 # If Aggregatation funtion is set
                 #---------------------------------
                 if filter.aggregate_interval != None:
-                    aggrCols.append("COALESCE(%s(dt.c%s_v),0) as c%s_v\n" %(filter.aggregate_function,idx,idx))
+                    aggrCols.append("COALESCE(%s(dt.c%s_v),%s) as c%s_v\n" %(filter.aggregate_function,idx,filter.aggregate_nodata,idx))
                     if self.qualityIndex==True:
                         #raise sosException.SOSException(3,"QI: %s"%(self.qualityIndex))
                         aggrCols.append("COALESCE(MIN(dt.c%s_qi),%s) as c%s_qi\n" %(idx,defaultQI,idx))
