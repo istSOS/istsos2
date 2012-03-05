@@ -1,3 +1,7 @@
+#import sos
+import sys, os
+from os import path
+sys.path.append(os.path.split(os.getcwd())[0])
 import sos
 from wsgiref.util import setup_testing_defaults
 from wsgiref.simple_server import make_server
