@@ -62,7 +62,7 @@ class VirtualProcess():
         "set generic input of generic type"
         self.inputs[name] = val
         
-    def setSOSobservationVar(self,proc,prop,samplingTime=False):
+    def setSOSobservationVar(self,proc,prop,samplingTime=False,disableAggregate=True):
         "method for setting a procedure observation input"
         self.filter.procedure = [proc]
         if type(prop)==type([]):
@@ -98,7 +98,13 @@ class VirtualProcess():
         
         #GET DATA FROM PROCEDURE ACCORDING TO THE FILTERS
         #=================================================
+        if disableAggregate:
+            self.filter.aggregate_function = None
+            self.filter.aggregate_interval = None
         ob.setData(self.pgdb,o,self.filter)
+        if disableAggregate:
+            self.filter.aggregate_function = self.aggregate_function
+            self.filter.aggregate_interval = self.aggregate_interval
         
         if samplingTime==False:
             return ob.data
@@ -248,7 +254,9 @@ class offInfo:
             self.desc=off["desc_off"]
         except:
             raise sosException.SOSException(2,"Parameter \"offering\" sent with invalid value: %s"%(off_name))
-        
+
+
+# @todo instantation with Builder pattern will be less confusing, observation class must be just a data container
 class observation:
     def __init__(self):
         self.procedure=None
@@ -313,10 +321,9 @@ class observation:
         
     def setData(self,pgdb,o,filter):
         """get data according to request filters"""
-
-	# @todo mettere da qualche altra parte
-	defaultQI = 100
-        
+        # @todo mettere da qualche altra parte
+        defaultQI = 100
+	        
         #SET FOI OF PROCEDURE
         #=========================================
         sqlFoi  = "SELECT name_fty, name_foi, ST_AsGml(ST_Transform(geom_foi,%s)) as gml" %(filter.srsName)
@@ -393,7 +400,6 @@ class observation:
                         aggrCols.append("COALESCE(MIN(dt.c%s_qi),%s) as c%s_qi\n" %(idx,defaultQI,idx))
                     aggrNotNull.append(" c%s_v > -900 " %(idx))
 
-                
                 
                 # Set SQL JOINS
                 #---------------
@@ -631,9 +637,9 @@ class observation:
             #import procedure process
             exec "import %s as Vproc" %(self.name)
             
-            #get evaluation function
-            #--self.observedProperty
+            # Initialization of virtual procedure will load the source data
             VP = Vproc.istvp(filter,pgdb)
+            # Execution data processing 
             self.data = VP.execute()
             try:
                 self.samplingTime = VP.st

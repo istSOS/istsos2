@@ -21,7 +21,6 @@ import cgi
 from cgi import parse_qsl, escape
 from urlparse import parse_qs
 
-#def sosFactoryFilter(httpRequest):
 def sosFactoryFilter(environ):
     #W httpRequest.content_type = "text/xml"
     content_type = environ.get('CONTENT_TYPE', '')

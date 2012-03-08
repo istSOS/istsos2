@@ -31,6 +31,19 @@ def get_name_from_urn(stringa,urnName):
                 raise sosException.SOSException(1,"Urn \"%s\" is not valid: %s."%(a,urn))
     return name
 
+
+'''
+ATTRIBUTES:
+
+offering (string)
+qualityIndex (boolean)
+observedProperty (array of string)
+srsName (string)
+eventTime (array of string)
+procedure (array of string)
+featureOfInterest (array of string)
+
+'''
 class sosGOfilter(f.sosFilter):
     "filter object for a GetObservations request"
     def __init__(self,sosRequest,method,requestObject):
@@ -52,9 +65,11 @@ class sosGOfilter(f.sosFilter):
                 self.observedProperty = []
                 oprs = requestObject["observedProperty"].split(",")
                 for opr in oprs:
-                    oprName = get_name_from_urn(opr,"property")
-                    #oprName = opr
-                    self.observedProperty.append(oprName) #one-many ID 
+                    # get_name_from_urn limit the ability to ask for an observedProperty with LIKE:
+                    # eg: ask "water" to get all the water related data, "water:discharge", "water:temperature" ...
+                    #oprName = get_name_from_urn(opr,"property")
+                    oprName = opr
+                    self.observedProperty.append(oprName) # one-many ID 
             else:
                 raise sosException.SOSException(1,"Parameter \"observedProperty\" is mandatory with multiplicity N")
                 
@@ -175,7 +190,7 @@ class sosGOfilter(f.sosFilter):
                     raise sosException.SOSException(2,"Using aggregateNodata parameter requires both \"aggregate_interval\" and \"aggregate_function\"")
                 self.aggregate_nodata = requestObject["aggregateNodata"]
             else:
-                self.aggregate_nodata = -99999
+                self.aggregate_nodata = sosConfig.aggregate_nodata
 
             #------------ QUALITY INDEX
             self.qualityIndex=False
@@ -213,9 +228,11 @@ class sosGOfilter(f.sosFilter):
             if len(obsProps) > 0:
                 for obsProp in obsProps:
                     val = obsProp.firstChild
-                    if val.nodeType == val.TEXT_NODE:
-                        self.observedProperty.append(get_name_from_urn(str(val.data),"property"))
-                        #self.observedProperty.append(str(val.data))
+                    if val.nodeType == val.TEXT_NODE:                    
+                        # get_name_from_urn limit the ability to ask for an observedProperty with LIKE:
+                        # eg: ask "water" to get all the water related data, "water:discharge", "water:temperature" ...
+                        #self.observedProperty.append(get_name_from_urn(str(val.data),"property"))
+                        self.observedProperty.append(str(val.data))
                     else:
                         err_txt = "XML parsing error (get value: observedProperty)"
                         raise sosException.SOSException(1,err_txt)
@@ -377,6 +394,7 @@ class sosGOfilter(f.sosFilter):
             self.aggregate_function = None
             aggint = requestObject.getElementsByTagName('aggregateInterval')
             aggfun = requestObject.getElementsByTagName('aggregateFunction')
+            aggnodata = requestObject.getElementsByTagName('aggregateNodata')
             
             if len(aggint)==1 and len(aggfun)==1:
                 #-----------------------
@@ -404,6 +422,19 @@ class sosGOfilter(f.sosFilter):
                     self.aggregate_function = str(val.data)
                     if not (self.aggregate_function.upper() in ["AVG","COUNT","MAX","MIN","SUM"]):
                         raise sosException.SOSException(2,"Available aggregation functions: avg, count, max, min, sum.")
+                
+                
+                #-----------------------------------
+                # -- aggregate_no_data default value
+                #-----------------------------------
+                if len(aggnodata)==1:
+                    val = aggnodata[0].firstChild
+                    self.aggregate_nodata = str(val.data)
+                else:
+                    self.aggregate_nodata = sosConfig.aggregate_nodata
+
+                    
+                    
             elif len(aggint)==0 and len(aggfun)==0:
                 pass
             else:
