@@ -31,7 +31,7 @@ def application(environ, start_response):
     import sosConfig
     
     if not sosConfig.istSOS_librarypath=="" or sosCOnfig.istSOS_librarypath==None:
-        sys.path.append(sosConfig.istSOS_librarypath)
+        sys.path.insert(0, sosConfig.istSOS_librarypath)
     import istSOS
     from istSOS import sosDatabase
     from istSOS import sosException
