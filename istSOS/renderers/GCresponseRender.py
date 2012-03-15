@@ -168,7 +168,7 @@ def render(GC):
             for rm in GC.ObservationOfferingList.responseMode:
                 r += "        <sos:responseMode>" + rm + "</sos:responseMode>\n"
 
-        r += "        </ObservationOffering>\n"
+            r += "        </ObservationOffering>\n"
         
         r += "      </ObservationOfferingList>\n"
         r += "      </Contents>\n"
