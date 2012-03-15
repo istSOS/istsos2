@@ -102,6 +102,7 @@ class VirtualProcess():
             self.filter.aggregate_function = None
             self.filter.aggregate_interval = None
         ob.setData(self.pgdb,o,self.filter)
+        
         if disableAggregate:
             self.filter.aggregate_function = self.aggregate_function
             self.filter.aggregate_interval = self.aggregate_interval
@@ -245,6 +246,80 @@ def buildQuery(parameters):
     """Documentation"""
 
 
+
+                
+'''
+filter.eventTime
+filter.aggregate_function
+filter.aggregate_interval
+filter.aggregate_nodata
+filter.aggregate_nodata_qi
+'''
+
+def applyFunction(ob, filter):
+    import copy
+    try:
+        # Create array container
+        begin = iso.parse_datetime(filter.eventTime[0][0])
+        end = iso.parse_datetime(filter.eventTime[0][1])
+        duration = iso.parse_duration(filter.aggregate_interval)
+        result = {}        
+        dt = begin
+        fields = len(ob.observedProperty)# + 1 # +1 timestamp field not mentioned in the observedProperty array
+        while dt < end:
+            dt2 = dt + duration
+            result[dt2]=[]
+            for c in range(fields):
+                result[dt2].append([])
+            
+            d = 0
+            data = copy.copy(ob.data)
+            while len(data) > 0:
+                tmp = data.pop(d)
+                if dt < tmp[0] and tmp[0] <= dt2:
+                    ob.data.pop(d)
+                    for c in range(fields):
+                        result[dt2][c].append(float(tmp[c+1]))
+                elif dt > tmp[0]:
+                    ob.data.pop(d)
+                elif dt2 < tmp[0]:
+                    break
+                    
+            dt = dt2
+            
+        data = []
+        
+        for r in sorted(result):
+            record = [r]
+            for v in range(len(result[r])):
+                if ob.observedProperty[v].split(":")[-1]=="qualityIndex":
+                    if len(result[r][v])==0:
+                        record.append(filter.aggregate_nodata_qi)
+                    else:
+                        record.append(int(min(result[r][v])))
+                else:
+                    val = None
+                    if len(result[r][v])==0:
+                        val = filter.aggregate_nodata
+                    elif filter.aggregate_function.upper() == 'SUM':
+                        val = sum(result[r][v])
+                    elif filter.aggregate_function.upper() == 'MAX':
+                        val = max(result[r][v])
+                    elif filter.aggregate_function.upper() == 'MIN':
+                        val = min(result[r][v])
+                    elif filter.aggregate_function.upper() == 'AVG':
+                        val = round(sum(result[r][v])/len(result[r][v]),4)
+                    elif filter.aggregate_function.upper() == 'COUNT':
+                        val = len(result[r][v])
+                    record.append(val)
+            data.append(record)
+                
+        ob.data = data
+        
+    except Exception as e:
+        raise sosException.SOSException(3,"Error while applying aggregate function on virtual procedures: %s" % (e))
+    
+
 class offInfo:
     def __init__(self,off_name,pgdb):
         sql = "SELECT name_off, desc_off FROM %s.offerings WHERE name_off='%s'" %(sosConfig.schema,off_name)
@@ -322,7 +397,6 @@ class observation:
     def setData(self,pgdb,o,filter):
         """get data according to request filters"""
         # @todo mettere da qualche altra parte
-        defaultQI = 100
 	        
         #SET FOI OF PROCEDURE
         #=========================================
@@ -394,17 +468,22 @@ class observation:
                 # If Aggregatation funtion is set
                 #---------------------------------
                 if filter.aggregate_interval != None:
-                    aggrCols.append("COALESCE(%s(dt.c%s_v),%s) as c%s_v\n" %(filter.aggregate_function,idx,filter.aggregate_nodata,idx))
+                    # This can be usefull with string values
+                    '''aggrCols.append("CASE WHEN %s(dt.c%s_v) is NULL THEN '%s' ELSE '' || %s(dt.c%s_v) END as c%s_v\n" % ( 
+                        filter.aggregate_function, idx, filter.aggregate_nodata, filter.aggregate_function, idx, idx)
+                    )'''
+                    # This accept only numeric results
+                    aggrCols.append("COALESCE(%s(dt.c%s_v),'%s') as c%s_v\n" %(filter.aggregate_function,idx,filter.aggregate_nodata,idx))
                     if self.qualityIndex==True:
                         #raise sosException.SOSException(3,"QI: %s"%(self.qualityIndex))
-                        aggrCols.append("COALESCE(MIN(dt.c%s_qi),%s) as c%s_qi\n" %(idx,defaultQI,idx))
+                        aggrCols.append("COALESCE(MIN(dt.c%s_qi),%s) as c%s_qi\n" %( idx, filter.aggregate_nodata_qi, idx ))
                     aggrNotNull.append(" c%s_v > -900 " %(idx))
-
                 
                 # Set SQL JOINS
                 #---------------
                 join_txt  = " left join (\n"
                 join_txt += " SELECT distinct A%s.id_msr, A%s.val_msr, A%s.id_eti_fk\n" %(idx,idx,idx)
+
                 if self.qualityIndex==True:
                     join_txt += ",A%s.id_qi_fk\n" %(idx)
                 join_txt += "   FROM %s.measures A%s, %s.event_time B%s\n" %(sosConfig.schema,idx,sosConfig.schema,idx)
@@ -629,24 +708,34 @@ class observation:
             #raise sosException.SOSException(3,self.data)
             #else:
             #    raise sosException.SOSException(3,"SQLEEE: %s"%(sql))
-        
+            
         #-----------------------------------------                
         #CASE "virtual"
         #-----------------------------------------       
         elif self.procedureType in ["virtual"]:
             #import procedure process
             exec "import %s as Vproc" %(self.name)
-            
             # Initialization of virtual procedure will load the source data
             VP = Vproc.istvp(filter,pgdb)
             # Execution data processing 
             self.data = VP.execute()
+            
+            # what is this ??
             try:
                 self.samplingTime = VP.st
             except:
                 pass
             
-            try:
+            self.aggregate_function = filter.aggregate_function
+            self.aggregate_interval = filter.aggregate_interval
+            self.aggregate_nodata = filter.aggregate_nodata
+            self.aggregate_nodata_qi = filter.aggregate_nodata_qi
+            
+            if filter.aggregate_interval != None:
+                applyFunction(self, filter)
+                
+        
+            '''try:
                 self.aggregate_function = VP.aggregate_function
             except:
                 self.aggregate_interval = None
@@ -654,19 +743,11 @@ class observation:
             try:
                 self.aggregate_interval = VP.aggregate_interval
             except:
-                self.aggregate_interval = None
+                self.aggregate_interval = None'''
                 
-            #raise sosException.SOSException(3,self.data)
-            
-            #get procedures
-            
-            #get data
-            
-            #apply function
-            
-            #set self.data [ [time,val1,val2,...,valN],[...],[...] ]
         
         
+                
 class observations:
     def __init__(self,filter,pgdb):
         self.offInfo = offInfo(filter.offering,pgdb)
@@ -712,7 +793,7 @@ class observations:
                     tp.append(iso.parse_datetime(t[1]))
                 if len(t)==1:
                     tp.append(iso.parse_datetime(t[0]))
-        #else: rise error ???
+                #else: rise error ???
         self.period = [min(tp),max(tp)]
         
         self.obs=[]
