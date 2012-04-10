@@ -1,4 +1,4 @@
-# istsos Istituto Scienze della Terra Sensor Observation Service
+# istSOS Istituto Scienze della Terra Sensor Observation Service
 # Copyright (C) 2010 Massimiliano Cannata
 #
 # This program is free software; you can redistribute it and/or modify
@@ -18,12 +18,12 @@
 import psycopg2 # @TODO the right library
 import psycopg2.extras
 
-#import sosConfig
-from istsos import sosDatabase
-from istsos import sosException
+import sosConfig
+from istSOS import sosDatabase
+from istSOS import sosException
 
 class ServiceIdentification:
-    def __init__(self,sosConfig):
+    def __init__(self):
         self.title=sosConfig.serviceIdentification["title"]
         self.abstract=sosConfig.serviceIdentification["abstract"]
         self.keywords=sosConfig.serviceIdentification["keywords"]
@@ -34,7 +34,7 @@ class ServiceIdentification:
         self.accessconstrains=sosConfig.serviceIdentification["accessConstrains"]
     
 class ServiceProvider:
-    def __init__(self,sosConfig):
+    def __init__(self):
         self.providerName=sosConfig.serviceProvider["providerName"]
         self.providerSite=sosConfig.serviceProvider["providerSite"]
         self.individualName=sosConfig.serviceProvider["serviceContact"]["individualName"]
@@ -64,7 +64,7 @@ class Operation:
     def addParameter(self,name,use="optional",allowedValues=[],range=[]):
         self.parameters.append(Parameter(name,use,allowedValues,range))
     
-def BuildSensorIdList(pgdb,sosConfig):
+def BuildSensorIdList(pgdb):
     list=[]
     sql = "SELECT name_prc FROM %s.procedures ORDER BY name_prc" %(sosConfig.schema)
     rows=pgdb.select(sql)
@@ -72,7 +72,7 @@ def BuildSensorIdList(pgdb,sosConfig):
         list.append(sosConfig.urn["procedure"] + row["name_prc"])    
     return list
 
-def BuildOfferingList(pgdb,sosConfig):
+def BuildOfferingList(pgdb):
     list=[]
     sql = "SELECT distinct(name_off) FROM %s.procedures, %s.off_proc, %s.offerings" %(sosConfig.schema,sosConfig.schema,sosConfig.schema)
     sql += " WHERE id_prc=id_prc_fk AND id_off_fk=id_off ORDER BY name_off"
@@ -85,8 +85,7 @@ def BuildOfferingList(pgdb,sosConfig):
         list.append(sosConfig.urn["offering"] +row["name_off"])
     return list
 
-def BuildEventTimeRange(pgdb,sosConfig):
-    
+def BuildEventTimeRange(pgdb):
     sql = "SELECT min(stime_prc) as b, max(etime_prc) as e FROM %s.procedures" %(sosConfig.schema)
     #sql = "SELECT min(time_eti) as b, max(time_eti) as e FROM %s.event_time" %(sosConfig.schema)
     try:
@@ -96,7 +95,7 @@ def BuildEventTimeRange(pgdb,sosConfig):
     #check if not observation?!?!?!?
     return [rows[0]["b"],rows[0]["e"]]
 
-def BuildobservedPropertyList(pgdb,sosConfig):
+def BuildobservedPropertyList(pgdb):
     list=[]
     sql = "SELECT distinct(name_opr) as nopr FROM %s.procedures,%s.proc_obs,%s.observed_properties" %(sosConfig.schema,sosConfig.schema,sosConfig.schema)
     sql += " WHERE id_prc_fk=id_prc AND id_opr_fk=id_opr ORDER BY nopr"
@@ -106,7 +105,7 @@ def BuildobservedPropertyList(pgdb,sosConfig):
         list.append(row["nopr"])
     return list
 
-def BuildfeatureOfInterestList(pgdb,sosConfig):
+def BuildfeatureOfInterestList(pgdb):
     list=[]
     sql = "SELECT distinct(name_fty||':'||name_foi) as nfoi FROM %s.foi, %s.feature_type" %(sosConfig.schema,sosConfig.schema) 
     sql += " WHERE id_fty=id_fty_fk ORDER BY nfoi"
@@ -118,17 +117,17 @@ def BuildfeatureOfInterestList(pgdb,sosConfig):
         list.append(sosConfig.urn["feature"] + row["nfoi"])
     return list
 
-def BuildOffEnvelope(pgdb,id,sosConfig):
+def BuildOffEnvelope(pgdb,id):
     sql = "SELECT asgml(Box2D(u.geom)) as ext FROM"
     sql += " ("
     #----case obs_type = fix
-    sql += " SELECT ST_Transform(geom_foi,%s) as geom FROM %s.off_proc," %(sosConfig.istsosepsg,sosConfig.schema)
+    sql += " SELECT ST_Transform(geom_foi,%s) as geom FROM %s.off_proc," %(sosConfig.istSOSepsg,sosConfig.schema)
     sql += " %s.procedures, %s.foi" %(sosConfig.schema,sosConfig.schema)
     sql += " WHERE id_prc_fk=id_prc AND id_foi_fk=id_foi AND id_off_fk=%s" %(id)
     #---------------
     sql += " UNION"
     #----case obs_type = mobile
-    sql += " SELECT ST_Transform(geom_pos,%s) as geom FROM %s.positions, %s.event_time e," %(sosConfig.istsosepsg,sosConfig.schema,sosConfig.schema)
+    sql += " SELECT ST_Transform(geom_pos,%s) as geom FROM %s.positions, %s.event_time e," %(sosConfig.istSOSepsg,sosConfig.schema,sosConfig.schema)
     sql += " %s.procedures, %s.off_proc o" %(sosConfig.schema,sosConfig.schema)
     sql += " WHERE id_eti=id_eti_fk AND id_prc=e.id_prc_fk AND id_prc=o.id_prc_fk AND id_off_fk=%s" %(id)
     #----------------
@@ -157,7 +156,7 @@ def BuildOffEnvelope(pgdb,id,sosConfig):
     return result
 
 
-def BuildOffTimePeriod(pgdb,id,sosConfig):
+def BuildOffTimePeriod(pgdb,id):
     sql = "SELECT max(etime_prc) as e, min(stime_prc) as b"
     sql += " from %s.procedures, %s.off_proc o" %(sosConfig.schema,sosConfig.schema)
     sql += " WHERE o.id_prc_fk=id_prc and id_off_fk=%s" %(id)
@@ -171,7 +170,7 @@ def BuildOffTimePeriod(pgdb,id,sosConfig):
     '''
     return [rows[0]["b"],rows[0]["e"]]
 
-def BuildOffProcList(pgdb,id,sosConfig):
+def BuildOffProcList(pgdb,id):
     list=[]
     sql = "SELECT distinct(name_prc)"
     sql += " FROM %s.off_proc, %s.procedures,%s.offerings" %(sosConfig.schema,sosConfig.schema,sosConfig.schema)
@@ -186,7 +185,7 @@ def BuildOffProcList(pgdb,id,sosConfig):
         list.append(row["name_prc"])
     return list
 
-def BuildOffObsPrList(pgdb,id,sosConfig):
+def BuildOffObsPrList(pgdb,id):
     list=[]
     sql = "SELECT distinct(name_opr)"
     sql += " FROM %s.offerings, %s.off_proc o, %s.procedures," %(sosConfig.schema,sosConfig.schema,sosConfig.schema)
@@ -202,7 +201,7 @@ def BuildOffObsPrList(pgdb,id,sosConfig):
         list.append(row["name_opr"])
     return list
 
-def BuildOffFoiList(pgdb,id,sosConfig):
+def BuildOffFoiList(pgdb,id):
     list=[]
 
     sql = "SELECT distinct(name_fty || ':' || name_foi) as fois" 
@@ -219,7 +218,7 @@ def BuildOffFoiList(pgdb,id,sosConfig):
         list.append(sosConfig.urn["feature"] + row["fois"])
     return list
 
-def BuildSensorList(pgdb,sosConfig):
+def BuildSensorList(pgdb):
     sql = "SELECT assignedid_prc as id from %s.procedures" %(sosConfig.schema)
     try:
         rows=pgdb.select(sql)
@@ -228,7 +227,7 @@ def BuildSensorList(pgdb,sosConfig):
     return [ sosConfig.urn["sensor"]+str(sid["id"]) for sid in rows ]
 
 class OperationsMetadata:
-    def __init__(self,pgdb,sosConfig):
+    def __init__(self,pgdb):
         self.OP=[]
         srslist=[sosConfig.urn["refsystem"]+i for i in sosConfig.parameters["GO_srs"]]
 
@@ -239,52 +238,39 @@ class OperationsMetadata:
         GetCapabilities.addParameter(name="section",use="optional",allowedValues=sosConfig.parameters["GC_Section"])
         self.OP.append(GetCapabilities)
         
-         
-        #DescribeSensor 
+        """ DescribeSensor """
         DescribeSensor=Operation(name="DescribeSensor",get=sosConfig.serviceUrl["get"],post=sosConfig.serviceUrl["post"])
         DescribeSensor.addParameter(name="service",use="required",allowedValues=sosConfig.parameters["service"])
         DescribeSensor.addParameter(name="version",use="required",allowedValues=sosConfig.parameters["version"])
-        DescribeSensor.addParameter(name="procedure",use="required",allowedValues=BuildSensorIdList(pgdb,sosConfig))
+        DescribeSensor.addParameter(name="procedure",use="required",allowedValues=BuildSensorIdList(pgdb))
         DescribeSensor.addParameter(name="outputFormat",use="required",allowedValues=sosConfig.parameters["DS_outputFormats"])
         self.OP.append(DescribeSensor)
-        
               
-         
-        #GetObservation 
+        """ GetObservation """
         GetObservation=Operation(name="GetObservation",get=sosConfig.serviceUrl["get"],post=sosConfig.serviceUrl["post"])
         GetObservation.addParameter(name="service",use="required",allowedValues=sosConfig.parameters["service"])
         GetObservation.addParameter(name="version",use="required",allowedValues=sosConfig.parameters["version"])
-        GetObservation.addParameter(name="srsName",use="optional",allowedValues=srslist) 
-        
-        GetObservation.addParameter(name="offering",use="required",allowedValues=BuildOfferingList(pgdb,sosConfig))
-        
-        GetObservation.addParameter(name="eventTime",use="optional",allowedValues=[],range=BuildEventTimeRange(pgdb,sosConfig))
-        
-        GetObservation.addParameter(name="procedure",use="optional",allowedValues=BuildSensorIdList(pgdb,sosConfig))
-        
-        GetObservation.addParameter(name="observedProperty",use="optional",allowedValues=BuildobservedPropertyList(pgdb,sosConfig))
-        
-        GetObservation.addParameter(name="featureOfInterest",use="optional",allowedValues=BuildfeatureOfInterestList(pgdb,sosConfig))
-        
+        GetObservation.addParameter(name="srsName",use="optional",allowedValues=srslist)
+        GetObservation.addParameter(name="offering",use="required",allowedValues=BuildOfferingList(pgdb))
+        GetObservation.addParameter(name="eventTime",use="optional",allowedValues=[],range=BuildEventTimeRange(pgdb))
+        GetObservation.addParameter(name="procedure",use="optional",allowedValues=BuildSensorIdList(pgdb))
+        GetObservation.addParameter(name="observedProperty",use="optional",allowedValues=BuildobservedPropertyList(pgdb))
+        GetObservation.addParameter(name="featureOfInterest",use="optional",allowedValues=BuildfeatureOfInterestList(pgdb))
         #GetObservation.addParameter(name="result",use="optional",allowedValues=[sosConfig.parameters["result"]])
         GetObservation.addParameter(name="responseFormat",use="required",allowedValues=sosConfig.parameters["GO_responseFormat"])
         GetObservation.addParameter(name="resultModel",use="optional",allowedValues=sosConfig.parameters["GO_resultModel"])
         GetObservation.addParameter(name="responseMode",use="optional",allowedValues=sosConfig.parameters["GO_responseMode"])
         self.OP.append(GetObservation)
         
-        
-         
-        #GetFeatureOfInterest 
+        """ GetFeatureOfInterest """
         GetFeatureOfInterest=Operation(name="GetFeatureOfInterest",get=sosConfig.serviceUrl["get"],post=sosConfig.serviceUrl["post"])
         GetFeatureOfInterest.addParameter(name="service",use="required",allowedValues=sosConfig.parameters["service"])
         GetFeatureOfInterest.addParameter(name="version",use="required",allowedValues=sosConfig.parameters["version"])
-        GetFeatureOfInterest.addParameter(name="featureOfInterest",use="required",allowedValues=BuildfeatureOfInterestList(pgdb,sosConfig))
+        GetFeatureOfInterest.addParameter(name="featureOfInterest",use="required",allowedValues=BuildfeatureOfInterestList(pgdb))
         GetFeatureOfInterest.addParameter(name="srsName",use="optional",allowedValues=srslist)
         self.OP.append(GetFeatureOfInterest)
         
-        
-         
-        #RegisterSensor 
+        """ InsertObservation """
         RegisterSensor=Operation(name="RegisterSensor",get=None,post=sosConfig.serviceUrl["post"])
         RegisterSensor.addParameter(name="service",use="required",allowedValues=sosConfig.parameters["service"])
         RegisterSensor.addParameter(name="version",use="required",allowedValues=sosConfig.parameters["version"])
@@ -292,9 +278,7 @@ class OperationsMetadata:
         RegisterSensor.addParameter(name="ObservationTemplate",use="required",allowedValues=["Any om:Observation"])
         self.OP.append(RegisterSensor)
         
-        
-        
-        #--InsertObservation 
+        """ InsertObservation """
         InsertObservation=Operation(name="InsertObservation",get=None,post=sosConfig.serviceUrl["post"])
         InsertObservation.addParameter(name="service",use="required",allowedValues=sosConfig.parameters["service"])
         InsertObservation.addParameter(name="version",use="required",allowedValues=sosConfig.parameters["version"])
@@ -325,7 +309,7 @@ class Offering:
          
 class ObservationOfferingList:
     #def __init__(self,filter, pgdb):
-    def __init__(self, pgdb,sosConfig):        
+    def __init__(self, pgdb):        
         self.offerings=[]
         #self.offDict = sosConfig.dictionaries["offering"]
         #elf.obsDict = sosConfig.dictionaries["phenomena"]
@@ -341,41 +325,42 @@ class ObservationOfferingList:
             off.id = row["name_off"]
             off.name = sosConfig.urn["offering"] + row["name_off"]
             off.desc = row["desc_off"]
-            off.boundedBy = BuildOffEnvelope(pgdb,row["id_off"],sosConfig)
-            timelag = BuildOffTimePeriod(pgdb,row["id_off"],sosConfig)
+            off.boundedBy = BuildOffEnvelope(pgdb,row["id_off"])
+            timelag = BuildOffTimePeriod(pgdb,row["id_off"])
             off.beginPosition = timelag[0]
             off.endPosition = timelag[1]
-            off.procedures = BuildOffProcList(pgdb,row["id_off"],sosConfig)
-            off.obsProp = BuildOffObsPrList(pgdb,row["id_off"],sosConfig)
-            off.fois = BuildOffFoiList(pgdb,row["id_off"],sosConfig)
+            off.procedures = BuildOffProcList(pgdb,row["id_off"])
+            off.obsProp = BuildOffObsPrList(pgdb,row["id_off"])
+            off.fois = BuildOffFoiList(pgdb,row["id_off"])
             self.offerings.append(off)
         
 
 class GetCapabilitiesResponse():
     def __init__(self,fil,pgdb):
         if "all" in fil.sections:
-            self.ServiceIdentifier = ServiceIdentification(fil.sosConfig)
-            self.ServiceProvider = ServiceProvider(fil.sosConfig)
-            self.OperationsMetadata = OperationsMetadata(pgdb,fil.sosConfig)
-            self.ObservationOfferingList = ObservationOfferingList(pgdb,fil.sosConfig)
+            self.ServiceIdentifier = ServiceIdentification()
+            self.ServiceProvider = ServiceProvider()
+            self.OperationsMetadata = OperationsMetadata(pgdb)
+            self.ObservationOfferingList = ObservationOfferingList(pgdb)
         else:
             if "serviceidentification" in fil.sections:
-                self.ServiceIdentifier = ServiceIdentification(fil.sosConfig)
+                self.ServiceIdentifier = ServiceIdentification()
             else:
                 self.ServiceIdentifier = []
             if "serviceprovider" in fil.sections:
-                self.ServiceProvider = ServiceProvider(fil.sosConfig)
+                self.ServiceProvider = ServiceProvider()
             else:
                 self.ServiceProvider = []
             if "operationsmetadata" in fil.sections:
-                self.OperationsMetadata = OperationsMetadata(pgdb,fil.sosConfig)
+                self.OperationsMetadata = OperationsMetadata(pgdb)
             else:
                 self.OperationsMetadata = []
             if "contents" in fil.sections:
-                self.ObservationOfferingList = ObservationOfferingList(pgdb,fil.sosConfig)
+                self.ObservationOfferingList = ObservationOfferingList(pgdb)
             else:
                 self.ObservationOfferingList = []
 
     
     
     
+
