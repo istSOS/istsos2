@@ -1,9 +1,0 @@
-{
-    "service": "SOSWA",
-    "version": "1.0.0",
-    "request": "get",
-    "typename": "serverStatus",
-    "lang": "IT",
-    "outputFormat" : "application/json",
-    "data" : "Null"
-}

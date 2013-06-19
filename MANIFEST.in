@@ -1,7 +1,0 @@
-include README LICENCE AUTHORS
-recursive-include istSOS *
-recursive-include service *
-recursive-include database *
-recursive-include testClient *
-prune DOCS
-prune webadmin
