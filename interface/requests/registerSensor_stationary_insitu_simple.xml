@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sos:RegisterSensor 
+    service="SOS" 
+    version="1.0.0" 
+    xmlns:sos="http://www.opengis.net/sos/1.0" 
+    xmlns:gml="http://www.opengis.net/gml" 
+    xmlns:om="http://www.opengis.net/om" 
+    xmlns:sml="http://www.opengis.net/sensorML" 
+    xmlns:swe="http://www.opengis.net/swe" 
+    xmlns:xlink="http://www.w3.org/1999/xlink" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://schemas.opengis.net/sos/1.0.0/sosRegisterSensor.xsd">
+  <sos:SensorDescription>
+    <sml:member>
+      <sml:System gml:id="H_TREVANO">
+        <gml:name>H_TREVANO</gml:name>
+        <sml:identification/>
+        <sml:classification>
+          <sml:ClassifierList>
+            <sml:classifier name="System Type">
+              <sml:Term definition="urn:ogc:def:classifier:x-istsos:1.0:systemType">
+                <sml:value>insitu-fixed-point</sml:value>
+              </sml:Term>
+            </sml:classifier>
+            <sml:classifier name="Sensor Type">
+              <sml:Term definition="urn:ogc:def:classifier:x-istsos:1.0:sensorType">
+                <sml:value>humidity sensor</sml:value>
+              </sml:Term>
+            </sml:classifier>
+          </sml:ClassifierList>
+        </sml:classification>
+        <sml:capabilities>
+          <swe:DataRecord/>
+        </sml:capabilities>
+        <gml:location>
+          <gml:Point gml:id="trevano" srsName="EPSG:4326">
+            <gml:coordinates>8.961435,46.028235,350</gml:coordinates>
+          </gml:Point>
+        </gml:location>
+        <sml:outputs>
+          <sml:OutputList>
+            <sml:output name="output data">
+              <swe:DataRecord definition="urn:ogc:def:dataType:x-istsos:1.0:timeSeries">
+                <swe:field name="Time">
+                  <swe:Time definition="urn:ogc:def:parameter:x-istsos:1.0:time:iso8601" gml:id="1">
+                    <swe:uom code="iso8601"/>
+                  </swe:Time>
+                </swe:field>
+                <swe:field name="air humidity">
+                  <swe:Quantity definition="urn:ogc:def:parameter:x-istsos:1.0:meteo:air:humidity" gml:id="2">
+                    <swe:uom code="%"/>
+                  </swe:Quantity>
+                </swe:field>
+              </swe:DataRecord>
+            </sml:output>
+          </sml:OutputList>
+        </sml:outputs>
+      </sml:System>
+    </sml:member>
+  </sos:SensorDescription>
+  <sos:ObservationTemplate>
+    <om:Observation>
+      <om:procedure xlink:href="urn:ogc:object:procedure:x-istsos:1.0:H_TREVANO"/>
+      <om:samplingTime>
+        <gml:TimePeriod>
+          <gml:TimeLength/>
+        </gml:TimePeriod>
+      </om:samplingTime>
+      <om:observedProperty>
+        <swe:CompositPhenomenon dimension="2">
+          <swe:component xlink:href="urn:ogc:def:parameter:x-istsos:1.0:time:iso8601"/>
+          <swe:component xlink:href="urn:ogc:def:parameter:x-istsos:1.0:meteo:air:humidity"/>
+        </swe:CompositPhenomenon>
+      </om:observedProperty>
+      <om:featureOfInterest xlink:href="trevano">
+        <gml:Point gml:id="trevano" srsName="EPSG:4326">
+          <gml:coordinates>8.961435,46.028235,350</gml:coordinates>
+        </gml:Point>
+      </om:featureOfInterest>
+      <om:result>
+        <swe:DataArray>
+          <swe:elementCount>
+            <swe:value>2</swe:value>
+          </swe:elementCount>
+          <swe:elementType name="SimpleDataArray" xlink:href="urn:ogc:def:dataType:x-istsos:1.0:timeSeriesDataRecord">
+            <swe:DataRecord definition="urn:ogc:def:dataType:x-istsos:1.0:timeSeries">
+              <swe:field name="Time">
+                <swe:Time definition="urn:ogc:def:parameter:x-istsos::time:iso8601" gml:id="1">
+                  <swe:uom code="iso8601"/>
+                </swe:Time>
+              </swe:field>
+              <swe:field name="air humidity">
+                <swe:Quantity definition="urn:ogc:def:parameter:x-istsos:1.0:meteo:air:humidity" gml:id="2">
+                  <swe:uom code="%"/>
+                </swe:Quantity>
+              </swe:field>
+            </swe:DataRecord>
+          </swe:elementType>
+          <swe:encoding>
+            <swe:TextBlock blockSeparator="@" decimalSeparator="." tokenSeparator=","/>
+          </swe:encoding>
+          <swe:values/>
+        </swe:DataArray>
+      </om:result>
+    </om:Observation>
+  </sos:ObservationTemplate>
+</sos:RegisterSensor>

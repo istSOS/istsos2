@@ -1,0 +1,28 @@
+{
+    "total": 1,
+    "success": true,
+    "message": "Capabilities data loaded correctly",
+    "data": [
+        {
+            "name": "temporary",
+            "description": "descrizione 1",
+            "procedures": 31,
+            "expiration": "31.01.2012",
+            "active": true
+        },
+        {
+            "name": "raifall",
+            "description": "descrizione 2",
+            "procedures": 4,
+            "expiration": "31.01.2012",
+            "active": false
+        },
+        {
+            "name": "temperature",
+            "description": "descrizione 3",
+            "procedures": 12,
+            "expiration": "31.01.2012",
+            "active": true
+        }
+    ]
+}

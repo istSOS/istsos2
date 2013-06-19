@@ -1,0 +1,37 @@
+// dot 2.26.3 on Linux 3.2.0-38-generic-pae
+// SchemaSpy rev 590
+digraph "tran_log" {
+  graph [
+    rankdir="RL"
+    bgcolor="#f7f7f7"
+    nodesep="0.18"
+    ranksep="0.46"
+    fontname="Helvetica"
+    fontsize="11"
+  ];
+  node [
+    fontname="Helvetica"
+    fontsize="11"
+    shape="plaintext"
+  ];
+  edge [
+    arrowsize="0.8"
+  ];
+  "tran_log" [
+    label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">tran_log</TD></TR>
+      <TR><TD PORT="id_trl" COLSPAN="3" BGCOLOR="#bed1b8" ALIGN="LEFT">id_trl</TD></TR>
+      <TR><TD PORT="operation_trl" COLSPAN="3" ALIGN="LEFT">operation_trl</TD></TR>
+      <TR><TD PORT="procedure_trl" COLSPAN="3" ALIGN="LEFT">procedure_trl</TD></TR>
+      <TR><TD PORT="begin_trl" COLSPAN="3" ALIGN="LEFT">begin_trl</TD></TR>
+      <TR><TD PORT="end_trl" COLSPAN="3" ALIGN="LEFT">end_trl</TD></TR>
+      <TR><TD PORT="count" COLSPAN="3" ALIGN="LEFT">count</TD></TR>
+      <TR><TD PORT="stime_prc" COLSPAN="3" ALIGN="LEFT">stime_prc</TD></TR>
+      <TR><TD PORT="etime_prc" COLSPAN="3" ALIGN="LEFT">etime_prc</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">  </TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">3 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+    </TABLE>>
+    URL="tables/tran_log.html"
+    tooltip="tran_log"
+  ];
+}

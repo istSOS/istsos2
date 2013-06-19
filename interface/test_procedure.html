@@ -1,0 +1,127 @@
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>extDesigner</title>
+        <link rel="stylesheet" type="text/css" href="ext/resources/css/ext-all.css"/>
+        <link rel="stylesheet" type="text/css" href="css/main.css"/>
+        <link href='http://fonts.googleapis.com/css?family=Patrick+Hand' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Nova+Square' rel='stylesheet' type='text/css'>
+        <script type="text/javascript" src="ext/ext-all-debug.js"></script>
+
+        <script type="text/javascript">
+            function ISO8601FromDate(isodate) {
+                function pad(n){return n<10 ? '0'+n : n}
+                var offset = isodate.getTimezoneOffset()/-60;
+                var tz = ((offset > 0) ? "+"+pad(offset) : pad(offset))
+                return isodate.getFullYear()+'-'
+                    + pad(isodate.getMonth()+1)+'-'
+                    + pad(isodate.getDate())+'T'
+                    + pad(isodate.getHours())+':'
+                    + pad(isodate.getMinutes())+':'
+                    + pad(isodate.getSeconds())+'.'
+                    + isodate.getMilliseconds() + tz;
+            }
+            String.prototype.capitalize = function(){
+                return this.toLowerCase().replace( /(^|\s)([a-z])/g , function(m,p1,p2){ return p1+p2.toUpperCase(); } );
+            };
+            Ext.override(Ext.layout.Layout, {
+                renderItem: function(item, target, position) {
+                    if (item && !item.rendered && item.isFieldLabelable && item.fieldLabel && item.allowBlank == false) {
+                        item.fieldLabel = '<span title="This is a mandatory parameter">' + item.fieldLabel + '<span style="color:red">*</span></span>';
+                    }
+                    this.callOverridden(arguments);
+                }
+            });
+            /*Ext.override(Ext.form.field.Picker, {
+                alignPicker: Ext.Function.createSequence(Ext.form.field.Picker.prototype.alignPicker, function() {
+                    var picker = this.getPicker();
+                    picker.setHeight(picker.store && picker.store.getCount() ? null : 0);
+                })
+            });
+            
+            Ext.override(Ext.form.field.Picker, {
+                alignPicker: function() {
+                    var me = this,
+                    picker = me.getPicker();
+                    if (me.isExpanded) {
+                        if (me.matchFieldWidth) {
+                            // Auto the height (it will be constrained by min and max width) unless there are no records to display.
+                            picker.setWidth(me.bodyEl.getWidth());
+                        } else { // MODIFIED - this else block added 
+                            picker.setSize(
+                            me.listConfig ? me.listConfig.width || null : null,
+                            ( picker.store && picker.store.getCount() ) ? null : 0
+                        );
+                        }
+                        if (picker.isFloating()) {
+                            me.doAlign();
+                        }
+                        picker.setHeight(picker.store && picker.store.getCount() ? null : 0);
+                    }
+                }
+            });*/
+        </script>
+
+        <script type="text/javascript" src="app/store/Fake.js"></script>
+        <script type="text/javascript" src="app/store/cmbIdentification.js"></script>
+        <script type="text/javascript" src="app/store/cmbSystemType.js"></script>
+        <script type="text/javascript" src="app/store/cmbSml.js"></script>
+        <script type="text/javascript" src="app/store/cmbName.js"></script>
+        <script type="text/javascript" src="app/store/cmbDocumentFormat.js"></script>
+        <script type="text/javascript" src="app/store/gridDocumentation.js"></script>
+        <script type="text/javascript" src="app/store/gridOutputs.js"></script>
+
+        <script type="text/javascript" src="app/view/ui/procedure.js"></script>
+        <script type="text/javascript" src="app/view/procedure.js"></script>
+
+        <script type="text/javascript">
+            
+            Ext.Loader.setConfig({
+                enabled: false
+            });
+
+            Ext.application({
+                name: 'istsos',
+                stores: [
+                    'Fake'
+                ],
+                launch: function() {
+                    Ext.QuickTips.init();
+
+                    var cmp9 = Ext.create('istsos.view.procedure', {
+                        renderTo: Ext.getBody(),
+                        id: 'procedureid',
+                        width: 1100,
+                        height: 900,
+                        dockedItems: [
+                            {
+                                xtype: 'toolbar',
+                                dock: 'top',
+                                items: [
+                                    {
+                                        xtype: 'button',
+                                        text: 'SUBMIT',
+                                        id: 'configsubmit',
+                                        handler: function(){
+                                            Ext.getCmp('procedureid').executePost();
+                                        }
+                                    },
+                                    {
+                                        xtype: 'button',
+                                        text: 'TEST',
+                                        handler: function(){
+                                            Ext.getCmp('procedureid').getContacts();
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    });
+                    cmp9.show();
+                }
+            });
+            
+        </script>
+    </head>
+    <body></body>
+</html>

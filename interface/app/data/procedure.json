@@ -1,0 +1,146 @@
+{
+    "total": 1,
+    "success": true,
+    "message": "Capabilities data loaded correctly",
+    "data": {
+        "system_id": "P_TRE",
+        "system": "P_TRE",
+        "description": "ciao",
+        "keywords": "uno,due,tre",
+        "identification": [
+        {
+            "name": "Serial Number",
+            "description": "",
+            "definition": "urn:x-ogc:def:identifier:x-istsos:1.0:serialNumber",
+            "uom": "",
+            "value": "TS-12349"
+        },
+        {
+            "name": "Long Name",
+            "description": "",
+            "definition": "urn:x-ogc:def:identifier:x-istsos:1.0:longName",
+            "uom": "",
+            "value": "nome lungo"
+        }
+        ],
+        "classification": [
+        {
+            "name": "System Type",
+            "definition": "urn:ogc:def:classifier:x-istsos:1.0:systemType",
+            "value": "insitu-fixed-point"
+        },
+        {
+            "name": "Sensor Type",
+            "definition": "urn:ogc:def:classifier:x-istsos:1.0:sensorType",
+            "value": "bukket"
+        }
+        ],
+        "characteristics": "http://www.gafi.org/tetet",
+        "contacts": [
+        {
+            "role": "urn:x-ogc:def:classifiers:x-istsos:1.0:contactType:owner",
+            "organizationName": "Pippo SA",
+            "individualName": "",
+            "voice": "",
+            "fax": "",
+            "email": "",
+            "web": "",
+            "deliveryPoint": "",
+            "city": "",
+            "administrativeArea": "",
+            "postalcode": ""
+        },
+        {
+            "role": "urn:x-ogc:def:classifiers:x-istsos:1.0:contactType:manufacturer",
+            "organizationName": "SUPSI",
+            "individualName": "Maurizio Pozzoni",
+            "voice": "blablabla",
+            "fax": "091123456",
+            "email": "091123457",
+            "web": "http://www.figabagnata.org",
+            "deliveryPoint": "blabla",
+            "city": "blablabla",
+            "administrativeArea": "blabla",
+            "postalcode": "6900"
+        },
+        {
+            "role": "urn:x-ogc:def:classifiers:x-istsos:1.0:contactType:operator",
+            "organizationName": "Paperino",
+            "individualName": "bla",
+            "voice": "bla",
+            "fax": "bla",
+            "email": "bla",
+            "web": "",
+            "deliveryPoint": "",
+            "city": "",
+            "administrativeArea": "",
+            "postalcode": ""
+        }
+        ],
+        "documentation": [
+        {
+            "description": "Documentation blablablabla",
+            "format": "text/html",
+            "date": "04/18/2012",
+            "link": "http://www.fififif.org/blabla",
+            "name": "",
+            "value": "",
+            "definition": ""
+        },
+        {
+            "description": "Documentation huhuhuhu",
+            "format": "text/html",
+            "date": "04/18/2011",
+            "link": "http://www.gugugu.org/blabla",
+            "name": "",
+            "value": "",
+            "definition": ""
+        }
+        ],
+        "location": {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                "123",
+                "456"
+                ]
+            },
+            "crs": {
+                "type": "name",
+                "properties": {
+                    "name": "EPSG:21781"
+                }
+            },
+            "properties": {
+                "name": "LUGANO"
+            }
+        },
+        "interfaces": "RS-232,IR",
+        "inputs": [
+        {
+            "name": "Temperature",
+            "description": "temperatura",
+            "definition": "urn:x-ogc:def:phenomenon:x-istsos:1.0:temperature",
+            "uom": "",
+            "value": ""
+        }
+        ],
+        "outputs": [
+        {
+            "name": "Conductivity",
+            "definition": "urn:x-ogc:def:phenomenon:x-istsos:1.0:conductivity",
+            "uom": "Pressure",
+            "description": "miao",
+            "constraint": {
+                "role": "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0",
+                "interval": [
+                "12",
+                "65"
+                ]
+            }
+        }
+        ],
+        "history" : []
+    }
+}

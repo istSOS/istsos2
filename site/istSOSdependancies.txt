@@ -1,0 +1,23 @@
+
+#Python Standard Library as Python 2.7.3#
+os
+sys
+xml.etree
+xml.elementtree
+xml.sax
+xml.dom
+traceback
+datetime
+json
+string
+copy
+cgi
+urlparse
+
+#non Python Standard Library as Python 2.7.3#
+pytz
+mx.DateTime
+lxml
+isodate
+psycopg2
+xml.cElementTree

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sos:RegisterSensor
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://schemas.opengis.net/sos/1.0.0/sosAll.xsd"
+   xmlns:sos="http://www.opengis.net/sos/1.0"
+   xmlns:gml="http://www.opengis.net/gml/3.2"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:om="http://www.opengis.net/om/1.0" 
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:swe="http://www.opengis.net/swe/0.0"
+   xmlns:sa="http://www.opengis.net/sampling/0.0"
+   service="SOS">
+    <SensorDescription>
+        <System>
+            <gml:description>a thermometer misuring air temperature</gml:description>
+            <gml:name>thermo1</gml:name>
+            <keywords>
+                <KeywordList codeSpace="urn:x-nasa:def:gcmd:keywords">
+                    <keyword>weather</keyword>
+                    <keyword>insitu</keyword>
+                    <keyword>thermometer</keyword>
+                </KeywordList>
+            </keywords>
+            <identification>
+                <IdentifierList>
+                    <identifier name="longName">
+                        <Term definition="urn:ogc:def:property:OGC:longName">
+                            <value>thermometer model 1</value>
+                        </Term>
+                    </identifier>
+                    <identifier name="modelNumber">
+                        <Term definition="urn:ogc:def:property:OGC:modelNumber">
+                            <value>00001</value>
+                        </Term>
+                    </identifier>
+                    <identifier name="manufacturer">
+                        <Term definition="urn:ogc:def:property:OGC:manufacturer">
+                            <value>IST Instruments</value>
+                        </Term>
+                    </identifier>
+                </IdentifierList>
+            </identification>
+            <classification>
+                <ClassifierList>
+                    <classifier name="Intended Application1">
+                        <Term definition="urn:ogc:def:classifier:OGC:application">
+                            <value>air temperature</value>
+                        </Term>
+                    </classifier>
+                </ClassifierList>
+            </classification>
+            <capabilities name="Procedure_properties">
+                <swe:DataRecord>
+                    <swe:field name="datalogger">
+                        <swe:Text definition="urn:ogc:def:property:none">
+                            <swe:value>Campbell CR510</swe:value>
+                        </swe:Text>
+                    </swe:field>
+                    <swe:field name="dataloggerIdentifier">
+                        <swe:Text definition="urn:ogc:def:property:none">
+                            <swe:value>TRE</swe:value>
+                        </swe:Text>
+                    </swe:field>
+                </swe:DataRecord>
+            </capabilities>
+            <components>
+                <ComponentList>
+                    <component name="thermometer">
+                        <Component gml:id="IstThermometer001">
+                            <identification>
+                                <IdentifierList>
+                                    <identifier name="longName">
+                                        <Term definition="urn:ogc:def:property:OGC:longName">
+                                            <value>thermometer model 1</value>
+                                        </Term>
+                                    </identifier>
+                                </IdentifierList>
+                            </identification>
+                            <!-- INPUTS -->
+                            <inputs>
+                                <InputList>
+                                    <input name="airtemperature">
+                                        <swe:ObservableProperty
+                                            definition="urn:ogc:def:property:x-ist::airtemperature"/>
+                                    </input>
+                                </InputList>
+                            </inputs>
+                            <!-- OUTPUTS -->
+                            <outputs>
+                                <OutputList>
+                                    <output name="airtemperature">
+                                        <swe:Quantity definition="urn:ogc:def:property:x-ist::airtemperature">
+                                            <swe:uom code="deg"/>
+                                        </swe:Quantity>
+                                    </output>
+                                </OutputList>
+                            </outputs>
+                            <!-- METHOD -->
+                            <method xlink:href="urn:ogc:def:process:1.0:detector"/>
+                        </Component>
+                    </component>
+                </ComponentList>
+            </components>            
+        </System>
+</SensorDescription>
+<ObservationTemplate>
+<om:Observation>
+    <om:procedure xlink:href="urn:ogc:object:procedure:x-ist::thermo1"/>
+    <om:samplingTime>
+      <gml:TimePeriod>
+        <gml:TimeLength>
+          <gml:duration>PT10M</gml:duration>
+          <gml:timeInterval unit="Min">10</gml:timeInterval>
+        </gml:TimeLength>
+      </gml:TimePeriod>
+    </om:samplingTime>
+    <om:observedProperty>
+      <swe:CompositPhenomenon dimension="2">
+        <swe:component xlink:href="urn:ogc:def:parameter:x-ist::time:iso8601"/>  
+        <swe:component xlink:href="urn:ogc:def:property:x-ist::airtemperature" />      
+      </swe:CompositPhenomenon>
+    </om:observedProperty>
+    <om:featureOfInterest xlink:href="urn:ogc:object:feature:x-ist::station:LUGANO">
+        <gml:Point srsName="EPSG:21781">
+            <gml:coordinates>717900,98520,280</gml:coordinates>
+        </gml:Point>
+    </om:featureOfInterest>
+    <om:result>
+      <swe:DataArray>
+        <swe:elementCount>
+          <swe:Count>
+            <swe:value>2</swe:value>
+          </swe:Count>
+        </swe:elementCount>
+        <swe:elementType name="SimpleDataArray" xlink:href="http://mmisw.org/ont/mmi/obs.owl/timeSeriesDataRecord">
+          <swe:DataRecord definition="http://mmiws.org/ont/x/timeSeries">
+            <swe:field name="Time">
+              <swe:Time definition="urn:ogc:def:parameter:x-ist::time:iso8601"/>
+            </swe:field>
+            <swe:field name="airtemperature">
+              <swe:Quantity definition="urn:ogc:def:property:x-ist::airtemperature">
+                <swe:uom code="deg"/>
+              </swe:Quantity>
+            </swe:field>
+          </swe:DataRecord>
+        </swe:elementType>
+        <swe:encoding>
+          <swe:TextBlock tokenSeparator="," blockSeparator="@" decimalSeparator="."/>
+        </swe:encoding>
+        <swe:values/>
+      </swe:DataArray>
+    </om:result>
+  </om:Observation>
+  </ObservationTemplate>
+ </sos:RegisterSensor>
+

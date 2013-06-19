@@ -1,0 +1,275 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>GetFeatureOfInterest &mdash; istSOS 2.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="istSOS 2.0 documentation" href="../index.html" />
+    <link rel="up" title="Example of SOS requests" href="../examples.html" />
+    <link rel="next" title="istSOS WAlib 2.0" href="istsos_wa.html" />
+    <link rel="prev" title="InsertObsertation" href="insertobservation.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="istsos_wa.html" title="istSOS WAlib 2.0"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="insertobservation.html" title="InsertObsertation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">istSOS 2.0 documentation</a> &raquo;</li>
+          <li><a href="../examples.html" accesskey="U">Example of SOS requests</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="getfeatureofinterest">
+<h1>GetFeatureOfInterest<a class="headerlink" href="#getfeatureofinterest" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>GetFeatureOfInterest returns a featureOfInterest that was advertised in one of the observation offerings of the SOS capabilities document. This could be a Station for in-situ sensors, for example.(SOS-Spec, OGC 06-009r6)</p>
+<ul>
+<li><p class="first"><strong>DescribeSensor parameters:</strong></p>
+<blockquote>
+<div><table border="1" class="docutils">
+<caption><em>Table-1: GetFeatuatureOfInterest operation request URL parameters [OGC 06-009r6]</em></caption>
+<colgroup>
+<col width="20%" />
+<col width="40%" />
+<col width="20%" />
+<col width="20%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><p class="first last">Parameter</p>
+</th>
+<th class="head"><p class="first last">Description</p>
+</th>
+<th class="head"><p class="first last">Definition</p>
+</th>
+<th class="head"><p class="first last">Multiplicity and Use</p>
+</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><p class="first last">request</p>
+</td>
+<td><p class="first last">returns a featureOfInterest that was advertised in one of the observation offerings of the SOS capabilities document</p>
+</td>
+<td><p class="first last">getFeatureOfInterest</p>
+</td>
+<td><p class="first last">One (mandatory)</p>
+</td>
+</tr>
+<tr class="row-odd"><td><p class="first last">service</p>
+</td>
+<td><p class="first last">Service type identifier</p>
+</td>
+<td><p class="first last">SOS</p>
+</td>
+<td><p class="first last">One (mandatory)</p>
+</td>
+</tr>
+<tr class="row-even"><td><p class="first last">version</p>
+</td>
+<td><p class="first last">Specification version for operation</p>
+</td>
+<td><p class="first last">1.0.0</p>
+</td>
+<td><p class="first last">One (mandatory)</p>
+</td>
+</tr>
+<tr class="row-odd"><td><p class="first last">featureOfInterestId</p>
+</td>
+<td><p class="first last">Specifies the identifier of the feature of interest being returned, for which detailed information is requested. These identifiers must be listed in the Contents section of the service metadata (GetCapabilities) document</p>
+</td>
+<td><p class="first last">featureId from GetCapabilities</p>
+</td>
+<td><p class="first last">One (mandatory) Choice1</p>
+</td>
+</tr>
+<tr class="row-even"><td><p class="first last">bbox</p>
+</td>
+<td><p class="first last">geographical boundingbox in comma-separeted values</p>
+</td>
+<td><p class="first last">lon1,lat1,lon2,lat2</p>
+</td>
+<td><p class="first last">One (mandatory) Choice2 with srs</p>
+</td>
+</tr>
+<tr class="row-odd"><td><p class="first last">srs</p>
+</td>
+<td><p class="first last">srs of the bbox enveloppe : only EPSG:4326&#8221;</p>
+</td>
+<td><p class="first last">EPSG:4326</p>
+</td>
+<td><p class="first last">One (mandatory) Choice2 with bbox</p>
+</td>
+</tr>
+<tr class="row-even"><td><p class="first last">eventTime</p>
+</td>
+<td><p class="first last">Specifies the time for which the feature of interest is to be queried. This uses a modified version of filter.xsd and allows a client to request targets from a specific instance, multiple instances or periods of time in the past, present and future. This is useful for dynamic sensors for which the properties of the feature of interest are time-dependent. Multiple time parameters may be indicated so that the client may request details of the observation target at multiple times. The supported range is listed in the contents section of the service metadata.</p>
+</td>
+<td><p class="first last">srs of the bbox enveloppe : only EPSG:4326</p>
+</td>
+<td><p class="first last">Zero or more (optional)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</li>
+</ul>
+</div>
+<div class="section" id="get-request">
+<h2>GET request<a class="headerlink" href="#get-request" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><strong>GetFeatureOfInterest GET request:</strong></li>
+</ul>
+<div class="highlight-python"><pre>http://localhost/istsos/demo/?request=getFeatureOfInterest&amp;featureOfInterestId=LUGANO&amp;srsName=21781&amp;service=SOS&amp;version=1.0.0</pre>
+</div>
+</div>
+<div class="section" id="post-request">
+<h2>POST request<a class="headerlink" href="#post-request" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><pre>http://localhost/istsos/demo/</pre>
+</div>
+<ul class="simple">
+<li><strong>GetFeatureOfInterest with ID :</strong></li>
+</ul>
+<p>GetFeatureOfInterestFeatureId.xml</p>
+<ul class="simple">
+<li><a class="reference download internal" href="../_downloads/getFeatureOfInterest.xml"><tt class="xref download docutils literal"><span class="pre">getFeatureOfInterest.xml</span></tt></a></li>
+</ul>
+<div class="highlight-xml"><div class="highlight"><pre><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+  <span class="nt">&lt;sos:getfeatureOfinterest</span>
+     <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+     <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://schemas.opengis.net/sos/1.0.0/sosAll.xsd&quot;</span>
+     <span class="na">xmlns:sos=</span><span class="s">&quot;http://www.opengis.net/sos/1.0&quot;</span>
+     <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml/3.2&quot;</span>
+     <span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span>
+     <span class="na">xmlns:om=</span><span class="s">&quot;http://www.opengis.net/om/1.0&quot;</span> <span class="na">service=</span><span class="s">&quot;SOS&quot;</span> <span class="na">outputFormat=</span><span class="s">&quot;text/xml;subtype=&#39;sensorML/1.0.0&#39;&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;FeatureOfInterestId&gt;</span>urn:ogc:def:feature:x-istsos:1.0:Point:LUGANO<span class="nt">&lt;/FeatureOfInterestId&gt;</span>
+  <span class="nt">&lt;srsName&gt;</span>4326<span class="nt">&lt;/srsName&gt;</span>
+
+  <span class="c">&lt;!-- See GetFeatureOfInterest operation description</span>
+<span class="c">  in the getCapabilities response to see available projection --&gt;</span>
+
+  <span class="c">&lt;!-- Examples</span>
+<span class="c">  &lt;srsName&gt;urn:ogc:crs:EPSG:21781&lt;/srsName&gt;</span>
+<span class="c">  &lt;srsName&gt;urn:ogc:crs:EPSG:4326&lt;/srsName&gt;</span>
+<span class="c">  &lt;srsName&gt;urn:ogc:crs:EPSG:8001&lt;/srsName&gt;</span>
+<span class="c">  --&gt;</span>
+
+  <span class="nt">&lt;/sos:getfeatureOfinterest&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<a href="../index.html"><img src="../_static/logo.png" border="0" alt="istSOS" align="centre" width="200"/></a>
+<hr>
+<a href="http://code.google.com/p/istsos/downloads" align="centre">Download istSOS v2.0</a>
+<hr>
+
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">GetFeatureOfInterest</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#get-request">GET request</a></li>
+<li><a class="reference internal" href="#post-request">POST request</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="insertobservation.html"
+                        title="previous chapter">InsertObsertation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="istsos_wa.html"
+                        title="next chapter">istSOS WAlib 2.0</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/examples/getfeatureofinterest.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="istsos_wa.html" title="istSOS WAlib 2.0"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="insertobservation.html" title="InsertObsertation"
+             >previous</a> |</li>
+        <li><a href="../index.html">istSOS 2.0 documentation</a> &raquo;</li>
+          <li><a href="../examples.html" >Example of SOS requests</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Massimiliano Cannata, Milan Antonovic.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

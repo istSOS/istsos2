@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>istSOS Poster</title>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+        <style type="text/css">
+            body {
+                padding: 0;
+                margin: 0;
+                background-color: #fff;
+                color: #000;
+            }
+
+            #content {
+                margin-top: 10px;
+                margin-right: 20px;
+                margin-left: 20px;
+                width: 95%;
+                font-family: Verdana, Arial, Helvetica, sans-serif;
+            }
+
+            #header {
+                position: relative;
+                height: 80px;
+                margin-bottom: 20px;
+            }
+
+            #healine {
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+
+            #logo {
+                position: absolute;
+                top: 0;
+                right: 0;
+            }
+
+            #url-form {
+                float: none;
+                margin-top: 8em;
+            }
+
+            #requestTextarea {
+                width: 100%;
+                height: 250px;
+                padding: 2px;
+            }
+
+            #requestGetInput {
+                width: 100%;
+                height: 40px;
+                padding: 1px;
+            }
+
+            h1, .title {
+                color: #5D5D49;
+                font-size: 20pt;
+                margin-right: 6pt;
+            }
+
+            h3 {
+                color: #5D5D49;
+                font-size: 12pt;
+                font-weight: bold;
+            }
+
+            .infotext {
+                color: #5D5D49;
+                font-size: 10pt;
+            }
+
+            .request-form {
+                margin-bottom: 12px;
+            }
+
+            .request-form-buttons {
+                margin: 6px;
+            }
+        </style>
+        <script language="JavaScript" type="text/javascript">
+
+            var datafolder = window.location.href.substring(0,
+            window.location.href.lastIndexOf("/") + 1) +
+                "requests/";
+            
+            var lastGetIdx = 0;
+            
+            
+            //alert(datafolder);
+            function load()
+            {
+                document.getElementById('adresa').value=window.location.origin + "/istsos/demo";
+                var placeholderIndex = "PLACEHOLDER";
+                //load files
+                var requests=new Array();
+                var j = 0;
+
+                // GET
+                requests[j]=["getCapabilities","request=getCapabilities&section=serviceidentification,serviceprovider,operationsmetadata,contents"];
+                j += 1;
+                requests[j]=["describeSensor","request=DescribeSensor&procedure=BELLINZONA&outputFormat=text/xml;subtype='sensorML/1.0.0'"];
+                j += 1;
+                requests[j]=["getObservation [SML]","request=GetObservation&offering=temporary&procedure=BELLINZONA&eventTime=2013-01-01T00:00:00+01/2013-01-07T00:00:00+01&observedProperty=rainfall,temperature,humidity,wind&responseFormat=text/xml;subtype='sensorML/1.0.0'&service=SOS&version=1.0.0"];
+                j += 1;
+                requests[j]=["getObservation [CSV]","request=GetObservation&offering=temporary&procedure=BELLINZONA&eventTime=2013-01-01T00:00:00+01/2013-01-07T00:00:00+01&observedProperty=rainfall,temperature,humidity,wind&responseFormat=text/plain&service=SOS&version=1.0.0"];
+                j += 1;
+                requests[j]=["getObservation [JSON]","request=GetObservation&offering=temporary&procedure=BELLINZONA&eventTime=2013-01-01T00:00:00+01/2013-01-07T00:00:00+01&observedProperty=rainfall,temperature,humidity,wind&responseFormat=application/json&service=SOS&version=1.0.0"];
+                j += 1;
+                requests[j]=["getObservationBBOX","request=GetObservation&offering=temporary&observedProperty=temperature&responseFormat=text/xml;subtype='sensorML/1.0.0'&service=SOS&version=1.0.0&featureOfInterest=<ogc:BBOX><ogc:PropertyName>the_geom</ogc:PropertyName><gml:Box srsName='EPSG:21781'><gml:coordinates>690549,82219 738549,134219</gml:coordinates></gml:Box></ogc:BBOX>"];
+                j += 1;
+                requests[j]=["getFeatureOfInterest","request=getFeatureOfInterest&featureOfInterest=LUGANO&srsName=900913"];
+		
+                lastGetIdx = j; 
+		
+                // POST
+                j += 1;		        
+                requests[j]=datafolder+"getCapabilities.xml";
+                j += 1;		        
+                requests[j]=datafolder+"describeSensor.xml";
+                j += 1;		        
+                requests[j]=datafolder+"getObservation.xml";
+                j += 1;		        
+                requests[j]=datafolder+"getObservation2.xml";
+                j += 1;		        
+                requests[j]=datafolder+"getObservation3.xml";
+                /*j += 1;		        
+                requests[j]=datafolder+"getObservationBBOX.xml";
+                j += 1;		        
+                requests[j]=datafolder+"getObservationDWithin.xml";
+                j += 1;		        
+                requests[j]=datafolder+"getObservationQualityIndex.xml";*/		        
+                j += 1;		        
+                requests[j]=datafolder+"getFeatureOfInterest.xml";
+                j += 1;		        
+                requests[j]=datafolder+"registerSensor_stationary_insitu_simple.xml";
+                j += 1;		        
+                requests[j]=datafolder+"registerSensor_stationary_insitu_composite.xml";
+                /*j += 1;		        
+                requests[j]=datafolder+"registerSensor_dynamic_insitu_simple.xml";
+                j += 1;		        
+                requests[j]=datafolder+"registerSensor_dynamic_insitu_composite.xml";
+                j += 1;		        
+                requests[j]=datafolder+"insertObservation_stationary_insitu_simple.xml";
+                j += 1;		        
+                requests[j]=datafolder+"insertObservation_stationary_insitu_composite.xml";
+                j += 1;		        
+                requests[j]=datafolder+"insertObservation_dynamic_insitu_simple.xml";
+                j += 1;		        
+                requests[j]=datafolder+"insertObservation_dynamic_insitu_composite.xml";*/
+		
+                //fill the select element
+                var selRequest = document.getElementById("selRequest");
+		
+                l = requests.length;
+		
+                for (var i=0; i<l; i++ ){
+                    var requestString = "";
+                    if(i <= lastGetIdx) {// Adding GET request
+                        selRequest.add(new Option("GET - " + requests[i][0], requests[i][1]), null);
+                    }
+                    else {// Adding POST request
+                        try {
+                            var name = requests[i].substring(requests[i].lastIndexOf("/") + 1, requests[i].length);
+                            selRequest.add(new Option("POST - " + name, requests[i]), null);
+                        } catch(err) {
+                            var txt="";
+                            txt+="Error loading file: " + requests[i];
+                            txt+="Error: " + err + "\n\n";
+                            var requestTextarea = document.getElementById('requestTextarea').value = "";
+                            requestTextarea.value+=txt;
+                        }
+                    }
+                }
+            }
+            function insertSelected() {
+                try {
+                    var selObj = document.getElementById('selRequest');
+                    var requestTextarea = document.getElementById('requestTextarea');
+                    var requestGetInput = document.getElementById('requestGetInput');
+                    var requestString = "";
+                    
+                    if(selObj.selectedIndex != 0){
+                        //console.log(selObj.selectedIndex + "-"+lastGetIdx);
+                        if(selObj.selectedIndex <= (lastGetIdx+1)){
+                            requestString = selObj.options[selObj.selectedIndex].value;
+                            requestTextarea.value = "";
+                            requestGetInput.value = requestString+"&service=SOS&version=1.0.0";
+                        }else{
+                            requestString = getFile(selObj.options[selObj.selectedIndex].value);
+                            if(requestString == null){
+                                requestString = "Error loading file!";
+                            }
+                            requestGetInput.value = "";
+                            requestTextarea.value = requestString;
+                        }
+                    }else{
+                        requestTextarea.value = requestString;
+                        requestGetInput.value = requestString;
+                    }
+                } catch(err) {
+                    var txt="";
+                    txt+="Error loading file: " + selObj.options[selObj.selectedIndex].value;
+                    txt+="Error: " + err + "\n\n";
+                    var requestTextarea = document.getElementById('requestTextarea').value = "";
+                    requestTextarea.value+=txt;
+                }
+            }
+            function getFile(fileName){
+                oxmlhttp = null;
+                try{
+                    oxmlhttp = new XMLHttpRequest();
+                    oxmlhttp.overrideMimeType("text/xml");
+                }
+                catch(e){
+                    try{
+                        oxmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+                    }
+                    catch(e){
+                        return null;
+                    }
+                }
+                if(!oxmlhttp) return null;
+                try{
+                    oxmlhttp.open("GET",fileName,false);
+                    oxmlhttp.send(null);
+                }
+                catch(e){
+                    return null;
+                }
+                return oxmlhttp.responseText;
+            }
+          	
+            var newPage = false;
+            function executeRequest(){
+                var selObj = document.getElementById('selRequest');
+                var requestform = document.getElementById('requestform');
+                if(selObj.selectedIndex != 0){
+                    if(selObj.selectedIndex <= (lastGetIdx+1)){
+                        var prms = document.getElementById("requestGetInput").value;
+                        prmArr = prms.split("&");
+                        prms = "";
+                        for(var c = 0; c < prmArr.length ; c++){
+                            avArr = prmArr[c].split("=");
+                            if(avArr.length==3){
+                                avArr = [avArr[0],avArr[1]+"="+avArr[2]]
+                            }
+                            avArr[1] = escape(avArr[1]);
+                            prms += avArr[0]+"="+avArr[1];
+                            if(c<(prmArr.length-1)){
+                                prms += "&";
+                            }
+                        }
+                        var url = document.getElementById('adresa').value+"?"+prms;
+                        if(newPage){
+                            window.open(url);
+                        }else{
+                            var frm = document.getElementById("outputframe");
+                            frm.src = url;
+                        }
+                        window.location.hash="DETAILS";
+                        return false;
+                    }else{
+                        if(!newPage){
+                            requestform.target = 'ServiceResponce'; 
+                        }else{
+                            requestform.target = '_blank';
+                        }
+                        requestform.action = document.getElementById('adresa').value;
+                        window.location.hash="DETAILS";
+                        return true; 
+                    }
+                }else{
+                    requestTextarea.value = requestString;
+                    requestGetInput.value = requestString;
+                }
+                return false;
+            }
+        </script>
+    </head>
+    <body bgcolor="#ffffff" text="#000000" onload="load()">
+        <a name="TOP"/>
+        <div id="content">
+            <div id="header">
+                <form name="requestform" onsubmit="return executeRequest()" id="requestform" method="post" action="" target='ServiceResponce'>
+                    <table>
+                        <tr>
+                            <td rowspan=3 style='padding-right:15px;'>
+                                <img
+                                    src="images/istsos-logo.png"
+                                    height="78"
+                                    border="0"/>
+                            </td>
+                            <td>
+                                URL:&nbsp;&nbsp; <span> <input id='adresa' name="url"
+                                                               value="http://localhost/istsos/demo" size="50"
+                                                               type="text" /> </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div>
+                                    Requests:<br>
+
+                                        <select id="selRequest"
+                                                onchange="insertSelected();">
+                                            <option value=" "></option>
+                                        </select>
+
+                                        <input value="Execute"
+                                               onclick="newPage=false;" type="submit" /> 
+
+                                        <input
+                                            value="Clear" name="reset" type="reset"
+                                            onclick="
+	                                        document.getElementById('selRequest').selectedIndex = 0;" />
+
+                                        <input value="Execute in new page"
+                                               onclick="newPage=true;" type="submit" /> 
+
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <br>
+                        <small>GET parameters:</small><br>
+                            <textarea name="parameters" id="requestGetInput"></textarea>
+                            <!--<input id='requestGetInput' name="parameters"
+                                value="" 
+                                type="text" />-->
+                            <small>POST XML:</small><br>
+                                <div><textarea name="request" id="requestTextarea"></textarea></div>
+                                </form>
+                                <hr>
+                                    <table width="100%">
+                                        <tr>
+                                            <td align='left'>
+                                                <small><a name="DETAILS">Response:</a></small>
+                                            </td>
+                                            <td align='left'>
+                                                <STRONG><a href="#TOP">top</a></STRONG>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <iframe width="100%" height="500" id="outputframe" name='ServiceResponce'>
+                                        <p>Your browser does not support iframes.</p>
+                                    </iframe>
+                                    <br>
+                                        </div>
+                                        </div>
+                                        </body>
+                                        </html>
+

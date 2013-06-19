@@ -1,0 +1,89 @@
+
+==========================
+Example of SOS requests
+==========================
+
+.. note:: This page describes the *Common Practice* in using istSOS trough practical examples of GET and POST requests based on the *demo* service that cames with the software.
+
+
+GetCapabilities
+===============
+GET request::
+
+  http://localhost/sos/istsos.py?service=SOS&request=GetCapabilities
+  
+POST request::
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <sos:GetCapabilities
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://schemas.opengis.net/sos/1.0.0/sosAll.xsd"
+       xmlns:sos="http://www.opengis.net/sos/1.0"
+       xmlns:gml="http://www.opengis.net/gml/3.2"
+       xmlns:ogc="http://www.opengis.net/ogc"
+       xmlns:om="http://www.opengis.net/om/1.0" 
+       service="SOS">
+        <section>serviceidentification</section>
+        <section>serviceprovider</section>
+    </sos:GetCapabilities>
+
+DescribeSensor
+===============
+GET request::
+
+    http://localhost/sos/istsos.py?service=SOS&version=1.0.0\
+    &request=DescribeSensor&procedure=B_TRE\
+    &outputFormat=text%2Fxml%3Bsubtype%3D%27sensorML%2F1.0.0%27
+    
+POST request::
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <sos:describeSensor
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://schemas.opengis.net/sos/1.0.0/sosAll.xsd"
+       xmlns:sos="http://www.opengis.net/sos/1.0"
+       xmlns:gml="http://www.opengis.net/gml/3.2"
+       xmlns:ogc="http://www.opengis.net/ogc"
+       xmlns:om="http://www.opengis.net/om/1.0" 
+       service="SOS" 
+       outputFormat="text/xml;subtype='sensorML/1.0.0'"> 
+        <procedure>P_BED</procedure>
+    </sos:describeSensor>
+
+GetObservation
+===============
+GET request::
+
+    http://localhost/sos/istsos.py?service=SOS&version=1.0.0\
+    &request=GetObservation&offering=meteoIST&procedure=P_BED\
+    &eventTime=2009-07-31T11:50:00+02:00/2009-07-31T12:20:00+02:00\
+    ,2009-07-31T12:50:00+02:00&observedProperty=rainfall\
+    &responseFormat=text%2Fxml%3Bsubtype%3D%27sensorML%2F1.0.0%27
+
+POST request::
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <sos:GetObservation
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://schemas.opengis.net/sos/1.0.0/sosAll.xsd"
+       xmlns:sos="http://www.opengis.net/sos/1.0"
+       xmlns:gml="http://www.opengis.net/gml/3.2"
+       xmlns:ogc="http://www.opengis.net/ogc"
+       xmlns:om="http://www.opengis.net/om/1.0" 
+       service="SOS">
+        <offering>meteoIST</offering>
+        <procedure>P_BED</procedure>
+        <eventTime>
+            <gml:TimePeriod>
+               <gml:beginPosition>2009-07-31T11:50:00+02:00</gml:beginPosition>
+               <gml:endPosition>2009-07-31T12:20:00+02:00</gml:endPosition>
+            </gml:TimePeriod>
+            <gml:TimeInstant>
+               <gml:timePosition>2009-07-31T11:50:00+02:00</gml:timePosition>
+            </gml:TimeInstant>
+        </eventTime>
+        <featureOfInterest>BEDRETTO</featureOfInterest>
+        <responseFormat>text/xml;subtype='sensorML/1.0.0'</responseFormat>
+        <observedProperty>rainfall</observedProperty>
+    </sos:GetObservation>
+

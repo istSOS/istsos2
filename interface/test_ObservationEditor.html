@@ -1,0 +1,64 @@
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>extDesigner</title>
+        <link rel="stylesheet" type="text/css" href="ext/resources/css/ext-all.css"/>
+        <link rel="stylesheet" type="text/css" href="css/main.css"/>
+        <link href='http://fonts.googleapis.com/css?family=Patrick+Hand' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Nova+Square' rel='stylesheet' type='text/css'>
+        <script type="text/javascript" src="ext/ext-all-debug.js"></script>
+
+        <script type="text/javascript" src="app/store/Offerings.js"></script>
+        <script type="text/javascript" src="app/store/Procedures.js"></script>
+        <script type="text/javascript" src="app/store/ObservedProperties.js"></script>
+        <script type="text/javascript" src="app/store/Observations.js"></script>
+
+        <script type="text/javascript" src="app/view/ui/ObservationEditorColumn.js"></script>
+        <script type="text/javascript" src="app/view/ObservationEditorColumn.js"></script>
+        <script type="text/javascript" src="app/view/ui/ObservationEditor.js"></script>
+        <script type="text/javascript" src="app/view/ObservationEditor.js"></script>
+
+        <script type="text/javascript">
+            
+            function ISO8601FromDate(isodate) {
+                function pad(n){return n<10 ? '0'+n : n}
+                var offset = isodate.getTimezoneOffset()/-60;
+                var tz = ((offset > 0) ? "+"+pad(offset) : pad(offset))
+                return isodate.getFullYear()+'-'
+                    + pad(isodate.getMonth()+1)+'-'
+                    + pad(isodate.getDate())+'T'
+                    + pad(isodate.getHours())+':'
+                    + pad(isodate.getMinutes())+':'
+                    + pad(isodate.getSeconds())+'.'
+                    + isodate.getMilliseconds() + tz;
+            }
+
+            Ext.Loader.setConfig({
+                enabled: false
+            });
+
+            Ext.application({
+                name: 'istsos',
+
+                stores: [
+                    'Offerings',
+                    'Procedures',
+                    'ObservedProperties'
+                ],
+
+                launch: function() {
+                    Ext.QuickTips.init();
+
+                    var cmp9 = Ext.create('istsos.view.ObservationEditor', {
+                        renderTo: Ext.getBody(),
+                        width: 900,
+                        height: 600
+                    });
+                    cmp9.show();
+                }
+            });
+            
+        </script>
+    </head>
+    <body></body>
+</html>

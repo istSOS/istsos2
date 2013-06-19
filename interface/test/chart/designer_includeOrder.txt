@@ -1,0 +1,3 @@
+<script type="text/javascript" src="app/view/ui/testColumn.js"></script>
+<script type="text/javascript" src="app/view/testColumn.js"></script>
+<script type="text/javascript" src="app/store/testColumnStore.js"></script>

@@ -1,0 +1,300 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>GetObservation &mdash; istSOS 2.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="istSOS 2.0 documentation" href="../index.html" />
+    <link rel="up" title="Example of SOS requests" href="../examples.html" />
+    <link rel="next" title="RegisterSensor" href="registersensor.html" />
+    <link rel="prev" title="DescribeSensor" href="describesensor.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="registersensor.html" title="RegisterSensor"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="describesensor.html" title="DescribeSensor"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">istSOS 2.0 documentation</a> &raquo;</li>
+          <li><a href="../examples.html" accesskey="U">Example of SOS requests</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="getobservation">
+<h1>GetObservation<a class="headerlink" href="#getobservation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>The GetObservation operation is designed to query a service to retrieve observation data structured according to the Observation and Measurement specification. Upon receiving a GetObservation request, a SOS shall either satisfy the request or return an exception report.</p>
+<ul>
+<li><p class="first"><strong>GetObservation parameters:</strong></p>
+<blockquote>
+<div><table border="1" class="docutils">
+<caption><em>Table-1: GetObservation operation request URL parameters [OGC 06-009r6]</em></caption>
+<colgroup>
+<col width="20%" />
+<col width="40%" />
+<col width="20%" />
+<col width="20%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head"><p class="first last">Parameter</p>
+</th>
+<th class="head"><p class="first last">Description</p>
+</th>
+<th class="head"><p class="first last">Definition</p>
+</th>
+<th class="head"><p class="first last">Multiplicity and Use</p>
+</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><p class="first last">request</p>
+</td>
+<td><p class="first last">getObservation is designed to request detailed sensor metadata</p>
+</td>
+<td><p class="first last">getObservation</p>
+</td>
+<td><p class="first last">One (mandatory)</p>
+</td>
+</tr>
+<tr class="row-odd"><td><p class="first last">service</p>
+</td>
+<td><p class="first last">Service type identifier</p>
+</td>
+<td><p class="first last">SOS</p>
+</td>
+<td><p class="first last">One (mandatory)</p>
+</td>
+</tr>
+<tr class="row-even"><td><p class="first last">version</p>
+</td>
+<td><p class="first last">Specification version for operation</p>
+</td>
+<td><p class="first last">1.0.0</p>
+</td>
+<td><p class="first last">One (mandatory)</p>
+</td>
+</tr>
+<tr class="row-odd"><td><p class="first last">srsName</p>
+</td>
+<td><p class="first last">Defines the spatial reference system that should be used for any geometries that are returned in the response.</p>
+</td>
+<td><p class="first last">This must be one of the advertised values in the offering specified in gml:srsName elements.</p>
+</td>
+<td><p class="first last">One (Optional)</p>
+</td>
+</tr>
+<tr class="row-even"><td><p class="first last">offering</p>
+</td>
+<td><p class="first last">Specifies the offering URI advertised in the GetCapabilities document. All of the following parameters are dependent on the selected offering.</p>
+</td>
+<td><p class="first last">This must match the gml:name of the offering or be constructed as a URL with a fragment identifier resolving to the offering gml:id.</p>
+</td>
+<td><p class="first last">One (mandatory)</p>
+</td>
+</tr>
+<tr class="row-odd"><td><p class="first last">eventTime</p>
+</td>
+<td><p class="first last">Specifies the time period(s) for which observations are requested. This allows a client to request observations from a specific instant, multiple instances or periods of time in the past, present and future. The supported range is listed in the selected offering capabilities</p>
+</td>
+<td><p class="first last">ogc:temporalOps (validtime format is yyyy-MM-ddThh:mm:ss/yyyy-MM-ddThh:mm:ss)</p>
+</td>
+<td><p class="first last">Zero or many (Optional)</p>
+</td>
+</tr>
+<tr class="row-even"><td><p class="first last">procedure</p>
+</td>
+<td><p class="first last">The procedure parameter specifies the sensor system(s) for which observations are requested.It defines a filter for the procedure property of the observations.</p>
+</td>
+<td><p class="first last">[all comma-separed valid sensors from the GetCapabilities]</p>
+</td>
+<td><p class="first last">Zero or many (Optional)</p>
+</td>
+</tr>
+<tr class="row-odd"><td><p class="first last">observedProperty</p>
+</td>
+<td><p class="first last"><a class="reference external" href="urn:ogc:def:phenomenon:OGC:1.0:depth">urn:ogc:def:phenomenon:OGC:1.0:depth</a></p>
+</td>
+<td><p class="first last">mandatory</p>
+</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><p class="first last">featureOfInterest</p>
+</td>
+<td><p class="first last">Specifies the feature for which observations are requested. This can either be represented by a reference to a feature ID advertised in the capabilities document or can be a spatial constraint.</p>
+</td>
+<td><p class="first last">ADD</p>
+</td>
+<td><p class="first last">Zero or many (Optional)</p>
+</td>
+</tr>
+<tr class="row-odd"><td><p class="first last">resultModel</p>
+</td>
+<td><p class="first last">Provides a place to put in OGC filter expressions based on property values. This instructs the SOS to only return observations where the result matches this expression.</p>
+</td>
+<td><p class="first last">ADD</p>
+</td>
+<td><p class="first last">Zero or many (Optional)</p>
+</td>
+</tr>
+<tr class="row-even"><td><p class="first last">responseFormat</p>
+</td>
+<td><p class="first last">Specifies the desired resultFormat MIME content type for transport of the results (e.g. TML, O&amp;M native format, or MPEG stream out-of-band). The supported output formats are listed in the selected offering capabilities. Desired output format of the getObservation operation. This can be a MimeType or QName for example.</p>
+</td>
+<td><p class="first last">text/xml;subtype=”sensorML/1.0.0”</p>
+</td>
+<td><p class="first last">One (mandatory)</p>
+</td>
+</tr>
+<tr class="row-odd"><td><p class="first last">responseMode</p>
+</td>
+<td><p class="first last">Specifies whether results are requested in-line, out-of-band, as an attachment, or if this is a request for an observation template that will be used for subsequent calls to GetResult. This is provided to allow the client to request the form of the response. The value of resultTemplate is used to retrieve an observation template that will later be used in calls to GetResult. The other options allow results to appear inline in a resultTag (inline), external to the observation element (out-of-band) or as a MIME attachment (attached).</p>
+</td>
+<td><p class="first last">inline, out-of-band, attached, resultTemplate</p>
+</td>
+<td><p class="first last">Zero or many (Optional)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</li>
+</ul>
+</div>
+<div class="section" id="get-request">
+<h2>GET request<a class="headerlink" href="#get-request" title="Permalink to this headline">¶</a></h2>
+<p>getObservation:</p>
+<div class="highlight-python"><pre>http://localhost/istsos/demo?service=SOS&amp;request=GetObservation&amp;offering=workshop&amp;procedure=P_LUGANO&amp;eventTime=2013-01-01T00:00:00+01/2013-02-4T17:00:00+01,2013-01-30T17:30:00+01&amp;observedProperty=rainfall&amp;responseFormat=text/xml;subtype='sensorML/1.0.0'&amp;service=SOS&amp;version=1.0.0</pre>
+</div>
+<p>getObservationBBOX:</p>
+<div class="highlight-python"><pre>http://localhost/istsos/demo?service=SOS&amp;request=GetObservation&amp;offering=workshop&amp;observedProperty=temperature&amp;responseFormat=text/xml;subtype='sensorML/1.0.0'&amp;service=SOS&amp;version=1.0.0&amp;featureOfInterest=&amp;BBOX=[713800,89915 713830,89940(,21781)]&amp;service=SOS&amp;version=1.0.0</pre>
+</div>
+</div>
+<div class="section" id="post-request">
+<h2>POST request<a class="headerlink" href="#post-request" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><pre>http://localhost/istsos/demo/</pre>
+</div>
+<p>getObservation.xml</p>
+<ul class="simple">
+<li><a class="reference download internal" href="../_downloads/getObservation.xml"><tt class="xref download docutils literal"><span class="pre">getObservation.xml</span></tt></a></li>
+<li><a class="reference download internal" href="../_downloads/getObservation2.xml"><tt class="xref download docutils literal"><span class="pre">getObservation2.xml</span></tt></a></li>
+<li><a class="reference download internal" href="../_downloads/getObservation4.xml"><tt class="xref download docutils literal"><span class="pre">getObservation4.xml</span></tt></a></li>
+</ul>
+<p><cite>getObservation3.xml</cite></p>
+<p><cite>getObservationBBOX.xml</cite></p>
+<p><cite>getObservationDWithin.xml</cite></p>
+<p><cite>getObservationQualityIndex.xml</cite></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<a href="../index.html"><img src="../_static/logo.png" border="0" alt="istSOS" align="centre" width="200"/></a>
+<hr>
+<a href="http://code.google.com/p/istsos/downloads" align="centre">Download istSOS v2.0</a>
+<hr>
+
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">GetObservation</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#get-request">GET request</a></li>
+<li><a class="reference internal" href="#post-request">POST request</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="describesensor.html"
+                        title="previous chapter">DescribeSensor</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="registersensor.html"
+                        title="next chapter">RegisterSensor</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/examples/getobservation.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="registersensor.html" title="RegisterSensor"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="describesensor.html" title="DescribeSensor"
+             >previous</a> |</li>
+        <li><a href="../index.html">istSOS 2.0 documentation</a> &raquo;</li>
+          <li><a href="../examples.html" >Example of SOS requests</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Massimiliano Cannata, Milan Antonovic.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

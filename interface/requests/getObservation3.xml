@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sos:GetObservation
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://schemas.opengis.net/sos/1.0.0/sosAll.xsd"
+   xmlns:sos="http://www.opengis.net/sos/1.0"
+   xmlns:gml="http://www.opengis.net/gml/3.2"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:om="http://www.opengis.net/om/1.0" 
+   service="SOS" version='1.0.0'>
+    <!--
+        Get an Observation: 
+            - last observation (omitting the optional eventTime definition)
+            - with EPSG code (1 Optional)
+            - from an offering (1 Mandatory)
+            - from a specific mobile procedure (1-many Optional)
+    -->
+    <offering>urn:ogc:def:offering:x-istsos:1.0:temporary</offering>
+    <procedure>urn:ogc:def:procedure:x-istsos:1.0:LOCARNO</procedure>
+    <eventTime>
+        <gml:TimeInstant>
+           <gml:timePosition>2013-01-07T00:00:00+01:00</gml:timePosition>
+        </gml:TimeInstant>
+    </eventTime>
+    <responseFormat>text/xml;subtype='sensorML/1.0.0'</responseFormat>
+    <observedProperty>urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature</observedProperty>
+</sos:GetObservation>
+
+
+

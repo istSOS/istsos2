@@ -1,0 +1,15 @@
+{
+    "total": 6,
+    "success": true,
+    "message": "Phenomenon data loaded correctly",
+    "data": [
+        {
+            "name": "Conductivity",
+            "description": "urn:x-ogc:def:phenomenon:x-istsos:1.0:conductivity"
+        },
+        {
+            "name": "Pressure",
+            "description": "urn:x-ogc:def:phenomenon:x-istsos:1.0:pressure"
+        }
+    ]
+}

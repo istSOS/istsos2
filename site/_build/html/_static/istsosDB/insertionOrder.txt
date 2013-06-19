@@ -1,0 +1,14 @@
+quality_index
+feature_type
+obs_type
+observed_properties
+offerings
+time_res_unit
+uoms
+foi
+procedures
+event_time
+measures
+off_proc
+positions
+proc_obs
