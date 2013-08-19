@@ -125,7 +125,7 @@ def initResource(waEnviron):
                     return dataqualities.waDataqualities(waEnviron)
                 
                 # ---------------------------------------
-                # Entering istsos.services.dataqualities
+                # Entering istsos.services.procedures
                 # ---------------------------------------
                 elif resource == "procedures":
                     print >> sys.stderr, resource
@@ -133,12 +133,18 @@ def initResource(waEnviron):
                     if len(pathinfo)<=1:
                         from walib.istsos.services.procedures import procedures
                         return procedures.waProcedures(waEnviron)
+                                        
                     else:
                         
                         resource = pathinfo.pop(0)
                         print >> sys.stderr, resource
                         
-                        if resource == 'operations':
+                        if resource == 'ratingcurve':
+                            print >> sys.stderr, resource
+                            from walib.istsos.services.ratingcurve import ratingcurve
+                            return ratingcurve.waRatingcurves(waEnviron)
+                        
+                        elif resource == 'operations':
                             resource = pathinfo.pop(0)
                             print >> sys.stderr, resource
                             
