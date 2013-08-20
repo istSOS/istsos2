@@ -150,14 +150,26 @@ class waObservedproperties(waResourceService):
                 self.serviceconf.connection['dbname'],
                 self.serviceconf.connection['host'],
                 self.serviceconf.connection['port'])        
-            sql = "INSERT INTO %s.observed_properties(name_opr, def_opr, desc_opr, constr_opr)" % self.service
-            sql += " VALUES (%s, %s, %s, %s);"
-            par = (
-                self.json['name'],
-                self.json['definition'],
-                self.json['description'],
-                json.dumps(self.json['constraint'])
-            )
+            
+            if self.json['constraint'] == {}:
+                sql = "INSERT INTO %s.observed_properties(name_opr, def_opr, desc_opr)" % self.service
+                sql += " VALUES (%s, %s, %s);"
+                par = (
+                    self.json['name'],
+                    self.json['definition'],
+                    self.json['description']
+                )
+            else:
+                sql = "INSERT INTO %s.observed_properties(name_opr, def_opr, desc_opr, constr_opr)" % self.service
+                sql += " VALUES (%s, %s, %s, %s);"
+                par = (
+                    self.json['name'],
+                    self.json['definition'],
+                    self.json['description'],
+                    json.dumps(self.json['constraint'])
+                )
+
+
             servicedb.execute(sql,par)
             self.setMessage("")
             

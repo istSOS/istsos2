@@ -28,7 +28,7 @@ class RegisterSensorResponse:
     def __init__(self,filter,pgdb):
         
         #-----------------------------
-        # trnsaction: insert procedure in DB
+        # transaction: insert procedure in DB
         #-----------------------------
                 
         #--check if proc_name exist

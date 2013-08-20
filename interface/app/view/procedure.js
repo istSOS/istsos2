@@ -214,6 +214,9 @@ Ext.define('istsos.view.procedure', {
         
         me.callParent(arguments);
         
+        
+        Ext.getCmp("constrChoose").select(0);
+
         Ext.getCmp("constrChoose").on("select",function(combo, records, eOpts){
         
             var value = combo.getValue();

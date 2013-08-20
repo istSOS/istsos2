@@ -174,10 +174,14 @@ class waServices(waResourceAdmin):
                 servicedb.rollbackTransaction()
                 raise
         
+
+
+
+
         
         # Setting proxy configuration
         from walib.istsos.services.configsections import serviceurl
-        surl = serviceurl.waServiceurl(self.waEnviron)
+        surl = configManager.waServiceConfig(defaultcfgpath, configfile)
         
         url = ''
         if self.waEnviron['server_port'] == '80':
@@ -187,9 +191,12 @@ class waServices(waResourceAdmin):
         
         url = "%s%s%s/%s" % (url, self.waEnviron['server_name'], self.waEnviron['script_name'], self.json["service"])
         
-        surl.executePut({
-            "url": url
-        })
+        surl.put("serviceurl", "url", url)
+        surl.save()
+
+
+
+
         
         self.setMessage( "New service <%s> correctly created" % str(self.json["service"]) )
 
@@ -376,10 +383,22 @@ class waServices(waResourceAdmin):
             self.setMessage("Services list successfully retrived: found [%s] services" % len(serviceslist) )
             
         else:
+            
+            try:
+                serviceslist = utils.getServiceList(self.waEnviron["services_path"],listonly=True)
+                
+                if not(self.urlservicename in serviceslist):
+                    raise Exception("")
+                
+            except Exception as ex:
+                print >> sys.stderr, traceback.print_exc()
+                raise ex
+            
+            
             #get database connection and initialize it
             #-------------------------------------------------------------------
             defaultcfgpath = os.path.join(self.waEnviron["services_path"],"default.cfg")
-            servicecfgpath = os.path.join(self.waEnviron["services_path"],self.urlservicename,self.urlservicename)+".cfg"
+            servicecfgpath = os.path.join(self.waEnviron["services_path"],self.urlservicename, self.urlservicename)+".cfg"
             config = configManager.waServiceConfig(defaultcfgpath,servicecfgpath)
             connection = config.get("connection")
             
