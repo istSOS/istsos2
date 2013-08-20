@@ -331,28 +331,31 @@ class Procedure():
                     item["uom"] = ""
                     
                 item["constraint"] = {}
+                 
                 try:
                     item["constraint"]["role"] = child.find("{%s}constraint" % ns['swe']).attrib["{%s}role" % ns['xlink']]
-                                        
-                    try:
-                        item["constraint"]["min"] = allow.find("{%s}min" % ns['swe']).text.strip()
-                    except:
-                        pass #item["constraint"]["min"] = ""
-                    try:
-                        item["constraint"]["max"] = allow.find("{%s}max" % ns['swe']).text.strip()
-                    except:
-                        pass #item["constraint"]["max"] = ""
-                    try:
-                        item["constraint"]["interval"] = allow.find("{%s}interval" % ns['swe']).text.strip().split(" ")
-                    except:
-                        pass #item["constraint"]["interval"] = ""
-                    try:
-                        item["constraint"]["valuelist"] = allow.find("{%s}valueList" % ns['swe']).text.strip().split(", ")
-                    except:
-                        pass #item["constraint"]["valuelist"] = ""
                 except:
-                    print >> sys.stderr, traceback.print_exc()
-                    pass #item["constraint"]["role"] = ""
+                    pass
+
+                try:
+                    item["constraint"]["min"] = allow.find("{%s}min" % ns['swe']).text.strip()
+                except:
+                    pass #item["constraint"]["min"] = ""
+
+                try:
+                    item["constraint"]["max"] = allow.find("{%s}max" % ns['swe']).text.strip()
+                except:
+                    pass #item["constraint"]["max"] = ""
+
+                try:
+                    item["constraint"]["interval"] = allow.find("{%s}interval" % ns['swe']).text.strip().split(" ")
+                except:
+                    pass #item["constraint"]["interval"] = ""
+                
+                try:
+                    item["constraint"]["valuelist"] = allow.find("{%s}valueList" % ns['swe']).text.strip().split(", ")
+                except:
+                    pass #item["constraint"]["valuelist"] = ""
                 
                 self.data["outputs"].append(item)  
             except Exception as ex:
