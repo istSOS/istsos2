@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from os.path import dirname, realpath, sep, pardir
 import sys
-sys.path.append(dirname(realpath(__file__)) + sep )
+sys.path.append(dirname(realpath(__file__)) )
 
 print sys.path
 
