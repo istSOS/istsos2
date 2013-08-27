@@ -23,6 +23,8 @@ def test_procedures(doc, v):
     #services_name_procedures_name_PUT(sname, pname, put)
     #services_name_procedures_name_DELETE(sname, pname)
     #services_name_procedures_operations_getlist_GET(sname)
+    #services_name_procedures_name_ratingcurve_GET(sname, pname)
+    #services_name_procedures_name_ratingcurve_POST(sname, pname, post)
     
     print '\n-----------------PROCEDURES----------------------\n'
     
@@ -32,6 +34,7 @@ def test_procedures(doc, v):
     pp = pprint.PrettyPrinter(indent=2)    
     sname = 'test'
     pname = 'test_post'
+    prat = "Q_TICINO"
     
     post = {
         "inputs": [], 
@@ -143,13 +146,28 @@ def test_procedures(doc, v):
         ], 
         "system_id": "test_post", 
         "history": []
-        }        
+        }   
+        
+    post_rat = [ 
+         {
+          'A': '42',
+          'B': '42',
+          'C': '42',
+          'K': '42',
+          'from': '1982-01-01T00:00+00:00',
+          'low_val': '0',
+          'to': '1983-01-01T00:00+00:00',
+          'up_val': '1000'
+         }
+        ]
         
     success_get1 = False
     success_post = False
     success_getlist = False
     success_put = False
     success_delete = False
+    success_get2 = False
+    success_postrat = False
     
     post1 = tpost.services_name_procedures_POST(sname, post)
     get1 = tget.services_name_procedures_name_GET(sname, pname)
@@ -162,6 +180,12 @@ def test_procedures(doc, v):
     get5 = tget.services_name_procedures_operations_getlist_GET(sname)
     time.sleep(1)
     get6 = tget.services_name_procedures_operations_getlist_GET(sname)
+    
+    get7 = tget.services_name_procedures_name_ratingcurve_GET(sname, prat)
+    time.sleep(1)
+    get8 = tget.services_name_procedures_name_ratingcurve_GET(sname, prat)
+    post2 = tpost.services_name_procedures_name_ratingcurve_POST(sname, prat, post_rat)
+    get9 = tget.services_name_procedures_name_ratingcurve_GET(sname, prat)
     
     
     
@@ -177,7 +201,7 @@ def test_procedures(doc, v):
                 doc.write(pp.pformat(get1))
                 doc.write('\nSecond get:\n')
                 doc.write(pp.pformat(get2))            
-            print 'services_name_procedures_name_GETT: FAILED'
+            print 'services_name_procedures_name_GET: FAILED'
     else:
         if v:
             doc.write('\n\nservices_name_procedures_name_GET: the requests did not succeed')
@@ -358,6 +382,106 @@ def test_procedures(doc, v):
             doc.write(pp.pformat(get6))            
         print 'services_name_procedures_operations_getlist_GET: FAILED'
         
+        
+        
+    #Check for two successful requests to have the same result    
+    if get7['success'] and get8['success']:
+        if get7 == get8:
+            print 'services_name_procedures_name_ratingcurve_GET: SUCCESS'
+            success_get2 = True
+        else:
+            if v:
+                doc.write('\n\nservices_name_procedures_name_ratingcurve_GET: the results are not all the same')
+                doc.write('\nFirst get:\n')
+                doc.write(pp.pformat(get7))
+                doc.write('\nSecond get:\n')
+                doc.write(pp.pformat(get8))            
+            print 'services_name_procedures_name_ratingcurve_GET: FAILED'
+    else:
+        if v:
+            doc.write('\n\nservices_name_procedures_name_ratingcurve_GET: the requests did not succeed')
+            doc.write('\nFirst get:\n')
+            doc.write(pp.pformat(get7))
+            doc.write('\nSecond get:\n')
+            doc.write(pp.pformat(get8))            
+        print 'services_name_procedures_name_ratingcurve_GET: FAILED'
+        
+    
+    
+    #Checks for the POST to be successful by comparing two GETs
+    if post2['success']:
+        #If gets before and after are the same, failure
+        if get8 == get9:
+            if v:
+                doc.write('\n\nservices_name_procedures_name_ratingcurve_POST: the data has not changed')
+                doc.write('\nPost:\n')
+                doc.write(pp.pformat(post1))
+                doc.write('\nGet, before:\n')
+                doc.write(pp.pformat(get8))
+                doc.write('\nGet, after:\n')
+                doc.write(pp.pformat(get9))
+            print 'services_name_procedures_name_ratingcurve_POST: FAILED'
+        #If second get has same or less entries than first, failure
+        elif get9['total'] != len(post_rat):
+            if v:
+                doc.write('\n\nservices_name_procedures_name_ratingcurve_POST: post does not have correct length')
+                doc.write('\nPost:\n')
+                doc.write(pp.pformat(post2))
+                doc.write('\nGet, before:\n')
+                doc.write(pp.pformat(get8))
+                doc.write('\nGet, after:\n')
+                doc.write(pp.pformat(get9))
+            print 'services_name_procedures_name_ratingcurve_POST: FAILED'
+        #If second get has one more entry than first, look for the 
+        #inserted value. If found, success, else failure
+        elif get9['total'] == len(post_rat):
+            for data in get9['data']:
+                temp = post_rat[0]
+                if (data['A'] == temp['A'] 
+                    and data['B'] == temp['B']
+                    and data['C'] == temp['C']
+                    and data['K'] == temp['K']
+                    and data['from'] == temp['from']
+                    and data['to'] == temp['to']
+                    and data['up_val'] == temp['up_val']
+                    and data['low_val'] == temp['low_val']
+                    ):
+                    print 'services_name_procedures_name_ratingcurve_POST: SUCCESS'
+                    success_postrat = True
+                    break
+            if not success_postrat:
+                if v:
+                    doc.write('\n\nservices_name_procedures_name_ratingcurve_POST: posted data does not correspond')
+                    doc.write('\nPost:\n')
+                    doc.write(pp.pformat(post2))
+                    doc.write('\nGet, before:\n')
+                    doc.write(pp.pformat(get8))
+                    doc.write('\nGet, after:\n')
+                    doc.write(pp.pformat(get9))
+                print 'services_name_procedures_name_ratingcurve_POST: FAILED'
+        #if anything else wrong, failure
+        else:
+            if v:
+                doc.write('\n\nservices_name_procedures_name_ratingcurve_POST: something went wrong')
+                doc.write('\nPost:\n')
+                doc.write(pp.pformat(post2))
+                doc.write('\nGet, before:\n')
+                doc.write(pp.pformat(get8))
+                doc.write('\nGet, after:\n')
+                doc.write(pp.pformat(get9))
+            print 'services_name_procedures_name_ratingcurve_POST: FAILED'
+    #If post not successful, failure
+    else:
+        if v:
+            doc.write('\n\nservices_name_procedures_name_ratingcurve_POST: post failed')
+            doc.write('\nPost:\n')
+            doc.write(pp.pformat(post2))
+            doc.write('\nGet, before:\n')
+            doc.write(pp.pformat(get8))
+            doc.write('\nGet, after:\n')
+            doc.write(pp.pformat(get9))
+        print 'services_name_procedures_name_ratingcurve_POST: FAILED'
+        
     
     
     result = {
@@ -365,7 +489,9 @@ def test_procedures(doc, v):
         'services_name_procedures_POST' : success_post,
         'services_name_procedures_operations_getlist_GET' : success_getlist,
         'services_name_procedures_name_PUT' : success_put,
-        'services_name_procedures_name_DELETE' : success_delete
+        'services_name_procedures_name_DELETE' : success_delete,
+        'services_name_procedures_name_ratingcurve_GET' : success_get2,
+        'services_name_procedures_name_ratingcurve_POST' : success_postrat
         }
         
     return result

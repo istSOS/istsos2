@@ -41,8 +41,32 @@ def test_services(doc, v):
         "port": "5432"
     } 
 
+      
+    success_get1 = False
+    success_post = False
+    success_get2 = False
+    success_put = False
+    success_delete = False
+    success_insertob = False
+    
+    get1 = tget.services_GET()
+    time.sleep(1)
+    get2 = tget.services_GET()    
+    post1 = tpost.services_POST(post)
+    get3 = tget.services_GET()
+    
+    get4 = tget.services_name_GET(sname)
+    time.sleep(1)
+    get5 = tget.services_name_GET(sname)
+    put1 = tput.services_name_PUT(put, sname_post)
+    get6 = tget.services_name_GET(sname_updated)
+    delete1 = tdelete.services_name_DELETE(sname_updated)
+    get7 = tget.services_name_GET(sname_updated)
+    
+    
+    asi = tget.services_name_procedures_name_GET(sname, sname)['data']['assignedSensorId']
     post_observation = {
-            "AssignedSensorId" : "63afcf6562a09ebb521e3abdd5b5e185",
+            "AssignedSensorId" : asi,
             "ForceInsert" : "true",
             "Observation" : {
                 "procedure": "urn:ogc:object:procedure:x-istsos:1.01.0:test",
@@ -61,7 +85,7 @@ def test_services(doc, v):
 				    ]
 			    },
 			    "featureOfInterest": {
-				    "geom": "<gml:Point srsName='EPSG:4326'><gml:coordinates>1,1,1</gml:coordinates></gml:Point>", 
+				    "geom": "<gml:Point srsName='EPSG:4326'><gml:coordinates>15,15,15</gml:coordinates></gml:Point>", 
 				    "name": "urn:ogc:object:feature:x-istsos:1.01.0:station:test"
 			    }, 
 			    "result": {
@@ -69,7 +93,7 @@ def test_services(doc, v):
 					    "elementCount": "2", 
 					    "values": [
 						    [
-							    "22012-01-01T14:00:00+01:00", 
+							    "2012-01-01T14:00:00+01:00", 
 							    "10.000000"
 						    ],
 						    [
@@ -91,30 +115,7 @@ def test_services(doc, v):
 				    }
 			    }
 		    } 
-		}
-    
-
-        
-    success_get1 = False
-    success_post = False
-    success_get2 = False
-    success_put = False
-    success_delete = False
-    success_insertob = False
-    
-    get1 = tget.services_GET()
-    time.sleep(1)
-    get2 = tget.services_GET()    
-    post1 = tpost.services_POST(post)
-    get3 = tget.services_GET()
-    
-    get4 = tget.services_name_GET(sname)
-    time.sleep(1)
-    get5 = tget.services_name_GET(sname)
-    put1 = tput.services_name_PUT(put, sname_post)
-    get6 = tget.services_name_GET(sname_updated)
-    delete1 = tdelete.services_name_DELETE(sname_updated)
-    get7 = tget.services_name_GET(sname_updated)
+		}    
     
     post2 = tpost.services_name_operations_insertobservation_POST(sname_insertob, post_observation)
     

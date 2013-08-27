@@ -74,6 +74,14 @@ def services_name_procedures_operations_getlist_GET(sname):
     result = GET(fname, address)
     return result
     
+def services_name_procedures_name_ratingcurve_GET(sname, pname):
+    
+    fname = '/istsos/services/{name}/procedures/{name}/ratingcurve'
+    address = 'http://localhost/istsos/wa/istsos/services/' + sname + '/procedures/' + pname + '/ratingcurve'
+    
+    result = GET(fname, address)
+    return result    
+    
 def operations_status_GET():
     
     fname = '/istsos/operations/status'

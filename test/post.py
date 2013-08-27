@@ -52,6 +52,15 @@ def services_name_procedures_POST(sname, post):
     result = POST(fname, post, address)
     return result
     
+def services_name_procedures_name_ratingcurve_POST(sname, pname, post):
+    
+    fname = '/istsos/services/{name}/procedures/{name}/ratingcurve'
+    address = 'http://localhost/istsos/wa/istsos/services/' + sname + '/procedures/' + pname + '/ratingcurve'
+    
+    result = POST(fname, post, address)
+    return result    
+    
+    
 def operations_validatedb_POST(post):
     
     fname = '/istsos/operations/validatedb'
