@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import test.get as tget #GET(fname, address)
-import test.post as tpost #POST(fname, spost, address)
-import test.put as tput #PUT(fname, sput, address)
-import test.delete as tdelete #DELETE(fname, address)
+import t_get as tget #GET(fname, address)
+import t_post as tpost #POST(fname, spost, address)
+import t_put as tput #PUT(fname, sput, address)
+import t_delete as tdelete #DELETE(fname, address)
 import pprint
 import time
 
