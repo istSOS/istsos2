@@ -53,11 +53,11 @@ class waRatingcurves(waResourceService):
         except:
             self.setException("rating-curve procedure name is required")
         self.RCprocedure = urllib.unquote(self.pathinfo[ii+1])
-        self.RCfilename = self.RCpath + self.RCprocedure + ".dat"
+        self.RCfilename = self.RCpath + "/" + self.RCprocedure + "_HQ.dat"
 
     def executeGet(self):
-        filename = self.RCpath + self.RCprocedure + ".dat"
-        RClist = RCload(filename)
+        #filename = self.RCpath + "/" + self.RCprocedure + ".dat"
+        RClist = RCload(self.RCfilename)
         self.setData(RClist)
         self.setMessage("Rating-curve parameters of procedure <%s> successfully retrived" % self.RCprocedure)        
             
@@ -86,6 +86,11 @@ def RCload(filename):
     return cvlist
 
 def RCsave(cvlist,filename):
+
+    print >> sys.stderr, "==================save=============="    
+    print >> sys.stderr, cvlist
+    print >> sys.stderr, filename
+    print >> sys.stderr, "==================save=============="
     lines = []
     header = ['from','to','low_val','up_val','A','B','C','K']
     #check cvlist validity and save to HQ virtual procedure conf file
@@ -98,6 +103,8 @@ def RCsave(cvlist,filename):
         except Exception as e:
             raise Exception("Error: invalid HQ parameter list; %s" % str(e) )
     
+    
+
     lines.sort()
     for i in range(1,len(lines)):
         if not lines[i][0]==lines[i-1][1]:
@@ -114,3 +121,4 @@ def RCsave(cvlist,filename):
 """    
 from|to|low_val|up_val|A|B|C|K
 1982-
+"""

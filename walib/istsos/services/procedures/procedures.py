@@ -19,6 +19,7 @@ from walib import procedure, utils, databaseManager
 from walib.resource import waResourceService
 import lib.requests as requests
 import os
+import sys
 
 class waProcedures(waResourceService):
     """class to handle SOS service objects, support GET and POST method"""
@@ -180,7 +181,7 @@ class waProcedures(waResourceService):
             procedureMLpath = os.path.join(self.sensormlpath,self.procedurename+".xml")
             os.remove(procedureMLpath)
             
-            #COMMIT transaction
+           #COMMIT transaction
             servicedb.commitTransaction()
             self.setMessage("Procedure '%s' successfully deleted" % self.procedurename)
         except Exception as e:
