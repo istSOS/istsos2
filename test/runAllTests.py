@@ -3,9 +3,10 @@ from os.path import dirname, realpath, sep, pardir
 import sys
 sys.path.append(dirname(realpath(__file__)) )
 
-print sys.path
 
-import test.istsos.services.configsections as conf
+print sys.path, dirname(realpath(__file__))
+
+import istsos.services.configsections as conf
 import istsos.services.dataqualities as data
 import istsos.services.epsgs as eps
 import istsos.services.observedproperties as obsprop
