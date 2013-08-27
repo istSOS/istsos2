@@ -5,7 +5,7 @@ sys.path.append(dirname(realpath(__file__)) )
 
 print sys.path
 
-import istsos.services.configsections as conf
+import test.istsos.services.configsections as conf
 import istsos.services.dataqualities as data
 import istsos.services.epsgs as eps
 import istsos.services.observedproperties as obsprop
