@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from os.path import dirname, realpath, sep, pardir, abspath
 import sys
-sys.path.append(dirname(realpath(__file__))+ sep + pardir + sep + pardir )
+sys.path.insert(0,dirname(realpath(__file__)))
+sys.path.append(0,dirname(realpath(__file__))+ sep + pardir + sep + pardir + "lib" )
 
 
-print sys.path, dirname(realpath(__file__))+ sep + pardir + sep + pardir
+print sys.path
 
 import istsos.services.configsections as conf
 import istsos.services.dataqualities as data
