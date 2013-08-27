@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+from os.path import dirname, realpath, sep, pardir
+import sys
+sys.path.append(dirname(realpath(__file__)) + sep )
 
 import istsos.services.configsections as conf
 import istsos.services.dataqualities as data
