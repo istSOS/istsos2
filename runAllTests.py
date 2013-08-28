@@ -104,7 +104,7 @@ def run_tests(arg):
             }
         } 
     address = 'http://localhost/istsos/wa/istsos/services/default/configsections'
-    result = tput.PUT("", config, address)
+    res = tput.PUT("", config, address)
     if not res['success']:
         raise SystemError("Unable to configure the SOS server: %s" % res['message'])
     
@@ -117,12 +117,12 @@ def run_tests(arg):
     if not res['success']:
         raise SystemError("Unable to create a new SOS service: %s" % res['message'])
     #----- ADD UNIT OF MEASURE ------
-    uom = {
+    tuom = {
         "name": "test", 
         "description": "test unit of measure"
         }
     address = 'http://localhost/istsos/wa/istsos/services/test/uoms'
-    res = tpost.POST("",uom,address)
+    res = tpost.POST("",tuom,address)
     if not res['success']:
         raise SystemError("Unable to create a new SOS unit of measure: %s" % res['message'])
     #----- ADD OBSERVED PROPERTY ------
@@ -138,7 +138,7 @@ def run_tests(arg):
     if not res['success']:
         raise SystemError("Unable to create a new SOS observed property: %s" % res['message'])
     #----- ADD PROCEDURE ------
-    proc = {
+    tproc = {
         "inputs": [], 
         "description": "test procedure", 
         "classification": [
@@ -194,7 +194,7 @@ def run_tests(arg):
         "history": []
         }
     address = 'http://localhost/istsos/wa/istsos/services/test/offerings/temporary/procedures'
-    es = tpost.POST("",proc,address)
+    res = tpost.POST("",tproc,address)
     if not res['success']:
         raise SystemError("Unable to create a new SOS procedure: %s" % res['message'])
     
@@ -236,11 +236,11 @@ def run_tests(arg):
         print '------------------------Failed tests:------------------------'
         print '#############################################################'
     
-#    print '\nConfigsections:'
-#    for el in configsections:
-#        if not configsections[el]:
-#            print el
-#
+        print '\nConfigsections:'
+        for el in configsections:
+            if not configsections[el]:
+                print el
+
         print '\nDataqualities:'
         for el in dataqualities:
             if not dataqualities[el]:
@@ -278,11 +278,13 @@ def run_tests(arg):
           
         print '\nSystemtypes:'
         print 'services/name/systemtypes non é implementato'
-        """        
+ 
+       """        
         for el in systemtypes:
             if not systemtypes[el]:
             print el
         """    
+
         print '\nUoms:'
         for el in uoms:
             if not uoms[el]:
@@ -317,7 +319,7 @@ def run_tests(arg):
         for el in featureofInterest:
             if not featureofInterest[el]:
                 print el
-            
+        
 
 
 if __name__ == "__main__":
