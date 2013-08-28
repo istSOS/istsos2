@@ -26,7 +26,7 @@ def test_procedures(doc):
     #services_name_procedures_name_ratingcurve_GET(sname, pname)
     #services_name_procedures_name_ratingcurve_POST(sname, pname, post)
     
-    doc.write('\n-----------------PROCEDURES----------------------\n')-----')
+    doc.write('\n-----------------PROCEDURES----------------------\n')
     
     pp = pprint.PrettyPrinter(indent=2)    
     sname = 'test'
@@ -189,7 +189,7 @@ def test_procedures(doc):
     #Check for two successful requests to have the same result
     if get1['success'] and get2['success']:
         if get1 == get2:
-            doc.write('services_name_procedures_name_GET: SUCCESS'))
+            doc.write('services_name_procedures_name_GET: SUCCESS')
             success_get1 = True
         else:
             doc.write('services_name_procedures_name_GET: FAILED')

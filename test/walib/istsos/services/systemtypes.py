@@ -8,11 +8,11 @@ import time
 import pprint
 
    
-def test_systemtypes(doc, v):
+def test_systemtypes(doc):
     #services_name_systemtypes_GET(sname)
     
-    print '\n-----------------SYSTEMTYPES---------------------\n'
-    print '\nRequest services_name_systemtypes_GET is not implemented\n'
+    doc.write('\n-----------------SYSTEMTYPES---------------------\n')
+    doc.write('\nRequest services_name_systemtypes_GET is not implemented\n')
     
 #    if v:
 #        doc.write('\n\n-----------------SYSTEMTYPES------------------------')

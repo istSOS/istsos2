@@ -16,7 +16,7 @@ def test_services(doc):
     #services_name_DELETE(sname_updated)
     #services_name_operations_insertobservation_POST(sname_insertob, post_observation)
     
-    doc.write('\n-----------------SERVICES------------------------\n')-----')
+    doc.write('\n-----------------SERVICES------------------------\n')
     
     pp = pprint.PrettyPrinter(indent=2)    
     sname = 'test'
@@ -237,7 +237,7 @@ def test_services(doc):
             doc.write('\nGet, before:\n')
             doc.write(pp.pformat(get5))
             doc.write('\nGet, after:\n')
-                doc.write(pp.pformat(get6))
+            doc.write(pp.pformat(get6))
         #For the success, second get should be the same as first
         #apart from the modicifation done with put
         else:
@@ -317,10 +317,9 @@ def test_services(doc):
         doc.write('services_name_operations_insertobservation_POST: SUCCESS')
         success_insertob = True
     else:
-        if v:
-            doc.write('\n\nservices_name_operations_insertobservation_POST: post failed')
-            doc.write('\nPost:\n')
-            doc.write(pp.pformat(post2))
+        doc.write('\n\nservices_name_operations_insertobservation_POST: post failed')
+        doc.write('\nPost:\n')
+        doc.write(pp.pformat(post2))
         doc.write('services_name_operations_insertobservation_POST: FAILED')
         
     

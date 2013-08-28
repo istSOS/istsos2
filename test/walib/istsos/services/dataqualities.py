@@ -128,15 +128,14 @@ def test_dataqualities(doc):
             doc.write(pp.pformat(get3))
     #If post not successful, failure
     else:
-        if v:
-            doc.write('\n\nservices_name_dataqualities_POST: FAILED')
-            doc.write('\n\nservices_name_dataqualities_POST: post failed')
-            doc.write('\nPost:\n')
-            doc.write(pp.pformat(post1))
-            doc.write('\nGet, before:\n')
-            doc.write(pp.pformat(get2))
-            doc.write('\nGet, after:\n')
-            doc.write(pp.pformat(get3))
+        doc.write('\n\nservices_name_dataqualities_POST: FAILED')
+        doc.write('\n\nservices_name_dataqualities_POST: post failed')
+        doc.write('\nPost:\n')
+        doc.write(pp.pformat(post1))
+        doc.write('\nGet, before:\n')
+        doc.write(pp.pformat(get2))
+        doc.write('\nGet, after:\n')
+        doc.write(pp.pformat(get3))
     
     #Check for two successful requests to have the same result
     if get4['success'] and get5['success']:

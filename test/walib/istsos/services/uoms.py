@@ -59,7 +59,7 @@ def test_uoms(doc):
     #Check for two successful requests to have the same result
     if get1['success'] and get2['success']:
         if get1 == get2:
-            doc.write('services_name_uoms_GET: SUCCESS'))
+            doc.write('services_name_uoms_GET: SUCCESS')
             success_get1 = True
         else:
             doc.write('services_name_uoms_GET: FAILED')
