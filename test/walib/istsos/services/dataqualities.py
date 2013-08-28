@@ -14,11 +14,10 @@ def test_dataqualities(doc, v):
     #services_name_dataqualities_code_GET(sname, qualcode)
     #services_name_dataqualities_code_PUT(sname, put, qualcode)
     #services_name_dataqualities_code_DELETE(sname, qualcode)
-
-    print '\n-----------------DATAQUALITIES-------------------\n'
     
-    if v:
-        doc.write('\n\n-----------------DATAQUALITIES----------------------')
+    ms = '\n|\n   |---DATAQUALITIES\n'   
+    if v: print ms
+    doc.write(ms)
     
     pp = pprint.PrettyPrinter(indent=2)    
     sname = 'test'
@@ -54,21 +53,22 @@ def test_dataqualities(doc, v):
     get7 = tget.services_name_dataqualities_code_GET(sname, qualcode)
     get8 = tget.services_name_dataqualities_GET(sname)
     
-    
-    
     #Check for two successful requests to have the same result
     if get1['success'] and get2['success']:
         if get1 == get2:
-            print 'services_name_dataqualities_GET: SUCCESS'
             success_get1 = True
+            ms = '\n      |---services_name_dataqualities_GET: SUCCESS'
+            if v: print ms
+            doc.write(ms)
         else:
-            if v:
-                doc.write('\n\nservices_name_dataqualities_GET: the results are not all the same')
-                doc.write('\nFirst get:\n')
-                doc.write(pp.pformat(get1))
-                doc.write('\nSecond get:\n')
-                doc.write(pp.pformat(get2))
-            print 'services_name_dataqualities_GET: FAILED'
+            ms = '\n      |---services_name_dataqualities_GET: FAILED'
+            if v: print ms
+            doc.write(ms)
+            doc.write('\n         |---the results are not consistent')
+            doc.write('\n         |---First get:')
+            doc.write(pp.pformat(get1))
+            doc.write('\n         |---Second get:')
+            doc.write(pp.pformat(get2))
     else:
         if v:
             doc.write('\n\nservices_name_dataqualities_GET: the requests have not been successful')
