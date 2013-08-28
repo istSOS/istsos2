@@ -652,8 +652,8 @@ def test_configsections(doc):
                 doc.write('services_name_configsections_geo_PUT: SUCCESS')
                 success_putgeo = True
             else:
-                 doc.write('services_name_configsections_geo_PUT: FAILED')
-                 doc.write('\n\nservices_name_configsections_geo_PUT: updated data does not correspond')
+                doc.write('services_name_configsections_geo_PUT: FAILED')
+                doc.write('\n\nservices_name_configsections_geo_PUT: updated data does not correspond')
                 doc.write('\nPut:\n')            
                 doc.write(pp.pformat(putgeo1)) 
                 doc.write('\nGet, before:\n')
