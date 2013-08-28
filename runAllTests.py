@@ -22,14 +22,13 @@ import test.put as tput #PUT(fname, sput, address)
 import test.delete as tdelete #DELETE(fname, address)
 
 def run_tests(arg):
-    
-    verb = arg['v']
+
+    f = open(path.abspath(path.dirname(__file__))+'/logs/test.log', 'w')
         
-    
-    if verb:
-        f = open(path.abspath(path.dirname(__file__))+'/logs/test.log', 'w')
-    else:
-        f = None
+    v = arg['v']
+    ms = '\n-------CREATING TESTING ENVIRONMENT\n'
+    if v: print ms
+    f.write(ms)   
     
     #=======================================================================    
     # CREATE A TEST ENVIRONMENT
@@ -107,6 +106,9 @@ def run_tests(arg):
     res = tput.PUT("", config, address)
     if not res['success']:
         raise SystemError("Unable to configure the SOS server: %s" % res['message'])
+    ms = '\n   |---SOS SERVER TEST CONFIGURATION SET\n'
+    if v: print ms
+    f.write(ms)
     
     #----- CREATE A SOS SERVICE ---------
     service = {
@@ -126,6 +128,9 @@ def run_tests(arg):
                 raise SystemError("Unable to delete existing test SOS service: %s" % res['message'])
         else:
             raise SystemError("Unable to create a new SOS service: %s" % res['message'])
+    ms = '\n   |---SOS SERVICE TEST CREATED\n'
+    if v: print ms
+    f.write(ms)
     #----- ADD UNIT OF MEASURE ------
     tuom = {
         "name": "test", 
@@ -135,6 +140,9 @@ def run_tests(arg):
     res = tpost.POST("",tuom,address)
     if not res['success']:
         raise SystemError("Unable to create a new SOS unit of measure: %s" % res['message'])
+    ms = '\n   |---UNIT OF MEASURE TEST CREATED\n'
+    if v: print ms
+    f.write(ms)
     #----- ADD OBSERVED PROPERTY ------
     opr = {
         "definition": "urn:ogc:def:parameter:x-istsos:1.0:test", 
@@ -147,6 +155,9 @@ def run_tests(arg):
     res = tpost.POST("",opr,address)
     if not res['success']:
         raise SystemError("Unable to create a new SOS observed property: %s" % res['message'])
+    ms = '\n   |---OBSERVED PROPERTY TEST CREATED\n'
+    if v: print ms
+    f.write(ms)
     #----- ADD PROCEDURE ------
     tproc = {
         'capabilities': [],
@@ -197,41 +208,50 @@ def run_tests(arg):
     if not res['success']:
         print res
         raise SystemError("Unable to create a new SOS procedure: %s" % res['message'])
-    
+    ms = '\n   |---PROCEDURE TEST CREATED\n'
+    if v: print ms
+    f.write(ms)
     #=======================================================================
     # TEST RESTFUL SERVICE REQUESTS
-    #=======================================================================    
-    dataqualities = data.test_dataqualities(f, verb)
-    epsgs = eps.test_epsgs(f, verb)
-    observedproperties = obsprop.test_observedproperties(f, verb)
-    offerings = offer.test_offerings(f, verb)
-    operations = oper.test_operations(f, verb)
-    procedures = proc.test_procedures(f, verb)
-    services = ser.test_services(f, verb)
-    systemtypes = syst.test_systemtypes(f, verb)
-    uoms = uom.test_uoms(f, verb)
-    configsections = conf.test_configsections(f, verb)
+    #=======================================================================
+    ms = '\n|\n-------TESTING RESTFUL SERVICE REQUESTS\n'   
+    if v: print ms
+    f.write(ms)
+    
+    dataqualities = data.test_dataqualities(f, v)
+    
+    epsgs = eps.test_epsgs(f, v)
+    observedproperties = obsprop.test_observedproperties(f, v)
+    offerings = offer.test_offerings(f, v)
+    operations = oper.test_operations(f, v)
+    procedures = proc.test_procedures(f, v)
+    services = ser.test_services(f, v)
+    systemtypes = syst.test_systemtypes(f, v)
+    uoms = uom.test_uoms(f, v)
+    configsections = conf.test_configsections(f, v)
 
     
     #=======================================================================
     # TEST SOS SERVICE REQUESTS
     #=======================================================================    
-    if verb: print '\n-----------------getCapabilities----------------------------\n'
-    getCapabilities = sos.getCapabilities(f, verb)
-    if verb: print '\n-----------------describeSensor-----------------------------\n'
-    describeSensor = sos.describeSensor(f, verb)
-    if verb: print '\n-----------------getObservation-----------------------------\n'
-    getObservation = sos.getObservation(f, verb)
-    if verb: print '\n-----------------registerSensor-----------------------------\n'
-    registerSensor = sos.registerSensor(f, verb)
-    if verb: print '\n-----------------insertObservation--------------------------\n'
-    insertObservation = sos.insertObservation(f, verb)
-    if verb: print '\n-----------------getFeatureOfInterest-----------------------\n'
-    featureofInterest = sos.getFeatureOfInterest(f, verb)
+    if v: print '\n-----------------getCapabilities----------------------------\n'
+    getCapabilities = sos.getCapabilities(f, v)
+    if v: print '\n-----------------registerSensor-----------------------------\n'
+    registerSensor = sos.registerSensor(f, v)
+    if v: print '\n-----------------describeSensor-----------------------------\n'
+    describeSensor = sos.describeSensor(f, v)
+    if v: print '\n-----------------getFeatureOfInterest-----------------------\n'
+    featureofInterest = sos.getFeatureOfInterest(f, v)
+    if v: print '\n-----------------insertObservation--------------------------\n'
+    insertObservation = sos.insertObservation(f, v)
+    if v: print '\n-----------------getObservation-----------------------------\n'
+    getObservation = sos.getObservation(f, v)
+    # delete sensor
+
     
     f.close()
     
-    if verb: 
+    if v: 
         print '\n#############################################################'
         print '------------------------Failed tests:------------------------'
         print '#############################################################'
@@ -275,16 +295,7 @@ def run_tests(arg):
         for el in services:
             if not services[el]:
                 print el
-          
-        print '\nSystemtypes:'
-        print 'services/name/systemtypes non é implementato'
- 
-        """        
-        for el in systemtypes:
-            if not systemtypes[el]:
-            print el
-        """    
-
+        
         print '\nUoms:'
         for el in uoms:
             if not uoms[el]:
