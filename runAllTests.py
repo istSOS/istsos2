@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
+import time
 from os import path
 sys.path.insert(0, path.abspath(path.dirname(__file__)))
 
@@ -23,12 +24,22 @@ import test.delete as tdelete #DELETE(fname, address)
 
 def run_tests(arg):
 
+    ntests = 0
+    passed = []
+    failed = []
+    start_time = time.time()
+    
     f = open(path.abspath(path.dirname(__file__))+'/logs/test.log', 'w')
         
     v = arg['v']
-    ms = '----CREATING TESTING ENVIRONMENT\n'
-    if v: print ms
-    f.write(ms)   
+
+    ms = 'UNIT TESTING'   
+    print ms
+    f.write('\n'+ms+'\n=================================')
+    
+    ms = 'CREATING TESTING ENVIRONMENT'   
+    if v: print '|---' + ms
+    f.write('\n'+ms+'\n=================================')
     
     #=======================================================================    
     # CREATE A TEST ENVIRONMENT
@@ -106,7 +117,7 @@ def run_tests(arg):
     res = tput.PUT("", config, address)
     if not res['success']:
         raise SystemError("Unable to configure the SOS server: %s" % res['message'])
-    ms = 'server configuration set: PASS'
+    ms = 'server configuration set'
     if v: print '\t|---' + ms
     f.write('\n'+ms)
     
@@ -128,7 +139,7 @@ def run_tests(arg):
                 raise SystemError("Unable to delete existing test SOS service: %s" % res['message'])
         else:
             raise SystemError("Unable to create a new SOS service: %s" % res['message'])
-    ms = 'service test set: PASS'
+    ms = 'service test created'
     if v: print '\t|---' + ms
     f.write('\n'+ms)
     #----- ADD UNIT OF MEASURE ------
@@ -140,7 +151,7 @@ def run_tests(arg):
     res = tpost.POST("",tuom,address)
     if not res['success']:
         raise SystemError("Unable to create a new SOS unit of measure: %s" % res['message'])
-    ms = 'unit of measure test creation: PASS'
+    ms = 'unit of measure test created'
     if v: print '\t|---' + ms
     f.write('\n'+ms)
     #----- ADD OBSERVED PROPERTY ------
@@ -155,7 +166,7 @@ def run_tests(arg):
     res = tpost.POST("",opr,address)
     if not res['success']:
         raise SystemError("Unable to create a new SOS observed property: %s" % res['message'])
-    ms = 'observed property test creation: PASS'
+    ms = 'observed property test created'
     if v: print '\t|---' + ms
     f.write('\n'+ms)
     #----- ADD PROCEDURE ------
@@ -208,7 +219,7 @@ def run_tests(arg):
     if not res['success']:
         print res
         raise SystemError("Unable to create a new SOS procedure: %s" % res['message'])
-    ms = 'procedure test creation: PASS'
+    ms = 'procedure test created'
     if v: print '\t|---' + ms
     f.write('\n'+ms)
     
@@ -217,40 +228,160 @@ def run_tests(arg):
     #=======================================================================
     ms = 'TESTING RESTFUL SERVICE REQUESTS\n'   
     if v: print '|---' + ms
-    f.write('\n'+ms)
+    f.write('\n'+ms+'\n=================================')   
     
+    if v: print '\t|---TESTING dataqualities \n'
     dataqualities = data.test_dataqualities(f, v)
-    
+    if v:
+        for el in dataqualities: print '\t\t|---' + el
+    for k,v in dataqualities.items():
+        passed.append(el) if v else failed.append(el)
+            
+    if v: print '\t|---TESTING epsg\n'
     epsgs = eps.test_epsgs(f, v)
+    if v:
+        for el in epsgs: print '\t\t|---' + el
+    for k,v in epsgs.items():
+        passed.append(el) if v else failed.append(el)
+            
+    if v: print '\t|---TESTING observedproperties \n'
     observedproperties = obsprop.test_observedproperties(f, v)
+    if v:
+        for el in observedproperties: print '\t\t|---' + el
+    for k,v in observedproperties.items():
+        passed.append(el) if v else failed.append(el)
+            
+    if v: print '\t|---TESTING offerings \n'
     offerings = offer.test_offerings(f, v)
+    if v:
+        for el in observedproperties: print '\t\t|---' + el
+    for k,v in offerings.items():
+        passed.append(el) if v else failed.append(el)
+         
+    if v: print '\t|---TESTING operations \n'
     operations = oper.test_operations(f, v)
+    if v:
+        for el in operations: print '\t\t|---' + el
+    for k,v in operations.items():
+        passed.append(el) if v else failed.append(el)
+           
+    if v: print '\t|---TESTING procedures \n'
     procedures = proc.test_procedures(f, v)
+    if v:
+        for el in procedures: print '\t\t|---' + el
+    for k,v in procedures.items():
+        passed.append(el) if v else failed.append(el)
+            
+    if v: print '\t|---TESTING services \n'
     services = ser.test_services(f, v)
+    if v:
+        for el in services: print '\t\t|---' + el
+    for k,v in services.items():
+        passed.append(el) if v else failed.append(el)
+            
+    if v: print '\t|---TESTING systemtypes \n'
     systemtypes = syst.test_systemtypes(f, v)
+    if v:
+        for el in systemtypes: print '\t\t|---' + el
+    for k,v in systemtypes.items():
+        passed.append(el) if v else failed.append(el)
+            
+    if v: print '\t|---TESTING uoms \n'
     uoms = uom.test_uoms(f, v)
+    if v:
+        for el in uoms: print '\t\t|---' + el
+    for k,v in uoms.items():
+        passed.append(el) if v else failed.append(el)
+           
+    if v: print '\t|---TESTING configsections \n'
     configsections = conf.test_configsections(f, v)
-
-    
+    if v:
+        for el in configsections: print '\t\t|---' + el
+    for k,v in configsections.items():
+        passed.append(el) if v else failed.append(el)
+      
     #=======================================================================
     # TEST SOS SERVICE REQUESTS
     #=======================================================================    
-    if v: print '\n-----------------getCapabilities----------------------------\n'
-    getCapabilities = sos.getCapabilities(f, v)
-    if v: print '\n-----------------registerSensor-----------------------------\n'
-    registerSensor = sos.registerSensor(f, v)
-    if v: print '\n-----------------describeSensor-----------------------------\n'
-    describeSensor = sos.describeSensor(f, v)
-    if v: print '\n-----------------getFeatureOfInterest-----------------------\n'
-    featureofInterest = sos.getFeatureOfInterest(f, v)
-    if v: print '\n-----------------insertObservation--------------------------\n'
-    insertObservation = sos.insertObservation(f, v)
-    if v: print '\n-----------------getObservation-----------------------------\n'
-    getObservation = sos.getObservation(f, v)
-    # delete sensor
-
+    ms = 'TESTING SOS SERVICE REQUESTS\n'   
+    if v: print '|---' + ms
+    f.write('\n'+ms+'\n=================================')   
     
+    if v: print '\t|---TESTING getCapabilities \n'
+    getCapabilities = sos.getCapabilities(f, v)
+    if v:
+        for el in getCapabilities: 
+            print '\t\t|---' + el
+    for k,v in getCapabilities.items():
+        passed.append(el) if v else failed.append(el)
+            
+    if v: print '\t|---TESTING registerSensor \n'
+    registerSensor = sos.registerSensor(f, v)
+    if v:
+        for el in registerSensor: 
+            print '\t\t|---' + el
+    for k,v in registerSensor.items():
+        passed.append(el) if v else failed.append(el)
+            
+    if v: print '\t|---TESTING describeSensor \n'
+    describeSensor = sos.describeSensor(f, v)
+    if v:
+        for el in describeSensor: 
+            print '\t\t|---' + el
+    for k,v in describeSensor.items():
+        passed.append(el) if v else failed.append(el)
+            
+    if v: print '\t|---TESTING getFeatureOfInterest \n'
+    featureofInterest = sos.getFeatureOfInterest(f, v)
+    if v:
+        for el in featureofInterest: 
+            print '\t\t|---' + el
+    for k,v in featureofInterest.items():
+        passed.append(el) if v else failed.append(el)
+           
+    if v: print '\t|---TESTING insertObservation \n'
+    insertObservation = sos.insertObservation(f, v)
+    if v:
+        for el in insertObservation: 
+            print '\t\t|---' + el
+    for k,v in insertObservation.items():
+        passed.append(el) if v else failed.append(el)
+            
+    if v: print '\t|---TESTING getObservation \n'
+    getObservation = sos.getObservation(f, v)
+    if v:
+        for el in getObservation: 
+            print '\t\t|---' + el
+    for k,v in getObservation.items():
+        passed.append(el) if v else failed.append(el)
+            
+    # delete sensor
     f.close()
+    
+    duration = ('%s seconds') %(time.time() - start_time)
+    npassed = len(passed)
+    nfailed = len(failed)
+    #calculate results statistics
+    
+    #=========================================================    
+    # WRITE TEST RESULTS    
+    #=========================================================
+    print "results:"
+    print "--test duration: %s" % duration
+    print "--run tests:     %s" % npassed
+    print "--passed tests:  %s" % nfailed
+    print "--failed tests:  %s" % (npassed+nfailed)
+    if len(failed) >0:    
+        print ""
+        print "failed test list: %s" %("\n -".join(failed))
+    
+    """
+    --Run Summary: 
+                Type      Total     Ran  Passed  Failed
+               suites       17      17     n/a       0
+               tests       143     143     143       0
+               asserts    1228    1228    1228       0    
+    """
     
     if v: 
         print '\n#############################################################'
