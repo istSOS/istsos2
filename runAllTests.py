@@ -138,6 +138,7 @@ def run_tests(arg):
     if not res['success']:
         raise SystemError("Unable to create a new SOS observed property: %s" % res['message'])
     #----- ADD PROCEDURE ------
+    """
     tproc = {
         "system_id":"test",
         "system":"test",
@@ -203,62 +204,39 @@ def run_tests(arg):
         "history":[]
     }   
     """
-    tproc = {
-        "inputs": [], 
-        "description": "test procedure", 
-        "classification": [
-            {
-            "definition": "urn:ogc:def:classifier:x-istsos:1.0:systemType", 
-            "name": "System Type", 
-            "value": "insitu-fixed-point"
-            }, 
-            {
-            "definition": "urn:ogc:def:classifier:x-istsos:1.0:sensorType", 
-            "name": "Sensor Type", 
-            "value": "test"
-            }
-        ], 
-        "characteristics": "", 
-        "interfaces": "", 
-        "keywords": "A,B,C", 
-        "contacts": [], 
-        #"assignedSensorId": "6ecb65065eccaac8967089df62c81a24", 
-        "documentation": [], 
-        "system": "test", 
-        "capabilities": [], 
-        "identification": [], 
-        "location": {
-            "geometry": {
-                "type": "Point", 
-                "coordinates": ["1", "1", "1"]
-                }, 
-            "crs": {
-                "type": "name", 
-                "properties": {"name": "4326"}
-                }, 
-            "type": "Feature", 
-            "properties": {"name": "test"}
-            }, 
-        "outputs": [
-            {
-            "definition": "urn:ogc:def:parameter:x-istsos:1.0:time:iso8601", 
-            "constraint": { }, 
-            "name": "Time", 
-            "uom": "", 
-            "description": ""
-            }, 
-            {
-            "definition": "urn:ogc:def:parameter:x-istsos:1.0:test", 
-            "constraint": { }, 
-            "name": "test", 
-            "uom": "test", 
-            "description": ""
-            }
-        ], 
-        "system_id": "test", 
-        "history": []
-        }
-        """
+    tproc = {u'capabilities': [],
+             u'characteristics': u'',
+             u'classification': [{u'definition': u'urn:ogc:def:classifier:x-istsos:1.0:systemType',
+               u'name': u'System Type',
+               u'value': u'insitu-fixed-point'},
+              {u'definition': u'urn:ogc:def:classifier:x-istsos:1.0:sensorType',
+               u'name': u'Sensor Type',
+               u'value': u'test_type'}],
+             u'contacts': [],
+             u'description': u'test procedure',
+             u'documentation': [],
+             u'history': [],
+             u'identification': [],
+             u'inputs': [],
+             u'interfaces': u'',
+             u'keywords': u'A,B,C',
+             u'location': {u'crs': {u'properties': {u'name': u'4326'}, u'type': u'name'},
+              u'geometry': {u'coordinates': [u'1', u'1', u'1'], u'type': u'Point'},
+              u'properties': {u'name': u'test'},
+              u'type': u'Feature'},
+             u'outputs': [{u'constraint': {u'interval': None, u'role': None},
+               u'definition': u'urn:ogc:def:parameter:x-istsos:1.0:time:iso8601',
+               u'description': u'',
+               u'name': u'Time',
+               u'uom': u'iso8601'},
+              {u'constraint': {u'min': u'0',
+                u'role': u'urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0'},
+               u'definition': u'urn:ogc:def:parameter:x-istsos:1.0:test',
+               u'description': u'test opr',
+               u'name': u'test',
+               u'uom': u'test'}],
+             u'system': u'test',
+             u'system_id': u'test'}
     address = 'http://localhost/istsos/wa/istsos/services/test/offerings/temporary/procedures'
     res = tpost.POST("",tproc,address)
     if not res['success']:
