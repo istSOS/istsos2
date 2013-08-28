@@ -139,6 +139,71 @@ def run_tests(arg):
         raise SystemError("Unable to create a new SOS observed property: %s" % res['message'])
     #----- ADD PROCEDURE ------
     tproc = {
+        "system_id":"test",
+        "system":"test",
+        "description":"test procedure",
+        "keywords":"A,B,C",
+        "identification":[],
+        "classification":[
+            {
+            "name":"System Type",
+            "definition":"urn:ogc:def:classifier:x-istsos:1.0:systemType",
+            "value":"insitu-fixed-point"
+            },
+            {
+            "name":"Sensor Type",
+            "definition":"urn:ogc:def:classifier:x-istsos:1.0:sensorType",
+            "value":"test_type"
+            }
+        ],
+        "characteristics":"",
+        "contacts":[],
+        "documentation":[],
+        "capabilities":[],
+        "location": {
+                "type":"Feature",
+                "geometry": {
+                    "type":"Point",
+                    "coordinates":["1","1","1"]
+                },
+                "crs":{
+                    "type":"name",
+                    "properties":{
+                        "name":"4326"
+                    }
+                },
+                "properties":{
+                        "name":"test"
+                }
+        },
+        "interfaces":"",
+        "inputs":[],
+        "outputs":[
+            {
+                "name":"Time",
+                "definition":"urn:ogc:def:parameter:x-istsos:1.0:time:iso8601",
+                "uom":"iso8601",
+                "description":"",
+                "constraint":{
+                    "role":null,
+                    "interval":null
+                }
+            },
+            {
+                "name":"test",
+                "definition":"urn:ogc:def:parameter:x-istsos:1.0:test",
+                "uom":"test",
+                "description":"test opr",
+                "constraint":{
+                        "role":"urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0",
+                        "min":"0"
+                }
+            }
+        ],
+        "history":[]
+    }   
+    """
+    tproc = {
         "inputs": [], 
         "description": "test procedure", 
         "classification": [
@@ -193,6 +258,7 @@ def run_tests(arg):
         "system_id": "test", 
         "history": []
         }
+        """
     address = 'http://localhost/istsos/wa/istsos/services/test/offerings/temporary/procedures'
     res = tpost.POST("",tproc,address)
     if not res['success']:
