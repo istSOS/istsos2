@@ -333,7 +333,7 @@ if __name__ == "__main__":
     parser.add_argument('password', action = 'store', help   = 'PostGIS password')
     parser.add_argument('host', action = 'store', help   = 'PostGIS host address')
     parser.add_argument('dbname', action = 'store', help   = 'PostGIS database name')
-    parser.add_argument('-p', action = 'store', default = 5342, type = int, dest   = 'port', help   = 'PostGIS connection port')
+    parser.add_argument('-p', action = 'store', default = '5342', dest   = 'port', help   = 'PostGIS connection port')
     parser.add_argument('-v','--verbose', action = 'store_true', dest   = 'v', help   = 'Activate verbose debug')
     args = parser.parse_args()
     #print args.__dict__
