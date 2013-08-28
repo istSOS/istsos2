@@ -279,7 +279,7 @@ def run_tests(arg):
         print '\nSystemtypes:'
         print 'services/name/systemtypes non é implementato'
  
-       """        
+        """        
         for el in systemtypes:
             if not systemtypes[el]:
             print el
