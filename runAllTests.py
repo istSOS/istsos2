@@ -26,7 +26,7 @@ def run_tests(arg):
     f = open(path.abspath(path.dirname(__file__))+'/logs/test.log', 'w')
         
     v = arg['v']
-    ms = '\n-------CREATING TESTING ENVIRONMENT\n'
+    ms = '----CREATING TESTING ENVIRONMENT\n'
     if v: print ms
     f.write(ms)   
     
@@ -106,9 +106,9 @@ def run_tests(arg):
     res = tput.PUT("", config, address)
     if not res['success']:
         raise SystemError("Unable to configure the SOS server: %s" % res['message'])
-    ms = '\n   |---SOS SERVER TEST CONFIGURATION SET\n'
-    if v: print ms
-    f.write(ms)
+    ms = 'server configuration set: PASS'
+    if v: print '\t|---' + ms
+    f.write('\n'+ms)
     
     #----- CREATE A SOS SERVICE ---------
     service = {
@@ -128,9 +128,9 @@ def run_tests(arg):
                 raise SystemError("Unable to delete existing test SOS service: %s" % res['message'])
         else:
             raise SystemError("Unable to create a new SOS service: %s" % res['message'])
-    ms = '\n   |---SOS SERVICE TEST CREATED\n'
-    if v: print ms
-    f.write(ms)
+    ms = 'service test set: PASS'
+    if v: print '\t|---' + ms
+    f.write('\n'+ms)
     #----- ADD UNIT OF MEASURE ------
     tuom = {
         "name": "test", 
@@ -140,9 +140,9 @@ def run_tests(arg):
     res = tpost.POST("",tuom,address)
     if not res['success']:
         raise SystemError("Unable to create a new SOS unit of measure: %s" % res['message'])
-    ms = '\n   |---UNIT OF MEASURE TEST CREATED\n'
-    if v: print ms
-    f.write(ms)
+    ms = 'unit of measure test creation: PASS'
+    if v: print '\t|---' + ms
+    f.write('\n'+ms)
     #----- ADD OBSERVED PROPERTY ------
     opr = {
         "definition": "urn:ogc:def:parameter:x-istsos:1.0:test", 
@@ -155,9 +155,9 @@ def run_tests(arg):
     res = tpost.POST("",opr,address)
     if not res['success']:
         raise SystemError("Unable to create a new SOS observed property: %s" % res['message'])
-    ms = '\n   |---OBSERVED PROPERTY TEST CREATED\n'
-    if v: print ms
-    f.write(ms)
+    ms = 'observed property test creation: PASS'
+    if v: print '\t|---' + ms
+    f.write('\n'+ms)
     #----- ADD PROCEDURE ------
     tproc = {
         'capabilities': [],
@@ -208,15 +208,16 @@ def run_tests(arg):
     if not res['success']:
         print res
         raise SystemError("Unable to create a new SOS procedure: %s" % res['message'])
-    ms = '\n   |---PROCEDURE TEST CREATED\n'
-    if v: print ms
-    f.write(ms)
+    ms = 'procedure test creation: PASS'
+    if v: print '\t|---' + ms
+    f.write('\n'+ms)
+    
     #=======================================================================
     # TEST RESTFUL SERVICE REQUESTS
     #=======================================================================
-    ms = '\n|\n-------TESTING RESTFUL SERVICE REQUESTS\n'   
-    if v: print ms
-    f.write(ms)
+    ms = 'TESTING RESTFUL SERVICE REQUESTS\n'   
+    if v: print '|---' + ms
+    f.write('\n'+ms)
     
     dataqualities = data.test_dataqualities(f, v)
     
