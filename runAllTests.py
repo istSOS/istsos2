@@ -278,14 +278,16 @@ def run_tests(arg):
         for el in services: print '\t\t|---' + el
     for k,v in services.items():
         passed.append(k) if v else failed.append(k)
-            
+    
+    """        
     if v: print '\t|---TESTING systemtypes \n'
     systemtypes = syst.test_systemtypes(f, v)
     if v:
         for el in systemtypes: print '\t\t|---' + el
     for k,v in systemtypes.items():
         passed.append(k) if v else failed.append(k)
-            
+    """
+                
     if v: print '\t|---TESTING uoms \n'
     uoms = uom.test_uoms(f, v)
     if v:
