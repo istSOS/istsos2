@@ -235,70 +235,70 @@ def run_tests(arg):
     if v:
         for el in dataqualities: print '\t\t|---' + el
     for k,v in dataqualities.items():
-        passed.append(el) if v else failed.append(el)
+        passed.append(k) if v else failed.append(k)
             
     if v: print '\t|---TESTING epsg\n'
     epsgs = eps.test_epsgs(f, v)
     if v:
         for el in epsgs: print '\t\t|---' + el
     for k,v in epsgs.items():
-        passed.append(el) if v else failed.append(el)
+        passed.append(k) if v else failed.append(k)
             
     if v: print '\t|---TESTING observedproperties \n'
     observedproperties = obsprop.test_observedproperties(f, v)
     if v:
         for el in observedproperties: print '\t\t|---' + el
     for k,v in observedproperties.items():
-        passed.append(el) if v else failed.append(el)
+        passed.append(k) if v else failed.append(k)
             
     if v: print '\t|---TESTING offerings \n'
     offerings = offer.test_offerings(f, v)
     if v:
         for el in observedproperties: print '\t\t|---' + el
     for k,v in offerings.items():
-        passed.append(el) if v else failed.append(el)
+        passed.append(k) if v else failed.append(k)
          
     if v: print '\t|---TESTING operations \n'
     operations = oper.test_operations(f, v)
     if v:
         for el in operations: print '\t\t|---' + el
     for k,v in operations.items():
-        passed.append(el) if v else failed.append(el)
+        passed.append(k) if v else failed.append(k)
            
     if v: print '\t|---TESTING procedures \n'
     procedures = proc.test_procedures(f, v)
     if v:
         for el in procedures: print '\t\t|---' + el
     for k,v in procedures.items():
-        passed.append(el) if v else failed.append(el)
+        passed.append(k) if v else failed.append(k)
             
     if v: print '\t|---TESTING services \n'
     services = ser.test_services(f, v)
     if v:
         for el in services: print '\t\t|---' + el
     for k,v in services.items():
-        passed.append(el) if v else failed.append(el)
+        passed.append(k) if v else failed.append(k)
             
     if v: print '\t|---TESTING systemtypes \n'
     systemtypes = syst.test_systemtypes(f, v)
     if v:
         for el in systemtypes: print '\t\t|---' + el
     for k,v in systemtypes.items():
-        passed.append(el) if v else failed.append(el)
+        passed.append(k) if v else failed.append(k)
             
     if v: print '\t|---TESTING uoms \n'
     uoms = uom.test_uoms(f, v)
     if v:
         for el in uoms: print '\t\t|---' + el
     for k,v in uoms.items():
-        passed.append(el) if v else failed.append(el)
+        passed.append(k) if v else failed.append(k)
            
     if v: print '\t|---TESTING configsections \n'
     configsections = conf.test_configsections(f, v)
     if v:
         for el in configsections: print '\t\t|---' + el
     for k,v in configsections.items():
-        passed.append(el) if v else failed.append(el)
+        passed.append(k) if v else failed.append(k)
       
     #=======================================================================
     # TEST SOS SERVICE REQUESTS
@@ -313,7 +313,7 @@ def run_tests(arg):
         for el in getCapabilities: 
             print '\t\t|---' + el
     for k,v in getCapabilities.items():
-        passed.append(el) if v else failed.append(el)
+        passed.append(k) if v else failed.append(k)
             
     if v: print '\t|---TESTING registerSensor \n'
     registerSensor = sos.registerSensor(f, v)
@@ -321,7 +321,7 @@ def run_tests(arg):
         for el in registerSensor: 
             print '\t\t|---' + el
     for k,v in registerSensor.items():
-        passed.append(el) if v else failed.append(el)
+        passed.append(k) if v else failed.append(k)
             
     if v: print '\t|---TESTING describeSensor \n'
     describeSensor = sos.describeSensor(f, v)
@@ -329,7 +329,7 @@ def run_tests(arg):
         for el in describeSensor: 
             print '\t\t|---' + el
     for k,v in describeSensor.items():
-        passed.append(el) if v else failed.append(el)
+        passed.append(k) if v else failed.append(k)
             
     if v: print '\t|---TESTING getFeatureOfInterest \n'
     featureofInterest = sos.getFeatureOfInterest(f, v)
@@ -337,7 +337,7 @@ def run_tests(arg):
         for el in featureofInterest: 
             print '\t\t|---' + el
     for k,v in featureofInterest.items():
-        passed.append(el) if v else failed.append(el)
+        passed.append(k) if v else failed.append(k)
            
     if v: print '\t|---TESTING insertObservation \n'
     insertObservation = sos.insertObservation(f, v)
@@ -345,7 +345,7 @@ def run_tests(arg):
         for el in insertObservation: 
             print '\t\t|---' + el
     for k,v in insertObservation.items():
-        passed.append(el) if v else failed.append(el)
+        passed.append(k) if v else failed.append(k)
             
     if v: print '\t|---TESTING getObservation \n'
     getObservation = sos.getObservation(f, v)
@@ -353,7 +353,7 @@ def run_tests(arg):
         for el in getObservation: 
             print '\t\t|---' + el
     for k,v in getObservation.items():
-        passed.append(el) if v else failed.append(el)
+        passed.append(k) if v else failed.append(k)
             
     # delete sensor
     f.close()
