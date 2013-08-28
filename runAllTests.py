@@ -231,49 +231,49 @@ def run_tests(arg):
     f.write('\n'+ms+'\n=================================')   
     
     if v: print '\t|---TESTING dataqualities \n'
-    dataqualities = data.test_dataqualities(f, v)
+    dataqualities = data.test_dataqualities(f)
     if v:
         for el in dataqualities: print '\t\t|---' + el
     for k,v in dataqualities.items():
         passed.append(k) if v else failed.append(k)
             
     if v: print '\t|---TESTING epsg\n'
-    epsgs = eps.test_epsgs(f, v)
+    epsgs = eps.test_epsgs(f)
     if v:
         for el in epsgs: print '\t\t|---' + el
     for k,v in epsgs.items():
         passed.append(k) if v else failed.append(k)
             
     if v: print '\t|---TESTING observedproperties \n'
-    observedproperties = obsprop.test_observedproperties(f, v)
+    observedproperties = obsprop.test_observedproperties(f)
     if v:
         for el in observedproperties: print '\t\t|---' + el
     for k,v in observedproperties.items():
         passed.append(k) if v else failed.append(k)
             
     if v: print '\t|---TESTING offerings \n'
-    offerings = offer.test_offerings(f, v)
+    offerings = offer.test_offerings(f)
     if v:
         for el in observedproperties: print '\t\t|---' + el
     for k,v in offerings.items():
         passed.append(k) if v else failed.append(k)
          
     if v: print '\t|---TESTING operations \n'
-    operations = oper.test_operations(f, v)
+    operations = oper.test_operations(f)
     if v:
         for el in operations: print '\t\t|---' + el
     for k,v in operations.items():
         passed.append(k) if v else failed.append(k)
            
     if v: print '\t|---TESTING procedures \n'
-    procedures = proc.test_procedures(f, v)
+    procedures = proc.test_procedures(f)
     if v:
         for el in procedures: print '\t\t|---' + el
     for k,v in procedures.items():
         passed.append(k) if v else failed.append(k)
             
     if v: print '\t|---TESTING services \n'
-    services = ser.test_services(f, v)
+    services = ser.test_services(f)
     if v:
         for el in services: print '\t\t|---' + el
     for k,v in services.items():
@@ -289,14 +289,14 @@ def run_tests(arg):
     """
                 
     if v: print '\t|---TESTING uoms \n'
-    uoms = uom.test_uoms(f, v)
+    uoms = uom.test_uoms(f)
     if v:
         for el in uoms: print '\t\t|---' + el
     for k,v in uoms.items():
         passed.append(k) if v else failed.append(k)
            
     if v: print '\t|---TESTING configsections \n'
-    configsections = conf.test_configsections(f, v)
+    configsections = conf.test_configsections(f)
     if v:
         for el in configsections: print '\t\t|---' + el
     for k,v in configsections.items():
@@ -310,7 +310,7 @@ def run_tests(arg):
     f.write('\n'+ms+'\n=================================')   
     
     if v: print '\t|---TESTING getCapabilities \n'
-    getCapabilities = sos.getCapabilities(f, v)
+    getCapabilities = sos.getCapabilities(f)
     if v:
         for el in getCapabilities: 
             print '\t\t|---' + el
@@ -318,7 +318,7 @@ def run_tests(arg):
         passed.append(k) if v else failed.append(k)
             
     if v: print '\t|---TESTING registerSensor \n'
-    registerSensor = sos.registerSensor(f, v)
+    registerSensor = sos.registerSensor(f)
     if v:
         for el in registerSensor: 
             print '\t\t|---' + el
@@ -326,7 +326,7 @@ def run_tests(arg):
         passed.append(k) if v else failed.append(k)
             
     if v: print '\t|---TESTING describeSensor \n'
-    describeSensor = sos.describeSensor(f, v)
+    describeSensor = sos.describeSensor(f)
     if v:
         for el in describeSensor: 
             print '\t\t|---' + el
@@ -334,7 +334,7 @@ def run_tests(arg):
         passed.append(k) if v else failed.append(k)
             
     if v: print '\t|---TESTING getFeatureOfInterest \n'
-    featureofInterest = sos.getFeatureOfInterest(f, v)
+    featureofInterest = sos.getFeatureOfInterest(f)
     if v:
         for el in featureofInterest: 
             print '\t\t|---' + el
@@ -342,7 +342,7 @@ def run_tests(arg):
         passed.append(k) if v else failed.append(k)
            
     if v: print '\t|---TESTING insertObservation \n'
-    insertObservation = sos.insertObservation(f, v)
+    insertObservation = sos.insertObservation(f)
     if v:
         for el in insertObservation: 
             print '\t\t|---' + el
@@ -350,7 +350,7 @@ def run_tests(arg):
         passed.append(k) if v else failed.append(k)
             
     if v: print '\t|---TESTING getObservation \n'
-    getObservation = sos.getObservation(f, v)
+    getObservation = sos.getObservation(f)
     if v:
         for el in getObservation: 
             print '\t\t|---' + el
@@ -370,101 +370,12 @@ def run_tests(arg):
     #=========================================================
     print "results:"
     print "--test duration: %s" % duration
-    print "--run tests:     %s" % npassed
-    print "--passed tests:  %s" % nfailed
-    print "--failed tests:  %s" % (npassed+nfailed)
+    print "--run tests:     %s" % (npassed+nfailed)
+    print "--passed tests:  %s" % npassed
+    print "--failed tests:  %s" % nfailed
     if len(failed) >0:    
         print ""
         print "failed test list: %s" %("\n -".join(failed))
-    
-    """
-    --Run Summary: 
-                Type      Total     Ran  Passed  Failed
-               suites       17      17     n/a       0
-               tests       143     143     143       0
-               asserts    1228    1228    1228       0    
-    """
-    
-    if v: 
-        print '\n#############################################################'
-        print '------------------------Failed tests:------------------------'
-        print '#############################################################'
-    
-        print '\nConfigsections:'
-        for el in configsections:
-            if not configsections[el]:
-                print el
-
-        print '\nDataqualities:'
-        for el in dataqualities:
-            if not dataqualities[el]:
-                print el
-        
-        print '\nEpsgs:'
-        for el in epsgs:
-            if not epsgs[el]:
-                print el
-          
-        print '\nObservedproperties:'
-        for el in observedproperties:
-            if not observedproperties[el]:
-                print el
-            
-        print '\nOfferings:'
-        for el in offerings:
-            if not offerings[el]:
-                print el
-            
-        print '\nOperations:'
-        for el in operations:
-            if not operations[el]:
-                print el
-            
-        print '\nProcedures:'
-        for el in procedures:
-            if not procedures[el]:
-                print el
-            
-        print '\nServices:'
-        for el in services:
-            if not services[el]:
-                print el
-        
-        print '\nUoms:'
-        for el in uoms:
-            if not uoms[el]:
-                print el
-    
-        print '\ngetCapabilities:'
-        for el in getCapabilities:
-            if not getCapabilities[el]:
-                print el
-    
-        print '\ndescribeSensor:'
-        for el in describeSensor:
-            if not describeSensor[el]:
-                print el
-    
-        print '\ngetObservation:'
-        for el in getObservation:
-            if not getObservation[el]:
-                print el
-    
-        print '\nregisterSensor:'
-        for el in registerSensor:
-            if not registerSensor[el]:
-                print el
-    
-        print '\ninsertObservation:'
-        for el in insertObservation:
-            if not insertObservation[el]:
-                print el
-    
-        print '\ngetFeatureOfInterest:'
-        for el in featureofInterest:
-            if not featureofInterest[el]:
-                print el
-        
 
 
 if __name__ == "__main__":
