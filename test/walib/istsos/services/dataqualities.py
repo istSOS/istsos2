@@ -8,16 +8,14 @@ import pprint
 import time
 
     
-def test_dataqualities(doc, v):
+def test_dataqualities(doc):
     #services_name_dataqualities_GET(sname)
     #services_name_dataqualities_POST(sname, post)
     #services_name_dataqualities_code_GET(sname, qualcode)
     #services_name_dataqualities_code_PUT(sname, put, qualcode)
     #services_name_dataqualities_code_DELETE(sname, qualcode)
     
-    ms = '\n|\n   |---DATAQUALITIES\n'   
-    if v: print ms
-    doc.write(ms)
+    doc.write('\nDATAQUALITIES\n-------------\n')
     
     pp = pprint.PrettyPrinter(indent=2)    
     sname = 'test'
@@ -57,52 +55,45 @@ def test_dataqualities(doc, v):
     if get1['success'] and get2['success']:
         if get1 == get2:
             success_get1 = True
-            ms = '\n      |---services_name_dataqualities_GET: SUCCESS'
-            if v: print ms
-            doc.write(ms)
+            doc.write('\n\nservices_name_dataqualities_GET: SUCCESS')
         else:
-            ms = '\n      |---services_name_dataqualities_GET: FAILED'
-            if v: print ms
-            doc.write(ms)
-            doc.write('\n         |---the results are not consistent')
-            doc.write('\n         |---First get:')
-            doc.write(pp.pformat(get1))
-            doc.write('\n         |---Second get:')
-            doc.write(pp.pformat(get2))
-    else:
-        if v:
-            doc.write('\n\nservices_name_dataqualities_GET: the requests have not been successful')
+            doc.write('\n\nservices_name_dataqualities_GET: FAILED')
+            doc.write('\nThe results are not consistent\n')
             doc.write('\nFirst get:\n')
             doc.write(pp.pformat(get1))
             doc.write('\nSecond get:\n')
             doc.write(pp.pformat(get2))
-        print 'services_name_dataqualities_GET: FAILED'
-    
+    else:
+        doc.write('\n\nservices_name_dataqualities_GET: FAILED')
+        doc.write('\n\nservices_name_dataqualities_GET: the requests have not been successful')
+        doc.write('\nFirst get:\n')
+        doc.write(pp.pformat(get1))
+        doc.write('\nSecond get:\n')
+        doc.write(pp.pformat(get2))
+        
      
     #Checks for the POST to be successful by comparing two GETs
     if post1['success']:
         #If gets before and after are the same, failure
         if get1 == get3:
-            if v:
-                doc.write('\n\nservices_name_dataqualities_POST: the data has not changed')
-                doc.write('\nPost:\n')
-                doc.write(pp.pformat(post1))
-                doc.write('\nGet, before:\n')
-                doc.write(pp.pformat(get2))
-                doc.write('\nGet, after:\n')
-                doc.write(pp.pformat(get3))
-            print 'services_name_dataqualities_POST: FAILED'
+            doc.write('\n\nservices_name_dataqualities_POST: FAILED')
+            doc.write('\n\nservices_name_dataqualities_POST: the data has not changed')
+            doc.write('\nPost:\n')
+            doc.write(pp.pformat(post1))
+            doc.write('\nGet, before:\n')
+            doc.write(pp.pformat(get2))
+            doc.write('\nGet, after:\n')
+            doc.write(pp.pformat(get3))
         #If second get has same or less entries than first, failure
         elif get3['total'] <= get1['total']:
-            if v:
-                doc.write('\n\nservices_name_dataqualities_POST: post failed or deleted another entry')
-                doc.write('\nPost:\n')
-                doc.write(pp.pformat(post1))
-                doc.write('\nGet, before:\n')
-                doc.write(pp.pformat(get2))
-                doc.write('\nGet, after:\n')
-                doc.write(pp.pformat(get3))
-            print 'services_name_dataqualities_POST: FAILED'
+            doc.write('\n\nservices_name_dataqualities_POST: FAILED')
+            doc.write('\n\nservices_name_dataqualities_POST: post failed or deleted another entry')
+            doc.write('\nPost:\n')
+            doc.write(pp.pformat(post1))
+            doc.write('\nGet, before:\n')
+            doc.write(pp.pformat(get2))
+            doc.write('\nGet, after:\n')
+            doc.write(pp.pformat(get3))
         #If second get has one more entry than first, look for the 
         #inserted value. If found, success, else failure
         elif get3['total'] == get1['total'] + 1:
@@ -113,33 +104,32 @@ def test_dataqualities(doc, v):
                     ):
                     #pp.pprint(get3)   
                     #pp.pprint(post1)
-                    print 'services_name_dataqualities_POST: SUCCESS'
+                    doc.write('\n\nservices_name_dataqualities_POST: SUCCESS')
                     success_post = True
                     break
             if not success_post:
-                if v:
-                    doc.write('\n\nservices_name_dataqualities_POST: posted data does not correspond')
-                    doc.write('\nPost:\n')
-                    doc.write(pp.pformat(post1))
-                    doc.write('\nGet, before:\n')
-                    doc.write(pp.pformat(get2))
-                    doc.write('\nGet, after:\n')
-                    doc.write(pp.pformat(get3))
-                print 'services_name_dataqualities_POST: FAILED'
-        #if anything else wrong, failure
-        else:
-            if v:
-                doc.write('\n\nservices_name_dataqualities_POST: something went wrong')
+                doc.write('\n\nservices_name_dataqualities_POST: FAILED')
+                doc.write('\n\nservices_name_dataqualities_POST: posted data does not correspond')
                 doc.write('\nPost:\n')
                 doc.write(pp.pformat(post1))
                 doc.write('\nGet, before:\n')
                 doc.write(pp.pformat(get2))
                 doc.write('\nGet, after:\n')
                 doc.write(pp.pformat(get3))
-            print 'services_name_dataqualities_POST: FAILED'
+        #if anything else wrong, failure
+        else:
+            doc.write('\n\nservices_name_dataqualities_POST: FAILED')
+            doc.write('\n\nservices_name_dataqualities_POST: something went wrong')
+            doc.write('\nPost:\n')
+            doc.write(pp.pformat(post1))
+            doc.write('\nGet, before:\n')
+            doc.write(pp.pformat(get2))
+            doc.write('\nGet, after:\n')
+            doc.write(pp.pformat(get3))
     #If post not successful, failure
     else:
         if v:
+            doc.write('\n\nservices_name_dataqualities_POST: FAILED')
             doc.write('\n\nservices_name_dataqualities_POST: post failed')
             doc.write('\nPost:\n')
             doc.write(pp.pformat(post1))
@@ -147,49 +137,42 @@ def test_dataqualities(doc, v):
             doc.write(pp.pformat(get2))
             doc.write('\nGet, after:\n')
             doc.write(pp.pformat(get3))
-            print 'services_name_dataqualities_POST: FAILED'
-            
     
     #Check for two successful requests to have the same result
     if get4['success'] and get5['success']:
         if get4 == get5:
             #print 'the results are the same:\n'
             #pp.pprint(get1)
-            print 'services_name_dataqualities_code_GET: SUCCESS'
+            doc.write('\n\nservices_name_dataqualities_code_GET: SUCCESS')
             success_get2 = True
         else:
-            if v:
-                doc.write('\n\nservices_name_dataqualities_code_GET: the results are not all the same')
-                doc.write('\nFirst get:\n')
-                doc.write(pp.pformat(get4))
-                doc.write('\nSecond get:\n')
-                doc.write(pp.pformat(get5))
-            print 'services_name_dataqualities_code_GET: FAILED'
-    else:
-        if v:
-            doc.write('\n\nservices_name_dataqualities_code_GET: the requests have not been successful')
+            doc.write('\n\nservices_name_dataqualities_code_GET: FAILED')
+            doc.write('\n\nservices_name_dataqualities_code_GET: the results are not all the same')
             doc.write('\nFirst get:\n')
             doc.write(pp.pformat(get4))
             doc.write('\nSecond get:\n')
             doc.write(pp.pformat(get5))
-        print 'services_name_dataqualities_code_GET: FAILED'
-    
-    
+    else:
+        doc.write('\n\nservices_name_dataqualities_code_GET: FAILED')
+        doc.write('\n\nservices_name_dataqualities_code_GET: the requests have not been successful')
+        doc.write('\nFirst get:\n')
+        doc.write(pp.pformat(get4))
+        doc.write('\nSecond get:\n')
+        doc.write(pp.pformat(get5))
     
     
     #Checks for the PUT to be successful by comparing two GETs
     if put1['success']:
         #If gets before and after are the same, failure
         if get5 == get6:
-            if v:
-                doc.write('\n\nservices_name_dataqualities_code_PUT: maybe you re-wrote existing data')
-                doc.write('\nPut:\n')            
-                doc.write(pp.pformat(put1)) 
-                doc.write('\nGet, before:\n')
-                doc.write(pp.pformat(get5))
-                doc.write('\nGet, after:\n')
-                doc.write(pp.pformat(get6))
-            print 'services_name_dataqualities_code_PUT: FAILED'
+            doc.write('\n\nservices_name_dataqualities_code_PUT: FAILED')
+            doc.write('\n\nservices_name_dataqualities_code_PUT: maybe you re-wrote existing data')
+            doc.write('\nPut:\n')            
+            doc.write(pp.pformat(put1)) 
+            doc.write('\nGet, before:\n')
+            doc.write(pp.pformat(get5))
+            doc.write('\nGet, after:\n')
+            doc.write(pp.pformat(get6))
         #For the success, second get should be the same as first
         #apart from the modicifation done with put
         else:
@@ -199,29 +182,27 @@ def test_dataqualities(doc, v):
                 ):
                 #print 'the update is successful:\n'
                 #pp.pprint(get6)
-                print 'services_name_dataqualities_code_PUT: SUCCESS'
+                doc.write('\n\nservices_name_dataqualities_code_PUT: SUCCESS')
                 success_put = True
             else:
-                if v:
-                    doc.write('\n\nservices_name_dataqualities_code_PUT: updated data does not correspond')
-                    doc.write('\nPut:\n')            
-                    doc.write(pp.pformat(put1)) 
-                    doc.write('\nGet, before:\n')
-                    doc.write(pp.pformat(get5))
-                    doc.write('\nGet, after:\n')
-                    doc.write(pp.pformat(get6))
-                print 'services_name_dataqualities_code_PUT: FAILED'
+                doc.write('\n\nservices_name_dataqualities_code_PUT: FAILED')
+                doc.write('\n\nservices_name_dataqualities_code_PUT: updated data does not correspond')
+                doc.write('\nPut:\n')            
+                doc.write(pp.pformat(put1)) 
+                doc.write('\nGet, before:\n')
+                doc.write(pp.pformat(get5))
+                doc.write('\nGet, after:\n')
+                doc.write(pp.pformat(get6))
     #If post not successful, failure
     else:
-        if v:
-            doc.write('\n\nservices_name_dataqualities_code_PUT: the request has not been successful')
-            doc.write('\nPut:\n')            
-            doc.write(pp.pformat(put1)) 
-            doc.write('\nGet, before:\n')
-            doc.write(pp.pformat(get5))
-            doc.write('\nGet, after:\n')
-            doc.write(pp.pformat(get6))
-        print 'services_name_dataqualities_code_PUT: FAILED'
+        doc.write('\n\nservices_name_dataqualities_code_PUT: FAILED')
+        doc.write('\n\nservices_name_dataqualities_code_PUT: the request has not been successful')
+        doc.write('\nPut:\n')            
+        doc.write(pp.pformat(put1)) 
+        doc.write('\nGet, before:\n')
+        doc.write(pp.pformat(get5))
+        doc.write('\nGet, after:\n')
+        doc.write(pp.pformat(get6))
             
             
             
@@ -229,43 +210,40 @@ def test_dataqualities(doc, v):
     if delete1['success']:
         #If gets before and after are the same, failure
         if get6 == get7:
-            if v:
-                doc.write('\n\nservices_name_dataqualities_code_DELETE: the results remained the same')
-                doc.write('\nDelete:\n')            
-                doc.write(pp.pformat(delete1))     
-                doc.write('\nGet, before:\n')
-                doc.write(pp.pformat(get6))
-                doc.write('\nGet, after:\n')
-                doc.write(pp.pformat(get7))
-            print 'services_name_dataqualities_code_DELETE: FAILED'
-        #For the success, second get should be void
-        else:
-            if get7['total'] == get6['total'] - 1 and get8 == get1:
-                #print 'the delete is successful:\n'
-                #pp.pprint(get6)
-                print 'services_name_dataqualities_code_DELETE: SUCCESS'
-                success_delete = True
-            else:
-                if v:
-                    doc.write('\n\nservices_name_dataqualities_code_DELETE: the element has not been deleted')
-                    doc.write('\nDelete:\n')            
-                    doc.write(pp.pformat(delete1))     
-                    doc.write('\nGet, before:\n')
-                    doc.write(pp.pformat(get6))
-                    doc.write('\nGet, after:\n')
-                    doc.write(pp.pformat(get7))
-                print 'services_name_dataqualities_code_DELETE: FAILED'
-    #If post not successful, failure
-    else:
-        if v:
-            doc.write('\n\nservices_name_dataqualities_code_DELETE: the request has not been successful')
+            doc.write('\n\nservices_name_dataqualities_code_DELETE: FAILED')
+            doc.write('\n\nservices_name_dataqualities_code_DELETE: the results remained the same')
             doc.write('\nDelete:\n')            
             doc.write(pp.pformat(delete1))     
             doc.write('\nGet, before:\n')
             doc.write(pp.pformat(get6))
             doc.write('\nGet, after:\n')
             doc.write(pp.pformat(get7))
-            print 'services_name_dataqualities_code_DELETE: FAILED'
+        #For the success, second get should be void
+        else:
+            if get7['total'] == get6['total'] - 1 and get8 == get1:
+                #print 'the delete is successful:\n'
+                #pp.pprint(get6)
+                doc.write('\n\nservices_name_dataqualities_code_DELETE: FAILED')
+                success_delete = True
+            else:
+                doc.write('\n\nservices_name_dataqualities_code_DELETE: FAILED')
+                doc.write('\n\nservices_name_dataqualities_code_DELETE: the element has not been deleted')
+                doc.write('\nDelete:\n')            
+                doc.write(pp.pformat(delete1))     
+                doc.write('\nGet, before:\n')
+                doc.write(pp.pformat(get6))
+                doc.write('\nGet, after:\n')
+                doc.write(pp.pformat(get7))
+    #If post not successful, failure
+    else:
+        doc.write('\n\nservices_name_dataqualities_code_DELETE: FAILED')
+        doc.write('\n\nservices_name_dataqualities_code_DELETE: the request has not been successful')
+        doc.write('\nDelete:\n')            
+        doc.write(pp.pformat(delete1))     
+        doc.write('\nGet, before:\n')
+        doc.write(pp.pformat(get6))
+        doc.write('\nGet, after:\n')
+        doc.write(pp.pformat(get7))
             
             
             

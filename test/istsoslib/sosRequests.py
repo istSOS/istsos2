@@ -3,10 +3,9 @@
 import lib.requests as requests
 import time
 
-def getCapabilities(doc, v):
+def getCapabilities(doc):
     
-    if v:
-        doc.write('\n\n-----------------getCapabilities----------------------------\n')
+    doc.write('\n\n-----------------getCapabilities----------------------------\n')
     
     service = 'test'
     
@@ -42,34 +41,31 @@ def getCapabilities(doc, v):
     res2 = requests.post('http://localhost/istsos/' + service, data=post, headers=header, prefetch=True)
     
     if get1.text == get2.text:
-        print 'GET retrieved the same information'
+        doc.write('GET retrieved the same information')
         success_get = True
     else:
-        print 'GET didn\'t retrieve the correct information'
-        if v:
-            doc.write('\n---------------------GET didn\'t retrieve the correct information--------------------\n')
-            doc.write(get2.text)
+        doc.write('GET didn\'t retrieve the correct information')
+        doc.write('\n---------------------GET didn\'t retrieve the correct information--------------------\n')
+        doc.write(get2.text)
     
     if res1.text == res2.text:
-        print 'POST retrieved the same information'
+        doc.write('POST retrieved the same information')
         success_post = True
     else:
-        print 'POST didn\'t retrieve the correct information'
-        if v:
-            doc.write('\n---------------------POST didn\'t retrieve the correct information--------------------\n')
-            doc.write(res2.text)
+        doc.write('POST didn\'t retrieve the correct information')
+        doc.write('\n---------------------POST didn\'t retrieve the correct information--------------------\n')
+        doc.write(res2.text)
         
     if get2.text == res2.text:
-        print 'POST and GET retrieved the same information'
+        doc.write('POST and GET retrieved the same information')
         combo = True
     else:
-        print 'POST and GET didn\'t retrieve the correct information'
-        if v:
-            doc.write('\nPOST and GET didn\'t retrieve the correct information\n')
-            doc.write('\n---------------------GET--------------------\n\n')
-            doc.write(get2.text)
-            doc.write('\n\n---------------------POST--------------------\n\n')
-            doc.write(res2.text)
+        doc.write('POST and GET didn\'t retrieve the correct information')
+        doc.write('\nPOST and GET didn\'t retrieve the correct information\n')
+        doc.write('\n---------------------GET--------------------\n\n')
+        doc.write(get2.text)
+        doc.write('\n\n---------------------POST--------------------\n\n')
+        doc.write(res2.text)
 
     result = {
         'getCapabilities_GET' : success_get,
@@ -82,10 +78,9 @@ def getCapabilities(doc, v):
 
 
    
-def describeSensor(doc, v):
+def describeSensor(doc):
     
-    if v:
-        doc.write('\n\n-----------------describeSensor-----------------------------\n')
+    doc.write('\n\n-----------------describeSensor-----------------------------\n')
     
     service = 'test'
     procedure = 'test'
@@ -120,34 +115,31 @@ def describeSensor(doc, v):
     res2 = requests.post('http://localhost/istsos/' + service, data=post, headers=header, prefetch=True)
     
     if get1.text == get2.text:
-        print 'GET retrieved the same information'
+        doc.write('GET retrieved the same information')
         success_get = True
     else:
-        print 'GET didn\'t retrieve the correct information'
-        if v:
-            doc.write('\n---------------------GET didn\'t retrieve the correct information--------------------\n')
-            doc.write(get2.text)
+        doc.write('GET didn\'t retrieve the correct information')
+        doc.write('\n---------------------GET didn\'t retrieve the correct information--------------------\n')
+        doc.write(get2.text)
     
     if res1.text == res2.text:
-        print 'POST retrieved the same information'
+        doc.write('POST retrieved the same information')
         success_post = True
     else:
-        print 'POST didn\'t retrieve the correct information'
-        if v:
-            doc.write('\n---------------------POST didn\'t retrieve the correct information--------------------\n')
-            doc.write(res2.text)
-        
+        doc.write('POST didn\'t retrieve the correct information')
+        doc.write('\n---------------------POST didn\'t retrieve the correct information--------------------\n')
+        doc.write(res2.text)
+    
     if get2.text == res2.text:
-        print 'POST and GET retrieved the same information'
+        doc.write('POST and GET retrieved the same information')
         combo = True
     else:
-        print 'POST and GET didn\'t retrieve the correct information'
-        if v:
-            doc.write('\nPOST and GET didn\'t retrieve the correct information\n')
-            doc.write('\n---------------------GET--------------------\n\n')
-            doc.write(get2.text)
-            doc.write('\n\n---------------------POST--------------------\n\n')
-            doc.write(res2.text)
+        doc.write('POST and GET didn\'t retrieve the correct information')
+        doc.write('\nPOST and GET didn\'t retrieve the correct information\n')
+        doc.write('\n---------------------GET--------------------\n\n')
+        doc.write(get2.text)
+        doc.write('\n\n---------------------POST--------------------\n\n')
+        doc.write(res2.text)
 
     result = {
         'describeSensor_GET' : success_get,
@@ -162,10 +154,9 @@ def describeSensor(doc, v):
 
 
     
-def getObservation(doc, v):
+def getObservation(doc):
     
-    if v:
-        doc.write('\n\n-----------------getObservation-----------------------------\n')
+    doc.write('\n\n-----------------getObservation-----------------------------\n')
     
     service = 'test'
     procedure = 'test'
@@ -269,112 +260,102 @@ def getObservation(doc, v):
     res6 = requests.post('http://localhost/istsos/' + service, data=post4, headers=header, prefetch=True)
     
     if get1.text == get2.text:
-        print 'GET retrieved the same information'
+        doc.write('GET retrieved the same information')
         success_get = True
     else:
-        print 'GET didn\'t retrieve the correct information'
-        if v:
-            doc.write('\n---------------------GET didn\'t retrieve the correct information--------------------\n')
-            doc.write(get2.text)
+        doc.write('GET didn\'t retrieve the correct information')
+        doc.write('\n---------------------GET didn\'t retrieve the correct information--------------------\n')
+        doc.write(get2.text)
         
     if getb1.text == getb2.text:
-        print 'GET retrieved the same information'
+        doc.write('GET retrieved the same information')
         success_getB = True
     else:
-        print 'GETB didn\'t retrieve the correct information'
-        if v:
-            doc.write('\n---------------------GETB didn\'t retrieve the correct information--------------------\n')
-            doc.write(getb2.text)
+        doc.write('GETB didn\'t retrieve the correct information')
+        doc.write('\n---------------------GETB didn\'t retrieve the correct information--------------------\n')
+        doc.write(getb2.text)
     
     if res1.text == res2.text:
-        print 'POST retrieved the same information'
+        doc.write('POST retrieved the same information')
         success_post = True
     else:
-        print 'POST didn\'t retrieve the correct information'
-        if v:
-            doc.write('\n---------------------POST didn\'t retrieve the correct information--------------------\n')
-            doc.write(res2.text)
-            
+        doc.write('POST didn\'t retrieve the correct information')
+        doc.write('\n---------------------POST didn\'t retrieve the correct information--------------------\n')
+        doc.write(res2.text)
+        
     
     if res3.text == res4.text:
-        print 'POST2 retrieved the same information'
+        doc.write('POST2 retrieved the same information')
         success_post = True
     else:
-        print 'POST2 didn\'t retrieve the correct information'
-        if v:
-            doc.write('\n---------------------POST2 didn\'t retrieve the correct information--------------------\n')
-            doc.write(res3.text)
+        doc.write('POST2 didn\'t retrieve the correct information')
+        doc.write('\n---------------------POST2 didn\'t retrieve the correct information--------------------\n')
+        doc.write(res3.text)
     
     if res5.text == res6.text:
-        print 'POST4 retrieved the same information'
+        doc.write('POST4 retrieved the same information')
         success_post = True
     else:
-        print 'POST4 didn\'t retrieve the correct information'
-        if v:
-            doc.write('\n---------------------POST4 didn\'t retrieve the correct information--------------------\n')
-            doc.write(res5.text)
+        doc.write('POST4 didn\'t retrieve the correct information')
+        doc.write('\n---------------------POST4 didn\'t retrieve the correct information--------------------\n')
+        doc.write(res5.text)
     
         
     if get2.text == getb2.text:
-        print 'GET and GETB retrieved the same information'
+        doc.write('GET and GETB retrieved the same information')
         combo = True
     else:
-        print 'GET and GETB didn\'t retrieve the correct information'
-        if v:
-            doc.write('\nGET and GETB didn\'t retrieve the correct information\n')
-            doc.write('\n---------------------GET--------------------\n\n')
-            doc.write(get2.text)
-            doc.write('\n\n---------------------GETB--------------------\n\n')
-            doc.write(getb2.text)
+        doc.write('GET and GETB didn\'t retrieve the correct information')
+        doc.write('\nGET and GETB didn\'t retrieve the correct information\n')
+        doc.write('\n---------------------GET--------------------\n\n')
+        doc.write(get2.text)
+        doc.write('\n\n---------------------GETB--------------------\n\n')
+        doc.write(getb2.text)
     
     if get2.text == res2.text:
-        print 'POST and GET retrieved the same information'
+        doc.write('POST and GET retrieved the same information')
         combo = True
     else:
-        print 'POST and GET didn\'t retrieve the correct information'
-        if v:
-            doc.write('\nPOST and GET didn\'t retrieve the correct information\n')
-            doc.write('\n---------------------GET--------------------\n\n')
-            doc.write(get2.text)
-            doc.write('\n\n---------------------POST--------------------\n\n')
-            doc.write(res2.text)
-            
+        doc.write('POST and GET didn\'t retrieve the correct information')
+        doc.write('\nPOST and GET didn\'t retrieve the correct information\n')
+        doc.write('\n---------------------GET--------------------\n\n')
+        doc.write(get2.text)
+        doc.write('\n\n---------------------POST--------------------\n\n')
+        doc.write(res2.text)
+        
     if getb2.text == res2.text:
-        print 'POST and GETB retrieved the same information'
+        doc.write('POST and GETB retrieved the same information')
         combo = True
     else:
-        print 'POST and GETB didn\'t retrieve the correct information'
-        if v:
-            doc.write('\nPOST and GETB didn\'t retrieve the correct information\n')
-            doc.write('\n---------------------GETB--------------------\n\n')
-            doc.write(getb2.text)
-            doc.write('\n\n---------------------POST--------------------\n\n')
-            doc.write(res2.text)
+        doc.write('POST and GETB didn\'t retrieve the correct information')
+        doc.write('\nPOST and GETB didn\'t retrieve the correct information\n')
+        doc.write('\n---------------------GETB--------------------\n\n')
+        doc.write(getb2.text)
+        doc.write('\n\n---------------------POST--------------------\n\n')
+        doc.write(res2.text)
             
     if get2.text == res4.text:
-        print 'POST2 and GET retrieved the same information'
+        doc.write('POST2 and GET retrieved the same information')
         combo = True
     else:
-        print 'POST2 and GET didn\'t retrieve the correct information'
-        if v:
-            doc.write('\nPOST2 and GET didn\'t retrieve the correct information\n')
-            doc.write('\n---------------------GET--------------------\n\n')
-            doc.write(get2.text)
-            doc.write('\n\n---------------------POST2--------------------\n\n')
-            doc.write(res4.text)
+        doc.write('POST2 and GET didn\'t retrieve the correct information')
+        doc.write('\nPOST2 and GET didn\'t retrieve the correct information\n')
+        doc.write('\n---------------------GET--------------------\n\n')
+        doc.write(get2.text)
+        doc.write('\n\n---------------------POST2--------------------\n\n')
+        doc.write(res4.text)
             
     if get2.text == res6.text:
-        print 'POST4 and GET retrieved the same information'
+        doc.write('POST4 and GET retrieved the same information')
         combo = True
     else:
-        print 'POST4 and GET didn\'t retrieve the correct information'
-        if v:
-            doc.write('\nPOST4 and GET didn\'t retrieve the correct information\n')
-            doc.write('\n---------------------GET--------------------\n\n')
-            doc.write(get2.text)
-            doc.write('\n\n---------------------POST4--------------------\n\n')
-            doc.write(res6.text)
-    
+        doc.write('POST4 and GET didn\'t retrieve the correct information')
+        doc.write('\nPOST4 and GET didn\'t retrieve the correct information\n')
+        doc.write('\n---------------------GET--------------------\n\n')
+        doc.write(get2.text)
+        doc.write('\n\n---------------------POST4--------------------\n\n')
+        doc.write(res6.text)
+
     result = {
         'getObservation_GET' : success_get,
         'getObservation_GETB' : success_getB,
@@ -387,10 +368,9 @@ def getObservation(doc, v):
     
     
     
-def registerSensor(doc, v):
+def registerSensor(doc):
     
-    if v:
-        doc.write('\n\n-----------------registerSensor-----------------------------\n')
+    doc.write('\n\n-----------------registerSensor-----------------------------\n')
     
     service = 'test'
     
@@ -771,23 +751,21 @@ def registerSensor(doc, v):
     resc2 = requests.post('http://localhost/istsos/' + service, data=post_composite, headers=header, prefetch=True)
     
     if ress1.text == ress2.text:
-        print 'POST Simple retrieved the same information'
+        doc.write('POST Simple retrieved the same information')
         success_posts = True
     else:
-        print 'POST Simple didn\'t retrieve the correct information'
-        if v:
-            doc.write('\n---------------------POST Simple didn\'t retrieve the correct information--------------------\n')
-            doc.write(ress2.text)    
+        doc.write('POST Simple didn\'t retrieve the correct information')
+        doc.write('\n---------------------POST Simple didn\'t retrieve the correct information--------------------\n')
+        doc.write(ress2.text)    
     
     if resc1.text == resc2.text:
-        print 'POST Composite retrieved the same information'
+        doc.write('POST Composite retrieved the same information')
         success_postc = True
     else:
-        print 'POST Composite didn\'t retrieve the correct information'
-        if v:
-            doc.write('\n---------------------POST Composite didn\'t retrieve the correct information--------------------\n')
-            doc.write(resc2.text)
-        
+        doc.write('POST Composite didn\'t retrieve the correct information')
+        doc.write('\n---------------------POST Composite didn\'t retrieve the correct information--------------------\n')
+        doc.write(resc2.text)
+    
     result = {
         'registerSensor_POSTS' : success_posts,
         'registerSensor_POSTC' : success_postc
@@ -796,10 +774,9 @@ def registerSensor(doc, v):
     return result
 
 
-def insertObservation(doc, v):
+def insertObservation(doc):
     
-    if v:
-        doc.write('\n\n-----------------insertObservation--------------------------\n')    
+    doc.write('\n\n-----------------insertObservation--------------------------\n')    
     
     service = 'test'
     
@@ -966,22 +943,20 @@ def insertObservation(doc, v):
     resc2 = requests.post('http://localhost/istsos/' + service, data=post_composite, headers=header, prefetch=True)
     
     if ress1.text == ress2.text:
-        print 'POST Simple retrieved the same information'
+        doc.write('POST Simple retrieved the same information')
         success_posts = True
     else:
-        print 'POST Simple didn\'t retrieve the correct information'
-        if v:
-            doc.write('\n---------------------POST Simple didn\'t retrieve the correct information--------------------\n')
-            doc.write(ress2.text)    
+        doc.write('POST Simple didn\'t retrieve the correct information')
+        doc.write('\n---------------------POST Simple didn\'t retrieve the correct information--------------------\n')
+        doc.write(ress2.text)    
     
     if resc1.text == resc2.text:
-        print 'POST Composite retrieved the same information'
+        doc.write('POST Composite retrieved the same information')
         success_postc = True
     else:
-        print 'POST Composite didn\'t retrieve the correct information'
-        if v:
-            doc.write('\n---------------------POST Composite didn\'t retrieve the correct information--------------------\n')
-            doc.write(resc2.text)
+        doc.write('POST Composite didn\'t retrieve the correct information')
+        doc.write('\n---------------------POST Composite didn\'t retrieve the correct information--------------------\n')
+        doc.write(resc2.text)
         
     result = {
         'insertObservation_POSTS' : success_posts,
@@ -990,10 +965,9 @@ def insertObservation(doc, v):
         
     return result
 
-def getFeatureOfInterest(doc, v):
+def getFeatureOfInterest(doc):
     
-    if v:
-        doc.write('\n\n-----------------getFeatureOfInterest-----------------------\n')
+    doc.write('\n\n-----------------getFeatureOfInterest-----------------------\n')
     
     service = 'test'
     foi = 'test'
@@ -1028,34 +1002,31 @@ def getFeatureOfInterest(doc, v):
     res2 = requests.post('http://localhost/istsos/' + service, data=post, headers=header, prefetch=True)
     
     if get1.text == get2.text:
-        print 'GET retrieved the same information'
+        doc.write('GET retrieved the same information')
         success_get = True
     else:
-        print 'GET didn\'t retrieve the correct information'
-        if v:
-            doc.write('\n---------------------GET didn\'t retrieve the correct information--------------------\n')
-            doc.write(get2.text)
+        doc.write('GET didn\'t retrieve the correct information')
+        doc.write('\n---------------------GET didn\'t retrieve the correct information--------------------\n')
+        doc.write(get2.text)
     
     if res1.text == res2.text:
-        print 'POST retrieved the same information'
+        doc.write('POST retrieved the same information')
         success_post = True
     else:
-        print 'POST didn\'t retrieve the correct information'
-        if v:
-            doc.write('\n---------------------POST didn\'t retrieve the correct information--------------------\n')
-            doc.write(res2.text)
-        
+        doc.write('POST didn\'t retrieve the correct information')
+        doc.write('\n---------------------POST didn\'t retrieve the correct information--------------------\n')
+        doc.write(res2.text)
+    
     if get2.text == res2.text:
-        print 'POST and GET retrieved the same information'
+        doc.write('POST and GET retrieved the same information')
         combo = True
     else:
-        print 'POST and GET didn\'t retrieve the correct information'
-        if v:
-            doc.write('\nPOST and GET didn\'t retrieve the correct information\n')
-            doc.write('\n---------------------GET--------------------\n\n')
-            doc.write(get2.text)
-            doc.write('\n\n---------------------POST--------------------\n\n')
-            doc.write(res2.text)
+        doc.write('POST and GET didn\'t retrieve the correct information')
+        doc.write('\nPOST and GET didn\'t retrieve the correct information\n')
+        doc.write('\n---------------------GET--------------------\n\n')
+        doc.write(get2.text)
+        doc.write('\n\n---------------------POST--------------------\n\n')
+        doc.write(res2.text)
         
     result = {
         'getFeatureOfInterest_GET' : success_get,

@@ -16,7 +16,7 @@ def deldic(d, k):
             del c[el]
     return c
 
-def test_configsections(doc, v):
+def test_configsections(doc):
     #services_name_configsections_GET(sname)
     #services_name_configsections_PUT(sname, put)
     #services_name_configsections_DELETE(sname)
@@ -39,10 +39,7 @@ def test_configsections(doc, v):
     #services_name_configsections_provider_PUT(sname, putpro)
     #services_name_configsections_provider_DELETE(sname)
     
-    print '\n-----------------CONFIGSECTIONS------------------\n'
-    
-    if v:
-        doc.write('\n\n-----------------CONFIGSECTIONS---------------------')
+    doc.write('\n\n-----------------CONFIGSECTIONS---------------------')
     
     pp = pprint.PrettyPrinter(indent=2)    
     sname = 'test'
@@ -270,39 +267,37 @@ def test_configsections(doc, v):
     #Check for two successful requests to have the same result
     if get1['success'] and get2['success']:
         if get1 == get2:
-            print 'services_name_configsections_GET: SUCCESS'
+            doc.write('services_name_configsections_GET: SUCCESS')
             success_get = True
         else:
-            if v:
-                doc.write('\n\nservices_name_configsections_GET: the results are not all the same')
-                doc.write('\nFirst get:\n')
-                doc.write(pp.pformat(get1))
-                doc.write('\nSecond get:\n')
-                doc.write(pp.pformat(get2))
-            print 'services_name_configsections_GET: FAILED'
-    else:
-        if v:
-            doc.write('\n\nservices_name_configsections_GET: the requests have not been successful')
+            doc.write('services_name_configsections_GET: FAILED')
+            doc.write('\n\nservices_name_configsections_GET: the results are not all the same')
             doc.write('\nFirst get:\n')
             doc.write(pp.pformat(get1))
             doc.write('\nSecond get:\n')
             doc.write(pp.pformat(get2))
-        print 'services_name_configsections_GET: FAILED'
+    else:
+        doc.write('services_name_configsections_GET: FAILED')
+        doc.write('\n\nservices_name_configsections_GET: the requests have not been successful')
+        doc.write('\nFirst get:\n')
+        doc.write(pp.pformat(get1))
+        doc.write('\nSecond get:\n')
+        doc.write(pp.pformat(get2))
+        
     
      
     #Checks for the PUT to be successful by comparing two GETs
     if put1['success']:
         #If gets before and after are the same, failure
         if get2 == get3:
-            if v:
-                doc.write('\n\nservices_name_configsections_PUT: maybe you re-wrote existing data')
-                doc.write('\nPut:\n')            
-                doc.write(pp.pformat(put1)) 
-                doc.write('\nGet, before:\n')
-                doc.write(pp.pformat(get2))
-                doc.write('\nGet, after:\n')
-                doc.write(pp.pformat(get3))
-            print 'services_name_configsections_PUT: FAILED'
+            doc.write('services_name_configsections_PUT: FAILED')
+            doc.write('\n\nservices_name_configsections_PUT: maybe you re-wrote existing data')
+            doc.write('\nPut:\n')            
+            doc.write(pp.pformat(put1)) 
+            doc.write('\nGet, before:\n')
+            doc.write(pp.pformat(get2))
+            doc.write('\nGet, after:\n')
+            doc.write(pp.pformat(get3))
         #For the success, second get should be the same as first
         #apart from the modicifation done with put
         else:
@@ -315,29 +310,28 @@ def test_configsections(doc, v):
                 and temp['provider'] == put['provider'] 
                 and temp['geo'] == put['geo']
                 ):
-                print 'services_name_configsections_PUT: SUCCESS'
+                doc.write('services_name_configsections_PUT: SUCCESS')
                 success_put = True
             else:
-                if v:
-                    doc.write('\n\nservices_name_configsections_PUT: updated data does not correspond')
-                    doc.write('\nPut:\n')            
-                    doc.write(pp.pformat(put1)) 
-                    doc.write('\nGet, before:\n')
-                    doc.write(pp.pformat(get2))
-                    doc.write('\nGet, after:\n')
-                    doc.write(pp.pformat(get3))
-                print 'services_name_configsections_PUT: FAILED'
+                doc.write('services_name_configsections_PUT: FAILED')
+                doc.write('\n\nservices_name_configsections_PUT: updated data does not correspond')
+                doc.write('\nPut:\n')            
+                doc.write(pp.pformat(put1)) 
+                doc.write('\nGet, before:\n')
+                doc.write(pp.pformat(get2))
+                doc.write('\nGet, after:\n')
+                doc.write(pp.pformat(get3))
     #If post not successful, failure
     else:
-        if v:
-            doc.write('\n\nservices_name_configsections_PUT: the request has not been successful')
-            doc.write('\nPut:\n')            
-            doc.write(pp.pformat(put1)) 
-            doc.write('\nGet, before:\n')
-            doc.write(pp.pformat(get2))
-            doc.write('\nGet, after:\n')
-            doc.write(pp.pformat(get3))
-        print 'services_name_configsections_PUT: FAILED'
+        doc.write('services_name_configsections_PUT: FAILED')
+        doc.write('\n\nservices_name_configsections_PUT: the request has not been successful')
+        doc.write('\nPut:\n')            
+        doc.write(pp.pformat(put1)) 
+        doc.write('\nGet, before:\n')
+        doc.write(pp.pformat(get2))
+        doc.write('\nGet, after:\n')
+        doc.write(pp.pformat(get3))
+        
             
             
             
@@ -345,43 +339,41 @@ def test_configsections(doc, v):
     if delete1['success']:
         #If gets before and after are the same, failure
         if get3 == get4:
-            if v:
-                doc.write('\n\nservices_name_configsections_DELETE: the results remained the same')
-                doc.write('\nDelete:\n')            
-                doc.write(pp.pformat(delete1))     
-                doc.write('\nGet, before:\n')
-                doc.write(pp.pformat(get3))
-                doc.write('\nGet, after:\n')
-                doc.write(pp.pformat(get4))
-            print 'services_name_configsections_DELETE: FAILED'
-        #For the success, second get should be void
-        else:
-            if get4['total'] == get3['total'] - 1:
-                #print 'the delete is successful:\n'
-                #pp.pprint(get6)
-                print 'services_name_configsections_DELETE: SUCCESS'
-                success_del = True
-            else:
-                if v:
-                    doc.write('\n\nservices_name_configsections_DELETE: the element has not been deleted')
-                    doc.write('\nDelete:\n')            
-                    doc.write(pp.pformat(delete1))     
-                    doc.write('\nGet, before:\n')
-                    doc.write(pp.pformat(get3))
-                    doc.write('\nGet, after:\n')
-                    doc.write(pp.pformat(get4))
-                print 'services_name_configsections_DELETE: FAILED'
-    #If post not successful, failure
-    else:
-        if v:
-            doc.write('\n\nservices_name_configsections_DELETE: the request has not been successful')
+            doc.write('services_name_configsections_DELETE: FAILED')
+            doc.write('\n\nservices_name_configsections_DELETE: the results remained the same')
             doc.write('\nDelete:\n')            
             doc.write(pp.pformat(delete1))     
             doc.write('\nGet, before:\n')
             doc.write(pp.pformat(get3))
             doc.write('\nGet, after:\n')
             doc.write(pp.pformat(get4))
-        print 'services_name_configsections_DELETE: FAILED'
+        #For the success, second get should be void
+        else:
+            if get4['total'] == get3['total'] - 1:
+                #print 'the delete is successful:\n'
+                #pp.pprint(get6)
+                doc.write('services_name_configsections_DELETE: SUCCESS')
+                success_del = True
+            else:
+                doc.write('services_name_configsections_DELETE: FAILED')
+                doc.write('\n\nservices_name_configsections_DELETE: the element has not been deleted')
+                doc.write('\nDelete:\n')            
+                doc.write(pp.pformat(delete1))     
+                doc.write('\nGet, before:\n')
+                doc.write(pp.pformat(get3))
+                doc.write('\nGet, after:\n')
+                doc.write(pp.pformat(get4))
+    #If post not successful, failure
+    else:
+        doc.write('services_name_configsections_DELETE: FAILED')
+        doc.write('\n\nservices_name_configsections_DELETE: the request has not been successful')
+        doc.write('\nDelete:\n')            
+        doc.write(pp.pformat(delete1))     
+        doc.write('\nGet, before:\n')
+        doc.write(pp.pformat(get3))
+        doc.write('\nGet, after:\n')
+        doc.write(pp.pformat(get4))
+        
             
     #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     #observations
@@ -390,39 +382,37 @@ def test_configsections(doc, v):
     #Check for two successful requests to have the same result
     if getob1['success'] and getob2['success']:
         if getob1 == getob2:
-            print 'services_name_configsections_getobservation_GET: SUCCESS'
+            doc.write('services_name_configsections_getobservation_GET: SUCCESS')
             success_getob = True
         else:
-            if v:
-                doc.write('\n\nservices_name_configsections_getobservation_GET: the results are not all the same')
-                doc.write('\nFirst get:\n')
-                doc.write(pp.pformat(getob1))
-                doc.write('\nSecond get:\n')
-                doc.write(pp.pformat(getob2))
-            print 'services_name_configsections_getobservation_GET: FAILED'
-    else:
-        if v:
-            doc.write('\n\nservices_name_configsections_getobservation_GET: the requests have not been successful')
+            doc.write('services_name_configsections_getobservation_GET: FAILED')
+            doc.write('\n\nservices_name_configsections_getobservation_GET: the results are not all the same')
             doc.write('\nFirst get:\n')
             doc.write(pp.pformat(getob1))
             doc.write('\nSecond get:\n')
             doc.write(pp.pformat(getob2))
-        print 'services_name_configsections_getobservation_GET: FAILED'
+    else:
+        doc.write('services_name_configsections_getobservation_GET: FAILED')
+        doc.write('\n\nservices_name_configsections_getobservation_GET: the requests have not been successful')
+        doc.write('\nFirst get:\n')
+        doc.write(pp.pformat(getob1))
+        doc.write('\nSecond get:\n')
+        doc.write(pp.pformat(getob2))
+        
     
      
     #Checks for the PUT to be successful by comparing two GETs
     if putob1['success']:
         #If gets before and after are the same, failure
         if getob2 == getob3:
-            if v:
-                doc.write('\n\nservices_name_configsections_getobservation_PUT: maybe you re-wrote existing data')
-                doc.write('\nPut:\n')            
-                doc.write(pp.pformat(putob1)) 
-                doc.write('\nGet, before:\n')
-                doc.write(pp.pformat(getob2))
-                doc.write('\nGet, after:\n')
-                doc.write(pp.pformat(getob3))
-            print 'services_name_configsections_getobservation_PUT: FAILED'
+            doc.write('services_name_configsections_getobservation_PUTT: FAILED')
+            doc.write('\n\nservices_name_configsections_getobservation_PUT: maybe you re-wrote existing data')
+            doc.write('\nPut:\n')            
+            doc.write(pp.pformat(putob1)) 
+            doc.write('\nGet, before:\n')
+            doc.write(pp.pformat(getob2))
+            doc.write('\nGet, after:\n')
+            doc.write(pp.pformat(getob3))
         #For the success, second get should be the same as first
         #apart from the modicifation done with put
         else:
@@ -434,29 +424,28 @@ def test_configsections(doc, v):
                 ):
                 #print 'the update is successful:\n'
                 #pp.pprint(get6)
-                print 'services_name_configsections_getobservation_PUT: SUCCESS'
+                doc.write('services_name_configsections_getobservation_PUTT: SUCCESS')
                 success_putob = True
             else:
-                if v:
-                    doc.write('\n\nservices_name_configsections_getobservation_PUT: updated data does not correspond')
-                    doc.write('\nPut:\n')            
-                    doc.write(pp.pformat(putob1)) 
-                    doc.write('\nGet, before:\n')
-                    doc.write(pp.pformat(getob2))
-                    doc.write('\nGet, after:\n')
-                    doc.write(pp.pformat(getob3))
-                print 'services_name_configsections_getobservation_PUT: FAILED'
+                doc.write('services_name_configsections_getobservation_PUTT: FAILED')
+                doc.write('\n\nservices_name_configsections_getobservation_PUT: updated data does not correspond')
+                doc.write('\nPut:\n')            
+                doc.write(pp.pformat(putob1)) 
+                doc.write('\nGet, before:\n')
+                doc.write(pp.pformat(getob2))
+                doc.write('\nGet, after:\n')
+                doc.write(pp.pformat(getob3))
     #If post not successful, failure
     else:
-        if v:
-            doc.write('\n\nservices_name_configsections_getobservation_PUT: the request has not been successful')
-            doc.write('\nPut:\n')            
-            doc.write(pp.pformat(putob1)) 
-            doc.write('\nGet, before:\n')
-            doc.write(pp.pformat(getob2))
-            doc.write('\nGet, after:\n')
-            doc.write(pp.pformat(getob3))
-        print 'services_name_configsections_getobservation_PUTT: FAILED'
+        doc.write('services_name_configsections_getobservation_PUTT: FAILED')
+        doc.write('\n\nservices_name_configsections_getobservation_PUT: the request has not been successful')
+        doc.write('\nPut:\n')            
+        doc.write(pp.pformat(putob1)) 
+        doc.write('\nGet, before:\n')
+        doc.write(pp.pformat(getob2))
+        doc.write('\nGet, after:\n')
+        doc.write(pp.pformat(getob3))
+        
             
             
             
@@ -464,41 +453,39 @@ def test_configsections(doc, v):
     if deleteob1['success']:
         #If gets before and after are the same, failure
         if getob3 == getob4:
-            if v:
-                doc.write('\n\nservices_name_configsections_getobservations_DELETE: the results remained the same')
-                doc.write('\nDelete:\n')            
-                doc.write(pp.pformat(deleteob1))     
-                doc.write('\nGet, before:\n')
-                doc.write(pp.pformat(getob3))
-                doc.write('\nGet, after:\n')
-                doc.write(pp.pformat(getob4))
-            print 'services_name_configsections_getobservations_DELETE: FAILED'
-        #For the success, second get should be void
-        else:
-            if getob4['total'] <= getob3['total'] and getob4['data']['default']:
-                print 'services_name_configsections_getobservations_DELETE: SUCCESS'
-                success_delob = True
-            else:
-                if v:
-                    doc.write('\n\nservices_name_configsections_getobservations_DELETE: the element has not been deleted')
-                    doc.write('\nDelete:\n')            
-                    doc.write(pp.pformat(deleteob1))     
-                    doc.write('\nGet, before:\n')
-                    doc.write(pp.pformat(getob3))
-                    doc.write('\nGet, after:\n')
-                    doc.write(pp.pformat(getob4))
-                print 'services_name_configsections_getobservations_DELETE: FAILED'
-    #If post not successful, failure
-    else:
-        if v:
-            doc.write('\n\nservices_name_configsections_getobservations_DELETE: the request has not been successful')
+            doc.write('services_name_configsections_getobservations_DELETE: FAILED')
+            doc.write('\n\nservices_name_configsections_getobservations_DELETE: the results remained the same')
             doc.write('\nDelete:\n')            
             doc.write(pp.pformat(deleteob1))     
             doc.write('\nGet, before:\n')
             doc.write(pp.pformat(getob3))
             doc.write('\nGet, after:\n')
             doc.write(pp.pformat(getob4))
-        print 'services_name_configsections_getobservations_DELETE: FAILED'
+        #For the success, second get should be void
+        else:
+            if getob4['total'] <= getob3['total'] and getob4['data']['default']:
+                doc.write('services_name_configsections_getobservations_DELETE: SUCCESS')
+                success_delob = True
+            else:
+                doc.write('services_name_configsections_getobservations_DELETE: FAILED')
+                doc.write('\n\nservices_name_configsections_getobservations_DELETE: the element has not been deleted')
+                doc.write('\nDelete:\n')            
+                doc.write(pp.pformat(deleteob1))     
+                doc.write('\nGet, before:\n')
+                doc.write(pp.pformat(getob3))
+                doc.write('\nGet, after:\n')
+                doc.write(pp.pformat(getob4))
+    #If post not successful, failure
+    else:
+        doc.write('services_name_configsections_getobservations_DELETE: FAILED')
+        doc.write('\n\nservices_name_configsections_getobservations_DELETE: the request has not been successful')
+        doc.write('\nDelete:\n')            
+        doc.write(pp.pformat(deleteob1))     
+        doc.write('\nGet, before:\n')
+        doc.write(pp.pformat(getob3))
+        doc.write('\nGet, after:\n')
+        doc.write(pp.pformat(getob4))
+        
             
     #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     #identification
@@ -507,39 +494,37 @@ def test_configsections(doc, v):
     #Check for two successful requests to have the same result
     if getid1['success'] and getid2['success']:
         if getid1 == getid2:
-            print 'services_name_configsections_identificaiton_GET: SUCCESS'
+            doc.write('services_name_configsections_identificaiton_GET: SUCCESS')
             success_getid = True
         else:
-            if v:
-                doc.write('\n\nservices_name_configsections_identificaiton_GET: the results are not all the same')
-                doc.write('\nFirst get:\n')
-                doc.write(pp.pformat(getid1))
-                doc.write('\nSecond get:\n')
-                doc.write(pp.pformat(getid2))
-            print 'services_name_configsections_identificaiton_GET: FAILED'
-    else:
-        if v:
-            doc.write('\n\nservices_name_configsections_identification_GET: the requests have not been successful')
+            doc.write('services_name_configsections_identificaiton_GET: FAILED')
+            doc.write('\n\nservices_name_configsections_identificaiton_GET: the results are not all the same')
             doc.write('\nFirst get:\n')
             doc.write(pp.pformat(getid1))
             doc.write('\nSecond get:\n')
             doc.write(pp.pformat(getid2))
-        print 'services_name_configsections_identificaiton_GET: FAILED'
+    else:
+        doc.write('services_name_configsections_identificaiton_GET: FAILED')
+        doc.write('\n\nservices_name_configsections_identification_GET: the requests have not been successful')
+        doc.write('\nFirst get:\n')
+        doc.write(pp.pformat(getid1))
+        doc.write('\nSecond get:\n')
+        doc.write(pp.pformat(getid2))
+        
     
      
     #Checks for the PUT to be successful by comparing two GETs
     if putid1['success']:
         #If gets before and after are the same, failure
         if getid2 == getid3:
-            if v:
-                doc.write('\n\nservices_name_configsections_identification_PUT: maybe you re-wrote existing data')
-                doc.write('\nPut:\n')            
-                doc.write(pp.pformat(putid1)) 
-                doc.write('\nGet, before:\n')
-                doc.write(pp.pformat(getid2))
-                doc.write('\nGet, after:\n')
-                doc.write(pp.pformat(getid3))
-            print 'services_name_configsections_identification_PUT: FAILED'
+            doc.write('services_name_configsections_identification_PUT: FAILED')
+            doc.write('\n\nservices_name_configsections_identification_PUT: maybe you re-wrote existing data')
+            doc.write('\nPut:\n')            
+            doc.write(pp.pformat(putid1)) 
+            doc.write('\nGet, before:\n')
+            doc.write(pp.pformat(getid2))
+            doc.write('\nGet, after:\n')
+            doc.write(pp.pformat(getid3))
         #For the success, second get should be the same as first
         #apart from the modicifation done with put
         else:
@@ -554,71 +539,65 @@ def test_configsections(doc, v):
                 ):
                 #print 'the update is successful:\n'
                 #pp.pprint(get6)
-                print 'services_name_configsections_identification_PUT: SUCCESS'
+                doc.write('services_name_configsections_identification_PUT: SUCCESS')
                 success_putid = True
             else:
-                if v:
-                    doc.write('\n\nservices_name_configsections_identification_PUT: updated data does not correspond')
-                    doc.write('\nPut:\n')            
-                    doc.write(pp.pformat(putid1)) 
-                    doc.write('\nGet, before:\n')
-                    doc.write(pp.pformat(getid2))
-                    doc.write('\nGet, after:\n')
-                    doc.write(pp.pformat(getid3))
-                print 'services_name_configsections_identification_PUT: FAILED'
+                doc.write('services_name_configsections_identification_PUT: FAILED')
+                doc.write('\n\nservices_name_configsections_identification_PUT: updated data does not correspond')
+                doc.write('\nPut:\n')            
+                doc.write(pp.pformat(putid1)) 
+                doc.write('\nGet, before:\n')
+                doc.write(pp.pformat(getid2))
+                doc.write('\nGet, after:\n')
+                doc.write(pp.pformat(getid3))
     #If post not successful, failure
     else:
-        if v:
-            doc.write('\n\nservices_name_configsections_identification_PUT: the request has not been successful')
-            doc.write('\nPut:\n')            
-            doc.write(pp.pformat(putid1)) 
-            doc.write('\nGet, before:\n')
-            doc.write(pp.pformat(getid2))
-            doc.write('\nGet, after:\n')
-            doc.write(pp.pformat(getid3))
-        print 'services_name_configsections_identification_PUTT: FAILED'
-            
-            
+        doc.write('services_name_configsections_identification_PUT: FAILED')
+        doc.write('\n\nservices_name_configsections_identification_PUT: the request has not been successful')
+        doc.write('\nPut:\n')            
+        doc.write(pp.pformat(putid1)) 
+        doc.write('\nGet, before:\n')
+        doc.write(pp.pformat(getid2))
+        doc.write('\nGet, after:\n')
+        doc.write(pp.pformat(getid3))
             
     #Checks for the DELETE to be successful by comparing two GETs
     if deleteid1['success']:
         #If gets before and after are the same, failure
         if getid3 == getid4:
-            if v:
-                doc.write('\n\nservices_name_configsections_identification_DELETE: the results remained the same')
-                doc.write('\nDelete:\n')            
-                doc.write(pp.pformat(deleteid1))     
-                doc.write('\nGet, before:\idn')
-                doc.write(pp.pformat(get3))
-                doc.write('\nGet, after:\n')
-                doc.write(pp.pformat(getid4))
-            print 'services_name_configsections_identification_DELETE: FAILED'
+            doc.write('services_name_configsections_identification_DELETE: FAILED')
+            doc.write('\n\nservices_name_configsections_identification_DELETE: the results remained the same')
+            doc.write('\nDelete:\n')            
+            doc.write(pp.pformat(deleteid1))     
+            doc.write('\nGet, before:\idn')
+            doc.write(pp.pformat(get3))
+            doc.write('\nGet, after:\n')
+            doc.write(pp.pformat(getid4))
         #For the success, second get should be void
         else:
             if getid4['total'] <= getid3['total'] and getid4['data']['default']:
-                print 'services_name_configsections_identification_DELETE: SUCCESS'
+                doc.write('services_name_configsections_identification_DELETE: SUCCESS')
                 success_delid = True
             else:
-                if v:
-                    doc.write('\n\nservices_name_configsections_identification_DELETE: the element has not been deleted')
-                    doc.write('\nDelete:\n')            
-                    doc.write(pp.pformat(deleteid1))     
-                    doc.write('\nGet, before:\n')
-                    doc.write(pp.pformat(getid3))
-                    doc.write('\nGet, after:\n')
-                    doc.write(pp.pformat(getid4))
-                print 'services_name_configsections_identification_DELETE: FAILED'
+                doc.write('services_name_configsections_identification_DELETE: FAILED')
+                doc.write('\n\nservices_name_configsections_identification_DELETE: the element has not been deleted')
+                doc.write('\nDelete:\n')            
+                doc.write(pp.pformat(deleteid1))     
+                doc.write('\nGet, before:\n')
+                doc.write(pp.pformat(getid3))
+                doc.write('\nGet, after:\n')
+                doc.write(pp.pformat(getid4))
     #If post not successful, failure
     else:
-        if v:
-            doc.write('\n\nservices_name_configsections_identification_DELETE: the request has not been successful')
-            doc.write('\nDelete:\n')            
-            doc.write(pp.pformat(deleteid1))     
-            doc.write('\nGet, before:\n')
-            doc.write(pp.pformat(getid3))
-            doc.write('\nGet, after:\n')
-            doc.write(pp.pformat(getid4))
-        print 'services_name_configsections_identification_DELETE: FAILED'
+        doc.write('services_name_configsections_identification_DELETE: FAILED')
+        doc.write('\n\nservices_name_configsections_identification_DELETE: the request has not been successful')
+        doc.write('\nDelete:\n')            
+        doc.write(pp.pformat(deleteid1))     
+        doc.write('\nGet, before:\n')
+        doc.write(pp.pformat(getid3))
+        doc.write('\nGet, after:\n')
+        doc.write(pp.pformat(getid4))
+        
             
     #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     #geo
@@ -627,39 +606,37 @@ def test_configsections(doc, v):
     #Check for two successful requests to have the same result
     if getgeo1['success'] and getgeo2['success']:
         if getgeo1 == getgeo2:
-            print 'services_name_configsections_geo_GET: SUCCESS'
+            doc.write('services_name_configsections_geo_GET: SUCCESS')
             success_getgeo = True
         else:
-            if v:
-                doc.write('\n\nservices_name_configsections_geo_GET: the results are not all the same')
-                doc.write('\nFirst get:\n')
-                doc.write(pp.pformat(getgeo1))
-                doc.write('\nSecond get:\n')
-                doc.write(pp.pformat(getgeo2))
-            print 'services_name_configsections_geo_GET: FAILED'
-    else:
-        if v:
-            doc.write('\n\nservices_name_configsections_geo_GET: the requests have not been successful')
+            doc.write('services_name_configsections_geo_GET: FAILED')
+            doc.write('\n\nservices_name_configsections_geo_GET: the results are not all the same')
             doc.write('\nFirst get:\n')
             doc.write(pp.pformat(getgeo1))
             doc.write('\nSecond get:\n')
             doc.write(pp.pformat(getgeo2))
-        print 'services_name_configsections_geo_GET: FAILED'
+    else:
+        doc.write('services_name_configsections_geo_GET: FAILED')
+        doc.write('\n\nservices_name_configsections_geo_GET: the requests have not been successful')
+        doc.write('\nFirst get:\n')
+        doc.write(pp.pformat(getgeo1))
+        doc.write('\nSecond get:\n')
+        doc.write(pp.pformat(getgeo2))
+        
     
      
     #Checks for the PUT to be successful by comparing two GETs
     if putgeo1['success']:
         #If gets before and after are the same, failure
         if getgeo2 == getgeo3:
-            if v:
-                doc.write('\n\nservices_name_configsections_geo_PUT: maybe you re-wrote existing data')
-                doc.write('\nPut:\n')            
-                doc.write(pp.pformat(putgeo1)) 
-                doc.write('\nGet, before:\n')
-                doc.write(pp.pformat(getgeo2))
-                doc.write('\nGet, after:\n')
-                doc.write(pp.pformat(getgeo3))
-            print 'services_name_configsections_geo_PUT: FAILED'
+            doc.write('services_name_configsections_geo_PUT: FAILED')
+            doc.write('\n\nservices_name_configsections_geo_PUT: maybe you re-wrote existing data')
+            doc.write('\nPut:\n')            
+            doc.write(pp.pformat(putgeo1)) 
+            doc.write('\nGet, before:\n')
+            doc.write(pp.pformat(getgeo2))
+            doc.write('\nGet, after:\n')
+            doc.write(pp.pformat(getgeo3))
         #For the success, second get should be the same as first
         #apart from the modicifation done with put
         else:
@@ -672,71 +649,66 @@ def test_configsections(doc, v):
                 ):
                 #print 'the update is successful:\n'
                 #pp.pprint(get6)
-                print 'services_name_configsections_geo_PUT: SUCCESS'
+                doc.write('services_name_configsections_geo_PUT: SUCCESS')
                 success_putgeo = True
             else:
-                if v:
-                    doc.write('\n\nservices_name_configsections_geo_PUT: updated data does not correspond')
-                    doc.write('\nPut:\n')            
-                    doc.write(pp.pformat(putgeo1)) 
-                    doc.write('\nGet, before:\n')
-                    doc.write(pp.pformat(getgeo2))
-                    doc.write('\nGet, after:\n')
-                    doc.write(pp.pformat(getgeo3))
-                print 'services_name_configsections_geo_PUT: FAILED'
+                 doc.write('services_name_configsections_geo_PUT: FAILED')
+                 doc.write('\n\nservices_name_configsections_geo_PUT: updated data does not correspond')
+                doc.write('\nPut:\n')            
+                doc.write(pp.pformat(putgeo1)) 
+                doc.write('\nGet, before:\n')
+                doc.write(pp.pformat(getgeo2))
+                doc.write('\nGet, after:\n')
+                doc.write(pp.pformat(getgeo3))
     #If post not successful, failure
     else:
-        if v:
-            doc.write('\n\nservices_name_configsections_geo_PUT: the request has not been successful')
-            doc.write('\nPut:\n')            
-            doc.write(pp.pformat(putgeo1)) 
-            doc.write('\nGet, before:\n')
-            doc.write(pp.pformat(getgeo2))
-            doc.write('\nGet, after:\n')
-            doc.write(pp.pformat(getgeo3))
-        print 'services_name_configsections_geo_PUT: FAILED'
-            
-            
+        doc.write('services_name_configsections_geo_PUT: FAILED')
+        doc.write('\n\nservices_name_configsections_geo_PUT: the request has not been successful')
+        doc.write('\nPut:\n')            
+        doc.write(pp.pformat(putgeo1)) 
+        doc.write('\nGet, before:\n')
+        doc.write(pp.pformat(getgeo2))
+        doc.write('\nGet, after:\n')
+        doc.write(pp.pformat(getgeo3))
+             
             
     #Checks for the DELETE to be successful by comparing two GETs
     if deletegeo1['success']:
         #If gets before and after are the same, failure
         if getgeo3 == getgeo4:
-            if v:
-                doc.write('\n\nservices_name_configsections_geo_DELETE: the results remained the same')
-                doc.write('\nDelete:\n')            
-                doc.write(pp.pformat(deletegeo1))     
-                doc.write('\nGet, before:\n')
-                doc.write(pp.pformat(getgeo3))
-                doc.write('\nGet, after:\n')
-                doc.write(pp.pformat(getgeo4))
-            print 'services_name_configsections_geo_DELETE: FAILED'
-        #For the success, second get should be void
-        else:
-            if getgeo4['total'] <= getgeo3['total'] and getgeo4['data']['default']:
-                print 'services_name_configsections_geo_DELETE: SUCCESS'
-                success_delgeo = True
-            else:
-                if v:
-                    doc.write('\n\nservices_name_configsections_geo_DELETE: the element has not been deleted')
-                    doc.write('\nDelete:\n')            
-                    doc.write(pp.pformat(deletegeo1))     
-                    doc.write('\nGet, before:\n')
-                    doc.write(pp.pformat(getgeo3))
-                    doc.write('\nGet, after:\n')
-                    doc.write(pp.pformat(getgeo4))
-                print 'services_name_configsections_geo_DELETE: FAILED'
-    #If post not successful, failure
-    else:
-        if v:
-            doc.write('\n\nservices_name_configsections_geo_DELETE: the request has not been successful')
+            doc.write('services_name_configsections_geo_DELETE: FAILED')
+            doc.write('\n\nservices_name_configsections_geo_DELETE: the results remained the same')
             doc.write('\nDelete:\n')            
             doc.write(pp.pformat(deletegeo1))     
             doc.write('\nGet, before:\n')
             doc.write(pp.pformat(getgeo3))
             doc.write('\nGet, after:\n')
             doc.write(pp.pformat(getgeo4))
-        print 'services_name_configsections_geo_DELETE: FAILED'
+        #For the success, second get should be void
+        else:
+            if getgeo4['total'] <= getgeo3['total'] and getgeo4['data']['default']:
+                doc.write('services_name_configsections_geo_DELETE: SUCCESS')
+                success_delgeo = True
+            else:
+                doc.write('services_name_configsections_geo_DELETE: FAILED')
+                doc.write('\n\nservices_name_configsections_geo_DELETE: the element has not been deleted')
+                doc.write('\nDelete:\n')            
+                doc.write(pp.pformat(deletegeo1))     
+                doc.write('\nGet, before:\n')
+                doc.write(pp.pformat(getgeo3))
+                doc.write('\nGet, after:\n')
+                doc.write(pp.pformat(getgeo4))
+    #If post not successful, failure
+    else:
+        doc.write('services_name_configsections_geo_DELETE: FAILED')
+        doc.write('\n\nservices_name_configsections_geo_DELETE: the request has not been successful')
+        doc.write('\nDelete:\n')            
+        doc.write(pp.pformat(deletegeo1))     
+        doc.write('\nGet, before:\n')
+        doc.write(pp.pformat(getgeo3))
+        doc.write('\nGet, after:\n')
+        doc.write(pp.pformat(getgeo4))
+        
             
     #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     #serviceurl
@@ -745,39 +717,37 @@ def test_configsections(doc, v):
     #Check for two successful requests to have the same result
     if getsrv1['success'] and getsrv2['success']:
         if getsrv1 == getsrv2:
-            print 'services_name_configsections_serviceurl_GET: SUCCESS'
+            doc.write('services_name_configsections_serviceurl_GET: SUCCESS')
             success_getsrv = True
         else:
-            if v:
-                doc.write('\n\nservices_name_configsections_serviceurl_GET: the results are not all the same')
-                doc.write('\nFirst get:\n')
-                doc.write(pp.pformat(getsrv1))
-                doc.write('\nSecond get:\n')
-                doc.write(pp.pformat(getsrv2))
-            print 'services_name_configsections_serviceurl_GET: FAILED'
-    else:
-        if v:
-            doc.write('\n\nservices_name_configsections_serviceurl_GET: the requests have not been successful')
+            doc.write('services_name_configsections_serviceurl_GET: FAILED')
+            doc.write('\n\nservices_name_configsections_serviceurl_GET: the results are not all the same')
             doc.write('\nFirst get:\n')
             doc.write(pp.pformat(getsrv1))
             doc.write('\nSecond get:\n')
             doc.write(pp.pformat(getsrv2))
-        print 'services_name_configsections_serviceurl_GET: FAILED'
+    else:
+        doc.write('services_name_configsections_serviceurl_GET: FAILED')
+        doc.write('\n\nservices_name_configsections_serviceurl_GET: the requests have not been successful')
+        doc.write('\nFirst get:\n')
+        doc.write(pp.pformat(getsrv1))
+        doc.write('\nSecond get:\n')
+        doc.write(pp.pformat(getsrv2))
+        
     
      
     #Checks for the PUT to be successful by comparing two GETs
     if putsrv1['success']:
         #If gets before and after are the same, failure
         if getsrv2 == getsrv3:
-            if v:
-                doc.write('\n\nservices_name_configsections_serviceurl_PUT: maybe you re-wrote existing data')
-                doc.write('\nPut:\n')            
-                doc.write(pp.pformat(putsrv1)) 
-                doc.write('\nGet, before:\n')
-                doc.write(pp.pformat(getsrv2))
-                doc.write('\nGet, after:\n')
-                doc.write(pp.pformat(getsrv3))
-            print 'services_name_configsections_serviceurl_PUT: FAILED'
+            doc.write('services_name_configsections_serviceurl_PUT: FAILED')
+            doc.write('\n\nservices_name_configsections_serviceurl_PUT: maybe you re-wrote existing data')
+            doc.write('\nPut:\n')            
+            doc.write(pp.pformat(putsrv1)) 
+            doc.write('\nGet, before:\n')
+            doc.write(pp.pformat(getsrv2))
+            doc.write('\nGet, after:\n')
+            doc.write(pp.pformat(getsrv3))
         #For the success, second get should be the same as first
         #apart from the modicifation done with put
         else:
@@ -786,29 +756,27 @@ def test_configsections(doc, v):
                 ):
                 #print 'the update is successful:\n'
                 #pp.pprint(get6)
-                print 'services_name_configsections_serviceurl_PUT: SUCCESS'
+                doc.write('services_name_configsections_serviceurl_PUT: SUCCESS')
                 success_putsrv = True
             else:
-                if v:
-                    doc.write('\n\nservices_name_configsections_serviceurl_PUT: updated data does not correspond')
-                    doc.write('\nPut:\n')            
-                    doc.write(pp.pformat(putsrv1)) 
-                    doc.write('\nGet, before:\n')
-                    doc.write(pp.pformat(getsrv2))
-                    doc.write('\nGet, after:\n')
-                    doc.write(pp.pformat(getsrv3))
-                print 'services_name_configsections_serviceurl_PUT: FAILED'
+                doc.write('services_name_configsections_serviceurl_PUT: FAILED')
+                doc.write('\n\nservices_name_configsections_serviceurl_PUT: updated data does not correspond')
+                doc.write('\nPut:\n')            
+                doc.write(pp.pformat(putsrv1)) 
+                doc.write('\nGet, before:\n')
+                doc.write(pp.pformat(getsrv2))
+                doc.write('\nGet, after:\n')
+                doc.write(pp.pformat(getsrv3))
     #If post not successful, failure
     else:
-        if v:
-            doc.write('\n\nservices_name_configsections_serviceurl_PUT: the request has not been successful')
-            doc.write('\nPut:\n')            
-            doc.write(pp.pformat(putsrv1)) 
-            doc.write('\nGet, before:\n')
-            doc.write(pp.pformat(getsrv2))
-            doc.write('\nGet, after:\n')
-            doc.write(pp.pformat(getsrv3))
-        print 'services_name_configsections_serviceurl_PUT: FAILED'
+        doc.write('services_name_configsections_serviceurl_PUT: FAILED')
+        doc.write('\n\nservices_name_configsections_serviceurl_PUT: the request has not been successful')
+        doc.write('\nPut:\n')            
+        doc.write(pp.pformat(putsrv1)) 
+        doc.write('\nGet, before:\n')
+        doc.write(pp.pformat(getsrv2))
+        doc.write('\nGet, after:\n')
+        doc.write(pp.pformat(getsrv3))
             
             
             
@@ -816,41 +784,38 @@ def test_configsections(doc, v):
     if deletesrv1['success']:
         #If gets before and after are the same, failure
         if getsrv3 == getsrv4:
-            if v:
-                doc.write('\n\nservices_name_configsections_serviceurl_DELETE: the results remained the same')
-                doc.write('\nDelete:\n')            
-                doc.write(pp.pformat(deletesrv1))     
-                doc.write('\nGet, before:\n')
-                doc.write(pp.pformat(getsrv3))
-                doc.write('\nGet, after:\n')
-                doc.write(pp.pformat(getsrv4))
-            print 'services_name_configsections_serviceurl_DELETE: FAILED'
-        #For the success, second get should be void
-        else:
-            if getsrv4['total'] <= getsrv3['total'] and getsrv4['data']['default']:
-                print 'services_name_configsections_serviceurl_DELETE: SUCCESS'
-                success_delsrv = True
-            else:
-                if v:
-                    doc.write('\n\nservices_name_configsections_serviceurl_DELETE: the element has not been deleted')
-                    doc.write('\nDelete:\n')            
-                    doc.write(pp.pformat(deletesrv1))     
-                    doc.write('\nGet, before:\n')
-                    doc.write(pp.pformat(getsrv3))
-                    doc.write('\nGet, after:\n')
-                    doc.write(pp.pformat(getsrv4))
-                print 'services_name_configsections_serviceurl_DELETE: FAILED'
-    #If post not successful, failure
-    else:
-        if v:
-            doc.write('\n\nservices_name_configsections_serviceurl_DELETE: the request has not been successful')
+            doc.write('services_name_configsections_serviceurl_DELETE: FAILED')
+            doc.write('\n\nservices_name_configsections_serviceurl_DELETE: the results remained the same')
             doc.write('\nDelete:\n')            
             doc.write(pp.pformat(deletesrv1))     
             doc.write('\nGet, before:\n')
             doc.write(pp.pformat(getsrv3))
             doc.write('\nGet, after:\n')
             doc.write(pp.pformat(getsrv4))
-        print 'services_name_configsections_serviceurl_DELETE: FAILED'
+        #For the success, second get should be void
+        else:
+            if getsrv4['total'] <= getsrv3['total'] and getsrv4['data']['default']:
+                doc.write('services_name_configsections_serviceurl_DELETE: SUCCESS')
+                success_delsrv = True
+            else:
+                doc.write('services_name_configsections_serviceurl_DELETE: FAILED')
+                doc.write('\n\nservices_name_configsections_serviceurl_DELETE: the element has not been deleted')
+                doc.write('\nDelete:\n')            
+                doc.write(pp.pformat(deletesrv1))     
+                doc.write('\nGet, before:\n')
+                doc.write(pp.pformat(getsrv3))
+                doc.write('\nGet, after:\n')
+                doc.write(pp.pformat(getsrv4))
+    #If post not successful, failure
+    else:
+        doc.write('services_name_configsections_serviceurl_DELETE: FAILED')
+        doc.write('\n\nservices_name_configsections_serviceurl_DELETE: the request has not been successful')
+        doc.write('\nDelete:\n')            
+        doc.write(pp.pformat(deletesrv1))     
+        doc.write('\nGet, before:\n')
+        doc.write(pp.pformat(getsrv3))
+        doc.write('\nGet, after:\n')
+        doc.write(pp.pformat(getsrv4))
             
     #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     #provider
@@ -859,39 +824,36 @@ def test_configsections(doc, v):
     #Check for two successful requests to have the same result
     if getpro1['success'] and getpro2['success']:
         if getpro1 == getpro2:
-            print 'services_name_configsections_provider_GET: SUCCESS'
+            doc.write('services_name_configsections_provider_GET: SUCCESS')            
             success_getpro = True
         else:
-            if v:
-                doc.write('\n\nservices_name_configsections_provider_GET: the results are not all the same')
-                doc.write('\nFirst get:\n')
-                doc.write(pp.pformat(getpro1))
-                doc.write('\nSecond get:\n')
-                doc.write(pp.pformat(getpro2))
-            print 'services_name_configsections_provider_GET: FAILED'
-    else:
-        if v:
-            doc.write('\n\nservices_name_configsections_provider_GET: the requests have not been successful')
+            doc.write('services_name_configsections_provider_GET: FAILED')
+            doc.write('\n\nservices_name_configsections_provider_GET: the results are not all the same')
             doc.write('\nFirst get:\n')
             doc.write(pp.pformat(getpro1))
             doc.write('\nSecond get:\n')
             doc.write(pp.pformat(getpro2))
-        print 'services_name_configsections_provider_GET: FAILED'
+    else:
+        doc.write('services_name_configsections_provider_GET: FAILED')
+        doc.write('\n\nservices_name_configsections_provider_GET: the requests have not been successful')
+        doc.write('\nFirst get:\n')
+        doc.write(pp.pformat(getpro1))
+        doc.write('\nSecond get:\n')
+        doc.write(pp.pformat(getpro2))
     
      
     #Checks for the PUT to be successful by comparing two GETs
     if putpro1['success']:
         #If gets before and after are the same, failure
         if getpro2 == getpro3:
-            if v:
-                doc.write('\n\nservices_name_configsections_provider_PUT: maybe you re-wrote existing data')
-                doc.write('\nPut:\n')            
-                doc.write(pp.pformat(putpro1)) 
-                doc.write('\nGet, before:\n')
-                doc.write(pp.pformat(getpro2))
-                doc.write('\nGet, after:\n')
-                doc.write(pp.pformat(getpro3))
-            print 'services_name_configsections_provider_PUT: FAILED'
+            doc.write('services_name_configsections_provider_PUT: FAILED')
+            doc.write('\n\nservices_name_configsections_provider_PUT: maybe you re-wrote existing data')
+            doc.write('\nPut:\n')            
+            doc.write(pp.pformat(putpro1)) 
+            doc.write('\nGet, before:\n')
+            doc.write(pp.pformat(getpro2))
+            doc.write('\nGet, after:\n')
+            doc.write(pp.pformat(getpro3))
         #For the success, second get should be the same as first
         #apart from the modicifation done with put
         else:
@@ -911,73 +873,66 @@ def test_configsections(doc, v):
                 ):
                 #print 'the update is successful:\n'
                 #pp.pprint(get6)
-                print 'services_name_configsections_provider_PUT: SUCCESS'
+                doc.write('services_name_configsections_provider_PUT: SUCCESS')
                 success_putpro = True
             else:
-                if v:
-                    doc.write('\n\nservices_name_configsections_provider_PUT: updated data does not correspond')
-                    doc.write('\nPut:\n')            
-                    doc.write(pp.pformat(putpro1)) 
-                    doc.write('\nGet, before:\n')
-                    doc.write(pp.pformat(getpro2))
-                    doc.write('\nGet, after:\n')
-                    doc.write(pp.pformat(getpro3))
-                print 'services_name_configsections_provider_PUT: FAILED'
+                doc.write('services_name_configsections_provider_PUT: FAILED')
+                doc.write('\n\nservices_name_configsections_provider_PUT: updated data does not correspond')
+                doc.write('\nPut:\n')            
+                doc.write(pp.pformat(putpro1)) 
+                doc.write('\nGet, before:\n')
+                doc.write(pp.pformat(getpro2))
+                doc.write('\nGet, after:\n')
+                doc.write(pp.pformat(getpro3))
     #If post not successful, failure
     else:
-        if v:
-            doc.write('\n\nservices_name_configsections_provider_PUT: the request has not been successful')
-            doc.write('\nPut:\n')            
-            doc.write(pp.pformat(putpro1)) 
-            doc.write('\nGet, before:\n')
-            doc.write(pp.pformat(getpro2))
-            doc.write('\nGet, after:\n')
-            doc.write(pp.pformat(getpro3))
-        print 'services_name_configsections_provider_PUT: FAILED'
-            
-            
+        doc.write('services_name_configsections_provider_PUT: FAILED')
+        doc.write('\n\nservices_name_configsections_provider_PUT: the request has not been successful')
+        doc.write('\nPut:\n')            
+        doc.write(pp.pformat(putpro1)) 
+        doc.write('\nGet, before:\n')
+        doc.write(pp.pformat(getpro2))
+        doc.write('\nGet, after:\n')
+        doc.write(pp.pformat(getpro3))
             
     #Checks for the DELETE to be successful by comparing two GETs
     if deletepro1['success']:
         #If gets before and after are the same, failure
         if getpro3 == getpro4:
-            if v:
-                doc.write('\n\nservices_name_configsections_provider_DELETE: the results remained the same')
-                doc.write('\nDelete:\n')            
-                doc.write(pp.pformat(deletepro1))     
-                doc.write('\nGet, before:\n')
-                doc.write(pp.pformat(getpro3))
-                doc.write('\nGet, after:\n')
-                doc.write(pp.pformat(getpro4))
-            print 'services_name_configsections_provider_DELETE: FAILED'
-        #For the success, second get should be void
-        else:
-            if getpro4['total'] <= getpro3['total'] and getpro4['data']['default']:
-                #print 'the delete is successful:\n'
-                #pp.pprint(get6)
-                print 'services_name_configsections_provider_DELETE: SUCCESS'
-                success_delpro = True
-            else:
-                if v:
-                    doc.write('\n\nservices_name_configsections_provider_DELETE: the element has not been deleted')
-                    doc.write('\nDelete:\n')            
-                    doc.write(pp.pformat(deletepro1))     
-                    doc.write('\nGet, before:\n')
-                    doc.write(pp.pformat(getpro3))
-                    doc.write('\nGet, after:\n')
-                    doc.write(pp.pformat(getpro4))
-                print 'services_name_configsections_provider_DELETE: FAILED'
-    #If post not successful, failure
-    else:
-        if v:
-            doc.write('\n\nservices_name_configsections_provider_DELETE: the request has not been successful')
+            doc.write('services_name_configsections_provider_DELETE: FAILED')
+            doc.write('\n\nservices_name_configsections_provider_DELETE: the results remained the same')
             doc.write('\nDelete:\n')            
             doc.write(pp.pformat(deletepro1))     
             doc.write('\nGet, before:\n')
             doc.write(pp.pformat(getpro3))
             doc.write('\nGet, after:\n')
             doc.write(pp.pformat(getpro4))
-        print 'services_name_configsections_provider_DELETE: FAILED'
+        #For the success, second get should be void
+        else:
+            if getpro4['total'] <= getpro3['total'] and getpro4['data']['default']:
+                #print 'the delete is successful:\n'
+                #pp.pprint(get6)
+                doc.write('services_name_configsections_provider_DELETE: SUCCESS')
+                success_delpro = True
+            else:
+                doc.write('services_name_configsections_provider_DELETE: FAILED')
+                doc.write('\n\nservices_name_configsections_provider_DELETE: the element has not been deleted')
+                doc.write('\nDelete:\n')            
+                doc.write(pp.pformat(deletepro1))     
+                doc.write('\nGet, before:\n')
+                doc.write(pp.pformat(getpro3))
+                doc.write('\nGet, after:\n')
+                doc.write(pp.pformat(getpro4))
+    #If post not successful, failure
+    else:
+        doc.write('services_name_configsections_provider_DELETE: FAILED')
+        doc.write('\n\nservices_name_configsections_provider_DELETE: the request has not been successful')
+        doc.write('\nDelete:\n')            
+        doc.write(pp.pformat(deletepro1))     
+        doc.write('\nGet, before:\n')
+        doc.write(pp.pformat(getpro3))
+        doc.write('\nGet, after:\n')
+        doc.write(pp.pformat(getpro4))
             
     #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     #connection
@@ -986,39 +941,36 @@ def test_configsections(doc, v):
     #Check for two successful requests to have the same result
     if getcon1['success'] and getcon2['success']:
         if getcon1 == getcon2:
-            print 'services_name_configsections_connection_GET: SUCCESS'
+            doc.write('services_name_configsections_connection_GET: SUCCESS')
             success_getcon = True
         else:
-            if v:
-                doc.write('\n\nservices_name_configsections_connection_GET: the results are not all the same')
-                doc.write('\nFirst get:\n')
-                doc.write(pp.pformat(getcon1))
-                doc.write('\nSecond get:\n')
-                doc.write(pp.pformat(getcon2))
-            print 'services_name_configsections_connection_GET: FAILED'
-    else:
-        if v:
-            doc.write('\n\nservices_name_configsections_connection_GET: the requests have not been successful')
+            doc.write('services_name_configsections_connection_GET: FAILED')
+            doc.write('\n\nservices_name_configsections_connection_GET: the results are not all the same')
             doc.write('\nFirst get:\n')
             doc.write(pp.pformat(getcon1))
             doc.write('\nSecond get:\n')
             doc.write(pp.pformat(getcon2))
-        print 'services_name_configsections_connection_GET: FAILED'
+    else:
+        doc.write('services_name_configsections_connection_GET: FAILED')
+        doc.write('\n\nservices_name_configsections_connection_GET: the requests have not been successful')
+        doc.write('\nFirst get:\n')
+        doc.write(pp.pformat(getcon1))
+        doc.write('\nSecond get:\n')
+        doc.write(pp.pformat(getcon2))
     
      
     #Checks for the PUT to be successful by comparing two GETs
     if putcon1['success']:
         #If gets before and after are the same, failure
         if getcon2 == getcon3:
-            if v:
-                doc.write('\n\nservices_name_configsections_connection_PUT: maybe you re-wrote existing data')
-                doc.write('\nPut:\n')            
-                doc.write(pp.pformat(putcon1)) 
-                doc.write('\nGet, before:\n')
-                doc.write(pp.pformat(getcon2))
-                doc.write('\nGet, after:\n')
-                doc.write(pp.pformat(getcon3))
-            print 'services_name_configsections_connection_PUT: FAILED'
+            doc.write('services_name_configsections_connection_PUT: FAILED')
+            doc.write('\n\nservices_name_configsections_connection_PUT: maybe you re-wrote existing data')
+            doc.write('\nPut:\n')            
+            doc.write(pp.pformat(putcon1)) 
+            doc.write('\nGet, before:\n')
+            doc.write(pp.pformat(getcon2))
+            doc.write('\nGet, after:\n')
+            doc.write(pp.pformat(getcon3))
         #For the success, second get should be the same as first
         #apart from the modicifation done with put
         else:
@@ -1031,54 +983,47 @@ def test_configsections(doc, v):
                 ):
                 #print 'the update is successful:\n'
                 #pp.pprint(get6)
-                print 'services_name_configsections_connection_PUT: SUCCESS'
+                doc.write('services_name_configsections_connection_PUT: SUCCESS')
                 success_putcon = True
             else:
-                if v:
-                    doc.write('\n\nservices_name_configsections_connection_PUT: updated data does not correspond')
-                    doc.write('\nPut:\n')            
-                    doc.write(pp.pformat(putcon1)) 
-                    doc.write('\nGet, before:\n')
-                    doc.write(pp.pformat(getcon2))
-                    doc.write('\nGet, after:\n')
-                    doc.write(pp.pformat(getcon3))
-                print 'services_name_configsections_connection_PUT: FAILED'
+                doc.write('services_name_configsections_connection_PUT: FAILED')
+                doc.write('\n\nservices_name_configsections_connection_PUT: updated data does not correspond')
+                doc.write('\nPut:\n')            
+                doc.write(pp.pformat(putcon1)) 
+                doc.write('\nGet, before:\n')
+                doc.write(pp.pformat(getcon2))
+                doc.write('\nGet, after:\n')
+                doc.write(pp.pformat(getcon3))
     #If post not successful, failure
     else:
-        if v:
-            doc.write('\n\nservices_name_configsections_connection_PUT: the request has not been successful')
-            doc.write('\nPut:\n')            
-            doc.write(pp.pformat(putcon1)) 
-            doc.write('\nGet, before:\n')
-            doc.write(pp.pformat(getcon2))
-            doc.write('\nGet, after:\n')
-            doc.write(pp.pformat(getcon3))
-        print 'services_name_configsections_connection_PUT: FAILED'
-            
-    
+        doc.write('services_name_configsections_connection_PUT: FAILED')
+        doc.write('\n\nservices_name_configsections_connection_PUT: the request has not been successful')
+        doc.write('\nPut:\n')            
+        doc.write(pp.pformat(putcon1)) 
+        doc.write('\nGet, before:\n')
+        doc.write(pp.pformat(getcon2))
+        doc.write('\nGet, after:\n')
+        doc.write(pp.pformat(getcon3))    
     
     #Check for two successful requests to have the same result
     if getcon4['success'] and getcon5['success']:
         if getcon4 == getcon5:
-            print 'services_name_configsections_connection_operations_validatedb_GET: SUCCESS'
+            doc.write('services_name_configsections_connection_operations_validatedb_GET: SUCCESS')
             success_getconop = True
         else:
-            if v:
-                doc.write('\n\nservices_name_configsections_connection_operations_validatedb_GET: the results are not all the same')
-                doc.write('\nFirst get:\n')
-                doc.write(pp.pformat(getcon4))
-                doc.write('\nSecond get:\n')
-                doc.write(pp.pformat(getcon5))
-            print 'services_name_configsections_connection_operations_validatedb_GET: FAILED'
-    else:
-        if v:
-            doc.write('\n\nservices_name_configsections_connection_operations_validatedb_GET: the requests have not been successful')
+            doc.write('services_name_configsections_connection_operations_validatedb_GET: FAILED')
+            doc.write('\n\nservices_name_configsections_connection_operations_validatedb_GET: the results are not all the same')
             doc.write('\nFirst get:\n')
             doc.write(pp.pformat(getcon4))
             doc.write('\nSecond get:\n')
             doc.write(pp.pformat(getcon5))
-        print 'services_name_configsections_connection_operations_validatedb_GET: FAILED'
-        
+    else:
+        doc.write('services_name_configsections_connection_operations_validatedb_GET: FAILED')
+        doc.write('\n\nservices_name_configsections_connection_operations_validatedb_GET: the requests have not been successful')
+        doc.write('\nFirst get:\n')
+        doc.write(pp.pformat(getcon4))
+        doc.write('\nSecond get:\n')
+        doc.write(pp.pformat(getcon5))
     
     result = {
         'services_name_configsections_GET' : success_get,

@@ -8,13 +8,10 @@ import time
 import pprint
 
     
-def test_epsgs(doc, v):
+def test_epsgs(doc):
     #services_name_epsgs_GET(sname)
     
-    print '\n-----------------EPSGS---------------------------\n'
-    
-    if v:
-        doc.write('\n\n-----------------EPSGS------------------------------')
+    doc.write('\n\n-----------------EPSGS------------------------------')
     
     pp = pprint.PrettyPrinter(indent=2)    
     sname = 'test'
@@ -28,26 +25,25 @@ def test_epsgs(doc, v):
     if get1['success'] and get2['success']:
         #Checks if all the requests got the same result
         if get1 == get2:
-            print 'services_name_epsgs_GET: SUCCESS'
+            doc.write('services_name_epsgs_GET: SUCCESS')
             success = True
         #If the results are not all the same, we got a failure
         else:
-            if v:
-                doc.write('\n\nservices_name_epsgs_GET: the results are not all the same')
-                doc.write('\nFirst get:\n')            
-                doc.write(pp.pformat(get1))
-                doc.write('\nSecond get:\n')            
-                doc.write(pp.pformat(get2))
-            print 'services_name_epsgs_GET: FAILED'
-    #If the requests weren't all successful, we got a failure
-    else:
-        if v:
-            doc.write('\n\nservices_name_epsgs_GET: the requests have not been successful')
+            doc.write('services_name_epsgs_GET: FAILED')
+            doc.write('\n\nservices_name_epsgs_GET: the results are not all the same')
             doc.write('\nFirst get:\n')            
             doc.write(pp.pformat(get1))
             doc.write('\nSecond get:\n')            
             doc.write(pp.pformat(get2))
-        print 'services_name_epsgs_GET: FAILED'
+    #If the requests weren't all successful, we got a failure
+    else:
+        doc.write('services_name_epsgs_GET: FAILED')
+        doc.write('\n\nservices_name_epsgs_GET: the requests have not been successful')
+        doc.write('\nFirst get:\n')            
+        doc.write(pp.pformat(get1))
+        doc.write('\nSecond get:\n')            
+        doc.write(pp.pformat(get2))
+        
         
         
         

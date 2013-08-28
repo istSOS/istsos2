@@ -17,7 +17,7 @@ def deldic(d, k):
             del c[el]
     return c    
     
-def test_procedures(doc, v):
+def test_procedures(doc):
     #services_name_procedures_POST(sname, post)
     #services_name_procedures_name_GET(sname, pname)
     #services_name_procedures_name_PUT(sname, pname, put)
@@ -26,10 +26,7 @@ def test_procedures(doc, v):
     #services_name_procedures_name_ratingcurve_GET(sname, pname)
     #services_name_procedures_name_ratingcurve_POST(sname, pname, post)
     
-    print '\n-----------------PROCEDURES----------------------\n'
-    
-    if v:
-        doc.write('\n\n-----------------PROCEDURES-------------------------')
+    doc.write('\n-----------------PROCEDURES----------------------\n')-----')
     
     pp = pprint.PrettyPrinter(indent=2)    
     sname = 'test'
@@ -192,24 +189,22 @@ def test_procedures(doc, v):
     #Check for two successful requests to have the same result
     if get1['success'] and get2['success']:
         if get1 == get2:
-            print 'services_name_procedures_name_GET: SUCCESS'
+            doc.write('services_name_procedures_name_GET: SUCCESS'))
             success_get1 = True
         else:
-            if v:
-                doc.write('\n\nservices_name_procedures_name_GET: the results are not all the same')
-                doc.write('\nFirst get:\n')
-                doc.write(pp.pformat(get1))
-                doc.write('\nSecond get:\n')
-                doc.write(pp.pformat(get2))            
-            print 'services_name_procedures_name_GET: FAILED'
-    else:
-        if v:
-            doc.write('\n\nservices_name_procedures_name_GET: the requests did not succeed')
+            doc.write('services_name_procedures_name_GET: FAILED')
+            doc.write('\n\nservices_name_procedures_name_GET: the results are not all the same')
             doc.write('\nFirst get:\n')
             doc.write(pp.pformat(get1))
             doc.write('\nSecond get:\n')
             doc.write(pp.pformat(get2))            
-        print 'services_name_procedures_name_GET: FAILED'
+    else:
+        doc.write('services_name_procedures_name_GET: FAILED')
+        doc.write('\n\nservices_name_procedures_name_GET: the requests did not succeed')
+        doc.write('\nFirst get:\n')
+        doc.write(pp.pformat(get1))
+        doc.write('\nSecond get:\n')
+        doc.write(pp.pformat(get2))            
     
      
     #Checks for the POST to be successful by comparing two GETs
@@ -233,26 +228,24 @@ def test_procedures(doc, v):
             and temp['system_id'] == post['system_id']
             and temp['history'] == post['history']
             ):
-            print 'services_name_procedures_POST: SUCCESS'
+            doc.write('services_name_procedures_POST: SUCCESS')
             success_post = True
         #if anything else wrong, failure
         else:
-            if v:
-                doc.write('\n\nservices_name_procedures_POST: posted data does not correspond')
-                doc.write('\nPost:\n')
-                doc.write(pp.pformat(post1))
-                doc.write('\nGet, after:\n')
-                doc.write(pp.pformat(get1['data']))
-            print 'services_name_procedures_POST: FAILED'
-    #If post not successful, failure
-    else:
-        if v:
-            doc.write('\n\nservices_name_procedures_POST: post did not succeed')
+            doc.write('services_name_procedures_POST: FAILED')
+            doc.write('\n\nservices_name_procedures_POST: posted data does not correspond')
             doc.write('\nPost:\n')
             doc.write(pp.pformat(post1))
             doc.write('\nGet, after:\n')
-            doc.write(pp.pformat(get1))
-        print 'services_name_procedures_POST: FAILED'
+            doc.write(pp.pformat(get1['data']))
+    #If post not successful, failure
+    else:
+        doc.write('services_name_procedures_POST: FAILED')
+        doc.write('\n\nservices_name_procedures_POST: post did not succeed')
+        doc.write('\nPost:\n')
+        doc.write(pp.pformat(post1))
+        doc.write('\nGet, after:\n')
+        doc.write(pp.pformat(get1))
             
     
     
@@ -260,15 +253,14 @@ def test_procedures(doc, v):
     if put1['success']:
         #If gets before and after are the same, failure
         if get2 == get3:
-            if v:
-                doc.write('\n\nservices_name_procedures_name_PUT: data did not change')
-                doc.write('\nPut:\n')
-                doc.write(pp.pformat(put1))
-                doc.write('\nGet, before:\n')
-                doc.write(pp.pformat(get2))
-                doc.write('\nGet, after:\n')
-                doc.write(pp.pformat(get3))
-            print 'services_name_procedures_name_PUT: FAILED'
+            doc.write('services_name_procedures_name_PUT: FAILED')
+            doc.write('\n\nservices_name_procedures_name_PUT: data did not change')
+            doc.write('\nPut:\n')
+            doc.write(pp.pformat(put1))
+            doc.write('\nGet, before:\n')
+            doc.write(pp.pformat(get2))
+            doc.write('\nGet, after:\n')
+            doc.write(pp.pformat(get3))
         #For the success, second get should be the same as first
         #apart from the modicifation done with put
         else:
@@ -292,27 +284,25 @@ def test_procedures(doc, v):
                 and temp['system_id'] == put['system_id']
                 and temp['history'] == put['history']
                 ):
-                print 'services_name_procedures_name_PUT: SUCCESS'
+                doc.write('services_name_procedures_name_PUT: SUCCESS')
                 success_put = True
             else:
-                if v:   
-                    doc.write('\n\nservices_name_procedures_name_PUT: data does not correspond')
-                    doc.write('\nPut:\n')
-                    doc.write(pp.pformat(put1))
-                    doc.write('\nGet, after:\n')
-                    doc.write(pp.pformat(get3))
-                print 'services_name_procedures_name_PUT: FAILED'
+                doc.write('services_name_procedures_name_PUT: FAILED')
+                doc.write('\n\nservices_name_procedures_name_PUT: data does not correspond')
+                doc.write('\nPut:\n')
+                doc.write(pp.pformat(put1))
+                doc.write('\nGet, after:\n')
+                doc.write(pp.pformat(get3))
     #If post not successful, failure
     else:
-        if v:
-            doc.write('\n\nservices_name_procedures_name_PUT: request did not succeed')
-            doc.write('\nPut:\n')
-            doc.write(pp.pformat(put1))
-            doc.write('\nGet, before:\n')
-            doc.write(pp.pformat(get2))
-            doc.write('\nGet, after:\n')
-            doc.write(pp.pformat(get3))
-            print 'services_name_procedures_name_PUT: FAILED'
+        doc.write('services_name_procedures_name_PUT: FAILED')
+        doc.write('\n\nservices_name_procedures_name_PUT: request did not succeed')
+        doc.write('\nPut:\n')
+        doc.write(pp.pformat(put1))
+        doc.write('\nGet, before:\n')
+        doc.write(pp.pformat(get2))
+        doc.write('\nGet, after:\n')
+        doc.write(pp.pformat(get3))
             
             
             
@@ -320,91 +310,84 @@ def test_procedures(doc, v):
     if delete1['success']:
         #If gets before and after are the same, failure
         if get3 == get4:
-            if v:
-                doc.write('\n\nservices_name_procedures_name_DELETE: data did not change')
-                doc.write('\nDelete:\n')
-                doc.write(pp.pformat(delete1))
-                doc.write('\nGet, before:\n')
-                doc.write(pp.pformat(get3))
-                doc.write('\nGet, after:\n')
-                doc.write(pp.pformat(get4))
-            print 'services_name_procedures_name_DELETE: FAILED'
-        #For the success, second get should be void
-        else:
-            if not get4['success']:
-                #print 'the delete is successful:\n'
-                #pp.pprint(get6)
-                print 'services_name_procedures_name_DELETE: SUCCESS'
-                success_delete = True
-            else:
-                if v:
-                    doc.write('\n\nservices_name_procedures_name_DELETE: data has not been deleted')
-                    doc.write('\nDelete:\n')
-                    doc.write(pp.pformat(delete1))
-                    doc.write('\nGet, before:\n')
-                    doc.write(pp.pformat(get3))
-                    doc.write('\nGet, after:\n')
-                    doc.write(pp.pformat(get4))
-                print 'services_name_procedures_name_DELETE: FAILED'
-    #If post not successful, failure
-    else:
-        if v:
-            doc.write('\n\nservices_name_procedures_name_DELETE: request did not succeed')
+            doc.write('services_name_procedures_name_DELETE: FAILED')
+            doc.write('\n\nservices_name_procedures_name_DELETE: data did not change')
             doc.write('\nDelete:\n')
             doc.write(pp.pformat(delete1))
             doc.write('\nGet, before:\n')
             doc.write(pp.pformat(get3))
             doc.write('\nGet, after:\n')
             doc.write(pp.pformat(get4))
-        print 'services_name_procedures_name_DELETE: FAILED'
+        #For the success, second get should be void
+        else:
+            if not get4['success']:
+                #doc.write('the delete is successful:\n'
+                #pp.pprint(get6)
+                doc.write('services_name_procedures_name_DELETE: SUCCESS')
+                success_delete = True
+            else:
+                doc.write('services_name_procedures_name_DELETE: FAILED')
+                doc.write('\n\nservices_name_procedures_name_DELETE: data has not been deleted')
+                doc.write('\nDelete:\n')
+                doc.write(pp.pformat(delete1))
+                doc.write('\nGet, before:\n')
+                doc.write(pp.pformat(get3))
+                doc.write('\nGet, after:\n')
+                doc.write(pp.pformat(get4))
+    #If post not successful, failure
+    else:
+        doc.write('services_name_procedures_name_DELETE: FAILED')
+        doc.write('\n\nservices_name_procedures_name_DELETE: request did not succeed')
+        doc.write('\nDelete:\n')
+        doc.write(pp.pformat(delete1))
+        doc.write('\nGet, before:\n')
+        doc.write(pp.pformat(get3))
+        doc.write('\nGet, after:\n')
+        doc.write(pp.pformat(get4))
             
     
     
     #Check for two successful requests to have the same result
     if get5['success'] and get6['success']:
         if get5 == get6:
-            print 'services_name_procedures_operations_getlist_GET: SUCCESS'
+            doc.write('services_name_procedures_operations_getlist_GET: SUCCESS')
             success_getlist = True
         else:
-            if v:
-                doc.write('\n\nservices_name_procedures_operations_getlist_GET: the results are not all the same')
-                doc.write('\nFirst get:\n')
-                doc.write(pp.pformat(get5))
-                doc.write('\nSecond get:\n')
-                doc.write(pp.pformat(get6))            
-            print 'services_name_procedures_operations_getlist_GET: FAILED'
-    else:
-        if v:
-            doc.write('\n\nservices_name_procedures_operations_getlist_GET: the requests did not succeed')
+            doc.write('services_name_procedures_operations_getlist_GET: FAILED')
+            doc.write('\n\nservices_name_procedures_operations_getlist_GET: the results are not all the same')
             doc.write('\nFirst get:\n')
             doc.write(pp.pformat(get5))
             doc.write('\nSecond get:\n')
             doc.write(pp.pformat(get6))            
-        print 'services_name_procedures_operations_getlist_GET: FAILED'
+    else:
+        doc.write('services_name_procedures_operations_getlist_GET: FAILED')
+        doc.write('\n\nservices_name_procedures_operations_getlist_GET: the requests did not succeed')
+        doc.write('\nFirst get:\n')
+        doc.write(pp.pformat(get5))
+        doc.write('\nSecond get:\n')
+        doc.write(pp.pformat(get6))            
         
         
         
     #Check for two successful requests to have the same result    
     if get7['success'] and get8['success']:
         if get7 == get8:
-            print 'services_name_procedures_name_ratingcurve_GET: SUCCESS'
+            doc.write('services_name_procedures_name_ratingcurve_GET: SUCCESS')
             success_get2 = True
         else:
-            if v:
-                doc.write('\n\nservices_name_procedures_name_ratingcurve_GET: the results are not all the same')
-                doc.write('\nFirst get:\n')
-                doc.write(pp.pformat(get7))
-                doc.write('\nSecond get:\n')
-                doc.write(pp.pformat(get8))            
-            print 'services_name_procedures_name_ratingcurve_GET: FAILED'
-    else:
-        if v:
-            doc.write('\n\nservices_name_procedures_name_ratingcurve_GET: the requests did not succeed')
+            doc.write('services_name_procedures_name_ratingcurve_GET: FAILED')
+            doc.write('\n\nservices_name_procedures_name_ratingcurve_GET: the results are not all the same')
             doc.write('\nFirst get:\n')
             doc.write(pp.pformat(get7))
             doc.write('\nSecond get:\n')
             doc.write(pp.pformat(get8))            
-        print 'services_name_procedures_name_ratingcurve_GET: FAILED'
+    else:
+        doc.write('services_name_procedures_name_ratingcurve_GET: FAILED')
+        doc.write('\n\nservices_name_procedures_name_ratingcurve_GET: the requests did not succeed')
+        doc.write('\nFirst get:\n')
+        doc.write(pp.pformat(get7))
+        doc.write('\nSecond get:\n')
+        doc.write(pp.pformat(get8))
         
     
     
@@ -412,26 +395,24 @@ def test_procedures(doc, v):
     if post2['success']:
         #If gets before and after are the same, failure
         if get8 == get9:
-            if v:
-                doc.write('\n\nservices_name_procedures_name_ratingcurve_POST: the data has not changed')
-                doc.write('\nPost:\n')
-                doc.write(pp.pformat(post1))
-                doc.write('\nGet, before:\n')
-                doc.write(pp.pformat(get8))
-                doc.write('\nGet, after:\n')
-                doc.write(pp.pformat(get9))
-            print 'services_name_procedures_name_ratingcurve_POST: FAILED'
+            doc.write('services_name_procedures_name_ratingcurve_POST: FAILED')
+            doc.write('\n\nservices_name_procedures_name_ratingcurve_POST: the data has not changed')
+            doc.write('\nPost:\n')
+            doc.write(pp.pformat(post1))
+            doc.write('\nGet, before:\n')
+            doc.write(pp.pformat(get8))
+            doc.write('\nGet, after:\n')
+            doc.write(pp.pformat(get9))
         #If second get has same or less entries than first, failure
         elif get9['total'] != len(post_rat):
-            if v:
-                doc.write('\n\nservices_name_procedures_name_ratingcurve_POST: post does not have correct length')
-                doc.write('\nPost:\n')
-                doc.write(pp.pformat(post2))
-                doc.write('\nGet, before:\n')
-                doc.write(pp.pformat(get8))
-                doc.write('\nGet, after:\n')
-                doc.write(pp.pformat(get9))
-            print 'services_name_procedures_name_ratingcurve_POST: FAILED'
+            doc.write('services_name_procedures_name_ratingcurve_POST: FAILED')
+            doc.write('\n\nservices_name_procedures_name_ratingcurve_POST: post does not have correct length')
+            doc.write('\nPost:\n')
+            doc.write(pp.pformat(post2))
+            doc.write('\nGet, before:\n')
+            doc.write(pp.pformat(get8))
+            doc.write('\nGet, after:\n')
+            doc.write(pp.pformat(get9))
         #If second get has one more entry than first, look for the 
         #inserted value. If found, success, else failure
         elif get9['total'] == len(post_rat):
@@ -446,42 +427,39 @@ def test_procedures(doc, v):
                     and data['up_val'] == temp['up_val']
                     and data['low_val'] == temp['low_val']
                     ):
-                    print 'services_name_procedures_name_ratingcurve_POST: SUCCESS'
+                    doc.write('services_name_procedures_name_ratingcurve_POST: SUCCESS')
                     success_postrat = True
                     break
             if not success_postrat:
-                if v:
-                    doc.write('\n\nservices_name_procedures_name_ratingcurve_POST: posted data does not correspond')
-                    doc.write('\nPost:\n')
-                    doc.write(pp.pformat(post2))
-                    doc.write('\nGet, before:\n')
-                    doc.write(pp.pformat(get8))
-                    doc.write('\nGet, after:\n')
-                    doc.write(pp.pformat(get9))
-                print 'services_name_procedures_name_ratingcurve_POST: FAILED'
-        #if anything else wrong, failure
-        else:
-            if v:
-                doc.write('\n\nservices_name_procedures_name_ratingcurve_POST: something went wrong')
+                doc.write('services_name_procedures_name_ratingcurve_POST: FAILED')
+                doc.write('\n\nservices_name_procedures_name_ratingcurve_POST: posted data does not correspond')
                 doc.write('\nPost:\n')
                 doc.write(pp.pformat(post2))
                 doc.write('\nGet, before:\n')
                 doc.write(pp.pformat(get8))
                 doc.write('\nGet, after:\n')
                 doc.write(pp.pformat(get9))
-            print 'services_name_procedures_name_ratingcurve_POST: FAILED'
-    #If post not successful, failure
-    else:
-        if v:
-            doc.write('\n\nservices_name_procedures_name_ratingcurve_POST: post failed')
+        #if anything else wrong, failure
+        else:
+            doc.write('services_name_procedures_name_ratingcurve_POST: FAILED')
+            doc.write('\n\nservices_name_procedures_name_ratingcurve_POST: something went wrong')
             doc.write('\nPost:\n')
             doc.write(pp.pformat(post2))
             doc.write('\nGet, before:\n')
             doc.write(pp.pformat(get8))
             doc.write('\nGet, after:\n')
             doc.write(pp.pformat(get9))
-        print 'services_name_procedures_name_ratingcurve_POST: FAILED'
-        
+    #If post not successful, failure
+    else:
+        doc.write('services_name_procedures_name_ratingcurve_POST: FAILED')
+        doc.write('\n\nservices_name_procedures_name_ratingcurve_POST: post failed')
+        doc.write('\nPost:\n')
+        doc.write(pp.pformat(post2))
+        doc.write('\nGet, before:\n')
+        doc.write(pp.pformat(get8))
+        doc.write('\nGet, after:\n')
+        doc.write(pp.pformat(get9))
+    
     
     
     result = {

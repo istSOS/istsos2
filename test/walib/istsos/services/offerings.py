@@ -8,7 +8,7 @@ import pprint
 import time
 
     
-def test_offerings(doc, v):
+def test_offerings(doc):
     #services_name_offerings_GET(sname)
     #services_name_offerings_POST(sname, post)
     #services_name_offerings_name_GET(sname, oname)
@@ -21,10 +21,7 @@ def test_offerings(doc, v):
     #services_name_offerings_name_procedures_name_POST(sname, post)
     #services_name_offerings_name_procedures_name_DELETE(sname)
     
-    print '\n-----------------OFFERINGS-----------------------\n'
-    
-    if v:
-        doc.write('\n\n-----------------OFFERINGS--------------------------')
+    doc.write('\n-----------------OFFERINGS-----------------------\n')
     
     pp = pprint.PrettyPrinter(indent=2)
     
@@ -111,50 +108,46 @@ def test_offerings(doc, v):
     #Check for two successful requests to have the same result
     if get1['success'] and get2['success']:
         if get1 == get2:
-            print 'services_name_offerings_GET: SUCCESS'
+            doc.write('services_name_offerings_GET: SUCCESS')
             success_get1 = True
         else:
-            if v:
-                doc.write('\n\nservices_name_offerings_GET: the results are not all the same')
-                doc.write('\nFirst get:\n')
-                doc.write(pp.pformat(get1))
-                doc.write('\nSecond get:\n')
-                doc.write(pp.pformat(get2))
-            print 'services_name_offerings_GET: FAILED'
-    else:
-        if v:
-            doc.write('\n\nservices_name_offerings_GET: the requests have not been successful')
+            doc.write('services_name_offerings_GET: FAILED')
+            doc.write('\n\nservices_name_offerings_GET: the results are not all the same')
             doc.write('\nFirst get:\n')
             doc.write(pp.pformat(get1))
             doc.write('\nSecond get:\n')
             doc.write(pp.pformat(get2))
-        print 'services_name_offerings_GET: FAILED'
+    else:
+        doc.write('services_name_offerings_GET: FAILED')
+        doc.write('\n\nservices_name_offerings_GET: the requests have not been successful')
+        doc.write('\nFirst get:\n')
+        doc.write(pp.pformat(get1))
+        doc.write('\nSecond get:\n')
+        doc.write(pp.pformat(get2))
     
      
     #Checks for the POST to be successful by comparing two GETs
     if post1['success']:
         #If gets before and after are the same, failure
         if get2 == get3:
-            if v:
-                doc.write('\n\nservices_name_offerings_POST: the data has not changed')
-                doc.write('\nPost:\n')
-                doc.write(pp.pformat(post1))
-                doc.write('\nGet, before:\n')
-                doc.write(pp.pformat(get2))
-                doc.write('\nGet, after:\n')
-                doc.write(pp.pformat(get3))
-            print 'services_name_offerings_POST: FAILED'
+            doc.write('services_name_offerings_POST: FAILED')
+            doc.write('\n\nservices_name_offerings_POST: the data has not changed')
+            doc.write('\nPost:\n')
+            doc.write(pp.pformat(post1))
+            doc.write('\nGet, before:\n')
+            doc.write(pp.pformat(get2))
+            doc.write('\nGet, after:\n')
+            doc.write(pp.pformat(get3))
         #If second get has same or less entries than first, failure
         elif get3['total'] <= get2['total']:
-            if v:
-                doc.write('\n\nservices_name_offerings_POST: post failed or deleted another entry')
-                doc.write('\nPost:\n')
-                doc.write(pp.pformat(post1))
-                doc.write('\nGet, before:\n')
-                doc.write(pp.pformat(get2))
-                doc.write('\nGet, after:\n')
-                doc.write(pp.pformat(get3))
-            print 'services_name_offerings_POST: FAILED'
+            doc.write('services_name_offerings_POST: FAILED')
+            doc.write('\n\nservices_name_offerings_POST: post failed or deleted another entry')
+            doc.write('\nPost:\n')
+            doc.write(pp.pformat(post1))
+            doc.write('\nGet, before:\n')
+            doc.write(pp.pformat(get2))
+            doc.write('\nGet, after:\n')
+            doc.write(pp.pformat(get3))
         #If second get has one more entry than first, look for the 
         #inserted value. If found, success, else failure
         elif get3['total'] == get2['total'] + 1:
@@ -168,66 +161,61 @@ def test_offerings(doc, v):
                     ):
                     #pp.pprint(get3)   
                     #pp.pprint(post1)
-                    print 'services_name_offerings_POST: SUCCESS'
+                    doc.write('services_name_offerings_POST: SUCCESS')
                     success_post = True
                     break
             if not success_post:
-                if v:
-                    doc.write('\n\nservices_name_offerings_POST: posted data does not correspond')
-                    doc.write('\nPost:\n')
-                    doc.write(pp.pformat(post1))
-                    doc.write('\nGet, before:\n')
-                    doc.write(pp.pformat(get2))
-                    doc.write('\nGet, after:\n')
-                    doc.write(pp.pformat(get3))
-                print 'services_name_offerings_POST: FAILED'
-        #if anything else wrong, failure
-        else:
-            if v:
-                doc.write('\n\nservices_name_offerings_POST: something went wrong')
+                doc.write('services_name_offerings_POST: FAILED')
+                doc.write('\n\nservices_name_offerings_POST: posted data does not correspond')
                 doc.write('\nPost:\n')
                 doc.write(pp.pformat(post1))
                 doc.write('\nGet, before:\n')
                 doc.write(pp.pformat(get2))
                 doc.write('\nGet, after:\n')
                 doc.write(pp.pformat(get3))
-            print 'services_name_offerings_POST: FAILED'
-    #If post not successful, failure
-    else:
-        if v:
-            doc.write('\n\nservices_name_offerings_POST: post failed')
+        #if anything else wrong, failure
+        else:
+            doc.write('services_name_offerings_POST: FAILED')
+            doc.write('\n\nservices_name_offerings_POST: something went wrong')
             doc.write('\nPost:\n')
             doc.write(pp.pformat(post1))
             doc.write('\nGet, before:\n')
             doc.write(pp.pformat(get2))
             doc.write('\nGet, after:\n')
             doc.write(pp.pformat(get3))
-        print 'services_name_offerings_POST: FAILED'
+    #If post not successful, failure
+    else:
+        doc.write('services_name_offerings_POST: FAILED')
+        doc.write('\n\nservices_name_offerings_POST: post failed')
+        doc.write('\nPost:\n')
+        doc.write(pp.pformat(post1))
+        doc.write('\nGet, before:\n')
+        doc.write(pp.pformat(get2))
+        doc.write('\nGet, after:\n')
+        doc.write(pp.pformat(get3))
             
     
     #Check for two successful requests to have the same result
     if get4['success'] and get5['success']:
         if get4 == get5:
-            #print 'the results are the same:\n'
+            #doc.write('the results are the same:\n'
             #pp.pprint(get1)
-            print 'services_name_offerings_name_GET: SUCCESS'
+            doc.write('services_name_offerings_name_GET: SUCCESS')
             success_get2 = True
         else:
-            if v:
-                doc.write('\n\nservices_name_offerings_name_GET: the results are not all the same')
-                doc.write('\nFirst get:\n')
-                doc.write(pp.pformat(get4))
-                doc.write('\nSecond get:\n')
-                doc.write(pp.pformat(get5))
-            print 'services_name_offerings_name_GET: FAILED'
-    else:
-        if v:
-            doc.write('\n\nservices_name_offerings_name_GET: the requests have not been successful')
+            doc.write('services_name_offerings_name_GET: FAILED')
+            doc.write('\n\nservices_name_offerings_name_GET: the results are not all the same')
             doc.write('\nFirst get:\n')
             doc.write(pp.pformat(get4))
             doc.write('\nSecond get:\n')
             doc.write(pp.pformat(get5))
-        print 'services_name_offerings_name_GET: FAILED'
+    else:
+        doc.write('services_name_offerings_name_GET: FAILED')
+        doc.write('\n\nservices_name_offerings_name_GET: the requests have not been successful')
+        doc.write('\nFirst get:\n')
+        doc.write(pp.pformat(get4))
+        doc.write('\nSecond get:\n')
+        doc.write(pp.pformat(get5))
     
     
     
@@ -236,15 +224,14 @@ def test_offerings(doc, v):
     if put1['success']:
         #If gets before and after are the same, failure
         if get5 == get6:
-            if v:
-                doc.write('\n\nservices_name_offerings_name_PUT: maybe you re-wrote existing data')
-                doc.write('\nPut:\n')            
-                doc.write(pp.pformat(put1)) 
-                doc.write('\nGet, before:\n')
-                doc.write(pp.pformat(get5))
-                doc.write('\nGet, after:\n')
-                doc.write(pp.pformat(get6))
-            print 'services_name_offerings_name_PUT: FAILED'
+            doc.write('services_name_offerings_name_PUT: FAILED')
+            doc.write('\n\nservices_name_offerings_name_PUT: maybe you re-wrote existing data')
+            doc.write('\nPut:\n')            
+            doc.write(pp.pformat(put1)) 
+            doc.write('\nGet, before:\n')
+            doc.write(pp.pformat(get5))
+            doc.write('\nGet, after:\n')
+            doc.write(pp.pformat(get6))
         #For the success, second get should be the same as first
         #apart from the modicifation done with put
         else:
@@ -256,30 +243,28 @@ def test_offerings(doc, v):
                     #and data['procedures'] == put['procedures']
                     #and data['id'] == put['id']
                     ):
-                    print 'services_name_offerings_name_PUT: SUCCESS'
+                    doc.write('services_name_offerings_name_PUT: SUCCESS')
                     success_put = True
                     break
             if not success_put:
-                if v:
-                    doc.write('\n\nservices_name_offerings_name_PUT: updated data does not correspond')
-                    doc.write('\nPut:\n')            
-                    doc.write(pp.pformat(put1)) 
-                    doc.write('\nGet, before:\n')
-                    doc.write(pp.pformat(get5))
-                    doc.write('\nGet, after:\n')
-                    doc.write(pp.pformat(get6))
-                print 'services_name_offerings_name_PUT: FAILED'
+                doc.write('services_name_offerings_name_PUT: FAILED')
+                doc.write('\n\nservices_name_offerings_name_PUT: updated data does not correspond')
+                doc.write('\nPut:\n')            
+                doc.write(pp.pformat(put1)) 
+                doc.write('\nGet, before:\n')
+                doc.write(pp.pformat(get5))
+                doc.write('\nGet, after:\n')
+                doc.write(pp.pformat(get6))
     #If post not successful, failure
     else:
-        if v:
-            doc.write('\n\nservices_name_offerings_name_PUT: the request has not been successful')
-            doc.write('\nPut:\n')            
-            doc.write(pp.pformat(put1)) 
-            doc.write('\nGet, before:\n')
-            doc.write(pp.pformat(get5))
-            doc.write('\nGet, after:\n')
-            doc.write(pp.pformat(get6))
-        print 'services_name_offerings_name_PUTT: FAILED'
+        doc.write('services_name_offerings_name_PUTT: FAILED')
+        doc.write('\n\nservices_name_offerings_name_PUT: the request has not been successful')
+        doc.write('\nPut:\n')            
+        doc.write(pp.pformat(put1)) 
+        doc.write('\nGet, before:\n')
+        doc.write(pp.pformat(get5))
+        doc.write('\nGet, after:\n')
+        doc.write(pp.pformat(get6))
             
             
             
@@ -287,162 +272,154 @@ def test_offerings(doc, v):
     if delete1['success']:
         #If gets before and after are the same, failure
         if get6 == get7:
-            if v:
-                doc.write('\n\nservices_name_offerings_name_DELETE: the results remained the same')
-                doc.write('\nDelete:\n')            
-                doc.write(pp.pformat(delete1))     
-                doc.write('\nGet, before:\n')
-                doc.write(pp.pformat(get6))
-                doc.write('\nGet, after:\n')
-                doc.write(pp.pformat(get7))
-            print 'services_name_offerings_name_DELETE: FAILED'
-        #For the success, second get should be void
-        else:
-            if get7['total'] == get6['total'] - 1 and get8 == get1:
-                #print 'the delete is successful:\n'
-                #pp.pprint(get6)
-                print 'services_name_offerings_name_DELETE: SUCCESS'
-                success_delete = True
-            else:
-                if v:
-                    doc.write('\n\nservices_name_offerings_name_DELETE: the element has not been deleted')
-                    doc.write('\nDelete:\n')            
-                    doc.write(pp.pformat(delete1))     
-                    doc.write('\nGet, before:\n')
-                    doc.write(pp.pformat(get6))
-                    doc.write('\nGet, after:\n')
-                    doc.write(pp.pformat(get7))
-                print 'services_name_offerings_name_DELETE: FAILED'
-    #If post not successful, failure
-    else:
-        if v:
-            doc.write('\n\nservices_name_offerings_name_DELETE: the request has not been successful')
+            doc.write('services_name_offerings_name_DELETE: FAILED')
+            doc.write('\n\nservices_name_offerings_name_DELETE: the results remained the same')
             doc.write('\nDelete:\n')            
             doc.write(pp.pformat(delete1))     
             doc.write('\nGet, before:\n')
             doc.write(pp.pformat(get6))
             doc.write('\nGet, after:\n')
             doc.write(pp.pformat(get7))
-        print 'services_name_offerings_name_DELETE: FAILED'
+        #For the success, second get should be void
+        else:
+            if get7['total'] == get6['total'] - 1 and get8 == get1:
+                #doc.write('the delete is successful:\n'
+                #pp.pprint(get6)
+                doc.write('services_name_offerings_name_DELETE: SUCCESS')
+                success_delete = True
+            else:
+                doc.write('services_name_offerings_name_DELETE: FAILED')
+                doc.write('\n\nservices_name_offerings_name_DELETE: the element has not been deleted')
+                doc.write('\nDelete:\n')            
+                doc.write(pp.pformat(delete1))     
+                doc.write('\nGet, before:\n')
+                doc.write(pp.pformat(get6))
+                doc.write('\nGet, after:\n')
+                doc.write(pp.pformat(get7))
+    #If post not successful, failure
+    else:
+        doc.write('services_name_offerings_name_DELETE: FAILED')
+        doc.write('\n\nservices_name_offerings_name_DELETE: the request has not been successful')
+        doc.write('\nDelete:\n')            
+        doc.write(pp.pformat(delete1))     
+        doc.write('\nGet, before:\n')
+        doc.write(pp.pformat(get6))
+        doc.write('\nGet, after:\n')
+        doc.write(pp.pformat(get7))
             
     
     
     #Check for two successful requests to have the same result
     if get9['success'] and get10['success']:
         if get9 == get10:
-            print 'services_name_offerings_name_procedures_GET: SUCCESS'
+            doc.write('services_name_offerings_name_procedures_GET: SUCCESS')
             success_get3 = True
         else:
-            if v:
-                doc.write('\n\nservices_name_offerings_name_procedures_GET: the results are not all the same')
-                doc.write('\nFirst get:\n')
-                doc.write(pp.pformat(get9))
-                doc.write('\nSecond get:\n')
-                doc.write(pp.pformat(get10))
-            print 'services_name_offerings_name_procedures_GET: FAILED'
-    else:
-        if v:
-            doc.write('\n\nservices_name_offerings_name_procedures_GET: the requests have not been successful')
+            doc.write('services_name_offerings_name_procedures_GET: FAILED')
+            doc.write('\n\nservices_name_offerings_name_procedures_GET: the results are not all the same')
             doc.write('\nFirst get:\n')
             doc.write(pp.pformat(get9))
             doc.write('\nSecond get:\n')
             doc.write(pp.pformat(get10))
-        print 'services_name_offerings_name_procedures_GET: FAILED'
+    else:
+        doc.write('services_name_offerings_name_procedures_GET: FAILED')
+        doc.write('\n\nservices_name_offerings_name_procedures_GET: the requests have not been successful')
+        doc.write('\nFirst get:\n')
+        doc.write(pp.pformat(get9))
+        doc.write('\nSecond get:\n')
+        doc.write(pp.pformat(get10))
         
         
     #Check for two successful requests to have the same result
     if get11['success'] and get12['success']:
         if get11 == get12:
-            print 'services_name_offerings_name_procedures_operations_memberlist_GET: SUCCESS'
+            doc.write('services_name_offerings_name_procedures_operations_memberlist_GET: SUCCESS')
             success_getmem = True
         else:
-            if v:
-                doc.write('\n\nservices_name_offerings_name_procedures_operations_memberlist_GET: the results are not all the same')
-                doc.write('\nFirst get:\n')
-                doc.write(pp.pformat(get11))
-                doc.write('\nSecond get:\n')
-                doc.write(pp.pformat(get12))
-            print 'services_name_offerings_name_procedures_operations_memberlist_GET: FAILED'
-    else:
-        if v:
-            doc.write('\n\nservices_name_offerings_name_procedures_operations_memberlist_GET: the requests have not been successful')
+            doc.write('services_name_offerings_name_procedures_operations_memberlist_GET: FAILED')
+            doc.write('\n\nservices_name_offerings_name_procedures_operations_memberlist_GET: the results are not all the same')
             doc.write('\nFirst get:\n')
             doc.write(pp.pformat(get11))
             doc.write('\nSecond get:\n')
             doc.write(pp.pformat(get12))
-        print 'services_name_offerings_name_procedures_operations_memberlist_GET: FAILED'
+    else:
+        doc.write('services_name_offerings_name_procedures_operations_memberlist_GET: FAILED')
+        doc.write('\n\nservices_name_offerings_name_procedures_operations_memberlist_GET: the requests have not been successful')
+        doc.write('\nFirst get:\n')
+        doc.write(pp.pformat(get11))
+        doc.write('\nSecond get:\n')
+        doc.write(pp.pformat(get12))
         
         
     #Check for two successful requests to have the same result
     if get13['success'] and get14['success']:
         if get13 == get14:
-            print 'services_name_offerings_name_procedures_operations_nonmemberlist_GET: SUCCESS'
+            doc.write('services_name_offerings_name_procedures_operations_nonmemberlist_GET: SUCCESS')
             success_getnmem = True
         else:
-            if v:
-                doc.write('\n\nservices_name_offerings_name_procedures_operations_nonmemberlist_GET: the results are not all the same')
-                doc.write('\nFirst get:\n')
-                doc.write(pp.pformat(get13))
-                doc.write('\nSecond get:\n')
-                doc.write(pp.pformat(get14))
-            print 'services_name_offerings_name_procedures_operations_nonmemberlist_GET: FAILED'
-    else:
-        if v:
-            doc.write('\n\nservices_name_offerings_name_procedures_operations_nonmemberlist_GET: the requests have not been successful')
+            doc.write('services_name_offerings_name_procedures_operations_nonmemberlist_GET: FAILED')
+            doc.write('\n\nservices_name_offerings_name_procedures_operations_nonmemberlist_GET: the results are not all the same')
             doc.write('\nFirst get:\n')
             doc.write(pp.pformat(get13))
             doc.write('\nSecond get:\n')
             doc.write(pp.pformat(get14))
-        print 'services_name_offerings_name_procedures_operations_nonmemberlist_GET: FAILED'
+            
+    else:
+        doc.write('services_name_offerings_name_procedures_operations_nonmemberlist_GET: FAILED')
+        doc.write('\n\nservices_name_offerings_name_procedures_operations_nonmemberlist_GET: the requests have not been successful')
+        doc.write('\nFirst get:\n')
+        doc.write(pp.pformat(get13))
+        doc.write('\nSecond get:\n')
+        doc.write(pp.pformat(get14))
+        
         
         
   #Check for two successful requests to have the same result
     if get15['success'] and get16['success']:
         if get15 == get16:
-            print 'services_name_offerings_name_operations_getlist_GET: SUCCESS'
+            doc.write('services_name_offerings_name_operations_getlist_GET: SUCCESS')
             success_getlist = True
         else:
-            if v:
-                doc.write('\n\nservices_name_offerings_name_operations_getlist_GET: the results are not all the same')
-                doc.write('\nFirst get:\n')
-                doc.write(pp.pformat(get15))
-                doc.write('\nSecond get:\n')
-                doc.write(pp.pformat(get16))
-            print 'services_name_offerings_name_operations_getlist_GET: FAILED'
-    else:
-        if v:
-            doc.write('\n\nservices_name_offerings_name_operations_getlist_GET: the requests have not been successful')
+            doc.write('services_name_offerings_name_operations_getlist_GET: FAILED')
+            doc.write('\n\nservices_name_offerings_name_operations_getlist_GET: the results are not all the same')
             doc.write('\nFirst get:\n')
             doc.write(pp.pformat(get15))
             doc.write('\nSecond get:\n')
             doc.write(pp.pformat(get16))
-        print 'services_name_offerings_name_operations_getlist_GET: FAILED'
+            
+    else:
+        doc.write('services_name_offerings_name_operations_getlist_GET: FAILED')
+        doc.write('\n\nservices_name_offerings_name_operations_getlist_GET: the requests have not been successful')
+        doc.write('\nFirst get:\n')
+        doc.write(pp.pformat(get15))
+        doc.write('\nSecond get:\n')
+        doc.write(pp.pformat(get16))
+        
         
    
     #Checks for the POST to be successful by comparing two GETs
     if post2['success']:
-        print 'services_name_offerings_name_procedures_name_POST: SUCCESS'
+        doc.write('services_name_offerings_name_procedures_name_POST: SUCCESS')
         success_postprog= True
     #If post not successful, failure
     else:
-        if v:
-            doc.write('\n\nservices_name_offerings_name_procedures_name_POST: post failed')
-            doc.write('\nPost:\n')
-            doc.write(pp.pformat(post2))
-        print 'services_name_offerings_name_procedures_name_POST: FAILED'     
+        doc.write('services_name_offerings_name_procedures_name_POST: FAILED')
+        doc.write('\n\nservices_name_offerings_name_procedures_name_POST: post failed')
+        doc.write('\nPost:\n')
+        doc.write(pp.pformat(post2))
+             
         
        
     #Checks for the DELETE to be successful by comparing two GETs
     if delete2['success']:
-        print 'services_name_offerings_name_procedures_name_DELETE: SUCCESS'
+        doc.write('services_name_offerings_name_procedures_name_DELETE: SUCCESS')
         success_delprog = True
     #If post not successful, failure
     else:
-        if v:
-            doc.write('\n\nservices_name_offerings_name_procedures_name_DELETEE: the request has not been successful')
-            doc.write('\nDelete:\n')            
-            doc.write(pp.pformat(delete2))
-        print 'services_name_offerings_name_procedures_name_DELETE: FAILED'       
+        doc.write('services_name_offerings_name_procedures_name_DELETE: FAILED')       
+        doc.write('\n\nservices_name_offerings_name_procedures_name_DELETEE: the request has not been successful')
+        doc.write('\nDelete:\n')            
+        doc.write(pp.pformat(delete2))
        
     
         
