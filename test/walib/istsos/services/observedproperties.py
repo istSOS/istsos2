@@ -138,18 +138,17 @@ def test_observedproperties(doc):
             doc.write(pp.pformat(get2))
             doc.write('\nGet, after:\n')
             doc.write(pp.pformat(get3))
-            doc.write('services_name_observedproperties_POST: FAILED'))
+            doc.write('services_name_observedproperties_POST: FAILED')
     #If post not successful, failure
     else:
-        if v:
-            doc.write('\n\nservices_name_observedproperties_POST: post FAILED'))
-            doc.write('\nPost:\n')
-            doc.write(pp.pformat(post1))
-            doc.write('\nGet, before:\n')
-            doc.write(pp.pformat(get2))
-            doc.write('\nGet, after:\n')
-            doc.write(pp.pformat(get3))
-        
+        doc.write('\n\nservices_name_observedproperties_POST: post FAILED')
+        doc.write('\nPost:\n')
+        doc.write(pp.pformat(post1))
+        doc.write('\nGet, before:\n')
+        doc.write(pp.pformat(get2))
+        doc.write('\nGet, after:\n')
+        doc.write(pp.pformat(get3))
+    
             
     
     #Check for two successful requests to have the same result
