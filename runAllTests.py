@@ -27,7 +27,7 @@ def run_tests(arg):
         
     
     if verb:
-        f = open(path.abspath(path.dirname(__file__))+'/log/test.log', 'w')
+        f = open(path.abspath(path.dirname(__file__))+'/logs/test.log', 'w')
     else:
         f = None
     
