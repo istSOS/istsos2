@@ -115,7 +115,17 @@ def run_tests(arg):
     address = 'http://localhost/istsos/wa/istsos/services'
     res = tpost.POST("",service,address)
     if not res['success']:
-        raise SystemError("Unable to create a new SOS service: %s" % res['message'])
+        if res['message'].find("already exists"):
+            deladdress = 'http://localhost/istsos/wa/istsos/services/test'
+            delres = tdelete.DELETE("",deladdress)
+            if delres['success']:
+                res = tpost.POST("",service,address)
+                if not res['success']:
+                    raise SystemError("Unable to create a new SOS service: %s" % res['message'])
+            else:
+                raise SystemError("Unable to delete existing test SOS service: %s" % res['message'])
+        else:
+            raise SystemError("Unable to create a new SOS service: %s" % res['message'])
     #----- ADD UNIT OF MEASURE ------
     tuom = {
         "name": "test", 
