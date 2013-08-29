@@ -102,11 +102,15 @@ class VirtualProcess():
                 raise sosException.SOSException(3,"setGenericVar argument not appripriate")        
         self.ob_input[name] = data
     
-    def setDischargeCurves(self,hqFile):
+    def setDischargeCurves(self,procedure):
         "method for setting h-q tranformation tables/curves"       
         #set requested period
         #================================================
-        hqFile = self.filter.sosConfig.virtual_HQ_folder + "/" + hqFile
+        hqFile = os.path.join(
+                        self.filter.sosConfig.self.virtual_processes_folder,
+                        procedure,
+                        procedure+".dat"
+				)
         tp=[]
         if self.filter.eventTime == None:
             tp = [None,None]
@@ -126,7 +130,10 @@ class VirtualProcess():
         period = (min(tp),max(tp))
         #get required parameters
         #==================================================
-        hq_fh = open(hqFile,'r')
+        try:        
+            hq_fh = open(hqFile,'r')
+        except Exception as e:
+            raise sosException.SOSException(3,"Unable to open hq rating curve file at: %s" % hqFile)
         lines = hq_fh.readlines()
         #read header
         hqs = {'from':[],'to':[],'low':[],'up': [],'A':[],'B':[],'C':[],'K':[]}
