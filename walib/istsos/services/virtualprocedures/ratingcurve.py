@@ -15,29 +15,26 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-from walib import procedure, resource, utils, databaseManager, configManager
 from walib.resource import waResourceService
-import sys, os, shutil, errno
-from walib.resource import waResourceConfigurator, waResourceService
-import traceback
-import urllib
+import sys, os
 
-class waRatingcurves(waResourceService):
+# istsos/services/test/virtualprocedures/Q_TEST/ratingcurves
+class waRatingcurve(waResourceService):
     """
     class to handle SOS rating curve for virtual procedure of type HQ
-    called with a request to istsos/services/{serviceName}/procedures/{procedurename}/ratingcurve
+    called with a request to istsos/services/{serviceName}/virtualprocedures/{procedurename}/ratingcurve
     
     list of ordered dictionary of rating-curve parameters:
         [ 
          {
-          'A': '5.781',
-          'B': '0.25',
-          'C': '1.358',
-          'K': '0',
-          'from': '1982-01-01T00:00+00:00',
-          'low_val': '0',
-          'to': '1983-01-01T00:00+00:00',
-          'up_val': '1000'
+          "A": "5.781",
+          "B": "0.25",
+          "C": "1.358",
+          "K": "0",
+          "from": "1982-01-01T00:00+00:00",
+          "low_val": "0",
+          "to": "1983-01-01T00:00+00:00",
+          "up_val": "1000"
          }, 
          {...},{...},...
         ]
@@ -45,18 +42,15 @@ class waRatingcurves(waResourceService):
     
     def __init__(self,waEnviron):
         waResourceService.__init__(self,waEnviron)
-        self.RCpath = self.serviceconf.discharges["virtual_HQ_folder"]
-        try:
-            ii = self.pathinfo.index("procedures")
-            if not self.pathinfo.index("ratingcurve") == ii+2:
-                raise Exception()
-        except:
-            self.setException("rating-curve procedure name is required")
-        self.RCprocedure = urllib.unquote(self.pathinfo[ii+1])
-        self.RCfilename = self.RCpath + "/" + self.RCprocedure + "_HQ.dat"
-
+        self.servicename = self.pathinfo[2]
+        self.procedurename =  self.pathinfo[4]
+        self.procedureFolder = os.path.join(self.servicepath, "/virtual/", self.procedurename)
+        self.RCfilename = os.path.join(self.procedureFolder, self.procedurename + ".dat")
+        
     def executeGet(self):
         #filename = self.RCpath + "/" + self.RCprocedure + ".dat"
+        if not os.path.exists(self.procedureFolder):
+            os.makedirs(self.procedureFolder) 
         RClist = RCload(self.RCfilename)
         self.setData(RClist)
         self.setMessage("Rating-curve parameters of procedure <%s> successfully retrived" % self.RCprocedure)        

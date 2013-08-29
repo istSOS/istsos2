@@ -139,18 +139,39 @@ def initResource(waEnviron):
                         resource = pathinfo.pop(0)
                         print >> sys.stderr, resource
                         
-                        if resource == 'ratingcurve':
-                            print >> sys.stderr, resource
-                            from walib.istsos.services.ratingcurve import ratingcurve
-                            return ratingcurve.waRatingcurves(waEnviron)
-                        
-                        elif resource == 'operations':
+                        if resource == 'operations':
                             resource = pathinfo.pop(0)
                             print >> sys.stderr, resource
                             
                             if resource == "getlist":
                                 from walib.istsos.services.procedures import procedures
                                 return procedures.waGetlist(waEnviron)
+                        
+                # ---------------------------------------
+                # Entering istsos.services.virtualprocedures
+                # ---------------------------------------
+                elif resource == "virtualprocedures":
+                    print >> sys.stderr, resource
+                    
+                    if len(pathinfo)<=1:
+                        from walib.istsos.services.virtualprocedures import virtualprocedures
+                        return virtualprocedures.waVirtualProcedures(waEnviron)
+                                        
+                    else:
+                        
+                        resource = pathinfo.pop(0)
+                        resource = pathinfo.pop(0)
+                        print >> sys.stderr, resource
+
+                        if resource == 'code':
+                            print >> sys.stderr, resource
+                            from walib.istsos.services.virtualprocedures import code
+                            return code.waCode(waEnviron)
+                            
+                        if resource == 'ratingcurve':
+                            print >> sys.stderr, resource
+                            from walib.istsos.services.virtualprocedures import ratingcurve
+                            return ratingcurve.waRatingcurves(waEnviron)
                 
                 # ---------------------------------------
                 # Entering istsos.services.observedproperties

@@ -134,15 +134,16 @@ class waResourceService(waResourceAdmin):
         if not os.path.isdir(self.waconf.paths["services"]):
             raise Exception("servicespath is not configured in the wa.cfg file [%s]." % self.waconf.paths["services"])
             
-        defaultpath = os.path.join(self.waconf.paths["services"], "default.cfg")
-        if not os.path.isfile(defaultpath):
-            raise Exception("istsos [default] configuration file not found in %s." % (defaultpath))
+        defaultCFGpath = os.path.join(self.waconf.paths["services"], "default.cfg")
+        if not os.path.isfile(defaultCFGpath):
+            raise Exception("istsos [default] configuration file not found in %s." % (defaultCFGpath))
         
         if not (self.service == None or self.service == 'default'):
             
-            servicepath = os.path.join(self.waconf.paths["services"], "%s" % self.service, "%s.cfg" % self.service)
-            if not os.path.isfile(servicepath):
-                raise Exception("istsos [%s] configuration file not found in %s." % (self.service,servicepath))
+            serviceCFGpath = os.path.join(self.waconf.paths["services"], "%s" % self.service, "%s.cfg" % self.service)
+            if not os.path.isfile(serviceCFGpath):
+                raise Exception("istsos [%s] configuration file not found in %s." % (self.service,serviceCFGpath))
+            self.servicepath = os.path.join(self.waconf.paths["services"], "%s" % self.service)
             
             sensormlpath = os.path.join(self.waconf.paths["services"], "%s" % self.service, "sml")
             if not os.path.isdir(sensormlpath):
@@ -155,9 +156,9 @@ class waResourceService(waResourceAdmin):
             self.virtualpath = virtualpath
         
         if self.service == None or self.service == 'default':
-            self.serviceconf = configManager.waServiceConfig(defaultpath)
+            self.serviceconf = configManager.waServiceConfig(defaultCFGpath)
         else:
-            self.serviceconf = configManager.waServiceConfig(defaultpath,servicepath)
+            self.serviceconf = configManager.waServiceConfig(defaultCFGpath,serviceCFGpath)
 
 
 class waResourceConfigurator(waResourceService):
