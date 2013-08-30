@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from walib import databaseManager
-from walib.istsos.services.procedures import waProcedures
+from walib.istsos.services.procedures.procedures import waProcedures
 
 import os
 import shutil
