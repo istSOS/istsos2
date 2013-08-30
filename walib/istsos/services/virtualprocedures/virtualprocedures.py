@@ -60,7 +60,7 @@ class waVirtualProcedures(waProcedures):
                 servicedb.mogrify(sql,(self.json["system"],))
                 self.procedurename = self.json["system"]
                 waProcedures.executeDelete(self)
-                raise Exception("SQL error in registering %s" %self.json["system"])
+                raise Exception("Error in registering %s" %self.json["system"])
                 
                 
             
