@@ -81,12 +81,12 @@ class waVirtualProcedures(waProcedures):
         #==================================
         waProcedures.executeDelete(self)
         if self.response['success'] == True:
-                #==================================
-                # remove the virtual files and folders
-                #==================================
-                procedureFolder = os.path.join(self.servicepath, "/virtual/", self.procedurename)
-                if os.path.exists(procedureFolder):
-                    shutil.rmtree(procedureFolder)
+            #==================================
+            # remove the virtual files and folders
+            #==================================
+            procedureFolder = os.path.join(self.servicepath, "/virtual/", self.procedurename)
+            if os.path.exists(procedureFolder):
+                shutil.rmtree(procedureFolder)
             
     def executeGet(self):
         if self.procedurename==None:
