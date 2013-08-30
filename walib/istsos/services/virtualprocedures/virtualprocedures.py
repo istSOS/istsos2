@@ -56,6 +56,7 @@ class waVirtualProcedures(waProcedures):
                 else:
                     print >> sys.stderr, "content: %s" %(content)
                 with open(sensorml, 'w') as content_file:
+                    print >> sys.stderr, "content: %s" %(content)
                     content_file.write(content)
                 #=====================================
                 # create the virtual procedure folder
