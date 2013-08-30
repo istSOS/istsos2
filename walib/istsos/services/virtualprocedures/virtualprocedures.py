@@ -3,7 +3,7 @@
 from walib import databaseManager
 from walib.istsos.services.procedures.procedures import waProcedures
 
-import os
+import os, sys
 import shutil
 
 # istsos/services/test/virtualprocedures/Q_TEST
@@ -50,10 +50,12 @@ class waVirtualProcedures(waProcedures):
                 raise Exception("SQL error in registering %s" %self.procedurename)
             #=====================================
             # create the virtual procedure folder
-            #=====================================       
+            #=====================================      
             procedureFolder = os.path.join(self.servicepath, "/virtual/", self.json["system"])
+            print >> sys.stderr, procedureFolder
             if not os.path.exists(procedureFolder):
-                os.makedirs(procedureFolder)            
+                os.makedirs(procedureFolder)     
+                
             
     def executeDelete(self):
         if self.procedurename==None:
