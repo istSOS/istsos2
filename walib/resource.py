@@ -18,7 +18,7 @@
 import sys, os, traceback
 from walib import configManager
 
-class waResource():
+class waResource(object):
     """
     Base class for istSOS Web Admin REST operations
     """
