@@ -45,7 +45,7 @@ class waVirtualProcedures(waProcedures):
             try:
                 servicedb.execute(sql,(self.json["system"],))
                 #chenge the sml replace("insitu-fixed-point","virtual")
-                sensorml = os.path.join(self.servicepath, "sml", self.procedurename+".xml")
+                sensorml = os.path.join(self.servicepath, "sml", self.json["system"]+".xml")
                 with open(sensorml, 'r') as content_file:
                     content = content_file.read()
                     content.replace("insitu-fixed-point","virtual")
