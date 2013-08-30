@@ -50,7 +50,11 @@ class waVirtualProcedures(waProcedures):
                 with open(sensorml, 'r') as content_file:
                     content = content_file.read()
                     print >> sys.stderr, "content: %s" %(content)
+                if content.find("insitu-fixed-point")>0:
+                    print >> sys.stderr, "FIND!!!" %(content)
                     content.replace("insitu-fixed-point","virtual")
+                else:
+                    print >> sys.stderr, "content: %s" %(content)
                 with open(sensorml, 'w') as content_file:
                     content_file.write(content)
                 #=====================================
