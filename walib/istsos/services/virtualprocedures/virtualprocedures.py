@@ -43,6 +43,11 @@ class waVirtualProcedures(waProcedures):
             #print >> sys.stderr, "sql: %s" %(sql)
             try:
                 servicedb.execute(sql,(self.procedurename,))
+                #chenge the sml replace("insitu-fixed-point","virtual")
+                #
+                with open(self.codefile, 'r') as content_file:
+                    content = content_file.read()
+                    content.replace("insitu-fixed-point","virtual")
                 #=====================================
                 # create the virtual procedure folder
                 #=====================================      
