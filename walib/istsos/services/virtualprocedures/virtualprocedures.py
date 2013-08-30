@@ -20,6 +20,7 @@ class waVirtualProcedures(waProcedures):
     def executePost(self):
         if not self.procedurename==None:
             raise Exception("POST action with url procedure name not supported")
+        self.procedurename = self.json["system"]
         #==================================
         # create the procedure as fixed
         #==================================
@@ -51,7 +52,7 @@ class waVirtualProcedures(waProcedures):
                 #=====================================
                 # create the virtual procedure folder
                 #=====================================      
-                procedureFolder = os.path.join(self.servicepath, "virtual", self.json["system"])
+                procedureFolder = os.path.join(self.servicepath, "virtual", self.procedurename)
                 if not os.path.exists(procedureFolder):
                     os.makedirs(procedureFolder) 
             except Exception as e:
