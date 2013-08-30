@@ -61,7 +61,7 @@ class waVirtualProcedures(waProcedures):
                 #=====================================
                 # create the virtual procedure folder
                 #=====================================      
-                procedureFolder = os.path.join(self.servicepath, "virtual", self.procedurename)
+                procedureFolder = os.path.join(self.servicepath, "virtual", self.json["system"])
                 if not os.path.exists(procedureFolder):
                     os.makedirs(procedureFolder)
             except Exception as e:
