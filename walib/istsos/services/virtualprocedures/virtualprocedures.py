@@ -49,6 +49,7 @@ class waVirtualProcedures(waProcedures):
                 print >> sys.stderr, "sensorml: %s" %(sensorml)
                 with open(sensorml, 'r') as content_file:
                     content = content_file.read()
+                    print >> sys.stderr, "content: %s" %(content)
                     content.replace("insitu-fixed-point","virtual")
                 with open(sensorml, 'w') as content_file:
                     content_file.write(content)
@@ -57,9 +58,8 @@ class waVirtualProcedures(waProcedures):
                 #=====================================      
                 procedureFolder = os.path.join(self.servicepath, "virtual", self.procedurename)
                 if not os.path.exists(procedureFolder):
-                    os.makedirs(procedureFolder) 
+                    os.makedirs(procedureFolder)
             except Exception as e:
-                print str(e)
                 servicedb.mogrify(sql,(self.json["system"],))
                 self.procedurename = self.json["system"]
                 waProcedures.executeDelete(self)
