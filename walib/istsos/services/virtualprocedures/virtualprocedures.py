@@ -10,7 +10,7 @@ import shutil
 class waVirtualProcedures(waProcedures):
     
     def __init__(self,waEnviron):
-        super(waProcedures, self).__init__(self,waEnviron)
+        super(waProcedures, self).__init__(waEnviron)
         self.servicename = self.pathinfo[2]
         if not self.pathinfo[-1]=="virtualprocedures" and len(self.pathinfo)>4:
             self.procedurename = self.pathinfo[4]
