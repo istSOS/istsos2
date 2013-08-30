@@ -46,9 +46,11 @@ class waVirtualProcedures(waProcedures):
                 servicedb.execute(sql,(self.json["system"],))
                 #chenge the sml replace("insitu-fixed-point","virtual")
                 sensorml = os.path.join(self.servicepath, "sml", self.procedurename+".xml")
-                with open(self.codefile, 'r') as content_file:
+                with open(sensorml, 'r') as content_file:
                     content = content_file.read()
                     content.replace("insitu-fixed-point","virtual")
+                with open(sensorml, 'w') as content_file:
+                    content_file.write(content)
                 #=====================================
                 # create the virtual procedure folder
                 #=====================================      
@@ -60,7 +62,7 @@ class waVirtualProcedures(waProcedures):
                 servicedb.mogrify(sql,(self.json["system"],))
                 self.procedurename = self.json["system"]
                 waProcedures.executeDelete(self)
-                raise Exception("Error in registering %s" %self.json["system"])
+                raise Exception("Error in registering %s: %s" %(self.json["system"],e))
                 
                 
             
