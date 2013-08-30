@@ -51,7 +51,7 @@ class waVirtualProcedures(waProcedures):
                     content = content_file.read()
                     print >> sys.stderr, "content: %s" %(content)
                 if content.find("insitu-fixed-point")>0:
-                    print >> sys.stderr, "FIND!!!" %(content)
+                    print >> sys.stderr, "FIND!!!"
                     content.replace("insitu-fixed-point","virtual")
                 else:
                     print >> sys.stderr, "content: %s" %(content)
