@@ -16,7 +16,7 @@ class waVirtualProcedures(waProcedures):
             self.procedurename = self.pathinfo[4]
         else:
             self.procedurename = None
-        print >> sys.stderr, "SRVPTH: %s - CONFPATH: %s - SRV: %s " %( self.servicepath,self.waconf.paths["services"], self.service)
+            
     def executePost(self):
         if not self.procedurename==None:
             raise Exception("POST action with url procedure name not supported")
@@ -43,18 +43,18 @@ class waVirtualProcedures(waProcedures):
             #print >> sys.stderr, "sql: %s" %(sql)
             try:
                 servicedb.execute(sql,(self.procedurename,))
+                #=====================================
+                # create the virtual procedure folder
+                #=====================================      
+                procedureFolder = os.path.join(self.servicepath, "virtual", self.json["system"])
+                if not os.path.exists(procedureFolder):
+                    os.makedirs(procedureFolder) 
             except Exception as e:
                 print str(e)
                 servicedb.mogrify(sql,(self.procedurename,))
                 waProcedures.executeDelete(self)
                 raise Exception("SQL error in registering %s" %self.procedurename)
-            #=====================================
-            # create the virtual procedure folder
-            #=====================================      
-            procedureFolder = os.path.join(self.servicepath, "/virtual/", self.json["system"])
-            print >> sys.stderr, procedureFolder
-            if not os.path.exists(procedureFolder):
-                os.makedirs(procedureFolder)     
+                
                 
             
     def executeDelete(self):
