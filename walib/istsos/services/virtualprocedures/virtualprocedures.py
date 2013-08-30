@@ -52,7 +52,7 @@ class waVirtualProcedures(waProcedures):
                     print >> sys.stderr, "content: %s" %(content)
                 if content.find("insitu-fixed-point")>0:
                     print >> sys.stderr, "FIND!!!"
-                    content.replace("insitu-fixed-point","virtual")
+                    content = content.replace("insitu-fixed-point","virtual")
                 else:
                     print >> sys.stderr, "content: %s" %(content)
                 with open(sensorml, 'w') as content_file:
