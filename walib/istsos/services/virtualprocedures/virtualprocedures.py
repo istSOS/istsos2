@@ -16,7 +16,7 @@ class waVirtualProcedures(waProcedures):
             self.procedurename = self.pathinfo[4]
         else:
             self.procedurename = None
-        print >> sys.stderr, "SRVPTH: %S - CONFPATH: %s - SRV: %s " %( self.servicepath,self.waconf.paths["services"], self.service)
+        print >> sys.stderr, "SRVPTH: %s - CONFPATH: %s - SRV: %s " %( self.servicepath,self.waconf.paths["services"], self.service)
     def executePost(self):
         if not self.procedurename==None:
             raise Exception("POST action with url procedure name not supported")
