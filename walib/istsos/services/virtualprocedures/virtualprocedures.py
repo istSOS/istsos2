@@ -20,7 +20,7 @@ class waVirtualProcedures(waProcedures):
     def executePost(self):
         if not self.procedurename==None:
             raise Exception("POST action with url procedure name not supported")
-        self.procedurename = self.json["system"]
+        
         #==================================
         # create the procedure as fixed
         #==================================
@@ -43,7 +43,7 @@ class waVirtualProcedures(waProcedures):
             sql  += " SET id_oty_fk = 3 WHERE name_prc = %s"
             #print >> sys.stderr, "sql: %s" %(sql)
             try:
-                servicedb.execute(sql,(self.procedurename,))
+                servicedb.execute(sql,(self.json["system"],))
                 #chenge the sml replace("insitu-fixed-point","virtual")
                 #
                 with open(self.codefile, 'r') as content_file:
@@ -57,7 +57,8 @@ class waVirtualProcedures(waProcedures):
                     os.makedirs(procedureFolder) 
             except Exception as e:
                 print str(e)
-                servicedb.mogrify(sql,(self.procedurename,))
+                servicedb.mogrify(sql,(self.json["system"],))
+                self.procedurename = self.json["system"]
                 waProcedures.executeDelete(self)
                 raise Exception("SQL error in registering %s" %self.procedurename)
                 
