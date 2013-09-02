@@ -348,7 +348,10 @@ class waProcedures(waResourceService):
         )
         
         smlobj = procedure.Procedure()
-        smlobj.loadXML(res.content)
+        try:
+            smlobj.loadXML(res.content)
+        except Exception as e:
+            raise Exception("sensor '%s' not found" % self.procedurename)
         
         # Searching for the assignedSensorId from the database
         servicedb = databaseManager.PgDB(
