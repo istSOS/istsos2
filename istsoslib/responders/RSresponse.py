@@ -265,8 +265,8 @@ class RegisterSensorResponse:
         )
         params=[]
         
-        print >> sys.stderr, "constr:%s" % filter.constr
-        print >> sys.stderr, "opr:%s" % opr_ids, filter.names
+        #print >> sys.stderr, "constr:%s" % filter.constr
+        #print >> sys.stderr, "opr:%s" % opr_ids, filter.names
         
         
         for i in range(len(opr_ids)):
