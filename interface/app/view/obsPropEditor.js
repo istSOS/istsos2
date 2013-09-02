@@ -196,24 +196,36 @@ Ext.define('istsos.view.obsPropEditor', {
         },this);
         
         Ext.getCmp("btnRemove").on("click",function(){
-            var sm = Ext.getCmp("gridop").getSelectionModel();
-            var rec = sm.getSelection();
-            if (rec.length>0) {
-                Ext.Ajax.request({
-                    url: Ext.String.format('{0}/istsos/services/{1}/observedproperties/{2}',wa.url, this.istService,Ext.getCmp('opDefinition').originalValue),
+            //var sm = Ext.getCmp("gridop").getSelectionModel();
+            //var rec = sm.getSelection();
+            //if (rec.length>0) {
+            Ext.Msg.show({
+                    title:'Erasing observed property',
+                    msg: 'Are you sure you want to erase the observed property?',
+                    buttons: Ext.Msg.YESNO,
+                    icon: Ext.Msg.QUESTION,
                     scope: this,
-                    method: "DELETE",
-                    jsonData: {
-                        'name': rec[0].get('name'),
-                        'description': rec[0].get('description')
-                    },
-                    success: function(response){
-                        this.resetForm();
-                        Ext.getStore("gridobservedproperties").load();
-                        Ext.getCmp('frmObservedProperties').hide();
+                    fn: function(btn){
+                        if (btn == 'yes'){
+                            Ext.Ajax.request({
+                                url: Ext.String.format('{0}/istsos/services/{1}/observedproperties/{2}',wa.url, this.istService,Ext.getCmp('opDefinition').originalValue),
+                                scope: this,
+                                method: "DELETE",
+                                /*jsonData: {
+                                    'name': rec[0].get('name'),
+                                    'description': rec[0].get('description')
+                                },*/
+                                success: function(response){
+                                    this.resetForm();
+                                    Ext.getStore("gridobservedproperties").load();
+                                    Ext.getCmp('frmObservedProperties').hide();
+                                }
+                            });      
+                        }
                     }
-                });                
-            }
+            });
+                          
+            //}
         },this);
         
         
