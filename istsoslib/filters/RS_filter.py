@@ -236,8 +236,7 @@ class sosRSfilter(f.sosFilter):
                                                 %(ns['om'],ns['gml'],ns['gml'],ns['gml'],geomtype) )
                 import sys                                
                 if GMLfeature:
-                    
-                    print >> sys.stderr, "%s" % et.tostring(GMLfeature)
+                    print >> sys.stderr, "GMLfeat:\n%s" % et.tostring(GMLfeature)
                 else: 
                     print >> sys.stderr, "NONE %s" % geomtype
                 
@@ -245,6 +244,8 @@ class sosRSfilter(f.sosFilter):
                     self.foiType = geomtype
                     self.foiSRS = GMLfeature.attrib["srsName"].split(":")[-1]
                     self.foiGML = et.tostring(GMLfeature, encoding="UTF-8").replace("<?xml version='1.0' encoding='UTF-8'?>","")
+                    print >> sys.stderr, "foiGMLbyFRS:\n%s" % self.foiGML
+                    
             if self.foiType == None:
                 raise sosException.SOSException(1,"not found valid GML feature, supported: %s "
                                     %(";".join(sosConfig.foiGeometryType)))

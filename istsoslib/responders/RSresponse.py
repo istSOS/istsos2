@@ -63,6 +63,7 @@ class RegisterSensorResponse:
                     id_fty= pgdb.executeInTransaction(sqlIns,params)[0]["id_fty"]
                 except:
                     raise sosException.SOSException(1,"SQL: %s"%(sqlIns))
+            
             sqlIns  = "INSERT INTO %s.foi (name_foi,desc_foi,geom_foi,id_fty_fk)" %(filter.sosConfig.schema)
             sqlIns += " VALUES (%s,%s,st_transform(ST_GeomFromGML(%s),%s),%s) RETURNING id_foi"   
             params = (str(filter.foiName),str(filter.foiDesc),str(filter.foiGML.strip()),int(filter.sosConfig.istsosepsg),int(id_fty))
