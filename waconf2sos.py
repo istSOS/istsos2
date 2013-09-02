@@ -38,7 +38,15 @@ class istsosConfig():
             "istsos_path" : config.istsoslib_path
         }
         
-        serviceobj = resource.waResourceService(waEnviron,waEnviron["pathinfo"][-1],loadjson=False)
+        
+        i = self.pathinfo.index("services")
+        if i>0 and i<len(self.pathinfo)-1:
+            service = self.pathinfo[i+1]
+        else:
+            service = None
+        serviceobj = resource.waResourceService(waEnviron,service,loadjson=False)
+        
+        #serviceobj = resource.waResourceService(waEnviron,waEnviron["pathinfo"][-1],loadjson=False)
         
         self.istsos_librarypath = serviceobj.waconf.paths["istsos"]
         
