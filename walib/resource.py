@@ -120,6 +120,8 @@ class waResourceAdmin(waResource):
 class waResourceService(waResourceAdmin):
     def __init__(self, waEnviron,service=None,loadjson=True):
         waResourceAdmin.__init__(self,waEnviron,loadjson)
+
+        print >> sys.stderr, "service: %s" % service        
         
         if service == None:
             i = self.pathinfo.index("services")
@@ -127,6 +129,9 @@ class waResourceService(waResourceAdmin):
                 self.service = self.pathinfo[i+1]
             else:
                 self.service = None
+                
+            print >> sys.stderr, "self.service: %s" % self.service        
+        
         else:
             self.service = service
         
@@ -139,7 +144,6 @@ class waResourceService(waResourceAdmin):
             raise Exception("istsos [default] configuration file not found in %s." % (defaultCFGpath))
         
         if not (self.service == None or self.service == 'default'):
-            
             serviceCFGpath = os.path.join(self.waconf.paths["services"], "%s" % self.service, "%s.cfg" % self.service)
             if not os.path.isfile(serviceCFGpath):
                 raise Exception("istsos [%s] configuration file not found in %s." % (self.service,serviceCFGpath))

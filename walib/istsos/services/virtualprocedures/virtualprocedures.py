@@ -100,8 +100,8 @@ class waVirtualProcedures(waProcedures):
  
 """
 {
-        "system_id": "P_TRE3",
-        "system": "P_TRE4",
+        "system_id": "uniqueid1",
+        "system": "Q_TEST",
         "description": "ciao",
         "keywords": "uno,due,tre",
         "identification": [],
