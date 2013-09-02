@@ -3,7 +3,63 @@ Ext.define('istsos.view.obsPropEditor', {
 
     initComponent: function() {
         var me = this;
-        var gs = Ext.create('istsos.store.gridObservedProperties');
+        
+        var gs = Ext.create('Ext.data.Store', {
+             storeId: 'gridobservedproperties',
+             proxy: {
+                type: 'ajax',
+                url: '',
+                reader: {
+                    type: 'json',
+                    idProperty: 'definition',
+                    messageProperty: 'message',
+                    root: 'data'
+                }
+            },
+            fields: [
+                {
+                    name: 'name',
+                    type: 'string'
+                },
+                {
+                    name: 'definition',
+                    type: 'string'
+                },
+                {
+                    name: 'description',
+                    type: 'string'
+                },
+                {
+                    name: 'procedures',
+                    type: 'string'
+                },
+                {
+                    name: 'constraint'
+                },
+                {
+                    name: 'constraint2str',
+                    type: 'string',
+                    convert: function(value, record) {
+                        if (record.data.constraint){
+                            if (record.data.constraint.min) { // Greater then
+                                return "From: " + record.data.constraint.min;
+                            } else if (record.data.constraint.max) { // Less then
+                                return "To: " + record.data.constraint.max;
+                            } else if (record.data.constraint.interval) { // Between
+                                return "From: " + record.data.constraint.interval[0] 
+                                + " / To: "  + record.data.constraint.interval[1];
+                            } else if (record.data.constraint.valueList) { // List
+                                return "List: " + record.data.constraint.valueList.join(', ');
+                            }
+                        }
+                        return "-";
+                    }
+                }
+            ]
+         });
+        
+        //var gs = Ext.create('istsos.store.gridObservedProperties');
+        
         Ext.create('istsos.store.Constraint');
         
         me.callParent(arguments);

@@ -5,7 +5,7 @@
         "directAPI": "",
         "spacesToIndent": "4",
         "codeGenFormat": "Class",
-        "exportPath": "/home/geomatica/istsos/interface",
+        "exportPath": "/home/milan/workspace/istsos/google-svn/trunk/interface",
         "extPath": "ext/",
         "lineEnding": "LF",
         "instantiateStore": true,
@@ -6867,6 +6867,7 @@
                             },
                             "codeClass": null,
                             "userConfig": {
+                                "dataIndex": "constraint2str",
                                 "text": "Constraint",
                                 "designer|userClassName": "MyColumn50"
                             }
@@ -8569,7 +8570,7 @@
                                     "codeClass": null,
                                     "userConfig": {
                                         "componentCls": null,
-                                        "html": "\n        <div class='mainHeaderTitle'><img height=28 src='images/istsos-logo.png'/></div>",
+                                        "html": " <div class='mainHeaderTitle'><a href='http://istgeo.ist.supsi.ch/software/istsos/' target='_BLANK'><img height=28 src='images/istsos-logo.png'/></a></div>",
                                         "designer|userClassName": "MyContainer2",
                                         "layout|flex": 1
                                     }
