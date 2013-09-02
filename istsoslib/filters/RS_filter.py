@@ -322,9 +322,8 @@ class sosRSfilter(f.sosFilter):
                             if allow is None:
                                 err_txt = "in <swe:constraint>: <swe:AllowedValues> is mandatory in multiplicity 1"
                                 raise sosException.SOSException(1,err_txt)
-                            #else:
+                            else:
                                 #print >> sys.stderr, "find allowed values"
-                                
                                 
                                 cvals = None
                                 if len(allow)==1:
