@@ -382,7 +382,7 @@ class sosRSfilter(f.sosFilter):
                                     if crole:
                                         cc["role"] = crole
                                     if cvals:
-                                        cc["%s" % ct] = cvals
+                                        cc["%s" % ct] = xvals
                         
                         print >> sys.stderr, "cc = %s" % cc
                         if not cc=={}:
