@@ -3893,7 +3893,7 @@
                                     "userConfig": {
                                         "height": 120,
                                         "itemId": "gridSml",
-                                        "margin": 8,
+                                        "margin": null,
                                         "minHeight": 120,
                                         "title": "",
                                         "forceFit": true,
@@ -4067,6 +4067,7 @@
                             "codeClass": null,
                             "userConfig": {
                                 "hidden": true,
+                                "hideMode": null,
                                 "id": "smlInputs",
                                 "padding": 8,
                                 "checkboxToggle": true,
@@ -4283,7 +4284,7 @@
                             "codeClass": null,
                             "userConfig": {
                                 "id": "smlIdentification",
-                                "padding": 8,
+                                "padding": null,
                                 "checkboxToggle": true,
                                 "collapsed": true,
                                 "collapsible": true,
@@ -4489,36 +4490,38 @@
                             ]
                         },
                         {
-                            "id": "ExtBox1-ext-gen125719",
-                            "type": "form",
+                            "id": "ExtBox1-ext-gen88438",
+                            "type": "fieldset",
                             "reference": {
                                 "name": "items",
                                 "type": "array"
                             },
                             "codeClass": null,
                             "userConfig": {
-                                "border": 0,
-                                "id": "characteristics",
-                                "bodyPadding": null,
-                                "collapsed": false,
-                                "title": "",
-                                "designer|userClassName": "MyForm25"
+                                "checkboxToggle": true,
+                                "collapsed": true,
+                                "collapsible": true,
+                                "title": "Characteristics (optional)",
+                                "designer|userClassName": "MyFieldSet39"
                             },
                             "cn": [
                                 {
-                                    "id": "ExtBox1-ext-gen88438",
-                                    "type": "fieldset",
+                                    "id": "ExtBox1-ext-gen125719",
+                                    "type": "form",
                                     "reference": {
                                         "name": "items",
                                         "type": "array"
                                     },
                                     "codeClass": null,
                                     "userConfig": {
-                                        "checkboxToggle": true,
-                                        "collapsed": true,
-                                        "collapsible": true,
-                                        "title": "Characteristics (optional)",
-                                        "designer|userClassName": "MyFieldSet39"
+                                        "border": 0,
+                                        "id": "characteristics",
+                                        "margin": 0,
+                                        "padding": 0,
+                                        "bodyPadding": null,
+                                        "collapsed": false,
+                                        "title": "",
+                                        "designer|userClassName": "MyForm25"
                                     },
                                     "cn": [
                                         {

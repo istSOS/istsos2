@@ -1129,6 +1129,15 @@ Ext.define('istsos.view.procedure', {
                         }
                     });
                     break;
+                default: // List
+                    ret.push({
+                        "name" : rec.get('name'),
+                        "definition" : rec.get('definition'),
+                        "uom" : rec.get('uom'),
+                        "description" : rec.get('description'),
+                        "constraint" : {}
+                    });
+                    break;
             }
             
             
