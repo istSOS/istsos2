@@ -313,16 +313,18 @@ class sosRSfilter(f.sosFilter):
                         cc = {}
                         constraint = qf.find("{%s}constraint" %(ns['swe']))
                         if constraint:
+                            if "{%s}role" % ns["xlink"] in constraint.attrib:
+                                    crole = constraint.attrib[ "{%s}role" % ns["xlink"] ]
+                            else:
+                                crole = None
+                            
                             allow = constraint.find("{%s}AllowedValues" %(ns['swe']))
                             if allow is None:
                                 err_txt = "in <swe:constraint>: <swe:AllowedValues> is mandatory in multiplicity 1"
                                 raise sosException.SOSException(1,err_txt)
                             else:
                                 print >> sys.stderr, "find allowed values"
-                                if "{%s}role" % ns["xlink"] in allow.attrib:
-                                    crole = allow.attrib[ "{%s}role" % ns["xlink"] ]
-                                else:
-                                    crole = None
+                                
                                 
                                 cvals = None
                                 if len(allow)==1:
@@ -339,28 +341,28 @@ class sosRSfilter(f.sosFilter):
                                         if not len(xvals)==1:
                                             err_txt = "'%s' constraint support/need one values" % ct
                                             raise sosException.SOSException(1,err_txt)
-                                            if not xvals[0].isdigit:
-                                                err_txt = "'%s' constraint support/need one values" % ct
-                                                raise sosException.SOSException(1,err_txt)
-                                            cvals = " ".join(xvals)
+                                        if not xvals[0].isdigit:
+                                            err_txt = "'%s' constraint support/need one values" % ct
+                                            raise sosException.SOSException(1,err_txt)
+                                        cvals = " ".join(xvals)
                                    
                                     elif ct == "{%s}interval" % ns["swe"]:                                       
                                         if not len(xvals)==2:
                                             err_txt = "'%s' constraint support/need two values" % ct
                                             raise sosException.SOSException(1,err_txt)
-                                            if not xvals[0].isdigit:
-                                                err_txt = "'%s' constraint support/need two values" % ct
-                                                raise sosException.SOSException(1,err_txt)
-                                            cvals = " ".join(xvals)
+                                        if not xvals[0].isdigit:
+                                            err_txt = "'%s' constraint support/need two values" % ct
+                                            raise sosException.SOSException(1,err_txt)
+                                        cvals = " ".join(xvals)
                                 
                                     elif ct == "{%s}valueList" % ns["swe"]:
                                         if not len(xvals)>0:
                                             err_txt = "'%s' constraint support/need at least one values" % ct
                                             raise sosException.SOSException(1,err_txt)
-                                            if not xvals[0].isdigit:
-                                                err_txt = "'%s' constraint support/needat least one values" % ct
-                                                raise sosException.SOSException(1,err_txt)
-                                            cvals = " ".join(xvals)
+                                        if not xvals[0].isdigit:
+                                            err_txt = "'%s' constraint support/needat least one values" % ct
+                                            raise sosException.SOSException(1,err_txt)
+                                        cvals = " ".join(xvals)
                                     
                                     print >> sys.stderr, "crole = %s" % crole
                                     print >> sys.stderr, "cvals = %s" % cvals
