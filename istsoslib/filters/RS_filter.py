@@ -310,7 +310,7 @@ class sosRSfilter(f.sosFilter):
                         #===================================================
                         constraint = qf.find("{%s}constraint" %(ns['swe']))
                         if constraint:
-                            allow = constraint.find("{{%s}AllowedValues" %(ns['swe']))
+                            allow = constraint.find("{%s}AllowedValues" %(ns['swe']))
                             if allow is None:
                                 err_txt = "in <swe:constraint>: <swe:AllowedValues> is mandatory in multiplicity 1"
                                 raise sosException.SOSException(1,err_txt)
