@@ -19,6 +19,7 @@ from istsoslib.filters import filter as f
 from istsoslib import sosException
 from lib.isodate import parse_duration
 from lib.etree import et
+import json
 
 def parse_and_get_ns(file):
     events = "start", "start-ns"
@@ -305,21 +306,66 @@ class sosRSfilter(f.sosFilter):
                         else:
                             self.descs.append("NULL")
                         
-                        allow = qf.find("{%s}constraint/{%s}AllowedValues" %(ns['swe'],ns['swe']))
-                        try:
-                            self.constr.append("min:" + allow.find("{%s}min" % ns['swe']).text.strip())
-                        except:
-                            try:
-                                self.constr.append("max:" + allow.find("{%s}max" % ns['swe']).text.strip())
-                            except:
-                                try:
-                                    self.constr.append("interval:" + allow.find("{%s}interval" % ns['swe']).text.strip())
-                                except:
-                                    try:
-                                        self.constr.append("valueList:" + allow.find("{%s}valueList" % ns['swe']).text.strip())
-                                    except:
-                                        self.constr.append("NULL")
-                                        
+                        # look for constraints [min,max,interval,valueList]
+                        #===================================================
+                        constraint = qf.find("{%s}constraint" %(ns['swe']))
+                        if constraint:
+                            allow = constraint.find("{{%s}AllowedValues" %(ns['swe']))
+                            if allow is None:
+                                err_txt = "in <swe:constraint>: <swe:AllowedValues> is mandatory in multiplicity 1"
+                                raise sosException.SOSException(1,err_txt)
+                            else:
+                                if "{%s}role" % ns["xlink"] in allow.attrib:
+                                    crole = allow.attrib[ "{%s}role" % ns["xlink"] ]
+                                else:
+                                    crole = None
+                                
+                                cvals = None
+                                if len(allow)==0:
+                                    ct = allow[0].tag
+                                    if not ct in ["{%s}min" % ns["swe"],"{%s}max" % ns["swe"],"{%s}interval" % ns["swe"],"{%s}valueList" % ns["swe"]]:
+                                        err_txt = "in <swe:constraint>: support only min, max, interval, valueList tag" 
+                                        raise sosException.SOSException(1,err_txt)
+                                    
+                                    xvals = allow[0].text.strip().split(" ")
+                                    
+                                    if ct == "{%s}min" % ns["swe"] or ct == "{%s}max" % ns["swe"]:
+                                        if not len(xvals)==1:
+                                            err_txt = "'%s' constraint support/need one values" % ct
+                                            raise sosException.SOSException(1,err_txt)
+                                            if not xvals[0].isdigit:
+                                                err_txt = "'%s' constraint support/need one values" % ct
+                                                raise sosException.SOSException(1,err_txt)
+                                            cvals = " ".join(xvals)
+                                   
+                                    elif ct == "{%s}interval" % ns["swe"]:                                       
+                                        if not len(xvals)==2:
+                                            err_txt = "'%s' constraint support/need two values" % ct
+                                            raise sosException.SOSException(1,err_txt)
+                                            if not xvals[0].isdigit:
+                                                err_txt = "'%s' constraint support/need two values" % ct
+                                                raise sosException.SOSException(1,err_txt)
+                                            cvals = " ".join(xvals)
+                                
+                                    elif ct == "{%s}valueList" % ns["swe"]:
+                                        if not len(xvals)>0:
+                                            err_txt = "'%s' constraint support/need at least one values" % ct
+                                            raise sosException.SOSException(1,err_txt)
+                                            if not xvals[0].isdigit:
+                                                err_txt = "'%s' constraint support/needat least one values" % ct
+                                                raise sosException.SOSException(1,err_txt)
+                                            cvals = " ".join(xvals)
+                                    
+                                    cc == {}
+                                    if crole:
+                                        cc["role"] = crole
+                                    if cvals:
+                                        cc["%s" ct] = cvals
+                                   if cc:
+                                       self.constr.append(json.dumps(cc))
+                                   else:
+                                       self.constr.append(None)
+                    
                     else:
                         err_txt = "swe:Time or swe:Quantity is mandatory in multiplicity 1:N"
                         raise sosException.SOSException(1,err_txt)
