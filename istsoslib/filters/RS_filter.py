@@ -337,8 +337,8 @@ class sosRSfilter(f.sosFilter):
                                     
                                     xvals = allow[0].text.strip().split(" ")
                                     print >> sys.stderr, "xvals = %s" % xvals
-                                    if ct == "{%s}min" % ns["swe"] or ct == "{%s}max" % ns["swe"]:
-                                        ct = "min" if ct == "{%s}min" % ns["swe"] else ct="max"
+                                    if ct == "{%s}min" % ns["swe"]: 
+                                        ct = "min"
                                         if not len(xvals)==1:
                                             err_txt = "'%s' constraint support/need one values" % ct
                                             raise sosException.SOSException(1,err_txt)
@@ -347,6 +347,16 @@ class sosRSfilter(f.sosFilter):
                                             raise sosException.SOSException(1,err_txt)
                                         cvals = " ".join(xvals)
                                    
+                                    elif ct == "{%s}max" % ns["swe"]:
+                                        ct = "max"
+                                        if not len(xvals)==1:
+                                            err_txt = "'%s' constraint support/need one values" % ct
+                                            raise sosException.SOSException(1,err_txt)
+                                        if not xvals[0].isdigit:
+                                            err_txt = "'%s' constraint support/need one values" % ct
+                                            raise sosException.SOSException(1,err_txt)
+                                        cvals = " ".join(xvals)
+                                        
                                     elif ct == "{%s}interval" % ns["swe"]: 
                                         ct = "interval"
                                         if not len(xvals)==2:
