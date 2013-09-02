@@ -39,9 +39,9 @@ class istsosConfig():
         }
         
         
-        i = self.pathinfo.index("services")
-        if i>0 and i<len(self.pathinfo)-1:
-            service = self.pathinfo[i+1]
+        i = waEnviron["pathinfo"].index("services")
+        if i>0 and i<len(waEnviron["pathinfo"])-1:
+            service = waEnviron["pathinfo"][i+1]
         else:
             service = None
         serviceobj = resource.waResourceService(waEnviron,service,loadjson=False)
