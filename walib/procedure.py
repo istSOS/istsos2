@@ -756,7 +756,7 @@ class Procedure():
         SensorDescription = et.SubElement(root, "{%s}SensorDescription" % ns['sos'])
         
         sml = self.toXML()
-        print >> sys.stderr, "SML:%s" % sml
+        #print >> sys.stderr, "SMLasXML:\n%s" % sml
         from StringIO import StringIO
         smltree, smlns = parse_and_get_ns(StringIO(sml))
         member = smltree.find("{%s}member" % ns['sml'] )
@@ -833,7 +833,7 @@ class Procedure():
         Create a SOS register sensor request String from self.procedure object
         """
         dom = self.toRegisterSensorDom()
-        print >> sys.stderr, "%s" % et.tostring(dom, encoding="UTF-8")
+        #print >> sys.stderr, "RSsmlBYwa:\n%s" % et.tostring(dom, encoding="UTF-8")
         #import time
         #time.sleep(10)
         return et.tostring(dom, encoding="UTF-8")      
