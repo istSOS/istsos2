@@ -356,15 +356,15 @@ class sosRSfilter(f.sosFilter):
                                                 raise sosException.SOSException(1,err_txt)
                                             cvals = " ".join(xvals)
                                     
-                                    cc == {}
+                                    cc = {}
                                     if crole:
                                         cc["role"] = crole
                                     if cvals:
-                                        cc["%s" ct] = cvals
-                                   if cc:
-                                       self.constr.append(json.dumps(cc))
-                                   else:
-                                       self.constr.append(None)
+                                        cc["%s" % ct] = cvals
+                                    if cc:
+                                        self.constr.append(json.dumps(cc))
+                                    else:
+                                        self.constr.append(None)
                     
                     else:
                         err_txt = "swe:Time or swe:Quantity is mandatory in multiplicity 1:N"
