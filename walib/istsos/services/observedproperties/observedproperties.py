@@ -15,11 +15,11 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-from walib import procedure, resource, utils, databaseManager, configManager
+from walib import databaseManager #, procedure, resource, utils, configManager
 from walib.resource import waResourceService
-import sys, os, shutil, errno
-from walib.resource import waResourceConfigurator, waResourceService
-import traceback
+#import sys, os, shutil, errno
+#from walib.resource import waResourceConfigurator, waResourceService
+#import traceback
 
 class waObservedproperties(waResourceService):
     """class to handle SOS service objects, support GET and POST method"""
@@ -144,23 +144,30 @@ class waObservedproperties(waResourceService):
             raise Exception("observedproperties operation can not be done for default service instance.")
         else:
             import json
+            from walib import utils as ut
+            
             servicedb = databaseManager.PgDB(
                 self.serviceconf.connection['user'],
                 self.serviceconf.connection['password'],
                 self.serviceconf.connection['dbname'],
                 self.serviceconf.connection['host'],
-                self.serviceconf.connection['port'])        
+                self.serviceconf.connection['port'])     
+                
+            sql = "INSERT INTO %s.observed_properties(name_opr, def_opr, desc_opr, constr_opr)" % self.service
             
-            if self.json['constraint'] == {}:
-                sql = "INSERT INTO %s.observed_properties(name_opr, def_opr, desc_opr)" % self.service
-                sql += " VALUES (%s, %s, %s);"
+            
+            if not self.json['constraint'] or self.json['constraint'] == {}:
+                sql += " VALUES (%s, %s, %s, NULL);"
                 par = (
                     self.json['name'],
                     self.json['definition'],
                     self.json['description']
                 )
             else:
-                sql = "INSERT INTO %s.observed_properties(name_opr, def_opr, desc_opr, constr_opr)" % self.service
+                try:
+                    ut.validateJsonConstraint(self.json['constraint'])
+                except Exception as ex:
+                    raise Exception("Constraint for observed property '%s' is not valid: %s" % (self.observedproperty,ex))   
                 sql += " VALUES (%s, %s, %s, %s);"
                 par = (
                     self.json['name'],
@@ -169,11 +176,10 @@ class waObservedproperties(waResourceService):
                     json.dumps(self.json['constraint'])
                 )
 
-
             servicedb.execute(sql,par)
-            self.setMessage("")
+            self.setMessage("Insert successfull")
             
-    
+            
     def executePut(self):
         """
         Method for executing a POST requests that create a new SOS observed property
@@ -184,6 +190,7 @@ class waObservedproperties(waResourceService):
             raise Exception("destination observedproperty is not specified.")
         else:
             import json
+            from walib import utils as ut
             servicedb = databaseManager.PgDB(
                 self.serviceconf.connection['user'],
                 self.serviceconf.connection['password'],
@@ -196,17 +203,33 @@ class waObservedproperties(waResourceService):
             row = servicedb.select(sql, par)
             if not row:
                 raise Exception("Original observed property '%s' does not exist." % self.observedproperty)
-            oid = row[0]["id_opr"] 
+            oid = row[0]["id_opr"]
+            
             sql = "UPDATE %s.observed_properties " % self.service
-            sql += "SET name_opr = %s, def_opr = %s, desc_opr=%s, constr_opr=%s"
-            sql += " WHERE id_opr = %s"
-            par = (
-                self.json['name'],
-                self.json['definition'],
-                self.json['description'],
-                json.dumps(self.json['constraint']),
-                oid
-            )
+            
+            if not self.json['constraint'] or self.json['constraint'] == {}:
+                sql += "SET name_opr = %s, def_opr = %s, desc_opr=%s, constr_opr=NULL "
+                par = (
+                    self.json['name'],
+                    self.json['definition'],
+                    self.json['description'],
+                    oid
+                )
+            else:
+                try:
+                    ut.validateJsonConstraint(self.json['constraint'])
+                except Exception as ex:
+                    raise Exception("Constraint for observed property '%s' is not valid: %s" % (self.observedproperty,ex))
+                sql += "SET name_opr = %s, def_opr = %s, desc_opr=%s, constr_opr=%s "
+                par = (
+                    self.json['name'],
+                    self.json['definition'],
+                    self.json['description'],
+                    json.dumps(self.json['constraint']),
+                    oid
+                )
+            sql += "WHERE id_opr = %s"
+            
             servicedb.execute(sql,par)
             self.setMessage("Update successfull")
         
@@ -254,6 +277,4 @@ class waObservedproperties(waResourceService):
             par = (oid,)
             servicedb.execute(sql,par)
             self.setMessage("Observed property is deleted")
-
-
 

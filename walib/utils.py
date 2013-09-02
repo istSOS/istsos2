@@ -485,4 +485,44 @@ def encodeobject(obj, encoding='utf-8'):
     return obj
             
     
+def validateJsonConstraint(constraint):
+    """
+    Permitted conigurations:
+        {"role":"urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0","min":"10"}
+        {"role":"urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0","max":"10"}
+        {"role":"urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0","interval":["-10","10"]}
+        {"role":"urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0","valueList":["1","2","3","4","5","6"]}
+    """
+    if 'min' in constraint:
+        try:
+            float(constraint['min'])
+        except ValueError:
+            raise Exception("Min value in constraint definition must be numeric")
+    elif 'max' in constraint:
+        try:
+            float(constraint['max'])
+        except ValueError:
+            raise Exception("Max value in constraint definition must be numeric")
+    elif 'interval' in constraint:
+        if not type(constraint['interval']) == type([]):
+            raise Exception("Constraint interval must be an array containint two numeric values")
+        if len(constraint['interval']) != 2:
+            raise Exception("Constraint interval must be an array containint two numeric values")
+        try:
+            float(constraint['interval'][0])
+            float(constraint['interval'][1])
+        except ValueError:
+            raise Exception("Constraint interval must be an array containint two numeric values")
+    elif 'valueList' in constraint:
+        if not type(constraint['valueList']) == type([]):
+            raise Exception("Constraint valueList must be an array containint a series of numeric values")
+        if len(constraint['interval']) <= 2:
+            raise Exception("Constraint valueList must be an array containint at least 1 numeric value")
+        try:
+            for val in constraint['interval']:
+                float(val)
+        except ValueError:
+            raise Exception("Constraint valueList must be an array containint a series of numeric values")
+            
+    
     
