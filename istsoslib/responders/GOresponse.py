@@ -101,15 +101,20 @@ class VirtualProcess():
             if not ( type(data[0])==type([]) and len(data[0]==2) ):
                 raise sosException.SOSException(3,"setGenericVar argument not appripriate")        
         self.ob_input[name] = data
+        
+    def execute(self):
+        raise sosException.SOSException(3,"function execute must be overridden")
+
+class VirtualProcessHQ(VirtualProcess):
     
-    def setDischargeCurves(self,procedure):
+    def setDischargeCurves(self):
         "method for setting h-q tranformation tables/curves"       
         #set requested period
         #================================================
         hqFile = os.path.join(
                         self.filter.sosConfig.self.virtual_processes_folder,
-                        procedure,
-                        procedure+".dat"
+                        self.filter.procedure[0],
+                        self.filter.procedure[0]+".dat"
 				)
         tp=[]
         if self.filter.eventTime == None:
@@ -180,9 +185,41 @@ class VirtualProcess():
         #raise sosException.SOSException(3,"%s" %(hqs))
         return hqs
         
-    def execute(self):
-        raise sosException.SOSException(3,"function execute must be overridden")
-
+    def execute(virtualProcedure):
+        #print "virtualProcedure running.."
+        #import datetime, decimal, sys
+        
+        if virtualProcedure.filter.qualityIndex == True:
+            data_out=[]
+            for rec in virtualProcedure.data:
+                if (float(rec[1])) < -999.0:
+                    data_out.append([ rec[0], -999.9, 110 ])
+                else:
+                    for o in range(len(virtualProcedure.hqCurves['from'])):
+                        if (virtualProcedure.hqCurves['from'][o] < rec[0] <= virtualProcedure.hqCurves['to'][o]) and (virtualProcedure.hqCurves['low'][o] <= float(rec[1]) < virtualProcedure.hqCurves['up'][o]):
+                            if (float(rec[1])-virtualProcedure.hqCurves['B'][o]) >=0:
+                                data_out.append([ rec[0], "%.3f" %(virtualProcedure.hqCurves['K'][o] + virtualProcedure.hqCurves['A'][o]*((float(rec[1])-virtualProcedure.hqCurves['B'][o])**virtualProcedure.hqCurves['C'][o])), rec[2] ])
+                            else:
+                                #data not evaluable
+                                data_out.append([ rec[0], -999.9, 120 ])
+                            break
+                        if o == ( len(virtualProcedure.hqCurves['from']) -1):
+                            #data non in curves definition
+                            data_out.append([ rec[0], -999.9, 120 ])         
+                    
+        else:
+            data_out=[]
+            for rec in virtualProcedure.data:
+                for o in range(len(virtualProcedure.hqCurves['from'])):
+                    if (virtualProcedure.hqCurves['from'][o] < rec[0] <= virtualProcedure.hqCurves['to'][o]) and (virtualProcedure.hqCurves['low'][o] <= float(rec[1]) < virtualProcedure.hqCurves['up'][o]):
+                        if (float(rec[1])-virtualProcedure.hqCurves['B'][o]) >=0:
+                            data_out.append([ rec[0], "%.3f" %(virtualProcedure.hqCurves['K'][o] + virtualProcedure.hqCurves['A'][o]*((float(rec[1])-virtualProcedure.hqCurves['B'][o])**virtualProcedure.hqCurves['C'][o])) ])
+                        else:
+                            data_out.append([ rec[0],-999.9 ])
+                        break
+                    if o == (len(virtualProcedure.hqCurves['from'])-1):
+                        data_out.append([ rec[0], -999.9 ])
+        return data_out  
 #--this while is not
 #import TEST as Vproc        
 #----------------------------------
@@ -708,7 +745,7 @@ class observation:
         elif self.procedureType in ["virtual"]:
             #----- VIRTUAL PROCESS LOADING -----
             try:
-                sys.path.append(filter.sosConfig.virtual_processes_folder)
+                sys.path.append(os.path.join(filter.sosConfig.virtual_processes_folder,self.name))
             except:
                 raise sosException.SOSException(2,"error in loading virtual procedure path")
             #import procedure process
