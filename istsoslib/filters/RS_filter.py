@@ -293,6 +293,7 @@ class sosRSfilter(f.sosFilter):
                             self.descs.append(desc.text)
                         else:
                             self.descs.append("NULL")
+                        self.constr.append(None)
                         #self.constr.append("NULL")
                         
                     elif not qf==None and tf==None:
