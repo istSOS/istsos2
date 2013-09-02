@@ -325,7 +325,7 @@ class sosRSfilter(f.sosFilter):
                                     crole = None
                                 
                                 cvals = None
-                                if len(allow)==0:
+                                if len(allow)==1:
                                     print >> sys.stderr, "find min-max-etc."
                                     ct = allow[0].tag
                                     print >> sys.stderr, "ct = %s" % ct
