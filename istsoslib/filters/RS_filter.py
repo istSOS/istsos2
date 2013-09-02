@@ -309,6 +309,7 @@ class sosRSfilter(f.sosFilter):
                         
                         # look for constraints [min,max,interval,valueList]
                         #===================================================
+                        import sys
                         cc = {}
                         constraint = qf.find("{%s}constraint" %(ns['swe']))
                         if constraint:
@@ -317,6 +318,7 @@ class sosRSfilter(f.sosFilter):
                                 err_txt = "in <swe:constraint>: <swe:AllowedValues> is mandatory in multiplicity 1"
                                 raise sosException.SOSException(1,err_txt)
                             else:
+                                print >> sys.stderr, "find allowed values"
                                 if "{%s}role" % ns["xlink"] in allow.attrib:
                                     crole = allow.attrib[ "{%s}role" % ns["xlink"] ]
                                 else:
@@ -324,13 +326,15 @@ class sosRSfilter(f.sosFilter):
                                 
                                 cvals = None
                                 if len(allow)==0:
+                                    print >> sys.stderr, "find min-max-etc."
                                     ct = allow[0].tag
+                                    print >> sys.stderr, "ct = %s" % ct
                                     if not ct in ["{%s}min" % ns["swe"],"{%s}max" % ns["swe"],"{%s}interval" % ns["swe"],"{%s}valueList" % ns["swe"]]:
                                         err_txt = "in <swe:constraint>: support only min, max, interval, valueList tag" 
                                         raise sosException.SOSException(1,err_txt)
                                     
                                     xvals = allow[0].text.strip().split(" ")
-                                    
+                                    print >> sys.stderr, "xvals = %s" % xvals
                                     if ct == "{%s}min" % ns["swe"] or ct == "{%s}max" % ns["swe"]:
                                         if not len(xvals)==1:
                                             err_txt = "'%s' constraint support/need one values" % ct
@@ -362,7 +366,7 @@ class sosRSfilter(f.sosFilter):
                                         cc["role"] = crole
                                     if cvals:
                                         cc["%s" % ct] = cvals
-                        if cc:
+                        if not cc=={}:
                             self.constr.append(json.dumps(cc))
                         else:
                             self.constr.append(None)
