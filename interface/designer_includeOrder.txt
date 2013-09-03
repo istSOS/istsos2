@@ -78,6 +78,8 @@
 <script type="text/javascript" src="app/view/ProcedureGrid.js"></script>
 <script type="text/javascript" src="app/view/ui/ProcedureGridEditor.js"></script>
 <script type="text/javascript" src="app/view/ProcedureGridEditor.js"></script>
+<script type="text/javascript" src="app/view/ui/VirtualProcedureEditor.js"></script>
+<script type="text/javascript" src="app/view/VirtualProcedureEditor.js"></script>
 <script type="text/javascript" src="app/store/DataQualityStore.js"></script>
 <script type="text/javascript" src="app/store/Offerings.js"></script>
 <script type="text/javascript" src="app/store/Procedures.js"></script>
