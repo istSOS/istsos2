@@ -18,6 +18,7 @@
 import sys, traceback
 import json
 from lib.etree import et
+from walib import utils as ut
 
 reurl = r'(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?'
 
@@ -81,9 +82,6 @@ class Procedure():
         else:
             raise TypeError("xml input must be a string representing the XML itself or the path to the file where the XML is stored")
             #tree, ns = parse_and_get_ns(xml)
-        
-        print >> sys.stderr, "NS: %s" % ns
-                
         
         #-----System name/identifier------
         system = tree.find("{%s}member/{%s}System" %(ns['sml'],ns['sml']) )
@@ -329,35 +327,39 @@ class Procedure():
                     item["uom"] = child.find("{%s}uom" % ns['swe']).attrib["code"]
                 except:
                     item["uom"] = ""
+                
+                
+                if allow:
+                
+                    item["constraint"] = {}
+                     
+                    try:
+                        item["constraint"]["role"] = child.find("{%s}constraint" % ns['swe']).attrib["{%s}role" % ns['xlink']]
+                    except:
+                        pass
+    
+                    try:
+                        item["constraint"]["min"] = allow.find("{%s}min" % ns['swe']).text.strip()
+                    except:
+                        pass #item["constraint"]["min"] = ""
+    
+                    try:
+                        item["constraint"]["max"] = allow.find("{%s}max" % ns['swe']).text.strip()
+                    except:
+                        pass #item["constraint"]["max"] = ""
+    
+                    try:
+                        item["constraint"]["interval"] = allow.find("{%s}interval" % ns['swe']).text.strip().split(" ")
+                    except:
+                        pass #item["constraint"]["interval"] = ""
                     
-                item["constraint"] = {}
-                 
-                try:
-                    item["constraint"]["role"] = child.find("{%s}constraint" % ns['swe']).attrib["{%s}role" % ns['xlink']]
-                except:
-                    pass
-
-                try:
-                    item["constraint"]["min"] = allow.find("{%s}min" % ns['swe']).text.strip()
-                except:
-                    pass #item["constraint"]["min"] = ""
-
-                try:
-                    item["constraint"]["max"] = allow.find("{%s}max" % ns['swe']).text.strip()
-                except:
-                    pass #item["constraint"]["max"] = ""
-
-                try:
-                    item["constraint"]["interval"] = allow.find("{%s}interval" % ns['swe']).text.strip().split(" ")
-                except:
-                    pass #item["constraint"]["interval"] = ""
+                    try:
+                        item["constraint"]["valuelist"] = allow.find("{%s}valueList" % ns['swe']).text.strip().split(", ")
+                    except:
+                        pass #item["constraint"]["valuelist"] = ""
                 
-                try:
-                    item["constraint"]["valuelist"] = allow.find("{%s}valueList" % ns['swe']).text.strip().split(", ")
-                except:
-                    pass #item["constraint"]["valuelist"] = ""
+                self.data["outputs"].append(item)
                 
-                self.data["outputs"].append(item)  
             except Exception as ex:
                 print >> sys.stderr, traceback.print_exc()
                 raise SyntaxError("Error in <sml:outputs>: some <swe:field> mandatory sub elements or attributes are missing")
@@ -600,7 +602,7 @@ class Procedure():
                 interface = et.SubElement(InterfaceList, "{%s}interface" % ns['sml'])
                 interface.attrib["name"] = i
         
-        #--- System Inputs
+        #--- System Inputs # Not yet supported in waAdmin !!
         if ("inputs" in self.data) and (not self.data["inputs"]==[]):
             system.append(et.Comment("System Inputs"))
             inputs = et.SubElement(system, "{%s}inputs" % ns['sml'])
@@ -628,22 +630,33 @@ class Procedure():
             oid += 1
             field = et.SubElement(DataRecord, "{%s}field" % ns['swe'])
             field.attrib["name"] = o["name"]
+            
             if o["name"] == "Time":
                 timetag = True
                 item = et.SubElement(field, "{%s}Time" % ns['swe'])
                 item.attrib["{%s}id" % ns['gml']] = "IDT_" + str(oid)
                 item.attrib["definition"] = o["definition"]
+                
                 if not o["description"]=="":
                     description = et.SubElement(item, "{%s}description" % ns['gml'])
                     description.text = o["description"]
+                    
                 uom = et.SubElement(item, "{%s}uom" % ns['swe'])
                 uom.attrib["code"] = o["uom"]
-                if not o["constraint"]=={} and o["constraint"]["role"]!="" and o["constraint"]["role"]!=None:
+                
+                # The constraint object is not mandatory
+                if "constraint" in o and o["constraint"]!={}: # and o["constraint"]["role"]!="" and o["constraint"]["role"]!=None:
+                    
                     constraint = et.SubElement(item, "{%s}constraint" % ns['swe'])
-                    constraint.attrib[ "{%s}role" % ns['xlink'] ] = o["constraint"]["role"]
+                    
+                    # Role attribute is not mandatory
+                    if "role" in o["constraint"] and o["constraint"]["role"]!="" and o["constraint"]["role"]!=None:
+                        constraint.attrib[ "{%s}role" % ns['xlink'] ] = o["constraint"]["role"]
+                        
                     AllowedTimes = et.SubElement(constraint, "{%s}AllowedTimes" % ns['swe'])
                     interval = et.SubElement(AllowedTimes, "{%s}interval" % ns['swe'])
                     interval.text = " ".join([ str(a) for a in o["constraint"]["interval"] ])
+                    
             else:
                 item = et.SubElement(field, "{%s}Quantity" % ns['swe'])
                 item.attrib["{%s}id" % ns['gml']] = "IDQ_" + str(oid)
@@ -652,26 +665,40 @@ class Procedure():
                 if not o["description"]=="":
                     description = et.SubElement(item, "{%s}description" % ns['gml'])
                     description.text = o["description"]
+                    
                 uom = et.SubElement(item, "{%s}uom" % ns['swe'])
                 uom.attrib["code"] = o["uom"]
                 
-                if not o["constraint"]=={} and o["constraint"]["role"]!="" and o["constraint"]["role"]!=None:
-                    constraint = et.SubElement(item, "{%s}constraint" % ns['swe'])
-                    constraint.attrib[ "{%s}role" % ns['xlink'] ]= o["constraint"]["role"]
+                # The constraint object is not mandatory
+                if "constraint" in o and o["constraint"]!={}: # and o["constraint"]["role"]!="" and o["constraint"]["role"]!=None:
                     
+                    try:
+                        ut.validateJsonConstraint(self.json['constraint'])
+                    except Exception as ex:
+                        raise Exception("Constraint for observed property '%s' is not valid: %s" % (o["definition"],ex))
+                    
+                    constraint = et.SubElement(item, "{%s}constraint" % ns['swe'])
+                    
+                    # Role attribute is not mandatory
+                    if "role" in o["constraint"] and o["constraint"]["role"]!="" and o["constraint"]["role"]!=None:
+                        constraint.attrib[ "{%s}role" % ns['xlink'] ]= o["constraint"]["role"]
+                        
                     AllowedValues = et.SubElement(constraint, "{%s}AllowedValues" % ns['swe'])
                     
                     # Factory on constraint min/max/interval/valuelist
-                    if o["constraint"].has_key("interval"):
+                    if "interval" in o["constraint"]:
                         interval = et.SubElement(AllowedValues, "{%s}interval" % ns['swe'])
                         interval.text = " ".join([ str(a) for a in o["constraint"]["interval"] ])
-                    elif o["constraint"].has_key("valueList"):
+                        
+                    elif "valueList" in o["constraint"]:#.has_key("valueList"):
                         valueList = et.SubElement(AllowedValues, "{%s}valueList" % ns['swe'])
                         valueList.text = ", ".join([ str(a) for a in o["constraint"]["valueList"] ])
-                    elif o["constraint"].has_key("min"):
+                        
+                    elif "min" in o["constraint"]:#.has_key("min"):
                         amin = et.SubElement(AllowedValues, "{%s}min" % ns['swe'])
                         amin.text = o["constraint"]["min"]
-                    elif o["constraint"].has_key("max"):
+                        
+                    elif "max" in o["constraint"]:#.has_key("max"):
                         amax = et.SubElement(AllowedValues, "{%s}max" % ns['swe'])
                         amax.text = o["constraint"]["max"]
                         
@@ -756,7 +783,7 @@ class Procedure():
         SensorDescription = et.SubElement(root, "{%s}SensorDescription" % ns['sos'])
         
         sml = self.toXML()
-        #print >> sys.stderr, "SMLasXML:\n%s" % sml
+        #print >> sys.stderr, "SML:%s" % sml
         from StringIO import StringIO
         smltree, smlns = parse_and_get_ns(StringIO(sml))
         member = smltree.find("{%s}member" % ns['sml'] )
@@ -833,7 +860,7 @@ class Procedure():
         Create a SOS register sensor request String from self.procedure object
         """
         dom = self.toRegisterSensorDom()
-        #print >> sys.stderr, "RSsmlBYwa:\n%s" % et.tostring(dom, encoding="UTF-8")
+        print >> sys.stderr, "%s" % et.tostring(dom, encoding="UTF-8")
         #import time
         #time.sleep(10)
         return et.tostring(dom, encoding="UTF-8")      
@@ -859,3 +886,4 @@ class Procedure():
 
 
     
+
