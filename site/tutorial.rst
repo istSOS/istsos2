@@ -223,7 +223,7 @@ Add new sensors
 
 ::
     
-    demo > Observed properties
+    services > demo > Observed properties
     
         Name: air-temperature
         Definition URN: urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature
@@ -247,7 +247,7 @@ Add new sensors
 
 ::
     
-    demo > Unit of measures
+    services > demo > Unit of measures
     
         Code: mm
         Description: millimiter
@@ -267,7 +267,7 @@ Add new sensors
 
 ::
 
-   demo > New procedure
+   services > demo > New procedure
     
         Name: T_LUGANO
         Description: temperature weather station in Lugano
@@ -284,10 +284,14 @@ Add new sensors
             Observed property: urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature
             Unit od measure: °C
             Description: conversion from resistance to temperature
-            quality index check: from -40 to +60
+            quality index check: Between / from -40 to +60
+            
+            Confirm the outputs pressing the "add" button.
         
         Optional parameters:
             fill at your own need and willing
+            
+        Register the new sensor (procedure) pressing the "submit" button.
   
 * Add other procedures
 
@@ -299,7 +303,7 @@ Add new sensors
 
 ::
 
-   demo > New procedure
+   services > demo > New procedure
     
         Name: P_LUGANO
         Description: rainfall weather station in Lugano
@@ -316,14 +320,14 @@ Add new sensors
             Observed property: urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall
             Unit od measure: mm
             Description: -
-            quality index check: from 0 to +500
+            quality index check: Between / from 0 to +500
         
         Optional parameters:
             fill at your own need and willing
 
 ::
 
-   demo > New procedure
+   services > demo > New procedure
     
         Name: LOCARNO
         Description: temperature and rainfall weather station in Locarno
@@ -340,19 +344,19 @@ Add new sensors
             Observed property: urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall
             Unit od measure: mm
             Description: -
-            quality index check: from 0 to +500
+            quality index check: Between / from 0 to +500
         
             Observed property: urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature
             Unit od measure: °C
             Description: conversion from resistance to temperature
-            quality index check: from -40 to +60
+            quality index check: Between / from -40 to +60
         
         Optional parameters:
             fill at your own need and willing
 
 ::
 
-    demo > New procedure
+    services > demo > New procedure
     
         Name: BELLINZONA
         Description: weather station in Bellinzona
@@ -374,17 +378,17 @@ Add new sensors
             Observed property: urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature
             Unit od measure: °C
             Description: conversion from resistance to temperature
-            quality index check: from -40 to +60
+            quality index check: Between / from -40 to +60
             
             Observed property: urn:ogc:def:parameter:x-istsos:1.0:meteo:air:humidity:relative
             Unit od measure: %
             Description: -
-            quality index check: from 0 to 100
+            quality index check: Between / from 0 to 100
         
             Observed property: urn:ogc:def:parameter:x-istsos:1.0:meteo:air:wind:velocity
             Unit od measure: m/s
             Description: -
-            quality index check: from 0 to 200
+            quality index check: Between / from 0 to 200
         
         Optional parameters:
             fill at your own need and willing  
@@ -393,7 +397,7 @@ Add new sensors
 
 ::
 
-    demo > Procedures
+    services > demo > Procedures
     
     it provides you a table with sensors and relative offerings and observedProperties
 
@@ -404,7 +408,7 @@ Create Offerings
 
 ::
 
-    demo > Offering editor
+    services > demo > Offering editor
         
         Name: workshop
         Description: demo dataset for GRASS meeting
@@ -417,7 +421,7 @@ Create Offerings
 
 ::
 
-    demo > Procedures
+    services > demo > Procedures
     
     it provides you a table with sensors and relative offerings and observedProperties
 
