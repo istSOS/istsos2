@@ -665,7 +665,7 @@ Ext.define('istsos.view.procedure', {
         store.removeAll();
         var c = json["data"]["outputs"];
         
-        for (var i in c) {
+        for (var i = 0; i < c.length; i++) {
             if (c[i]['name']!='Time') {
                
                 var cnf = {
@@ -679,17 +679,19 @@ Ext.define('istsos.view.procedure', {
                     "list": ""
                 };
                
-                if (c[i]['constraint']["role"]){
-                     cnf.role = c[i]['constraint']["role"];
+                if (c[i]['constraint']){
+                    if (c[i]['constraint']["role"]){
+                        cnf.role = c[i]['constraint']["role"];
+                    }
                     if (c[i]['constraint']["interval"]){
                          cnf.from = c[i]['constraint']["interval"][0];
                          cnf.to = c[i]['constraint']["interval"][1];
-                    }else if(c[i]['constraint']["valuelist"]){
-                         cnf.list = c[i]['constraint']["valuelist"].join(", ");
+                    }else if(c[i]['constraint']["valueList"]){
+                         cnf.list = c[i]['constraint']["valueList"].join(", ");
                     }else if(c[i]['constraint']["max"]){
-                         cnf.list = c[i]['constraint']["to"];
+                         cnf.to = c[i]['constraint']["max"];
                     }else if(c[i]['constraint']["min"]){
-                         cnf.list = c[i]['constraint']["from"];
+                         cnf.from = c[i]['constraint']["min"];
                     }
                 }
                 
