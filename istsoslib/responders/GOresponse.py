@@ -185,39 +185,39 @@ class VirtualProcessHQ(VirtualProcess):
         #raise sosException.SOSException(3,"%s" %(hqs))
         return hqs
         
-    def execute(virtualProcedure):
-        #print "virtualProcedure running.."
+    def execute(self):
+        #print "self running.."
         #import datetime, decimal, sys
         
-        if virtualProcedure.filter.qualityIndex == True:
+        if self.filter.qualityIndex == True:
             data_out=[]
-            for rec in virtualProcedure.data:
+            for rec in self.data:
                 if (float(rec[1])) < -999.0:
                     data_out.append([ rec[0], -999.9, 110 ])
                 else:
-                    for o in range(len(virtualProcedure.hqCurves['from'])):
-                        if (virtualProcedure.hqCurves['from'][o] < rec[0] <= virtualProcedure.hqCurves['to'][o]) and (virtualProcedure.hqCurves['low'][o] <= float(rec[1]) < virtualProcedure.hqCurves['up'][o]):
-                            if (float(rec[1])-virtualProcedure.hqCurves['B'][o]) >=0:
-                                data_out.append([ rec[0], "%.3f" %(virtualProcedure.hqCurves['K'][o] + virtualProcedure.hqCurves['A'][o]*((float(rec[1])-virtualProcedure.hqCurves['B'][o])**virtualProcedure.hqCurves['C'][o])), rec[2] ])
+                    for o in range(len(self.hqCurves['from'])):
+                        if (self.hqCurves['from'][o] < rec[0] <= self.hqCurves['to'][o]) and (self.hqCurves['low'][o] <= float(rec[1]) < self.hqCurves['up'][o]):
+                            if (float(rec[1])-self.hqCurves['B'][o]) >=0:
+                                data_out.append([ rec[0], "%.3f" %(self.hqCurves['K'][o] + self.hqCurves['A'][o]*((float(rec[1])-self.hqCurves['B'][o])**self.hqCurves['C'][o])), rec[2] ])
                             else:
                                 #data not evaluable
                                 data_out.append([ rec[0], -999.9, 120 ])
                             break
-                        if o == ( len(virtualProcedure.hqCurves['from']) -1):
+                        if o == ( len(self.hqCurves['from']) -1):
                             #data non in curves definition
                             data_out.append([ rec[0], -999.9, 120 ])         
                     
         else:
             data_out=[]
-            for rec in virtualProcedure.data:
-                for o in range(len(virtualProcedure.hqCurves['from'])):
-                    if (virtualProcedure.hqCurves['from'][o] < rec[0] <= virtualProcedure.hqCurves['to'][o]) and (virtualProcedure.hqCurves['low'][o] <= float(rec[1]) < virtualProcedure.hqCurves['up'][o]):
-                        if (float(rec[1])-virtualProcedure.hqCurves['B'][o]) >=0:
-                            data_out.append([ rec[0], "%.3f" %(virtualProcedure.hqCurves['K'][o] + virtualProcedure.hqCurves['A'][o]*((float(rec[1])-virtualProcedure.hqCurves['B'][o])**virtualProcedure.hqCurves['C'][o])) ])
+            for rec in self.data:
+                for o in range(len(self.hqCurves['from'])):
+                    if (self.hqCurves['from'][o] < rec[0] <= self.hqCurves['to'][o]) and (self.hqCurves['low'][o] <= float(rec[1]) < self.hqCurves['up'][o]):
+                        if (float(rec[1])-self.hqCurves['B'][o]) >=0:
+                            data_out.append([ rec[0], "%.3f" %(self.hqCurves['K'][o] + self.hqCurves['A'][o]*((float(rec[1])-self.hqCurves['B'][o])**self.hqCurves['C'][o])) ])
                         else:
                             data_out.append([ rec[0],-999.9 ])
                         break
-                    if o == (len(virtualProcedure.hqCurves['from'])-1):
+                    if o == (len(self.hqCurves['from'])-1):
                         data_out.append([ rec[0], -999.9 ])
         return data_out  
 #--this while is not
