@@ -268,7 +268,6 @@ class RegisterSensorResponse:
         #print >> sys.stderr, "constr:%s" % filter.constr
         #print >> sys.stderr, "opr:%s" % opr_ids, filter.names
         
-        
         for i in range(len(opr_ids)):
             params.append(( ret_prc["id_prc"], uom_ids[i], opr_ids[i], filter.constr[i]))
         sqlIns += ",".join(["%s"]*len(params))

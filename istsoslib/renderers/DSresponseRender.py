@@ -18,6 +18,7 @@
 from istsoslib import sosException
 import sys   
 from lib.etree import et
+import json
 
 reurl = r'(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?'
 
@@ -101,18 +102,13 @@ def render(DS,sosConfig):
     fieldT.attrib["name"] = "Time"
     time = et.SubElement(fieldT,"{%s}Time" % ns["swe"])
     time.attrib["definition"] = sosConfig.urn["time"]
-    #time.attrib["{%s}id" % ns["gml"] ] = str(0) # not valid against schema validation > TOREMOVE
     
+    # Adding constraint for current allowed times
     if (not DS.stime == None) and (not DS.etime == None):
         constraint =  et.SubElement(time, "{%s}constraint" % ns['swe'])
         allowedTimes =  et.SubElement(constraint, "{%s}AllowedTimes" % ns['swe'])
         interval = et.SubElement(allowedTimes, "{%s}interval" % ns['swe'])
         interval.text = "%s %s" %(DS.stime.strftime("%Y-%m-%dT%H:%M:%S.%f%z"), DS.etime.strftime("%Y-%m-%dT%H:%M:%S.%f%z"))
-    
-    #import pprint
-    #pp = pprint.PrettyPrinter(indent=2)
-    #pp.pprint(sosConfig)
-    
     
     if DS.procedureType=="insitu-mobile-point": # Adding 3d coordinates observation
         
@@ -133,11 +129,11 @@ def render(DS,sosConfig):
         
         
     for index,field in enumerate(DS.observedProperties):
+        
         fieldQ = et.SubElement(datarecord,"{%s}field" % ns["swe"])
         fieldQ.attrib["name"] = field["name_opr"]
         quantity = et.SubElement(fieldQ,"{%s}Quantity" % ns["swe"])
         quantity.attrib["definition"] = field["def_opr"]
-        #quantity.attrib["{%s}id" % ns["gml"] ] = str(index+1) # not valid against schema validation > TOREMOVE
         
         if not (field["name_uom"]=="" or field["name_uom"]==None or field["name_uom"]=="NULL"):
             uom = et.SubElement(quantity,"{%s}uom" % ns["swe"])
@@ -146,14 +142,47 @@ def render(DS,sosConfig):
         if not (field["desc_opr"]=="" or field["desc_opr"]==None or field["desc_opr"]=="NULL"):
             description = et.SubElement(quantity,"{%s}description" % ns["swe"])
             description.text = field["desc_opr"]
-        """    
-        if not (field["constr_pro"]=="" or field["constr_pro"]==None  or field["constr_pro"]=="NULL"):
-            constraint = et.SubElement(quantity,"{%s}constraint" % ns["swe"])
-            constraint.attrib["{%s}role" % ns['xlink']] = "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0"
-            AllowedValues = et.SubElement(constraint,"{%s}AllowedValues" % ns["swe"])
-            AllowedValuesList = field["constr_pro"].split(":")
-            constraintType = et.SubElement( AllowedValues,"{%s}%s" %(ns["swe"],AllowedValuesList[0]) )
-            constraintType.text = AllowedValuesList[1]
+        """
+        
+        """
+        # Handling constraint
+        Permitted conigurations:
+            {"role":"urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0","min":"10"}
+            {"role":"urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0","max":"10"}
+            {"role":"urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0","interval":["-10","10"]}
+            {"role":"urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0","valueList":["1","2","3","4","5","6"]}
+        """
+        if not (field["constr_pro"]=="" or field["constr_pro"]==None):
+            try:
+                constraintObj = json.loads(field["constr_pro"])
+                
+                constraint = et.SubElement(quantity,"{%s}constraint" % ns["swe"])
+                
+                # Role attribute is not mandatory
+                if "role" in constraintObj and constraintObj["role"]!="" and constraintObj["role"]!=None:
+                    constraint.attrib[ "{%s}role" % ns['xlink'] ]= constraintObj["role"]
+                    
+                AllowedValues = et.SubElement(constraint, "{%s}AllowedValues" % ns['swe'])
+                
+                # Factory on constraint min/max/interval/valuelist
+                if "interval" in constraintObj:
+                    interval = et.SubElement(AllowedValues, "{%s}interval" % ns['swe'])
+                    interval.text = " ".join([ str(a) for a in constraintObj["interval"] ])
+                    
+                elif "valueList" in constraintObj:#.has_key("valueList"):
+                    valueList = et.SubElement(AllowedValues, "{%s}valueList" % ns['swe'])
+                    valueList.text = ", ".join([ str(a) for a in constraintObj["valueList"] ])
+                    
+                elif "min" in constraintObj:#.has_key("min"):
+                    amin = et.SubElement(AllowedValues, "{%s}min" % ns['swe'])
+                    amin.text = constraintObj["min"]
+                    
+                elif "max" in constraintObj:#.has_key("max"):
+                    amax = et.SubElement(AllowedValues, "{%s}max" % ns['swe'])
+                    amax.text = constraintObj["max"]
+                
+            except Exception:
+                raise Exception("Constraint definition invalid in the database for %s" % field["def_opr"])
         
     root = tree.getroot()
     return et.tostring(root)

@@ -29,6 +29,8 @@ from lib import isodate as iso
 
 from datetime import datetime
 
+import json
+
 now = datetime.now()
 
 class InsertObservationResponse:
@@ -176,37 +178,64 @@ class InsertObservationResponse:
         oprUoms=[]
         oprIds=[] #to be removed ????
         proIds=[]
-        oprCon=[]
-        proCon=[]
+        obsPropConstr=[]
+        procConstr=[]
+        
+        
+        # Building a matrix
+        '''
+        oprNames=       ["urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature" , ...]
+        oprUoms=        ["mm" , ...]
+        oprIds=         [id_opr , ...]
+        proIds=         [id_pro , ...]
+        obsPropConstr=  [{"interval": ["-40", "50"], "role": "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0"} , ...]
+        procConstr=     [{"max": "100", "role": "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0"} , ...]
+        '''
+        
         for row in opr:
+            
             oprNames.append(row["def_opr"])
             oprUoms.append(row["name_uom"])
             oprIds.append(row["id_opr"])
-            
-            try:
-                cos = row["constr_opr"].split(":")
-            except:
-                if row["constr_opr"] in [None,'']:
-                    cos = [None,None]
-                else:
-                    raise sosException.SOSException(3,"observed property constrain '%s' malformatted" %(row["constr_opr"]))
-            oprCon.append({'mode': cos[0], 'val': cos[1].strip()})
-            
             proIds.append(row["id_pro"])
             
+            
+            
+            print >> sys.stderr, "------------------>> constr_opr: %s" % row["constr_opr"]
+            if not row["constr_opr"] in [None,'']:
+                obsPropConstr.append(json.loads(row["constr_opr"]))
+            else:
+                obsPropConstr.append(None)
+                
+            print >> sys.stderr, "------------------>> constr_pro: %s" % row["constr_pro"]
+            if not row["constr_pro"] in [None,'']:
+                procConstr.append(json.loads(row["constr_pro"]))
+            else:
+                procConstr.append(None)
+                
+            '''
+            try:
+                cos = row["constr_opr"].split(":")
+                obsPropConstr.append({'mode': cos[0], 'val': cos[1].strip()})
+            except:
+                if row["constr_opr"] in [None,'']:
+                    cos = [{'mode': None, 'val': None}]
+                    obsPropConstr.append({'mode': None, 'val': None})
+                else:
+                    raise sosException.SOSException(3,"observed property constrain '%s' malformatted" %(row["constr_opr"]))
+                    
             try:
                 cos = row["constr_pro"].split(":")
+                procConstr.append({'mode': cos[0], 'val': cos[1].strip()})
             except:
                 if row["constr_pro"] in [None,'']:
                     cos = [None,None]
+                    procConstr.append([{'mode': None, 'val': None}])
                 else:
-                    raise sosException.SOSException(3,"procedure specific constrain '%s' malformatted" %(row["constr_pro"]))
-            proCon.append({'mode': cos[0], 'val': cos[1].strip()})
+                    raise sosException.SOSException(3,"procedure specific constrain '%s' malformatted" %(row["constr_pro"]))'''
         
         #---- get ordered list of observed properties in data----
         dataKeys = [ key for key in filter.data.keys() ] 
-        #dataNames = dataKeys
-        ### dataNames = [ key.split(":")[-1] for key in filter.data.keys() ]
         
         #----- get ordered list of unit of measures provided with data-------
         dataUoms = []
@@ -237,10 +266,11 @@ class InsertObservationResponse:
         yobs=None
         zobs=None
         tpar=None
-        pars=[]
+        pars=[] # Observed parameters
         parsId=[]
         parsConsObs=[]
         parsConsPro=[]
+        
         # urn of different parameters
         for i, dn in enumerate(dataKeys):
             if dn.split(":")[-1] in filter.sosConfig.parGeom["x"]:
@@ -252,29 +282,21 @@ class InsertObservationResponse:
             elif dn.find("iso8601")>=0:
                 tpar = dataKeys[i]
             else:
-                if not dn.split(":")[-1] == "qualityIndex":
-                    #pars.append(dataKeys[i])
+                if dn.split(":")[-1] != "qualityIndex":
                     pars.append(dn)
                     try:
-                        print >> sys.stderr, "==PARS=========="
-                        print >> sys.stderr, pprint.pprint(proIds)
-                        print >> sys.stderr, "-------------------"
-                        print >> sys.stderr, pprint.pprint(oprCon)
-                        print >> sys.stderr, "-------------------"
-                        print >> sys.stderr, pprint.pprint(proCon)
-                        #parsId.append(proIds[oprNames.index(dataKeys[i])])
                         parsId.append(proIds[oprNames.index(dn)])
-                        parsConsObs.append(oprCon[oprNames.index(dn)])
-                        parsConsPro.append(proCon[oprNames.index(dn)])
+                        parsConsObs.append(obsPropConstr[oprNames.index(dn)])
+                        parsConsPro.append(procConstr[oprNames.index(dn)])
                     except:
                         raise sosException.SOSException(3,"parameter %s not observed by this sensor %s - %s" %(dn,pars,oprNames))
-         
+                        
         #----------------------------------------------------------------------------------
         # set default quality index if not provided
         #----------------------------------------------------------------------------------
         for par in pars:
             try:
-                kqi = dataKeys.index(par+":qualityIndex")
+                dataKeys.index(par+":qualityIndex")
             except:
                 filter.data[par+":qualityIndex"]={"vals":[filter.sosConfig.default_qi]*len(filter.data[par]["vals"])}
                     
@@ -337,14 +359,6 @@ class InsertObservationResponse:
                 except Exception as e:
                     raise e
             
-            #--------------------
-            print >> sys.stderr, "insert par values============"
-            print >> sys.stderr, len(ids_eti)
-            #--insert par values
-            #--------------------     
-            
-            #TODO
-            
             for i, par in enumerate(pars):
                 params = []
                 ids_msr = []
@@ -352,47 +366,63 @@ class InsertObservationResponse:
                 sql += " (%s,%s,%s,%s) RETURNING id_msr"
                 #hasvalues = False
                 for ii,id_et in enumerate(ids_eti):
+                    
                     if not filter.data[par]["vals"][ii] in ['NULL',u'NULL',None,-999,"-999",u"-999",filter.sosConfig.aggregate_nodata]:
                         
-                        # quality check level I (gross error) 200
-                        #------------------------------------------
-                        if filter.sosConfig.correct_qi:
-                            if parsConsObs[i]['mode']==u'max':
-                                if float(filter.data[par]["vals"][ii]) <= float(parsConsObs[i]['val']):
-                                    pqi = int(filter.sosConfig.correct_qi)
-                            elif parsConsObs[i]['mode']==u'min':
-                                if float(filter.data[par]["vals"][ii]) >= float(parsConsObs[i]['val']):
-                                    pqi = int(filter.sosConfig.correct_qi)
-                            elif parsConsObs[i]['mode']==u'interval':
-                                l = parsConsObs[i]['val'].split(" ")
-                                if float(l[0]) <= float(filter.data[par]["vals"][ii]) <= float(l[1]):
-                                    pqi = int(filter.sosConfig.correct_qi)
-                            elif parsConsObs[i]['mode']==u'valueList':
-                                if float(filter.data[par]["vals"][ii]) in [float(p) for p in parsConsObs[i]['val'].split("")]:
-                                    pqi = int(filter.sosConfig.correct_qi)
+                        print >> sys.stderr, "------------------------------------------"
+                        print >> sys.stderr, "------------------------------------------"
+                        print >> sys.stderr, (i,", ", par ,", ", pprint.pprint(parsConsObs[i]))
+                        print >> sys.stderr, "i: %s" % i
+                        print >> sys.stderr, "par: %s" % par
+                        print >> sys.stderr, "parsConsObs: %s" % pprint.pprint(parsConsObs[i])
+                        print >> sys.stderr, "------------------------------------------"
+                        print >> sys.stderr, "------------------------------------------"
                         
-                        # quality check level II (statistical range) 300
-                        #-------------------------------------------
-                        if filter.sosConfig.stat_qi:
-                            if parsConsPro[i]['mode']=='max':
-                                if float(filter.data[par]["vals"][ii]) <= float(parsConsPro[i]['val']):
-                                    pqi = int(filter.sosConfig.stat_qi)
-                            elif parsConsPro[i]['mode']=='min':
-                                if float(filter.data[par]["vals"][ii]) >= float(parsConsPro[i]['val']):
-                                    pqi = int(filter.sosConfig.stat_qi)
-                            elif parsConsPro[i]['mode']=='interval':
-                                l = parsConsPro[i]['val'].split(" ")
-                                if float(l[0]) <= float(filter.data[par]["vals"][ii]) <= float(l[1]):
-                                    pqi = int(filter.sosConfig.stat_qi)
-                            elif parsConsPro[i]['mode']=='valueList':
-                                if float(filter.data[par]["vals"][ii]) in [float(p) for p in parsConsPro[i]['val'].split("")]:
-                                    pqi = int(filter.sosConfig.stat_qi) 
+                        pqi = int(filter.data[par+":qualityIndex"]["vals"][ii])
+                        
+                        # Constraint quality is done only if the quality index is equal to the default qi (RAW DATA)
+                        if int(filter.sosConfig.default_qi) == pqi:
+                            
+                            # quality check level I (gross error)
+                            #------------------------------------
+                            if filter.sosConfig.correct_qi and parsConsObs[i] != None:
+                                
+                                if 'max' in parsConsObs[i]:
+                                    if float(filter.data[par]["vals"][ii]) <= float(parsConsObs[i]['max']):
+                                        pqi = int(filter.sosConfig.correct_qi)
+                                elif 'min' in parsConsObs[i]:
+                                    if float(filter.data[par]["vals"][ii]) >= float(parsConsObs[i]['min']):
+                                        pqi = int(filter.sosConfig.correct_qi)
+                                elif 'interval' in parsConsObs[i]:
+                                    if float(parsConsObs[i]['interval'][0]) <= float(filter.data[par]["vals"][ii]) <= float(parsConsObs[i]['interval'][1]):
+                                        pqi = int(filter.sosConfig.correct_qi)
+                                elif 'valueList' in parsConsObs[i]:
+                                    if float(filter.data[par]["vals"][ii]) in [float(p) for p in parsConsObs[i]['valueList']]:
+                                        pqi = int(filter.sosConfig.correct_qi)
+                            
+                            # quality check level II (statistical range)
+                            #-------------------------------------------
+                            if filter.sosConfig.stat_qi and parsConsPro[i] != None:
+                                
+                                if 'max' in parsConsPro[i]:
+                                    if float(filter.data[par]["vals"][ii]) <= float(parsConsPro[i]['max']):
+                                        pqi = int(filter.sosConfig.correct_qi)
+                                elif 'min' in parsConsPro[i]:
+                                    if float(filter.data[par]["vals"][ii]) >= float(parsConsPro[i]['min']):
+                                        pqi = int(filter.sosConfig.correct_qi)
+                                elif 'interval' in parsConsPro[i]:
+                                    if float(parsConsPro[i]['interval'][0]) <= float(filter.data[par]["vals"][ii]) <= float(parsConsPro[i]['interval'][1]):
+                                        pqi = int(filter.sosConfig.correct_qi)
+                                elif 'valueList' in parsConsPro[i]:
+                                    if float(filter.data[par]["vals"][ii]) in [float(p) for p in parsConsPro[i]['valueList']]:
+                                        pqi = int(filter.sosConfig.correct_qi)
                                     
                         # insert observation
                         #-------------------------------------------     
                         #print >> sys.stderr, "insert par values============"
                         #print >> sys.stderr, "%s %s %s %s" % (parsConsPro[i],parsConsObs[i],pqi,float(filter.data[par]["vals"][ii]))
                         #-------------------------------------------
+                        
                         params = (int(parsId[i]),int(id_et),pqi,float(filter.data[par]["vals"][ii]))
                         try:
                             nid_msr = pgdb.executeInTransaction(sql,params)
