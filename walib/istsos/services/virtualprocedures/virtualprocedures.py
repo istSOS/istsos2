@@ -21,6 +21,14 @@ class waVirtualProcedures(waProcedures):
         if not self.procedurename==None:
             raise Exception("POST action with url procedure name not supported")
         
+        waProcedures.executePost(self)
+        if not self.response['success'] == True:
+            self.procedurename = self.json["system"]
+            self.executeDelete()
+            raise Exception("Error in registering %s" %(self.json["system"]))
+                        
+        
+        """
         #==================================
         # create the procedure as fixed
         #==================================
@@ -69,7 +77,7 @@ class waVirtualProcedures(waProcedures):
                 self.procedurename = self.json["system"]
                 waProcedures.executeDelete(self)
                 raise Exception("Error in registering %s: %s" %(self.json["system"],e))
-                
+        """                
                 
             
     def executeDelete(self):
@@ -84,9 +92,11 @@ class waVirtualProcedures(waProcedures):
             #==================================
             # remove the virtual files and folders
             #==================================
-            procedureFolder = os.path.join(self.servicepath, "/virtual/", self.procedurename)
+            procedureFolder = os.path.join(self.servicepath, "virtual", self.procedurename)
             if os.path.exists(procedureFolder):
                 shutil.rmtree(procedureFolder)
+        else:
+            raise Exception("deleting procedure error!")
             
     def executeGet(self):
         if self.procedurename==None:

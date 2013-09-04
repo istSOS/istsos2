@@ -337,7 +337,6 @@ class RegisterSensorResponse:
             if not os.path.exists(procedureFolder):
                 os.makedirs(procedureFolder)
         
-                
         
         """
         xml_pre = ""<SensorML xmlns:sml="http://www.opengis.net/sensorML/1.0.1"
