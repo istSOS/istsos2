@@ -53,7 +53,7 @@ class waRatingcurves(waResourceService):
             os.makedirs(self.procedureFolder) 
         RClist = RCload(self.RCfilename)
         self.setData(RClist)
-        self.setMessage("Rating-curve parameters of procedure <%s> successfully retrived" % self.RCprocedure)        
+        self.setMessage("Rating-curve parameters of procedure <%s> successfully retrived" % self.procedurename)        
             
     def executePost(self):
         """
@@ -61,7 +61,7 @@ class waRatingcurves(waResourceService):
                   
         """
         if RCsave(self.json,self.RCfilename):
-            self.setMessage("Rating-curve parameters of procedure <%s> successfully saved" % self.RCprocedure)               
+            self.setMessage("Rating-curve parameters of procedure <%s> successfully saved" % self.procedurename)               
             
         
         
