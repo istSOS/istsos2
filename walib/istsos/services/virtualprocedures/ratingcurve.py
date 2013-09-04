@@ -49,7 +49,7 @@ class waRatingcurves(waResourceService):
         
     def executeGet(self):
         #filename = self.RCpath + "/" + self.RCprocedure + ".dat"
-        if os.path.isfile(self.RCfilename):
+        if not os.path.isfile(self.RCfilename):
             raise Exception("Rating-curve parameters of procedure <%s> not set" % self.procedurename)
         
         RClist = RCload(self.RCfilename)
