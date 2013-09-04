@@ -90,7 +90,7 @@ class waVirtualProcedures(waProcedures):
             
     def executeGet(self):
         if self.procedurename==None:
-            raise Exception("POST action without url procedure name not supported")
+            raise Exception("GET action without url procedure name not supported")
         #==================================
         # delete the procedure
         #==================================

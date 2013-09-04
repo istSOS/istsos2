@@ -19,7 +19,7 @@ from walib.resource import waResourceService
 import sys, os
 
 # istsos/services/test/virtualprocedures/Q_TEST/ratingcurves
-class waRatingcurve(waResourceService):
+class waRatingcurves(waResourceService):
     """
     class to handle SOS rating curve for virtual procedure of type HQ
     called with a request to istsos/services/{serviceName}/virtualprocedures/{procedurename}/ratingcurve
