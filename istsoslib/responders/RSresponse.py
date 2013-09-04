@@ -329,6 +329,16 @@ class RegisterSensorResponse:
         tree = et.ElementTree(filter.xmlSensorDescription)
         tree.write(f, encoding="UTF-8")
         
+        #-----------------------------------------------------------
+        # create virtual procedure folder if system type is virtual
+        #-----------------------------------------------------------
+        if oty == "virtual":
+            procedureFolder = os.path.join(self.filter.sosConfig.virtual_processes_folder, filter.procedure)
+            if not os.path.exists(procedureFolder):
+                os.makedirs(procedureFolder)
+        
+                
+        
         """
         xml_pre = ""<SensorML xmlns:sml="http://www.opengis.net/sensorML/1.0.1"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
