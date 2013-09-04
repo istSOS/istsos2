@@ -63,7 +63,11 @@ class waRatingcurves(waResourceService):
         if RCsave(self.json,self.RCfilename):
             self.setMessage("Rating-curve parameters of procedure <%s> successfully saved" % self.procedurename)               
             
-        
+    def executeDelete(self):
+        if os.path.isfile(self.RCfilename):
+            os.remove(self.RCfilename)
+        else:
+            raise Exception("Rating-curve parameters of procedure <%s> not set" % self.procedurename)
         
 def RCload(filename):
     #load HQ virtual procedure conf file to a list of dictionaries
