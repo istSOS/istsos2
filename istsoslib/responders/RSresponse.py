@@ -333,7 +333,7 @@ class RegisterSensorResponse:
         # create virtual procedure folder if system type is virtual
         #-----------------------------------------------------------
         if oty == "virtual":
-            procedureFolder = os.path.join(self.filter.sosConfig.virtual_processes_folder, filter.procedure)
+            procedureFolder = os.path.join(filter.sosConfig.virtual_processes_folder, filter.procedure)
             if not os.path.exists(procedureFolder):
                 os.makedirs(procedureFolder)
         
