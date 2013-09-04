@@ -27,7 +27,6 @@ Ext.define('istsos.view.ProcedurePlotter', {
         
         me.callParent(arguments);
         
-        
         var offset = (new Date()).getTimezoneOffset()/-60;
         var tz = ((offset > 0) ? "+"+pad(offset) : pad(offset));
         Ext.getCmp('oeBeginTime').format = 'H:i ['+tz+']';

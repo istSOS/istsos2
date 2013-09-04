@@ -11098,8 +11098,13 @@
                             },
                             "codeClass": null,
                             "userConfig": {
+                                "id": "vpcmbplist",
                                 "fieldLabel": "Virtual procedure",
                                 "labelWidth": 150,
+                                "displayField": "name",
+                                "queryMode": "local",
+                                "store": "procedurelist",
+                                "valueField": "name",
                                 "designer|userClassName": "MyComboBox31",
                                 "layout|anchor": "100%"
                             }
@@ -11115,6 +11120,7 @@
                     },
                     "codeClass": null,
                     "userConfig": {
+                        "id": "vppanel",
                         "activeItem": 0,
                         "title": "",
                         "activeTab": 0,
@@ -11152,6 +11158,21 @@
                                     },
                                     "cn": [
                                         {
+                                            "id": "ExtBox1-ext-gen48175",
+                                            "type": "tbtext",
+                                            "reference": {
+                                                "name": "items",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "style": null,
+                                                "text": "ADD",
+                                                "designer|userClassName": "MyTextItem",
+                                                "layout|flex": null
+                                            }
+                                        },
+                                        {
                                             "id": "ExtBox1-ext-gen40471",
                                             "type": "button",
                                             "reference": {
@@ -11160,8 +11181,56 @@
                                             },
                                             "codeClass": null,
                                             "userConfig": {
-                                                "text": "Add row",
+                                                "id": "vpbtnaddrc",
+                                                "text": "> at end",
                                                 "designer|userClassName": "MyButton77",
+                                                "layout|flex": null
+                                            }
+                                        },
+                                        {
+                                            "id": "ExtBox1-ext-gen46515",
+                                            "type": "button",
+                                            "reference": {
+                                                "name": "items",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "disabled": true,
+                                                "id": "vpbtnaddaboverc",
+                                                "text": "> above selected",
+                                                "designer|userClassName": "MyButton77",
+                                                "layout|flex": null
+                                            }
+                                        },
+                                        {
+                                            "id": "ExtBox1-ext-gen46844",
+                                            "type": "button",
+                                            "reference": {
+                                                "name": "items",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "disabled": true,
+                                                "id": "vpbtnaddbelowrc",
+                                                "text": "> below selected",
+                                                "designer|userClassName": "MyButton77",
+                                                "layout|flex": null
+                                            }
+                                        },
+                                        {
+                                            "id": "ExtBox1-ext-gen47502",
+                                            "type": "tbseparator",
+                                            "reference": {
+                                                "name": "items",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "margin": "0px 8px 0px 8px",
+                                                "padding": null,
+                                                "designer|userClassName": "MySeparator1",
                                                 "layout|flex": null
                                             }
                                         },
@@ -11174,6 +11243,8 @@
                                             },
                                             "codeClass": null,
                                             "userConfig": {
+                                                "disabled": true,
+                                                "id": "vpbtnremoverc",
                                                 "text": "Remove selected",
                                                 "designer|userClassName": "MyButton78",
                                                 "layout|flex": null
@@ -11191,24 +11262,80 @@
                                     "codeClass": null,
                                     "userConfig": {
                                         "border": 0,
+                                        "id": "vpgridratingcurve",
                                         "title": "",
+                                        "store": "ratingcurve",
                                         "designer|userClassName": "MyGridPanel16",
                                         "layout|flex": 1
                                     },
                                     "cn": [
                                         {
-                                            "id": "ExtBox1-ext-gen37132",
-                                            "type": "gridcolumn",
+                                            "id": "ExtBox1-ext-gen37146",
+                                            "type": "datecolumn",
                                             "reference": {
                                                 "name": "columns",
                                                 "type": "array"
                                             },
                                             "codeClass": null,
                                             "userConfig": {
-                                                "dataIndex": "string",
-                                                "text": "String",
-                                                "designer|userClassName": "MyColumn51"
-                                            }
+                                                "dataIndex": "from",
+                                                "flex": 0.13,
+                                                "text": "From",
+                                                "format": "Y-m-d",
+                                                "designer|userClassName": "MyDateColumn2"
+                                            },
+                                            "cn": [
+                                                {
+                                                    "id": "ExtBox1-ext-gen40882",
+                                                    "type": "datefield",
+                                                    "reference": {
+                                                        "name": "field",
+                                                        "type": "object"
+                                                    },
+                                                    "codeClass": null,
+                                                    "userConfig": {
+                                                        "name": "from",
+                                                        "fieldLabel": "Label",
+                                                        "hideLabel": true,
+                                                        "format": "Y-m-d",
+                                                        "designer|userClassName": "MyDateField8"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "id": "ExtBox1-ext-gen32244",
+                                            "type": "datecolumn",
+                                            "reference": {
+                                                "name": "columns",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "dataIndex": "to",
+                                                "flex": 0.13,
+                                                "text": "To",
+                                                "format": "Y-m-d",
+                                                "designer|userClassName": "MyDateColumn3"
+                                            },
+                                            "cn": [
+                                                {
+                                                    "id": "ExtBox1-ext-gen42591",
+                                                    "type": "datefield",
+                                                    "reference": {
+                                                        "name": "field",
+                                                        "type": "object"
+                                                    },
+                                                    "codeClass": null,
+                                                    "userConfig": {
+                                                        "name": "to",
+                                                        "fieldLabel": "Label",
+                                                        "hideLabel": true,
+                                                        "format": "Y-m-d",
+                                                        "designer|userClassName": "MyDateField9"
+                                                    }
+                                                }
+                                            ]
                                         },
                                         {
                                             "id": "ExtBox1-ext-gen37139",
@@ -11219,39 +11346,181 @@
                                             },
                                             "codeClass": null,
                                             "userConfig": {
-                                                "dataIndex": "number",
-                                                "text": "Number",
+                                                "dataIndex": "low_val",
+                                                "flex": 0.13,
+                                                "text": "Low",
                                                 "designer|userClassName": "MyNumberColumn4"
-                                            }
+                                            },
+                                            "cn": [
+                                                {
+                                                    "id": "ExtBox1-ext-gen42933",
+                                                    "type": "numberfield",
+                                                    "reference": {
+                                                        "name": "field",
+                                                        "type": "object"
+                                                    },
+                                                    "codeClass": null,
+                                                    "userConfig": {
+                                                        "fieldLabel": "Label",
+                                                        "hideLabel": true,
+                                                        "designer|userClassName": "MyNumberField10"
+                                                    }
+                                                }
+                                            ]
                                         },
                                         {
-                                            "id": "ExtBox1-ext-gen37146",
-                                            "type": "datecolumn",
+                                            "id": "ExtBox1-ext-gen32714",
+                                            "type": "numbercolumn",
                                             "reference": {
                                                 "name": "columns",
                                                 "type": "array"
                                             },
                                             "codeClass": null,
                                             "userConfig": {
-                                                "dataIndex": "date",
-                                                "text": "Date",
-                                                "designer|userClassName": "MyDateColumn2"
-                                            }
+                                                "dataIndex": "up_val",
+                                                "flex": 0.13,
+                                                "text": "Up",
+                                                "designer|userClassName": "MyNumberColumn5"
+                                            },
+                                            "cn": [
+                                                {
+                                                    "id": "ExtBox1-ext-gen43226",
+                                                    "type": "numberfield",
+                                                    "reference": {
+                                                        "name": "field",
+                                                        "type": "object"
+                                                    },
+                                                    "codeClass": null,
+                                                    "userConfig": {
+                                                        "fieldLabel": "Label",
+                                                        "designer|userClassName": "MyNumberField11"
+                                                    }
+                                                }
+                                            ]
                                         },
                                         {
-                                            "id": "ExtBox1-ext-gen37153",
-                                            "type": "booleancolumn",
+                                            "id": "ExtBox1-ext-gen33185",
+                                            "type": "numbercolumn",
                                             "reference": {
                                                 "name": "columns",
                                                 "type": "array"
                                             },
                                             "codeClass": null,
                                             "userConfig": {
-                                                "dataIndex": "bool",
-                                                "flex": 1,
-                                                "text": "Boolean",
-                                                "designer|userClassName": "MyBooleanColumn7"
-                                            }
+                                                "dataIndex": "A",
+                                                "flex": 0.13,
+                                                "text": "A",
+                                                "designer|userClassName": "MyNumberColumn6"
+                                            },
+                                            "cn": [
+                                                {
+                                                    "id": "ExtBox1-ext-gen43404",
+                                                    "type": "numberfield",
+                                                    "reference": {
+                                                        "name": "field",
+                                                        "type": "object"
+                                                    },
+                                                    "codeClass": null,
+                                                    "userConfig": {
+                                                        "fieldLabel": "Label",
+                                                        "hideLabel": true,
+                                                        "designer|userClassName": "MyNumberField12"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "id": "ExtBox1-ext-gen33557",
+                                            "type": "numbercolumn",
+                                            "reference": {
+                                                "name": "columns",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "dataIndex": "B",
+                                                "flex": 0.13,
+                                                "text": "B",
+                                                "designer|userClassName": "MyNumberColumn7"
+                                            },
+                                            "cn": [
+                                                {
+                                                    "id": "ExtBox1-ext-gen43643",
+                                                    "type": "numberfield",
+                                                    "reference": {
+                                                        "name": "field",
+                                                        "type": "object"
+                                                    },
+                                                    "codeClass": null,
+                                                    "userConfig": {
+                                                        "fieldLabel": "Label",
+                                                        "hideLabel": true,
+                                                        "designer|userClassName": "MyNumberField13"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "id": "ExtBox1-ext-gen33721",
+                                            "type": "numbercolumn",
+                                            "reference": {
+                                                "name": "columns",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "dataIndex": "C",
+                                                "flex": 0.13,
+                                                "text": "C",
+                                                "designer|userClassName": "MyNumberColumn8"
+                                            },
+                                            "cn": [
+                                                {
+                                                    "id": "ExtBox1-ext-gen43885",
+                                                    "type": "numberfield",
+                                                    "reference": {
+                                                        "name": "field",
+                                                        "type": "object"
+                                                    },
+                                                    "codeClass": null,
+                                                    "userConfig": {
+                                                        "fieldLabel": "Label",
+                                                        "hideLabel": true,
+                                                        "designer|userClassName": "MyNumberField14"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "id": "ExtBox1-ext-gen33887",
+                                            "type": "numbercolumn",
+                                            "reference": {
+                                                "name": "columns",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "dataIndex": "K",
+                                                "flex": 0.13,
+                                                "text": "K",
+                                                "designer|userClassName": "MyNumberColumn9"
+                                            },
+                                            "cn": [
+                                                {
+                                                    "id": "ExtBox1-ext-gen44130",
+                                                    "type": "numberfield",
+                                                    "reference": {
+                                                        "name": "field",
+                                                        "type": "object"
+                                                    },
+                                                    "codeClass": null,
+                                                    "userConfig": {
+                                                        "fieldLabel": "Label",
+                                                        "hideLabel": true,
+                                                        "designer|userClassName": "MyNumberField15"
+                                                    }
+                                                }
+                                            ]
                                         },
                                         {
                                             "id": "ExtBox1-ext-gen37160",
@@ -11263,6 +11532,31 @@
                                             "codeClass": null,
                                             "userConfig": {
                                                 "designer|userClassName": "MyGridView15"
+                                            }
+                                        },
+                                        {
+                                            "id": "ExtBox1-ext-gen34510",
+                                            "type": "gridcelleditingplugin",
+                                            "reference": {
+                                                "name": "plugins",
+                                                "type": "array"
+                                            },
+                                            "codeClass": "Ext.grid.plugin.CellEditing",
+                                            "userConfig": {
+                                                "designer|userClassName": "MyCellEditingPlugin"
+                                            }
+                                        },
+                                        {
+                                            "id": "ExtBox1-ext-gen50406",
+                                            "type": "rowselectionmodel",
+                                            "reference": {
+                                                "name": "selModel",
+                                                "type": "object"
+                                            },
+                                            "codeClass": "Ext.selection.RowModel",
+                                            "userConfig": {
+                                                "allowDeselect": true,
+                                                "designer|userClassName": "MyRowSelectionModel"
                                             }
                                         }
                                     ]
@@ -11281,11 +11575,25 @@
                                         "layout": "hbox",
                                         "title": "",
                                         "designer|userClassName": "MyPanel83",
-                                        "layout|flex": null,
                                         "container|align": "stretch",
-                                        "container|padding": "8px 0px 8px 0px"
+                                        "container|padding": "8px 0px 8px 0px",
+                                        "layout|flex": null
                                     },
                                     "cn": [
+                                        {
+                                            "id": "ExtBox1-ext-gen39412",
+                                            "type": "container",
+                                            "reference": {
+                                                "name": "items",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "width": 40,
+                                                "designer|userClassName": "MyContainer32",
+                                                "layout|flex": null
+                                            }
+                                        },
                                         {
                                             "id": "ExtBox1-ext-gen38823",
                                             "type": "button",
@@ -11295,13 +11603,13 @@
                                             },
                                             "codeClass": null,
                                             "userConfig": {
-                                                "text": "Delete",
+                                                "text": "Delete Rating Curve File",
                                                 "designer|userClassName": "MyButton75",
                                                 "layout|flex": 1
                                             }
                                         },
                                         {
-                                            "id": "ExtBox1-ext-gen39412",
+                                            "id": "ExtBox1-ext-gen44408",
                                             "type": "container",
                                             "reference": {
                                                 "name": "items",
@@ -11323,9 +11631,24 @@
                                             },
                                             "codeClass": null,
                                             "userConfig": {
-                                                "text": "Save",
+                                                "id": "vpbtnsaverc",
+                                                "text": "Store the file",
                                                 "designer|userClassName": "MyButton76",
                                                 "layout|flex": 1
+                                            }
+                                        },
+                                        {
+                                            "id": "ExtBox1-ext-gen44551",
+                                            "type": "container",
+                                            "reference": {
+                                                "name": "items",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "width": 40,
+                                                "designer|userClassName": "MyContainer32",
+                                                "layout|flex": null
                                             }
                                         }
                                     ]
@@ -11382,6 +11705,20 @@
                                     },
                                     "cn": [
                                         {
+                                            "id": "ExtBox1-ext-gen41996",
+                                            "type": "container",
+                                            "reference": {
+                                                "name": "items",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "width": 40,
+                                                "designer|userClassName": "MyContainer32",
+                                                "layout|flex": null
+                                            }
+                                        },
+                                        {
                                             "id": "ExtBox1-ext-gen41989",
                                             "type": "button",
                                             "reference": {
@@ -11396,7 +11733,7 @@
                                             }
                                         },
                                         {
-                                            "id": "ExtBox1-ext-gen41996",
+                                            "id": "ExtBox1-ext-gen45462",
                                             "type": "container",
                                             "reference": {
                                                 "name": "items",
@@ -11421,6 +11758,20 @@
                                                 "text": "Save",
                                                 "designer|userClassName": "MyButton76",
                                                 "layout|flex": 1
+                                            }
+                                        },
+                                        {
+                                            "id": "ExtBox1-ext-gen45637",
+                                            "type": "container",
+                                            "reference": {
+                                                "name": "items",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "width": 40,
+                                                "designer|userClassName": "MyContainer32",
+                                                "layout|flex": null
                                             }
                                         }
                                     ]
@@ -13453,6 +13804,160 @@
                             }
                         }
                     ]
+                }
+            ]
+        },
+        {
+            "id": "ExtBox1-ext-gen35230",
+            "type": "jsonstore",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "storeId": "ratingcurve",
+                "designer|userClassName": "RatingCurve",
+                "designer|userAlias": "ratingcurve"
+            },
+            "cn": [
+                {
+                    "id": "ExtBox1-ext-gen35234",
+                    "type": "ajaxproxy",
+                    "reference": {
+                        "name": "proxy",
+                        "type": "object"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "designer|userClassName": "Ajax Proxy22"
+                    },
+                    "cn": [
+                        {
+                            "id": "ExtBox1-ext-gen35240",
+                            "type": "jsonreader",
+                            "reference": {
+                                "name": "reader",
+                                "type": "object"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "designer|userClassName": "Json Reader21"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ExtBox1-ext-gen35565",
+                    "type": "datafield",
+                    "reference": {
+                        "name": "fields",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "name": "from",
+                        "type": "date",
+                        "designer|userClassName": "MyField76"
+                    }
+                },
+                {
+                    "id": "ExtBox1-ext-gen35572",
+                    "type": "datafield",
+                    "reference": {
+                        "name": "fields",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "name": "to",
+                        "type": "date",
+                        "designer|userClassName": "MyField77"
+                    }
+                },
+                {
+                    "id": "ExtBox1-ext-gen35579",
+                    "type": "datafield",
+                    "reference": {
+                        "name": "fields",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "name": "low_val",
+                        "type": "float",
+                        "designer|userClassName": "MyField78"
+                    }
+                },
+                {
+                    "id": "ExtBox1-ext-gen35586",
+                    "type": "datafield",
+                    "reference": {
+                        "name": "fields",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "name": "up_val",
+                        "type": "float",
+                        "designer|userClassName": "MyField79"
+                    }
+                },
+                {
+                    "id": "ExtBox1-ext-gen35593",
+                    "type": "datafield",
+                    "reference": {
+                        "name": "fields",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "name": "A",
+                        "type": "float",
+                        "designer|userClassName": "MyField80"
+                    }
+                },
+                {
+                    "id": "ExtBox1-ext-gen36020",
+                    "type": "datafield",
+                    "reference": {
+                        "name": "fields",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "name": "B",
+                        "type": "float",
+                        "designer|userClassName": "MyField81"
+                    }
+                },
+                {
+                    "id": "ExtBox1-ext-gen36027",
+                    "type": "datafield",
+                    "reference": {
+                        "name": "fields",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "name": "C",
+                        "type": "float",
+                        "designer|userClassName": "MyField82"
+                    }
+                },
+                {
+                    "id": "ExtBox1-ext-gen36034",
+                    "type": "datafield",
+                    "reference": {
+                        "name": "fields",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "name": "K",
+                        "type": "float",
+                        "designer|userClassName": "MyField83"
+                    }
                 }
             ]
         }

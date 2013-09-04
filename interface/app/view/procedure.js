@@ -4,7 +4,9 @@ Ext.define('istsos.view.procedure', {
         
         var me = this;
         
-        Ext.create('istsos.store.cmbSystemType');
+        var systy = Ext.create('istsos.store.cmbSystemType');
+        systy.getProxy().url = Ext.String.format('{0}/istsos/services/{1}/systemtypes', 
+            wa.url, this.istService);
         Ext.create('istsos.store.cmbDocumentFormat');
         Ext.create('istsos.store.gridDocumentation');
         Ext.create('istsos.store.gridOutputs');
@@ -220,7 +222,6 @@ Ext.define('istsos.view.procedure', {
         Ext.getCmp("constrChoose").on("select",function(combo, records, eOpts){
         
             var value = combo.getValue();
-            console.log(value);
             
             var from = Ext.getCmp('constrFrom');
             var to = Ext.getCmp('constrTo');
@@ -253,7 +254,6 @@ Ext.define('istsos.view.procedure', {
                   list.setVisible(true);
                   break;
             }
-            
         });
         
         // Combos used for the utils - copy template
@@ -286,23 +286,14 @@ Ext.define('istsos.view.procedure', {
                     }
                 }
             });
-            /*
-            o.getStore().load({
-                url: Ext.String.format('{0}/istsos/services/{1}/offerings/operations/getlist',
-                    wa.url,combo.getValue()),
-                callback: function(records, operation, success){
-                    this.enable();
-                },
-                scope: o
-            });*/
         });
+        
         Ext.getCmp("oeCbOffering").on("select",function(combo, records, eOpts){
             
             var pr = Ext.getCmp('oeCbProcedure');
             pr.reset();
             pr.getStore().removeAll();
             pr.disable();
-            
             
             Ext.Ajax.request({
                 url: Ext.String.format('{0}/istsos/services/{1}/offerings/{2}/procedures/operations/memberslist',
@@ -321,15 +312,6 @@ Ext.define('istsos.view.procedure', {
                     }
                 }
             });
-            
-            /*pr.getStore().load({
-                url: Ext.String.format('{0}/istsos/services/{1}/offerings/{2}/procedures/operations/memberslist',
-                    wa.url,Ext.getCmp('cmbServices').getValue(),combo.getValue()),
-                callback: function(records, operation, success){
-                    this.enable();
-                },
-                scope: pr
-            });*/
         });
         Ext.getCmp("btnTemplateFill").on("click",this.executeCopy,this);
         
@@ -874,8 +856,20 @@ Ext.define('istsos.view.procedure', {
                 data: jsonData
             };
             
+            var posturl = Ext.String.format(
+                '{0}/istsos/services/{1}/procedures', 
+                wa.url,this.istService
+            );
+            
+            if (jsonData['classification']['systemtype']=='virtual'){
+                posturl = Ext.String.format(
+                    '{0}/istsos/services/{1}/virtualprocedures', 
+                    wa.url,this.istService
+                );
+            }
+            
             Ext.Ajax.request({
-                url: Ext.String.format('{0}/istsos/services/{1}/procedures', wa.url,this.istService),
+                url: posturl,
                 scope: this,
                 method: "POST",
                 jsonData: jsonData,

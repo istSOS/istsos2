@@ -627,3 +627,8 @@ table.x-datepicker-inner .x-datepicker-selected a {
     background-repeat: no-repeat;
     background-position: center center;
 }
+
+
+.x-toolbar .x-toolbar-text {
+    color: white !important;
+}

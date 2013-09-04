@@ -120,7 +120,6 @@ Ext.define('istsos.view.ProcedureGrid', {
                 dataIndex: procedure.storeConvertFieldToId[properties[i].definition+':qualityIndex'],
                 definition: Ext.String.format('{0}:qualityIndex',properties[i].definition),
                 flex: 0.3,
-                //text: Ext.String.format('{0}:qualityIndex',properties[i].name),
                 editor: {
                     xtype: 'combobox',
                     queryMode: 'local',
