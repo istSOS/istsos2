@@ -44,7 +44,7 @@ class waRatingcurves(waResourceService):
         waResourceService.__init__(self,waEnviron)
         self.servicename = self.pathinfo[2]
         self.procedurename =  self.pathinfo[4]
-        self.procedureFolder = os.path.join(self.servicepath, "/virtual/", self.procedurename)
+        self.procedureFolder = os.path.join(self.servicepath, "virtual", self.procedurename)
         self.RCfilename = os.path.join(self.procedureFolder, self.procedurename + ".dat")
         
     def executeGet(self):
