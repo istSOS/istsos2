@@ -68,19 +68,19 @@ class waCode(waResourceService):
             raise Exception("Virtual procedure %s not available: please check!")
         if os.path.exists(self.codefile):
             raise Exception("Virtual procedure code file %s already exists!")
-        if not code in self.json:
+        if not "code" in self.json:
             raise Exception("code parameter is mandatory")
         with open(self.codefile, 'w') as f:
             f.write(self.json["code"])
       
-      def executePut(self):
-          if not os.path.exists(self.procedureFolder):
-              raise Exception("Virtual procedure %s not available: please check!")
-          if not os.path.exists(self.codefile):
-              raise Exception("Virtual procedure code file %s does not exist!")
-          if not code in self.json:
-              raise Exception("code parameter is mandatory")
-          with open(self.codefile, 'w') as f:
-              f.write(self.json["code"])
+    def executePut(self):
+        if not os.path.exists(self.procedureFolder):
+            raise Exception("Virtual procedure %s not available: please check!")
+        if not os.path.exists(self.codefile):
+            raise Exception("Virtual procedure code file %s does not exist!")
+        if not "code" in self.json:
+            raise Exception("code parameter is mandatory")
+        with open(self.codefile, 'w') as f:
+            f.write(self.json["code"])
   
         
