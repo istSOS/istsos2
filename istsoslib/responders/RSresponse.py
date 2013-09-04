@@ -96,8 +96,8 @@ class RegisterSensorResponse:
         opr_ids=[]
         for index, par in enumerate(filter.parameters):
             #--insitu-fixed-point (this is the default if no system type defined in XML request)
-            if filter.systemType=='insitu-fixed-point' or filter.systemType == None:
-                oty = 'insitu-fixed-point'
+            if filter.systemType=='insitu-fixed-point' or filter.systemType == None or filter.systemType =="virtual":
+                oty = 'virtual' if filter.systemType =="virtual" else 'insitu-fixed-point'
                 if not par.split(":")[-1]=="iso8601": #forse basta vedere se ha iso8601 nella stringa???
                     if par in filter.oprDef:
                         i = filter.oprDef.index(par)
@@ -125,7 +125,8 @@ class RegisterSensorResponse:
                             opr_ids.append(id_opr)
                         except:
                             raise sosException.SOSException(1,"SQL: %s"%(pgdb.mogrify(sqlIns,params)))
-             
+            #--virtual
+            
             #--insitu-mobile-point
             elif filter.systemType=='insitu-mobile-point':
                 oty = 'insitu-mobile-point'
