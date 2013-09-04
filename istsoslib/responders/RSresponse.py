@@ -179,7 +179,7 @@ class RegisterSensorResponse:
         #for uom in filter.uoms:
         for i, uom in enumerate(filter.uoms):
             par = filter.parameters[i]
-            if oty=='insitu-fixed-point':
+            if oty=='insitu-fixed-point' or oty=='virtual':
                 if not par.split(":")[-1]=="iso8601": 
                     sqlId  = "SELECT id_uom FROM %s.uoms" %(filter.sosConfig.schema)
                     sqlId += " WHERE name_uom=%s" 
