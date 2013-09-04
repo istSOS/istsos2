@@ -49,8 +49,9 @@ class waRatingcurves(waResourceService):
         
     def executeGet(self):
         #filename = self.RCpath + "/" + self.RCprocedure + ".dat"
-        if not os.path.exists(self.procedureFolder):
-            os.makedirs(self.procedureFolder) 
+        if os.path.isfile(self.RCfilename):
+            raise Exception("Rating-curve parameters of procedure <%s> not set" % self.procedurename)
+        
         RClist = RCload(self.RCfilename)
         self.setData(RClist)
         self.setMessage("Rating-curve parameters of procedure <%s> successfully retrived" % self.procedurename)        
@@ -60,6 +61,9 @@ class waRatingcurves(waResourceService):
         Method for executing a POST requests that create a new SOS observed property
                   
         """
+        if not os.path.exists(self.procedureFolder):
+            raise Exception("Virtual procedure <%s> not set" % self.procedurename)         
+            #os.makedirs(self.procedureFolder)        
         if RCsave(self.json,self.RCfilename):
             self.setMessage("Rating-curve parameters of procedure <%s> successfully saved" % self.procedurename)               
             
