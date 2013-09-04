@@ -158,21 +158,30 @@ def initResource(waEnviron):
                         return virtualprocedures.waVirtualProcedures(waEnviron)
                                         
                     else:
-                        
-                        resource = pathinfo.pop(0)
                         resource = pathinfo.pop(0)
                         print >> sys.stderr, resource
 
+                        if resource == "operations":
+                            print >> sys.stderr, resource              
+                            resource = pathinfo.pop(0)    
+                            if resource == "getlist":  
+                                print >> sys.stderr, resource     
+                                from walib.istsos.services.virtualprocedures import virtualprocedures
+                                return virtualprocedures.waGetlist(waEnviron)
+                                
+                        resource = pathinfo.pop(0)
+                        print >> sys.stderr, resource
+                        
                         if resource == 'code':
                             print >> sys.stderr, resource
                             from walib.istsos.services.virtualprocedures import code
                             return code.waCode(waEnviron)
                             
-                        if resource == 'ratingcurve':
+                        elif resource == 'ratingcurve':
                             print >> sys.stderr, resource
                             from walib.istsos.services.virtualprocedures import ratingcurve
                             return ratingcurve.waRatingcurves(waEnviron)
-                
+                            
                 # ---------------------------------------
                 # Entering istsos.services.observedproperties
                 # ---------------------------------------
@@ -196,6 +205,14 @@ def initResource(waEnviron):
                     print >> sys.stderr, resource
                     from walib.istsos.services.epsgs import epsgs
                     return epsgs.waEpsgs(waEnviron)
+                    
+                # ---------------------------------------
+                # Entering istsos.services.epsgs
+                # ---------------------------------------
+                elif resource == "systemtypes":
+                    print >> sys.stderr, resource
+                    from walib.istsos.services.systemtypes import systemtypes
+                    return systemtypes.waSystemTypes(waEnviron)
                 
                 
                 # ---------------------------------------

@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from walib import databaseManager
+from walib import databaseManager, utils
 from walib.istsos.services.procedures.procedures import waProcedures
+from walib.resource import waResourceService
 
 import os, sys
 import shutil
@@ -179,3 +180,46 @@ class waVirtualProcedures(waProcedures):
         ]
     }
 """
+
+
+
+class waGetlist(waResourceService):
+    """
+    Class to execute istsos/services/{serviceName}/virtualprocedures/operations/getlist
+    """
+    def __init__(self,waEnviron):
+        waResourceService.__init__(self,waEnviron)
+        self.servicename = self.pathinfo[2]
+        
+    def executeGet(self):
+        if self.servicename == "default":
+            raise Exception("getlist operation can not be done for default service instance.")
+        else:
+            data = []
+            servicedb = databaseManager.PgDB(self.serviceconf.connection['user'],
+                                            self.serviceconf.connection['password'],
+                                            self.serviceconf.connection['dbname'],
+                                            self.serviceconf.connection['host'],
+                                            self.serviceconf.connection['port']
+            )
+            proceduresList = utils.getProcedureNamesList(servicedb,self.servicename,observationType='virtual')
+            for proc in proceduresList:
+                elem = {}
+                elem.update(proc)
+                #elem["name"] = proc["name"]
+                ops = utils.getObservedPropertiesFromProcedure(servicedb,self.servicename,proc["name"])
+                if ops != None:
+                    elem["observedproperties"] = [ {"name" : op["name"], "uom" : op["uom"]  } for op in ops ]
+                else:
+                    elem["observedproperties"] = []
+                offs = utils.getOfferingsFromProcedure(servicedb,self.servicename,proc["name"])
+                if offs != None:
+                    elem["offerings"] = [ off["name"] for off in offs ]
+                else:
+                    elem["offerings"] = []
+                data.append(elem)
+            
+            self.setData(data)
+            self.setMessage("Procedures of service <%s> successfully retrived" % self.servicename)
+            
+        

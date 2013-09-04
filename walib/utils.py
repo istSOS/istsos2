@@ -155,9 +155,11 @@ def getOfferingDetailsList(pgdb,service):
     else:
         return []
 
-def getProcedureNamesList(pgdb,service,offering=None):
+def getProcedureNamesList(pgdb,service,offering=None, observationType=None):
     """
-    Return the list of procedures
+    Return the list of procedures:
+        
+        The list can be filtered by offering and/or observationType
     
     @param pgdb: service connection
     @type pgdb: L{wa.databaseManager.PgDB} object
@@ -165,6 +167,7 @@ def getProcedureNamesList(pgdb,service,offering=None):
     @type service: L{string}
     @param offering: filter procedures by this offering name
     @type offering: C{string} or C{None}
+    @type observationType: C{string} or C{None}
     @return: C{list} of C{dict} with procedure C{id} and C{name} keys
     
     >>> Return example:
@@ -175,21 +178,46 @@ def getProcedureNamesList(pgdb,service,offering=None):
         ]
     """
     if offering==None:
-        sql = """
-            SELECT id_prc, name_prc, desc_prc, assignedid_prc
-            FROM %s.procedures 
-            ORDER BY name_prc""" %((service,))
-        rows = pgdb.select(sql)
+        if observationType==None:            
+            sql = """
+                SELECT id_prc, name_prc, desc_prc, assignedid_prc
+                FROM %s.procedures 
+                ORDER BY name_prc""" %((service,))
+            rows = pgdb.select(sql)
+            
+        else:
+            sql = """
+                SELECT id_prc, name_prc, desc_prc, assignedid_prc
+                FROM %s.procedures, %s.obs_type """ % (service,service)
+            sql += """
+                WHERE id_oty_fk = id_oty
+                AND name_oty = %s
+                ORDER BY name_prc""" 
+            rows = pgdb.select(sql,(observationType,))
     else:
-        sql  = """
-            SELECT id_prc, name_prc, desc_prc, assignedid_prc
-            FROM %s.off_proc op, %s.procedures p, %s.offerings o """ %((service,)*3)
-        sql += """ 
-            WHERE o.id_off=op.id_off_fk 
-            AND op.id_prc_fk=p.id_prc 
-            AND o.name_off=%s
-            ORDER BY p.name_prc; """
-        rows = pgdb.select(sql,(offering,))
+        if observationType==None:   
+            sql  = """
+                SELECT id_prc, name_prc, desc_prc, assignedid_prc
+                FROM %s.off_proc op, %s.procedures p, %s.offerings o """ %((service,)*3)
+            sql += """ 
+                WHERE o.id_off = op.id_off_fk 
+                AND op.id_prc_fk = p.id_prc 
+                AND o.name_off = %s
+                ORDER BY p.name_prc; """
+            rows = pgdb.select(sql,(offering,))
+        else:
+            sql = """
+                SELECT id_prc, name_prc, desc_prc, assignedid_prc
+                FROM %s.off_proc op, %s.procedures, %s.offerings, %s.obs_type """ % ((service,)*4)
+            sql += """
+                WHERE o.id_off=op.id_off_fk 
+                AND op.id_prc_fk=p.id_prc 
+                AND id_oty_fk = id_oty
+                AND o.name_off = %s
+                AND name_oty = %s
+                ORDER BY name_prc""" 
+            rows = pgdb.select(sql,(offering, observationType))
+            
     if rows:
         return [ 
             { 
@@ -201,7 +229,7 @@ def getProcedureNamesList(pgdb,service,offering=None):
         ]
     else:
         return []
-       
+               
 
 def getObsPropNamesList(pgdb,service,offering=None):
     """
