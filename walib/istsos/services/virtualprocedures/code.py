@@ -41,8 +41,8 @@ class waCode(waResourceService):
         waResourceService.__init__(self,waEnviron)
         self.servicename = self.pathinfo[2]
         self.procedurename =  self.pathinfo[4]
-        self.procedureFolder = os.path.join(self.servicepath, "/virtual/", self.procedurename)
-        self.codefile = os.path.join(self.servicepath, "/virtual/", self.procedurename, self.procedurename+".py")
+        self.procedureFolder = os.path.join(self.servicepath, "virtual", self.procedurename)
+        self.codefile = os.path.join(self.servicepath, "virtual", self.procedurename, self.procedurename+".py")
         
     def executeGet(self):
         #filename = self.RCpath + "/" + self.RCprocedure + ".dat"
