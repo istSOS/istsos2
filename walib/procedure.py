@@ -673,7 +673,7 @@ class Procedure():
                 if "constraint" in o and o["constraint"]!={}: # and o["constraint"]["role"]!="" and o["constraint"]["role"]!=None:
                     
                     try:
-                        ut.validateJsonConstraint(self.json['constraint'])
+                        ut.validateJsonConstraint(o['constraint'])
                     except Exception as ex:
                         raise Exception("Constraint for observed property '%s' is not valid: %s" % (o["definition"],ex))
                     
