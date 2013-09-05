@@ -122,7 +122,7 @@ def BuildfeatureOfInterestList(pgdb,sosConfig):
     return list
 
 def BuildOffEnvelope(pgdb,id,sosConfig):
-    sql = "SELECT asgml(Box2D(u.geom)) as ext FROM"
+    sql = "SELECT ST_asgml(Box2D(u.geom)) as ext FROM"
     sql += " ("
     #----case obs_type = fix
     sql += " SELECT ST_Transform(geom_foi,%s) as geom FROM %s.off_proc," %(sosConfig.istsosepsg,sosConfig.schema)
