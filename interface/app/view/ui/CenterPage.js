@@ -154,9 +154,9 @@ Ext.define('istsos.view.ui.CenterPage', {
             // If istBody is an array then a container is initialized
             if(Ext.isArray(this.istBody)){
                 if(this.istBody.length==1){
-                    this.istForm = Ext.create(this.istBody[0],this.getIstConfig(),{
+                    this.istForm = Ext.create(this.istBody[0],Ext.apply({
                         flex: 1
-                    });  
+                    },this.getIstConfig()));  
                     this.initListeners();
                     this.getComponent(1).add({
                         xtype: 'panel',

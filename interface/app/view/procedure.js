@@ -552,7 +552,6 @@ Ext.define('istsos.view.procedure', {
         //Ext.getCmp('smlOutputs').getComponent('gridSml').getComponent('gridToolbar').setVisible(false); // Remove observed property button
         }
         
-        
         this.loadedJson = json;
         
         // GENERAL INFORMATION
@@ -1068,10 +1067,7 @@ Ext.define('istsos.view.procedure', {
             "definition" : wa.isodef,
             "uom" : "iso8601",
             "description" : "",
-            "constraint" : {
-                "role" : null,
-                "interval" : null
-            }
+            "constraint" : {}
         }];
         for (var i = 0; i < store.getCount(); i++) {
             var rec = store.getAt(i);

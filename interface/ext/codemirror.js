@@ -516,7 +516,12 @@ Ext.define('Ext.ux.form.field.CodeMirror', {
             },
             onKeyEvent:         function(editor, event){
                 me.fireEvent('keyevent', me, event);
-            }
+            },
+            extraKeys: {
+                "Tab": function(){
+                    editor.replaceSelection("   ","end");
+                }
+           }
         });
 //        me.editor.setValue(me.rawValue);
         me.setMode(me.mode);

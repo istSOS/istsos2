@@ -11066,11 +11066,10 @@
             "userConfig": {
                 "height": null,
                 "width": null,
-                "layout": "vbox",
+                "layout": "border",
                 "title": "",
                 "designer|userClassName": "VirtualProcedureEditor",
-                "designer|userAlias": "virtualprocedureeditor",
-                "container|align": "stretch"
+                "designer|userAlias": "virtualprocedureeditor"
             },
             "cn": [
                 {
@@ -11082,11 +11081,12 @@
                     },
                     "codeClass": null,
                     "userConfig": {
-                        "height": null,
+                        "height": 50,
                         "bodyPadding": 10,
                         "title": "",
                         "designer|userClassName": "MyForm46",
-                        "layout|flex": null
+                        "layout|flex": null,
+                        "layout|region": "north"
                     },
                     "cn": [
                         {
@@ -11123,9 +11123,10 @@
                         "id": "vppanel",
                         "activeItem": 0,
                         "title": "",
-                        "activeTab": 0,
+                        "activeTab": 1,
                         "designer|userClassName": "MyPanel79",
-                        "layout|flex": 1
+                        "layout|flex": 1,
+                        "layout|region": "center"
                     },
                     "cn": [
                         {
@@ -11278,6 +11279,7 @@
                                             },
                                             "codeClass": null,
                                             "userConfig": {
+                                                "sortable": false,
                                                 "dataIndex": "from",
                                                 "flex": 0.13,
                                                 "text": "From",
@@ -11312,6 +11314,7 @@
                                             },
                                             "codeClass": null,
                                             "userConfig": {
+                                                "sortable": false,
                                                 "dataIndex": "to",
                                                 "flex": 0.13,
                                                 "text": "To",
@@ -11346,6 +11349,7 @@
                                             },
                                             "codeClass": null,
                                             "userConfig": {
+                                                "sortable": false,
                                                 "dataIndex": "low_val",
                                                 "flex": 0.13,
                                                 "text": "Low",
@@ -11377,6 +11381,7 @@
                                             },
                                             "codeClass": null,
                                             "userConfig": {
+                                                "sortable": false,
                                                 "dataIndex": "up_val",
                                                 "flex": 0.13,
                                                 "text": "Up",
@@ -11407,6 +11412,7 @@
                                             },
                                             "codeClass": null,
                                             "userConfig": {
+                                                "sortable": false,
                                                 "dataIndex": "A",
                                                 "flex": 0.13,
                                                 "text": "A",
@@ -11438,6 +11444,7 @@
                                             },
                                             "codeClass": null,
                                             "userConfig": {
+                                                "sortable": false,
                                                 "dataIndex": "B",
                                                 "flex": 0.13,
                                                 "text": "B",
@@ -11469,6 +11476,7 @@
                                             },
                                             "codeClass": null,
                                             "userConfig": {
+                                                "sortable": false,
                                                 "dataIndex": "C",
                                                 "flex": 0.13,
                                                 "text": "C",
@@ -11500,6 +11508,7 @@
                                             },
                                             "codeClass": null,
                                             "userConfig": {
+                                                "sortable": false,
                                                 "dataIndex": "K",
                                                 "flex": 0.13,
                                                 "text": "K",
@@ -11603,6 +11612,7 @@
                                             },
                                             "codeClass": null,
                                             "userConfig": {
+                                                "id": "vpbtndeleterc",
                                                 "text": "Delete Rating Curve File",
                                                 "designer|userClassName": "MyButton75",
                                                 "layout|flex": 1
@@ -11632,7 +11642,7 @@
                                             "codeClass": null,
                                             "userConfig": {
                                                 "id": "vpbtnsaverc",
-                                                "text": "Store the file",
+                                                "text": "Store the File",
                                                 "designer|userClassName": "MyButton76",
                                                 "layout|flex": 1
                                             }
@@ -11671,17 +11681,19 @@
                             },
                             "cn": [
                                 {
-                                    "id": "ExtBox1-ext-gen42512",
-                                    "type": "panel",
+                                    "id": "ExtBox1-ext-gen33633",
+                                    "type": "form",
                                     "reference": {
                                         "name": "items",
                                         "type": "array"
                                     },
                                     "codeClass": null,
                                     "userConfig": {
-                                        "border": 0,
+                                        "id": "vpcodingform",
+                                        "layout": "fit",
+                                        "bodyPadding": 10,
                                         "title": "",
-                                        "designer|userClassName": "MyPanel87",
+                                        "designer|userClassName": "MyForm47",
                                         "layout|flex": 1
                                     }
                                 },
@@ -11727,7 +11739,8 @@
                                             },
                                             "codeClass": null,
                                             "userConfig": {
-                                                "text": "Delete",
+                                                "id": "vpbtndeletecode",
+                                                "text": "Delete Code File",
                                                 "designer|userClassName": "MyButton75",
                                                 "layout|flex": 1
                                             }
@@ -11755,7 +11768,8 @@
                                             },
                                             "codeClass": null,
                                             "userConfig": {
-                                                "text": "Save",
+                                                "id": "vpbtnsavecode",
+                                                "text": "Save the Python Code",
                                                 "designer|userClassName": "MyButton76",
                                                 "layout|flex": 1
                                             }

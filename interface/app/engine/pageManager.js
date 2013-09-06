@@ -100,7 +100,15 @@ istsos.engine.pageManager.openPage = function (conf){
     var mainCenter = Ext.getCmp("mainCenter");
     mainCenter.removeAll(true);
     try{
-        var page = Ext.create('istsos.view.ui.CenterPage',Ext.apply({},conf));
+        var page;
+        if (!Ext.isEmpty(conf['wapage']) && conf['wapage'] == 'MainCenter') {
+            page = Ext.create(conf.istBody[0],Ext.apply({
+                flex: 1 //,padding: 16
+            },conf)); 
+        }else{
+            page = Ext.create('istsos.view.ui.CenterPage',Ext.apply({},conf));
+        }
+        //var page = Ext.create('istsos.view.ui.CenterPage',Ext.apply({},conf));
         mainCenter.add(page);
     }catch(e){
         console.error(e);

@@ -85,6 +85,13 @@ istsos.engine.serviceConfig = {
             },
             istFooter: istsos.EMPTY
         },
+        "Virtual Procedures": {
+            istTitle: "Virtual Procedures",
+            icon: 'system-run.svg',
+            istBody: ["istsos.view.VirtualProcedureEditor"],
+            wapage: 'MainCenter',
+            istFooter: istsos.EMPTY
+        },
         "New procedure": {
             istTitle: "New procedure",
             icon: 'new_service.svg',
@@ -224,11 +231,7 @@ istsos.engine.observationConfig = {
             istTitle: "Data Editor",
             icon: 'editor.svg',
             istBody: ["istsos.view.Editor1"],
-            //istBody: ["istsos.view.Chart"],
             wapage: 'MainCenter',
-            /*istFunction: {
-                onLoad: "operationLoad"
-            },*/
             istFooter: istsos.EMPTY
         }
     }
