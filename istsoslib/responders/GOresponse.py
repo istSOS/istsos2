@@ -33,6 +33,7 @@ from lib import pytz
 class VirtualProcess():
     def __init__(self,filter,pgdb):
         self.filter = copy.deepcopy(filter)
+        self.filterDefault = copy.deepcopy(filter)
         self.pgdb = pgdb
         self.ob_inputs = {}
         self.inputs = {}
@@ -112,9 +113,9 @@ class VirtualProcessHQ(VirtualProcess):
         #set requested period
         #================================================
         hqFile = os.path.join(
-                        self.filter.sosConfig.self.virtual_processes_folder,
+                        self.filter.sosConfig.virtual_processes_folder,
                         self.filter.procedure[0],
-                        self.filter.procedure[0]+".dat"
+                        self.filter.procedure[0]+".rcv"
 				)
         tp=[]
         if self.filter.eventTime == None:
@@ -183,7 +184,7 @@ class VirtualProcessHQ(VirtualProcess):
                 except:
                     pass
         #raise sosException.SOSException(3,"%s" %(hqs))
-        return hqs
+        self.hqCurves = hqs
         
     def execute(self):
         #print "self running.."
@@ -750,6 +751,11 @@ class observation:
                 raise sosException.SOSException(2,"error in loading virtual procedure path")
             #import procedure process
             exec "import %s as Vproc" %(self.name)
+            
+            '''code = compile('import %s as Vproc', '<string>', 'exec')
+            exec code
+            print a'''
+            
             # Initialization of virtual procedure will load the source data
             VP = Vproc.istvp(filter,pgdb)
             # Execution data processing 
