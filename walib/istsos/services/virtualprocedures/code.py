@@ -25,7 +25,9 @@ description:
 
 # istsos/services/test/virtualprocedures/Q_TEST/code
 from walib.resource import waResourceService
-import sys, os
+import os
+import codecs
+
 
 # istsos/services/test/virtualprocedures/Q_TEST/ratingcurves
 class waCode(waResourceService):
@@ -47,9 +49,9 @@ class waCode(waResourceService):
     def executeGet(self):
         #filename = self.RCpath + "/" + self.RCprocedure + ".dat"
         if not os.path.exists(self.procedureFolder):
-            raise Exception("Virtual procedure %s not available: please check!")
+            raise Exception("Virtual procedure %s not available: please check!" % self.procedurename)
         if not os.path.exists(self.codefile):
-            raise Exception("Virtual procedure code file %s not available: please check!")
+            raise Exception("Virtual procedure code file %s not available: please check!" % self.procedurename)
         
         with open(self.codefile, 'r') as content_file:
             content = content_file.read()
@@ -80,7 +82,11 @@ class waCode(waResourceService):
             raise Exception("Virtual procedure code file %s does not exist!")
         if not "code" in self.json:
             raise Exception("code parameter is mandatory")
-        with open(self.codefile, 'w') as f:
+        
+        #with open(self.codefile, 'w') as f:
+        
+        with codecs.open(self.codefile, "w", "utf-8") as f:
             f.write(self.json["code"])
+            f.close()
   
         

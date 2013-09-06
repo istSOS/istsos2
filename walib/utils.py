@@ -467,9 +467,6 @@ Workaround to prevent encoding change during execution exception
 
 import psycopg2 # @TODO the right library
 import psycopg2.extras
-import sys
-import traceback
-import pprint
 
 def to_unicode_or_bust(obj, encoding='utf-8'):
     try:

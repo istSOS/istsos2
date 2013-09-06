@@ -15,8 +15,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-import sys, os, traceback
+import sys, os
 from walib import configManager
+from walib import utils as ut
 
 class waResource(object):
     """
@@ -40,7 +41,8 @@ class waResource(object):
         self.postRequest = None
         if self.method in ["POST","PUT"] and loadjson==True:
             import json
-            self.json = json.loads(waEnviron['wsgi_input'])
+            
+            self.json = ut.encodeobject(json.loads(waEnviron['wsgi_input']))
     
     def validateGet(self):
         """ base method to validate GET request """
@@ -106,7 +108,6 @@ class waResourceAdmin(waResource):
     """
     def __init__(self, waEnviron,loadjson=True):
         waResource.__init__(self,waEnviron,loadjson)
-        import config
         class waconf():
             def __init__(self):
                 self.paths = {}
