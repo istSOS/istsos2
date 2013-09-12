@@ -180,34 +180,36 @@ def getProcedureNamesList(pgdb,service,offering=None, observationType=None):
     if offering==None:
         if observationType==None:            
             sql = """
-                SELECT id_prc, name_prc, desc_prc, assignedid_prc
-                FROM %s.procedures 
-                ORDER BY name_prc""" %((service,))
+                SELECT id_prc, name_prc, desc_prc, assignedid_prc, name_oty
+                FROM %s.procedures, %s.obs_type 
+                WHERE id_oty_fk = id_oty 
+                ORDER BY name_prc""" %((service,)*2)
             rows = pgdb.select(sql)
             
         else:
             sql = """
-                SELECT id_prc, name_prc, desc_prc, assignedid_prc
-                FROM %s.procedures, %s.obs_type """ % (service,service)
+                SELECT id_prc, name_prc, desc_prc, assignedid_prc, name_oty
+                FROM %s.procedures, %s.obs_type 
+                WHERE id_oty_fk = id_oty""" % ((service,)*2)
             sql += """
-                WHERE id_oty_fk = id_oty
                 AND name_oty = %s
                 ORDER BY name_prc""" 
             rows = pgdb.select(sql,(observationType,))
     else:
         if observationType==None:   
             sql  = """
-                SELECT id_prc, name_prc, desc_prc, assignedid_prc
-                FROM %s.off_proc op, %s.procedures p, %s.offerings o """ %((service,)*3)
+                SELECT id_prc, name_prc, desc_prc, assignedid_prc, name_oty
+                FROM %s.off_proc op, %s.procedures p, %s.offerings o, %s.obs_type """ %((service,)*4)
             sql += """ 
                 WHERE o.id_off = op.id_off_fk 
-                AND op.id_prc_fk = p.id_prc 
+                AND op.id_prc_fk = p.id_prc  
+                AND id_oty_fk = id_oty
                 AND o.name_off = %s
                 ORDER BY p.name_prc; """
             rows = pgdb.select(sql,(offering,))
         else:
             sql = """
-                SELECT id_prc, name_prc, desc_prc, assignedid_prc
+                SELECT id_prc, name_prc, desc_prc, assignedid_prc, name_oty
                 FROM %s.off_proc op, %s.procedures, %s.offerings, %s.obs_type """ % ((service,)*4)
             sql += """
                 WHERE o.id_off=op.id_off_fk 
@@ -224,7 +226,8 @@ def getProcedureNamesList(pgdb,service,offering=None, observationType=None):
                 "id": row["id_prc"], 
                 "name": row["name_prc"], 
                 "description": row["desc_prc"], 
-                "assignedid": row["assignedid_prc"]
+                "assignedid": row["assignedid_prc"], 
+                "sensortype": row["name_oty"]
             } for row in rows
         ]
     else:
