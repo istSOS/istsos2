@@ -101,6 +101,8 @@ class sosGOfilter(f.sosFilter):
                     else:
                         raise sosException.SOSException(2,"Parameter \"eventTime\" bad formatted")
                 
+                # Checking if some event limitation is reached
+                #if sosConfig["maxGoPeriod"]:
                 tp=[]
                 for t in self.eventTime:
                     if len(t) == 2:
@@ -108,9 +110,6 @@ class sosGOfilter(f.sosFilter):
                         tp.append(iso.parse_datetime(t[1]))
                     if len(t)==1:
                         tp.append(iso.parse_datetime(t[0]))
-                
-                # Checking if some event limitation is reached
-                #if sosConfig["maxGoPeriod"]:
                 if int(sosConfig.maxGoPeriod) > 0:
                     from datetime import timedelta
                     d = timedelta(hours=int(sosConfig.maxGoPeriod))

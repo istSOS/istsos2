@@ -17,20 +17,16 @@
 
 
 import string
-import psycopg2 # @TODO the right library
-import psycopg2.extras
 import os
 import os.path
 import sys
 
-#import sosConfig
-from istsoslib import sosDatabase
-#from SOS.config import mimetype
 from istsoslib import sosException
 
 
 class DescribeSensorResponse:
     def __init__(self, filter, pgdb):
+    
         self.smlFile = ""
         sql = "SELECT id_prc, stime_prc, etime_prc, name_oty from %s.procedures, %s.obs_type" %(filter.sosConfig.schema,filter.sosConfig.schema)
         sql += " WHERE id_oty=id_oty_fk AND name_prc = %s" 
@@ -44,24 +40,51 @@ class DescribeSensorResponse:
         if res==None:
             raise sosException.SOSException(1,"Error! Procedure '%s' not exist or can't be found.")
         
-        # look for observation start time
-        try:
-            self.stime = res[0]['stime_prc']
-        except:
-            self.stime = None
-            #raise sosException.SOSException(1,"Procedure '%s' has no valid stime."%(filter.procedure))
         
-        # look for observation end time
-        try:
-            self.etime = res[0]['etime_prc']
-        except:
-            self.etime = None
-            
         # look for observation end time
         try:
             self.procedureType = res[0]['name_oty']
         except:
             self.procedureType = None
+            
+        
+        if self.procedureType == 'virtual':
+            vpFolder = os.path.join(filter.sosConfig.virtual_processes_folder,filter.procedure)
+            try:
+                sys.path.append(vpFolder)
+            except:
+                raise sosException.SOSException(2,"error in loading virtual procedure path")
+                
+            # check if python file exist
+            if os.path.isfile("%s/%s.py" % (vpFolder,filter.procedure)):
+                
+                #import procedure process
+                exec "import %s as vproc" %(filter.procedure)
+                
+                # Initialization of virtual procedure will load the source data
+                vp = vproc.istvp()
+                vp._configure(filter,pgdb)
+                
+                self.stime, self.etime = vp.getSampligTime()
+                
+            else:
+                self.stime = None
+                self.etime = None
+        
+        else:
+            # look for observation start time
+            try:
+                self.stime = res[0]['stime_prc']
+            except:
+                self.stime = None
+                #raise sosException.SOSException(1,"Procedure '%s' has no valid stime."%(filter.procedure))
+            
+            # look for observation end time
+            try:
+                self.etime = res[0]['etime_prc']
+            except:
+                self.etime = None
+            
         
         # check if folder containing SensorML exists
         if not os.path.isdir(filter.sosConfig.sensorMLpath):

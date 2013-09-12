@@ -16,95 +16,211 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-import psycopg2 # @TODO the right library
-import psycopg2.extras
+#import psycopg2 # @TODO the right library
+#import psycopg2.extras
 import os, sys
 
 #import sosConfig
-from istsoslib import sosDatabase
+#from istsoslib import sosDatabase
 from istsoslib import sosException
 #import mx.DateTime.ISO
 from datetime import timedelta
 import copy
-from datetime import datetime
+#from datetime import datetime
 from lib import isodate as iso
 from lib import pytz
 
 class VirtualProcess():
-    def __init__(self,filter,pgdb):
-        self.filter = copy.deepcopy(filter)
-        self.filterDefault = copy.deepcopy(filter)
+    
+    procedures = {}
+    samplingTime = (None,None)
+    
+    def _configure(self, filterRequest, pgdb):
+        self.filter = copy.deepcopy(filterRequest)
         self.pgdb = pgdb
-        self.ob_inputs = {}
-        self.inputs = {}
-        self.aggregate_function = filter.aggregate_function
-        self.aggregate_interval = filter.aggregate_interval
         
-    def setInput(self,val,name):
-        "set generic input of generic type"
-        self.inputs[name] = val
-        
-    def setSOSobservationVar(self,proc,prop,samplingTime=False,disableAggregate=True):
-        "method for setting a procedure observation input"
-        self.filter.procedure = [proc]
-        if type(prop)==type([]):
-            self.filter.observedProperty = prop
-        else:
-            self.filter.observedProperty = [prop]
-        
-        #raise sosException.SOSException(3,"filter: %s" % self.filter.observedProperty)
-        
-        #CRETE OBSERVATION OBJECT
-        #=================================================
-        ob = observation()
-        
-        #BUILD BASE INFOS FOR REQUIRED PROCEDURE
-        #=================================================
-        sqlSel = "SELECT DISTINCT"
-        sqlSel += " id_prc, name_prc, name_oty, stime_prc, etime_prc, time_res_prc, name_tru"
-        sqlFrom = "FROM %s.procedures, %s.proc_obs p, %s.observed_properties, " %(self.filter.sosConfig.schema,self.filter.sosConfig.schema,self.filter.sosConfig.schema)
-        sqlFrom += " %s.uoms, %s.time_res_unit, %s.obs_type" %(self.filter.sosConfig.schema,self.filter.sosConfig.schema,self.filter.sosConfig.schema)
-        sqlWhere = "WHERE id_prc=p.id_prc_fk AND id_opr_fk=id_opr AND id_uom=id_uom_fk AND id_tru=id_tru_fk AND id_oty=id_oty_fk"
-        sqlWhere += " AND name_prc='%s'" %(self.filter.procedure[0])
+    def addProcedure(self, name, observedProperty):
         """
-        properties = [ "def_opr='%s'" % op for op in self.filter.observedProperty ]
-        sqlWhere += " AND ( %s )" %(" OR ".join(properties))
-        raise sosException.SOSException(3,"l-SQL: %s - %s"%(sqlSel + " " + sqlFrom + " " + sqlWhere,"e"))
+        name: String
+        observedProperty: String or Array of String
         """
-        try:
-            o = self.pgdb.select(sqlSel + " " + sqlFrom + " " + sqlWhere)[0]
-        except Exception as e:
-            raise sosException.SOSException(3,"SQL: %s - %s"%(sqlSel + " " + sqlFrom + " " + sqlWhere,e))    
-        
-        ob.baseInfo(self.pgdb,o,self.filter.sosConfig)
-        
-        #GET DATA FROM PROCEDURE ACCORDING TO THE FILTERS
-        #=================================================
-        if disableAggregate:
-            self.filter.aggregate_function = None
-            self.filter.aggregate_interval = None
-        ob.setData(self.pgdb,o,self.filter)
-        
-        if disableAggregate:
-            self.filter.aggregate_function = self.aggregate_function
-            self.filter.aggregate_interval = self.aggregate_interval
-        
-        self.samplingTime = ob.samplingTime
-        
-        if samplingTime==False:
-            return ob.data
-        else:
-            return (ob.data,ob.samplingTime)
-        
-    def setGenericObservationVar(self,data,name):
-        "method for setting generic data observation"
-        if not type(data)==type([]):
-            if not ( type(data[0])==type([]) and len(data[0]==2) ):
-                raise sosException.SOSException(3,"setGenericVar argument not appripriate")        
-        self.ob_input[name] = data
+        self.procedures[name] = observedProperty
         
     def execute(self):
+        "This method must be overridden to implement data gathering for this virtual procedure"
         raise sosException.SOSException(3,"function execute must be overridden")
+    
+    def calculateObservations(self, observation):
+        self.observation = observation
+        self.observation.samplingTime = self.getSampligTime()
+        self.observation.data = self.execute()
+        if self.filter.aggregate_interval != None:
+            self.applyFunction()
+    
+    def getSampligTime(self):
+        self.setSampligTime()
+        return self.samplingTime
+        
+    def setSampligTime(self):
+        """
+        This method can be overridden to set the virtual procedure sampling time
+        *************************************************************************
+        By default This method calculate the sampling time of a virtual procedure 
+        giving the procedure name from witch the data are derived 
+        as single string or array of strings.
+        
+        If an array is give by default it will return the minimum begin position 
+        and the maximum end position among all the procedures name given.
+        """
+        if len(self.procedures)==0:
+            self.samplingTime = (None,None)
+        else:
+            if len(self.procedures)>1: 
+                sql = """ 
+                    SELECT min(stime_prc), max(etime_prc)
+                    FROM %s.procedures 
+                    WHERE (stime_prc IS NOT NULL
+                    AND etime_prc IS NOT NULL)
+                    AND (
+                """ % self.filter.sosConfig.schema
+                sql += ("name_prc=%s OR "*len(self.procedures))
+                sql += ") GROUP BY stime_prc, etime_prc"
+                param = tuple(self.procedures.keys())
+            else:
+                sql = """ 
+                    SELECT stime_prc, etime_prc
+                    FROM %s.procedures 
+                    WHERE (stime_prc IS NOT NULL
+                    AND etime_prc IS NOT NULL)
+                """ % self.filter.sosConfig.schema
+                sql += "AND name_prc=%s"
+                param = (self.procedures.keys()[0],)
+                
+            try:
+                result = self.pgdb.select(sql, param)
+                if len(result)==0:
+                    raise sosException.SOSException(3,"Virtual Procedure Error: procedure %s not found in the database" % (", ".join(param)) )
+                result = result[0]
+            except Exception as e:
+                raise sosException.SOSException(3,"Database error: %s - %s" % (sql, e))    
+                
+            self.samplingTime = (result[0],result[1])
+        
+    def getData(self, procedure=None, disableAggregation=False):
+        """
+        procedure: String
+        """
+        
+        # Validating:
+        # If procedure is None, it is supposed that only one procedure has been added
+        if procedure is None:
+            if len(self.procedures)==0:
+                raise sosException.SOSException(3,"Virtual Procedure Error: no procedures added")    
+            procedure = self.procedures.keys()[0]
+            
+        elif procedure not in self.procedures.keys():
+            raise sosException.SOSException(3,"Virtual Procedure Error: procedure %s has not been added to this virtual procedure" % procedure)    
+        
+        virtualFilter = copy.deepcopy(self.filter)
+        virtualFilter.procedure = [procedure]
+        virtualFilter.observedProperty = self.procedures[procedure]
+        
+        sql = """
+            SELECT DISTINCT id_prc, name_prc, name_oty, 
+                stime_prc, etime_prc, time_res_prc, name_tru 
+            FROM 
+                %s.procedures, 
+                %s.proc_obs p, 
+                %s.observed_properties, 
+                %s.uoms, 
+                %s.time_res_unit, 
+                %s.obs_type """ % ((self.filter.sosConfig.schema,)*6 )
+        sql += """
+                WHERE id_prc = p.id_prc_fk 
+                AND id_opr_fk = id_opr 
+                AND id_uom = id_uom_fk 
+                AND id_tru = id_tru_fk 
+                AND id_oty = id_oty_fk
+                AND name_prc=%s"""
+        
+        try:
+            result = self.pgdb.select(sql, (procedure,))
+            if len(result)==0:
+                raise sosException.SOSException(3,"Virtual Procedure Error: procedure %s not found in the database" % procedure)
+            result = result[0]
+        except Exception as e:
+            raise sosException.SOSException(3,"Database error: %s - %s" % (sql, e))    
+        
+        obs = Observation()
+        
+        obs.baseInfo(self.pgdb, result, virtualFilter.sosConfig)
+        obs.setData(self.pgdb, result, virtualFilter)
+        
+        return obs.data
+    
+    def applyFunction(self):
+        try:
+            # Create array container
+            begin = iso.parse_datetime(self.filter.eventTime[0][0])
+            end = iso.parse_datetime(self.filter.eventTime[0][1])
+            duration = iso.parse_duration(self.filter.aggregate_interval)
+            result = {}
+            dt = begin
+            fields = len(self.observation.observedProperty)# + 1 # +1 timestamp field not mentioned in the observedProperty array
+            
+            while dt < end:
+                dt2 = dt + duration
+                result[dt2]=[]
+                for c in range(fields):
+                    result[dt2].append([])
+                
+                d = 0
+                data = copy.copy(self.observation.data)
+                while len(data) > 0:
+                    tmp = data.pop(d)
+                    if dt < tmp[0] and tmp[0] <= dt2:
+                        self.observation.data.pop(d)
+                        for c in range(fields):
+                            result[dt2][c].append(float(tmp[c+1]))
+                    elif dt > tmp[0]:
+                        self.observation.data.pop(d)
+                    elif dt2 < tmp[0]:
+                        break
+                        
+                dt = dt2
+                
+            data = []
+            
+            for r in sorted(result):
+                record = [r]
+                for v in range(len(result[r])):
+                    if self.observation.observedProperty[v].split(":")[-1]=="qualityIndex":
+                        if len(result[r][v])==0:
+                            record.append(self.filter.aggregate_nodata_qi)
+                        else:
+                            record.append(int(min(result[r][v])))
+                    else:
+                        val = None
+                        if len(result[r][v])==0:
+                            val = self.filter.aggregate_nodata
+                        elif self.filter.aggregate_function.upper() == 'SUM':
+                            val = sum(result[r][v])
+                        elif self.filter.aggregate_function.upper() == 'MAX':
+                            val = max(result[r][v])
+                        elif self.filter.aggregate_function.upper() == 'MIN':
+                            val = min(result[r][v])
+                        elif self.filter.aggregate_function.upper() == 'AVG':
+                            val = round(sum(result[r][v])/len(result[r][v]),4)
+                        elif self.filter.aggregate_function.upper() == 'COUNT':
+                            val = len(result[r][v])
+                        record.append(val)
+                data.append(record)
+                    
+            self.observation.data = data
+            
+        except Exception as e:
+            raise sosException.SOSException(3,"Error while applying aggregate function on virtual procedures: %s" % (e))
+        
 
 class VirtualProcessHQ(VirtualProcess):
     
@@ -190,9 +306,12 @@ class VirtualProcessHQ(VirtualProcess):
         #print "self running.."
         #import datetime, decimal, sys
         
+        self.setDischargeCurves()
+        data = self.getData()
+        
         if self.filter.qualityIndex == True:
             data_out=[]
-            for rec in self.data:
+            for rec in data:
                 if (float(rec[1])) < -999.0:
                     data_out.append([ rec[0], -999.9, 110 ])
                 else:
@@ -206,11 +325,10 @@ class VirtualProcessHQ(VirtualProcess):
                             break
                         if o == ( len(self.hqCurves['from']) -1):
                             #data non in curves definition
-                            data_out.append([ rec[0], -999.9, 120 ])         
-                    
+                            data_out.append([ rec[0], -999.9, 120 ])       
         else:
             data_out=[]
-            for rec in self.data:
+            for rec in data:
                 for o in range(len(self.hqCurves['from'])):
                     if (self.hqCurves['from'][o] < rec[0] <= self.hqCurves['to'][o]) and (self.hqCurves['low'][o] <= float(rec[1]) < self.hqCurves['up'][o]):
                         if (float(rec[1])-self.hqCurves['B'][o]) >=0:
@@ -220,7 +338,10 @@ class VirtualProcessHQ(VirtualProcess):
                         break
                     if o == (len(self.hqCurves['from'])-1):
                         data_out.append([ rec[0], -999.9 ])
+                        
         return data_out  
+        
+        
 #--this while is not
 #import TEST as Vproc        
 #----------------------------------
@@ -269,11 +390,11 @@ def BuildOfferingList(pgdb,sosConfig):
     for row in rows:
         list.append(row["name_off"])
 
-
+'''
 def buildQuery(parameters):
     """Documentation"""
 
-
+'''
 
                 
 '''
@@ -361,7 +482,7 @@ class offInfo:
 
 
 # @todo instantation with Builder pattern will be less confusing, observation class must be just a data container
-class observation:
+class Observation:
 
     def __init__(self):
         self.procedure=None
@@ -384,7 +505,7 @@ class observation:
         self.qualitydef = None
         self.data=[]
         
-    def baseInfo(self,pgdb,o,sosConfig):
+    def baseInfo(self, pgdb, o, sosConfig):
         #set base information of registered procedure
         #=============================================
         
@@ -421,7 +542,7 @@ class observation:
         
         self.dataType = sosConfig.urn["dataType"] + "timeSeries"
         self.timedef = sosConfig.urn["parameter"] + "time:iso8601"
-        self.qualitydef = None #sosConfig.urn["parameter"] + "qualityIndex"
+        self.qualitydef = None
         
         
     def setData(self,pgdb,o,filter):
@@ -481,7 +602,7 @@ class observation:
                 self.uom += ["-"]
         
         #SET DATA
-        #=========================================
+        #=========================================getSampligTime
         #CASE "insitu-fixed-point" or "insitu-mobile-point"
         #-----------------------------------------
         if self.procedureType in ["insitu-fixed-point","insitu-mobile-point"]:
@@ -510,7 +631,7 @@ class observation:
                         filter.aggregate_function, idx, filter.aggregate_nodata, filter.aggregate_function, idx, idx)
                     )'''
                     # This accept only numeric results
-                    aggrCols.append("COALESCE(%s(dt.c%s_v),'%s') as c%s_v\n" %(filter.aggregate_function,idx,filter.aggregate_nodata,idx))
+                    aggrCols.append("COALESCE(%s(dt.c%s_v),'%s') as c%s_v\getSampligTimen" %(filter.aggregate_function,idx,filter.aggregate_nodata,idx))
                     if self.qualityIndex==True:
                         #raise sosException.SOSException(3,"QI: %s"%(self.qualityIndex))
                         aggrCols.append("COALESCE(MIN(dt.c%s_qi),%s) as c%s_qi\n" %( idx, filter.aggregate_nodata_qi, idx ))
@@ -673,6 +794,7 @@ class observation:
                         sqlInt += "%s seconds " % isoInt.seconds
 
                 
+                # @todo improve this part
                 # calculate how many step are included in the asked interval.
                 hopBefore = 1
                 hop = 0
@@ -744,37 +866,31 @@ class observation:
         #CASE "virtual"
         #-----------------------------------------       
         elif self.procedureType in ["virtual"]:
-            #----- VIRTUAL PROCESS LOADING -----
-            try:
-                sys.path.append(os.path.join(filter.sosConfig.virtual_processes_folder,self.name))
-            except:
-                raise sosException.SOSException(2,"error in loading virtual procedure path")
-            #import procedure process
-            exec "import %s as Vproc" %(self.name)
             
-            '''code = compile('import %s as Vproc', '<string>', 'exec')
-            exec code
-            print a'''
-            
-            # Initialization of virtual procedure will load the source data
-            VP = Vproc.istvp(filter,pgdb)
-            # Execution data processing 
-            self.data = VP.execute()
-            
-            # what is this ??
-            try:
-                self.samplingTime = VP.samplingTime
-            except:
-                pass
             
             self.aggregate_function = filter.aggregate_function
             self.aggregate_interval = filter.aggregate_interval
             self.aggregate_nodata = filter.aggregate_nodata
             self.aggregate_nodata_qi = filter.aggregate_nodata_qi
+                        
+            vpFolder = os.path.join(os.path.join(filter.sosConfig.virtual_processes_folder,self.name))
             
-            if filter.aggregate_interval != None:
-                applyFunction(self, filter)
+            if not os.path.isfile("%s/%s.py" % (vpFolder,self.name)):
+                raise sosException.SOSException(2,"Virtual procedure folder does not contain any Virtual Procedure code for %s" % self.name)
                 
+            #----- VIRTUAL PROCESS LOADING -----
+            try:
+                sys.path.append(vpFolder)
+            except:
+                raise sosException.SOSException(2,"error in loading virtual procedure path")
+            #import procedure process
+            exec "import %s as vproc" %(self.name)
+            
+            # Initialization of virtual procedure will load the source data
+            vp = vproc.istvp()
+            vp._configure(filter, pgdb)
+            # Calculate virtual procedure data
+            vp.calculateObservations(self)
                 
                 
 class observations:
@@ -891,7 +1007,7 @@ class observations:
             
             #CRETE OBSERVATION OBJECT
             #=================================================
-            ob = observation()
+            ob = Observation()
             
             #BUILD BASE INFOS FOR EACH PROCEDURE (Pi)
             #=================================================
