@@ -6682,6 +6682,34 @@
                     }
                 },
                 {
+                    "id": "ExtBox1-ext-gen32540",
+                    "type": "gridcolumn",
+                    "reference": {
+                        "name": "columns",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "dataIndex": "description",
+                        "text": "Description",
+                        "designer|userClassName": "MyColumn31"
+                    }
+                },
+                {
+                    "id": "ExtBox1-ext-gen32950",
+                    "type": "gridcolumn",
+                    "reference": {
+                        "name": "columns",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "dataIndex": "sensortype",
+                        "text": "Sensor Type",
+                        "designer|userClassName": "MyColumn31"
+                    }
+                },
+                {
                     "id": "ExtBox1-ext-gen24907",
                     "type": "gridcolumn",
                     "reference": {
@@ -11101,9 +11129,10 @@
                                 "id": "vpcmbplist",
                                 "fieldLabel": "Virtual procedure",
                                 "labelWidth": 150,
+                                "allowBlank": false,
                                 "displayField": "name",
-                                "queryMode": "local",
-                                "store": "procedurelist",
+                                "forceSelection": true,
+                                "store": "vplist",
                                 "valueField": "name",
                                 "designer|userClassName": "MyComboBox31",
                                 "layout|anchor": "100%"
@@ -11398,6 +11427,7 @@
                                                     "codeClass": null,
                                                     "userConfig": {
                                                         "fieldLabel": "Label",
+                                                        "hideLabel": true,
                                                         "designer|userClassName": "MyNumberField11"
                                                     }
                                                 }
@@ -13437,6 +13467,36 @@
                     }
                 },
                 {
+                    "id": "ExtBox1-ext-gen32742",
+                    "type": "datafield",
+                    "reference": {
+                        "name": "fields",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "name": "description",
+                        "sortType": "asText",
+                        "type": "string",
+                        "designer|userClassName": "MyField49"
+                    }
+                },
+                {
+                    "id": "ExtBox1-ext-gen32831",
+                    "type": "datafield",
+                    "reference": {
+                        "name": "fields",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "name": "sensortype",
+                        "sortType": "asText",
+                        "type": "string",
+                        "designer|userClassName": "MyField49"
+                    }
+                },
+                {
                     "id": "ExtBox1-ext-gen24083",
                     "type": "datafield",
                     "reference": {
@@ -13451,6 +13511,90 @@
                 },
                 {
                     "id": "ExtBox1-ext-gen24090",
+                    "type": "datafield",
+                    "reference": {
+                        "name": "fields",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "name": "observedproperties",
+                        "designer|userClassName": "MyField51"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "ExtBox1-ext-gen35785",
+            "type": "jsonstore",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "storeId": "vplist",
+                "designer|userClassName": "vplist"
+            },
+            "cn": [
+                {
+                    "id": "ExtBox1-ext-gen35788",
+                    "type": "ajaxproxy",
+                    "reference": {
+                        "name": "proxy",
+                        "type": "object"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "designer|userClassName": "Ajax Proxy14"
+                    },
+                    "cn": [
+                        {
+                            "id": "ExtBox1-ext-gen35791",
+                            "type": "jsonreader",
+                            "reference": {
+                                "name": "reader",
+                                "type": "object"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "idProperty": "name",
+                                "root": "data",
+                                "designer|userClassName": "Json Reader14"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ExtBox1-ext-gen35794",
+                    "type": "datafield",
+                    "reference": {
+                        "name": "fields",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "name": "name",
+                        "sortType": "asText",
+                        "type": "string",
+                        "designer|userClassName": "MyField49"
+                    }
+                },
+                {
+                    "id": "ExtBox1-ext-gen35797",
+                    "type": "datafield",
+                    "reference": {
+                        "name": "fields",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "name": "offerings",
+                        "designer|userClassName": "MyField50"
+                    }
+                },
+                {
+                    "id": "ExtBox1-ext-gen35800",
                     "type": "datafield",
                     "reference": {
                         "name": "fields",

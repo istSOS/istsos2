@@ -46,7 +46,7 @@ Ext.define('istsos.view.VirtualProcedureEditor', {
         });
         
         // Store for combo listing virtual procedures
-        var plist = Ext.create('istsos.store.gridProceduresList');
+        var plist = Ext.create('istsos.store.vplist');
         plist.getProxy().url = Ext.String.format(
             '{0}/istsos/services/{1}/virtualprocedures/operations/getlist', 
             wa.url, this.istService
@@ -58,10 +58,10 @@ Ext.define('istsos.view.VirtualProcedureEditor', {
         
         
         // Refresh combo store of virtual procedures every time it is expanded
-        Ext.getCmp('vpcmbplist').on("expand",function(combo){
+        /*Ext.getCmp('vpcmbplist').on("expand",function(combo){
             this.removeAll();
             this.load();
-        },plist);
+        },plist);*/
         
         // When virtual procedure is selected in combo load rating curve grid
         Ext.getCmp('vpcmbplist').on("select",function(combo, record, index, eOpts){

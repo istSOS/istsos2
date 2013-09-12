@@ -25,9 +25,23 @@ Ext.define('istsos.view.proceduresList', {
             var rec = sm.getSelection();
             if (rec.length==1) {
                 
+                var msg = '', deleteurl='';
+                if (rec[0].get('sensortype')=='virtual'){
+                    deleteurl=Ext.String.format('{0}/istsos/services/{1}/virtualprocedures/{2}', 
+                        wa.url, this.istService, rec[0].get('name')
+                    );
+                    msg = "Are you sure you want to erase the virtual " +
+                        "procedure and all of its python code?";
+                }else{
+                    deleteurl=Ext.String.format('{0}/istsos/services/{1}/procedures/{2}', 
+                        wa.url, this.istService, rec[0].get('name')
+                    );
+                    msg = "Are you sure you want to erase the procedure and all of its observations?";
+                }
+                
                 Ext.Msg.show({
                     title:'Erasing procedure',
-                    msg: 'Are you sure you want to erase the procedure and all of its observations?',
+                    msg: msg,
                     buttons: Ext.Msg.YESNO,
                     icon: Ext.Msg.QUESTION,
                     fn: function(btn){
@@ -41,7 +55,7 @@ Ext.define('istsos.view.proceduresList', {
                             }
                             this.mask.show();
                             Ext.Ajax.request({
-                                url: Ext.String.format('{0}/istsos/services/{1}/procedures/{2}', wa.url, this.istService, rec[0].get('name')),
+                                url: deleteurl,
                                 scope: this,
                                 method: "DELETE",
                                 success: function(response){
@@ -84,7 +98,7 @@ Ext.define('istsos.view.proceduresList', {
                 this.istService,value);
             return Ext.String.format('<span class="softLink" onclick="{0}">{1}</span>',func,value);
         }
-        this.columns[1].renderer = function(value, p, record){
+        this.columns[3].renderer = function(value, p, record){
             var ret = [];
             for (var i = 0; i < value.length; i++) {
                 //var s = Ext.String.format('<span class="softLink" onclick="alert(\'load editor for: '+value[i]+'\')">{0}</span>',value[i]);
@@ -93,7 +107,7 @@ Ext.define('istsos.view.proceduresList', {
             }  
             return ret.join(",&nbsp;")
         };
-        this.columns[2].renderer = function(value, p, record){
+        this.columns[4].renderer = function(value, p, record){
             var ret = [];
             for (var i = 0; i < value.length; i++) {
                 var v = value[i]['name'].split(':');
