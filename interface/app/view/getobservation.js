@@ -51,16 +51,18 @@ Ext.define('istsos.view.getobservation', {
         
         me.callParent(arguments);
         
+        var items = [{
+            xtype: 'checkboxfield',
+            name: 'transactional_log',
+            fieldLabel: 'Transactional request logger',
+            boxLabel: 'Enabled if checked',
+            inputValue: 'True',
+            uncheckedValue: 'False',
+            anchor: '100%'
+        }];
+        
         if (this.istService!='default') {
-            Ext.getCmp('getobsconfig').add([{
-                xtype: 'checkboxfield',
-                name: 'transactional_log',
-                fieldLabel: 'Transactional request logger',
-                boxLabel: 'Enabled if checked',
-                inputValue: 'True',
-                uncheckedValue: 'False',
-                anchor: '100%'
-            },{
+            items = items.concat([{
                 xtype: 'combobox',
                 name: 'defaultqi',
                 fieldLabel: 'Default quality index',
@@ -108,10 +110,8 @@ Ext.define('istsos.view.getobservation', {
                 valueField: 'code',
                 anchor: '100%'
             }]);
-        //Ext.getCmp('defaultqi').setVisible(false);
-        //Ext.getCmp('aggregatenodataqi').setVisible(false);
         }else{
-            Ext.getCmp('getobsconfig').add([{
+            items = items.concat([{
                 xtype: 'textfield',
                 name: 'defaultqi',
                 fieldLabel: 'Default quality index',
@@ -136,11 +136,12 @@ Ext.define('istsos.view.getobservation', {
                 anchor: '100%'
             }]);
         }
-        Ext.getCmp('getobsconfig').add([{
+        items = items.concat([{
             xtype: 'textfield',
             name: 'aggregatenodata',
             fieldLabel: 'Aggregation no-data value',
             anchor: '100%'
         }]);
+        Ext.getCmp('getobsconfig').add(items);
     }
 });
