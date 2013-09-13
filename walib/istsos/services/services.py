@@ -151,10 +151,8 @@ class waServices(waResourceAdmin):
                 defaultepsg = defaultconfig.get("geo")['istsosepsg']
                 import sys
                 if not "epsg" in self.json:
-                    print >> sys.stderr, "From Config: %s" % defaultepsg
                     sql = sqlschema.createsqlschema.replace("$SRID",defaultepsg).replace("$schema",self.json["service"])
                 else:
-                    print >> sys.stderr, "From JSON %s" % self.json['epsg']
                     sql = sqlschema.createsqlschema.replace("$SRID",self.json['epsg'])
                     
                     #set correct default EPSG of the new service

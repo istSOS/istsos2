@@ -370,7 +370,7 @@ class waProcedures(waResourceService):
             }
             ret.update(smlobj.data) # merging dictionaries
             self.setData(ret)
-            self.setMessage("Sensor Description secessfully loaded")
+            self.setMessage("Sensor Description successfully loaded")
         else:
             self.setException("Unable to find the procedure's assignedSensorId")
         

@@ -725,16 +725,6 @@ class Procedure():
                 contact.attrib["{%s}arcrole" % ns['xlink'] ] = h["reference"]["role"]
         
         return et.tostring(root, encoding="UTF-8")
-
-            
-        # xml.dom.minidom is buggy with unicode characters
-        '''if indent==True:
-            #--- PrettyPrint XML 
-            from xml.dom.minidom import parseString
-            txt = et.tostring(root, encoding="UTF-8")
-            return parseString(txt).toprettyxml()
-        else:
-            return et.tostring(root, encoding="UTF-8")'''
         
         
     def toRegisterSensorDom(self,indent=False):
@@ -860,9 +850,6 @@ class Procedure():
         Create a SOS register sensor request String from self.procedure object
         """
         dom = self.toRegisterSensorDom()
-        print >> sys.stderr, "%s" % et.tostring(dom, encoding="UTF-8")
-        #import time
-        #time.sleep(10)
         return et.tostring(dom, encoding="UTF-8")      
         
         

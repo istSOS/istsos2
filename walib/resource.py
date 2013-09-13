@@ -122,8 +122,6 @@ class waResourceService(waResourceAdmin):
     def __init__(self, waEnviron,service=None,loadjson=True):
         waResourceAdmin.__init__(self,waEnviron,loadjson)
 
-        print >> sys.stderr, "service: %s" % service        
-        
         if service == None:
             i = self.pathinfo.index("services")
             if i>0 and i<len(self.pathinfo)-1:
@@ -131,8 +129,6 @@ class waResourceService(waResourceAdmin):
             else:
                 self.service = None
                 
-            print >> sys.stderr, "self.service: %s" % self.service        
-        
         else:
             self.service = service
         

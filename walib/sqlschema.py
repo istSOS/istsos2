@@ -222,6 +222,7 @@ ALTER SEQUENCE uoms_id_uom_seq OWNED BY uoms.id_uom;
 --=====================================
 CREATE TABLE tran_log (
     id_trl integer NOT NULL,
+    transaction_time_trl timestamp without time zone DEFAULT now(),
     operation_trl character varying NOT NULL,
     procedure_trl character varying(30) NOT NULL,
     begin_trl timestamp with time zone,
@@ -349,7 +350,7 @@ INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('aggregation no data
 INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('outboud', 'gross error', 0);
 INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('raw', 'the format is correct', 100);
 INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('acceptable', 'the value is acceptable for the observed property', 110);
-INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('reasonable', 'the value is in a resonable range', 200);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('reasonable', 'the value is in a resonable range for that observed property and station', 200);
 INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('timely coherent', 'the value is coherent with time-series', 300);
 INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('spatilly coherent', 'the value is coherent with close by observations', 400);
 INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('manually adjusted', 'the value has been manually corrected', 500);

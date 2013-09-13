@@ -89,10 +89,6 @@ def RCload(filename):
 
 def RCsave(cvlist,filename):
 
-    print >> sys.stderr, "==================save=============="    
-    print >> sys.stderr, cvlist
-    print >> sys.stderr, filename
-    print >> sys.stderr, "==================save=============="
     lines = []
     header = ['from','to','low_val','up_val','A','B','C','K']
     #check cvlist validity and save to HQ virtual procedure conf file

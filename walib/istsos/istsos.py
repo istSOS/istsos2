@@ -55,7 +55,6 @@ class waStatus(waIstsos):
                         } 
         """
         services = utils.getServiceList(self.waconf.paths["services"],listonly=True)
-        print >> sys.stderr, "services: %s" % self.waconf.paths["services"]
         data = []
         for service in services:
             srv = {}
@@ -65,11 +64,6 @@ class waStatus(waIstsos):
             #-------------------------------------------------------------------
             defaultcfgpath = os.path.join(self.waconf.paths["services"],"default.cfg")
             servicecfgpath = os.path.join(self.waconf.paths["services"],service,service)+".cfg"
-            
-            print >> sys.stderr, "defaultcfgpath: %s" % (defaultcfgpath)
-            print >> sys.stderr, "servicecfgpath: %s" % (servicecfgpath)
-            
-            
             config = configManager.waServiceConfig(defaultcfgpath,servicecfgpath)
             
             #test if service is active (check answer to GetCapabilities)

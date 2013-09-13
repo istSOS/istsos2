@@ -24,7 +24,7 @@ def initResource(waEnviron):
     # ---------------
     pathinfo = copy.deepcopy(waEnviron['pathinfo'])
     resource = pathinfo.pop(0)
-    print >> sys.stderr, resource
+    #print >> sys.stderr, resource
     
     if resource == "istsos":
         
@@ -56,37 +56,37 @@ def initResource(waEnviron):
         # Entering istsos.services
         # -------------------------- 
         elif resource == "services":
-            print >> sys.stderr, resource
+            #print >> sys.stderr, resource
             
             if len(pathinfo)<=1:
                 from walib.istsos.services import services
                 return services.waServices(waEnviron)
             else:
-                print >> sys.stderr, pathinfo.pop(0)  # remove service name
+                #print >> sys.stderr, pathinfo.pop(0)  # remove service name
                 resource = pathinfo.pop(0)
                 
                 # ---------------------------------------
                 # Entering istsos.services.configsections
                 # ---------------------------------------
                 if resource == "configsections":
-                    print >> sys.stderr, resource
+                    #print >> sys.stderr, resource
                     
                     if len(pathinfo)==0:
                         from walib.istsos.services.configsections import configsections
                         return configsections.waConfigsections(waEnviron)
                     else:
                         resource = pathinfo.pop(0)
-                        print >> sys.stderr, resource
+                        #print >> sys.stderr, resource
                         if resource == "connection":
                             if len(pathinfo)==0:
                                 from walib.istsos.services.configsections import connection
                                 return connection.waConnection(waEnviron)
                             else:
                                 resource = pathinfo.pop(0)
-                                print >> sys.stderr, resource
+                                #print >> sys.stderr, resource
                                 if resource == "operations":
                                     resource = pathinfo.pop(0)
-                                    print >> sys.stderr, resource
+                                    #print >> sys.stderr, resource
                                     if resource == "validatedb":
                                         from walib.istsos.services.configsections import connection
                                         return connection.waValidatedb(waEnviron)
@@ -120,7 +120,7 @@ def initResource(waEnviron):
                 # Entering istsos.services.dataqualities
                 # ---------------------------------------
                 elif resource == "dataqualities":
-                    print >> sys.stderr, resource
+                    #print >> sys.stderr, resource
                     from walib.istsos.services.dataqualities import dataqualities
                     return dataqualities.waDataqualities(waEnviron)
                 
@@ -128,7 +128,7 @@ def initResource(waEnviron):
                 # Entering istsos.services.procedures
                 # ---------------------------------------
                 elif resource == "procedures":
-                    print >> sys.stderr, resource
+                    #print >> sys.stderr, resource
                     
                     if len(pathinfo)<=1:
                         from walib.istsos.services.procedures import procedures
@@ -137,11 +137,11 @@ def initResource(waEnviron):
                     else:
                         
                         resource = pathinfo.pop(0)
-                        print >> sys.stderr, resource
+                        #print >> sys.stderr, resource
                         
                         if resource == 'operations':
                             resource = pathinfo.pop(0)
-                            print >> sys.stderr, resource
+                            #print >> sys.stderr, resource
                             
                             if resource == "getlist":
                                 from walib.istsos.services.procedures import procedures
@@ -151,7 +151,7 @@ def initResource(waEnviron):
                 # Entering istsos.services.virtualprocedures
                 # ---------------------------------------
                 elif resource == "virtualprocedures":
-                    print >> sys.stderr, resource
+                    #print >> sys.stderr, resource
                     
                     if len(pathinfo)<=1:
                         from walib.istsos.services.virtualprocedures import virtualprocedures
@@ -159,26 +159,26 @@ def initResource(waEnviron):
                                         
                     else:
                         resource = pathinfo.pop(0)
-                        print >> sys.stderr, resource
+                        #print >> sys.stderr, resource
 
                         if resource == "operations":
-                            print >> sys.stderr, resource              
+                            #print >> sys.stderr, resource              
                             resource = pathinfo.pop(0)    
                             if resource == "getlist":  
-                                print >> sys.stderr, resource     
+                                #print >> sys.stderr, resource     
                                 from walib.istsos.services.virtualprocedures import virtualprocedures
                                 return virtualprocedures.waGetlist(waEnviron)
                                 
                         resource = pathinfo.pop(0)
-                        print >> sys.stderr, resource
+                        #print >> sys.stderr, resource
                         
                         if resource == 'code':
-                            print >> sys.stderr, resource
+                            #print >> sys.stderr, resource
                             from walib.istsos.services.virtualprocedures import code
                             return code.waCode(waEnviron)
                             
                         elif resource == 'ratingcurve':
-                            print >> sys.stderr, resource
+                            #print >> sys.stderr, resource
                             from walib.istsos.services.virtualprocedures import ratingcurve
                             return ratingcurve.waRatingcurves(waEnviron)
                             
@@ -186,7 +186,7 @@ def initResource(waEnviron):
                 # Entering istsos.services.observedproperties
                 # ---------------------------------------
                 elif resource == "observedproperties":
-                    print >> sys.stderr, resource
+                    #print >> sys.stderr, resource
                     from walib.istsos.services.observedproperties import observedproperties
                     return observedproperties.waObservedproperties(waEnviron)
                     
@@ -194,7 +194,7 @@ def initResource(waEnviron):
                 # Entering istsos.services.uoms
                 # ---------------------------------------
                 elif resource == "uoms":
-                    print >> sys.stderr, resource
+                    #print >> sys.stderr, resource
                     from walib.istsos.services.uoms import uoms
                     return uoms.waUoms(waEnviron)
                 
@@ -202,7 +202,7 @@ def initResource(waEnviron):
                 # Entering istsos.services.epsgs
                 # ---------------------------------------
                 elif resource == "epsgs":
-                    print >> sys.stderr, resource
+                    #print >> sys.stderr, resource
                     from walib.istsos.services.epsgs import epsgs
                     return epsgs.waEpsgs(waEnviron)
                     
@@ -210,7 +210,7 @@ def initResource(waEnviron):
                 # Entering istsos.services.epsgs
                 # ---------------------------------------
                 elif resource == "systemtypes":
-                    print >> sys.stderr, resource
+                    #print >> sys.stderr, resource
                     from walib.istsos.services.systemtypes import systemtypes
                     return systemtypes.waSystemTypes(waEnviron)
                 
@@ -219,19 +219,19 @@ def initResource(waEnviron):
                 # Entering istsos.services.offerings
                 # ---------------------------------------
                 elif resource == "offerings":
-                    print >> sys.stderr, resource
+                    #print >> sys.stderr, resource
                     
                     if len(pathinfo)<=1:
                         from walib.istsos.services.offerings import offerings
                         return offerings.waOfferings(waEnviron)
                     else:
                         resource = pathinfo.pop(0) # remove offering name
-                        print >> sys.stderr, resource
+                        #print >> sys.stderr, resource
                         
                         if resource == "operations":
                             resource = pathinfo.pop(0)
                             if resource == "getlist":
-                                print >> sys.stderr, resource
+                                #print >> sys.stderr, resource
                                 from walib.istsos.services.offerings import offerings
                                 return offerings.waGetlist(waEnviron)
                         else:
@@ -243,7 +243,7 @@ def initResource(waEnviron):
                                 else:
                                     resource = pathinfo.pop(0)
                                     if resource == "operations":
-                                        print >> sys.stderr, resource
+                                        #print >> sys.stderr, resource
                                         resource = pathinfo.pop(0)
                                         if resource == "memberslist":
                                             from walib.istsos.services.offerings.procedures import procedures
@@ -256,14 +256,14 @@ def initResource(waEnviron):
                 # Entering istsos.services.operations
                 # ---------------------------------------
                 elif resource == "operations":
-                    print >> sys.stderr, resource              
+                    #print >> sys.stderr, resource              
                     resource = pathinfo.pop(0)    
                     if resource == "getobservation":  
-                        print >> sys.stderr, resource     
+                        #print >> sys.stderr, resource     
                         from walib.istsos.services import services
                         return services.waGetobservation(waEnviron)
                     elif resource == "insertobservation":
-                        print >> sys.stderr, resource     
+                        #print >> sys.stderr, resource     
                         from walib.istsos.services import services
                         return services.waInsertobservation(waEnviron)
                                    

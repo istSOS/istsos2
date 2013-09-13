@@ -483,14 +483,10 @@ def to_unicode_or_bust(obj, encoding='utf-8'):
     
 
 def encodeobject(obj, encoding='utf-8'):
-    #pp = pprint.PrettyPrinter(indent=4)
-    #print >> sys.stderr, "PRIMA **************************"
-    #pp.pprint(obj)
     try:
         if type(obj) is list:
             for key, value in enumerate(obj):
                 
-                #print >> sys.stderr, "key: %s" % key
                 if type(value) is dict or type(value) is psycopg2.extras.DictRow:
                     obj[key] = encodeobject(value, encoding)
                 elif type(value) is list:
@@ -499,7 +495,6 @@ def encodeobject(obj, encoding='utf-8'):
                     obj[key] = to_unicode_or_bust(value, encoding)
         elif type(obj) is dict or type(obj) is psycopg2.extras.DictRow:
             for key, value in obj.iteritems():
-                #print >> sys.stderr, "key: %s" % key
                 if type(value) is dict:
                     obj[key] = encodeobject(value, encoding)
                 elif type(value) is list:
@@ -508,8 +503,6 @@ def encodeobject(obj, encoding='utf-8'):
                     obj[key] = to_unicode_or_bust(value, encoding)
     except Exception as e:
         print >> sys.stderr, traceback.print_exc()
-    #print >> sys.stderr, "DOPO **************************"
-    #pp.pprint(obj)
     return obj
             
     
