@@ -57,13 +57,11 @@ def sosFactoryFilter(environ,sosConfig):
                 raise sosException.SOSException(3,"Request not found")
 
         else:
-            print >> sys.stderr, content
             xmldoc = minidom.parseString(content)
             
         requestObject = xmldoc.firstChild
         sosRequest = requestObject.localName.lower()
             
-        #print >> sys.stderr, requestObject.toprettyxml()
     else:
         err_txt = "Allowed \"http request\" are GET and POST: %s" %(method=="GET")
         raise sosException.SOSException(1,err_txt)

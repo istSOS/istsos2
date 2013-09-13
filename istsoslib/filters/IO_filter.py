@@ -99,20 +99,16 @@ class sosIOfilter(f.sosFilter):
             CompositPhenomenon = observedProperty.find("{%s}CompositePhenomenon" % ns['swe'] )
             import traceback, sys
             
-            print >> sys.stderr, "CompositPhenomenon: %s" % CompositPhenomenon
-            
             if not CompositPhenomenon == None:
                 components = CompositPhenomenon.findall("{%s}component" % ns['swe'] )
                 for co in components:
                     try:
                         self.oprName.append(co.attrib[ "{%s}href" % ns['xlink'] ] )
                     except:
-                        print >> sys.stderr, traceback.print_exc()
                         try:
                             name = co.find("{%s}name" % ns['gml'] )
                             self.oprName.append(name.text)
                         except:
-                            print >> sys.stderr, traceback.print_exc()
                             raise sosException.SOSException(1,"om:observedProperty Name is missing: 'xlink:href' or 'gml:name' required")
             else:
                 try:

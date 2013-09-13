@@ -236,14 +236,6 @@ class sosRSfilter(f.sosFilter):
                 GMLfeature = Observation.find("{%s}featureOfInterest/{%s}FeatureCollection/{%s}location/{%s}%s" 
                                                 %(ns['om'],ns['gml'],ns['gml'],ns['gml'],geomtype) )
 
-                """
-                import sys                                
-                if GMLfeature:
-                    print >> sys.stderr, "GMLfeat:\n%s" % et.tostring(GMLfeature)
-                else: 
-                    print >> sys.stderr, "NONE %s" % geomtype
-                """
-                
                 if not GMLfeature==None:
                     self.foiType = geomtype
                     self.foiSRS = GMLfeature.attrib["srsName"].split(":")[-1]
@@ -323,19 +315,15 @@ class sosRSfilter(f.sosFilter):
                                 err_txt = "in <swe:constraint>: <swe:AllowedValues> is mandatory in multiplicity 1"
                                 raise sosException.SOSException(1,err_txt)
                             else:
-                                #print >> sys.stderr, "find allowed values"
                                 
                                 cvals = None
                                 if len(allow)==1:
-                                    #print >> sys.stderr, "find min-max-etc."
                                     ct = allow[0].tag
-                                    #print >> sys.stderr, "ct = %s" % ct
                                     if not ct in ["{%s}min" % ns["swe"],"{%s}max" % ns["swe"],"{%s}interval" % ns["swe"],"{%s}valueList" % ns["swe"]]:
                                         err_txt = "in <swe:constraint>: support only min, max, interval, valueList tag" 
                                         raise sosException.SOSException(1,err_txt)
                                     
                                     xvals = allow[0].text.strip().split(" ")
-                                    #print >> sys.stderr, "xvals = %s" % xvals
                                     if ct == "{%s}min" % ns["swe"]: 
                                         ct = "min"
                                         if not len(xvals)==1:
@@ -376,14 +364,11 @@ class sosRSfilter(f.sosFilter):
                                             raise sosException.SOSException(1,err_txt)
                                         cvals = " ".join(xvals)
                                     
-                                    #print >> sys.stderr, "crole = %s" % crole
-                                    #print >> sys.stderr, "cvals = %s" % cvals
                                     if crole:
                                         cc["role"] = crole
                                     if cvals:
                                         cc["%s" % ct] = xvals
                         
-                        #print >> sys.stderr, "cc = %s" % cc
                         if not cc=={}:
                             self.constr.append(json.dumps(cc))
                         else:

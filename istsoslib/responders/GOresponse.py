@@ -303,8 +303,6 @@ class VirtualProcessHQ(VirtualProcess):
         self.hqCurves = hqs
         
     def execute(self):
-        #print "self running.."
-        #import datetime, decimal, sys
         
         self.setDischargeCurves()
         data = self.getData()
@@ -778,19 +776,14 @@ class Observation:
                         sqlInt += "%s seconds " % isoInt.seconds
                         
                 elif isinstance(isoInt, iso.Duration): 
-                    print "INTERVAL:"
                     if isoInt.years>0:
-                        print isoInt.years
                         sqlInt += "%s years " % isoInt.years
                     if isoInt.months>0:
                         isoInt.months = int(isoInt.months)
-                        print isoInt.months
                         sqlInt += "%s months " % isoInt.months
                     if isoInt.days>0:
-                        print isoInt.days
                         sqlInt += "%s days " % isoInt.days
                     if isoInt.seconds>0:
-                        print isoInt.seconds
                         sqlInt += "%s seconds " % isoInt.seconds
 
                 
@@ -836,8 +829,8 @@ class Observation:
                 
             #--------- debug execute query --------
             #raise sosException.SOSException(3,sql)
-            #print >> sys.stderr, sql
             #--------------------------------------
+            
             try:
                 data_res = pgdb.select(sql)
             except:
@@ -858,9 +851,6 @@ class Observation:
                         data_array = [line["t"],line["x"],line["y"],line["z"]]
                 data_array.extend([line[field] for field in valeFieldName])
                 self.data.append(data_array)
-            #raise sosException.SOSException(3,self.data)
-            #else:
-            #    raise sosException.SOSException(3,"SQLEEE: %s"%(sql))
             
         #-----------------------------------------                
         #CASE "virtual"

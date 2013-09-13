@@ -46,9 +46,6 @@ class InsertObservationResponse:
             prc = pgdb.select(sql,params)[0]
         except:
             raise sosException.SOSException(3,"assignedSensorId '%s' is invalid! SQL: %s" %(filter.assignedSensorId,pgdb.mogrify(sql,params)))
-        
-        print >> sys.stderr, "==PROC INFO=========="
-        print >> sys.stderr, pprint.pprint(prc)
                 
         #--check requested procedure name exists
         #=============================================
@@ -100,7 +97,6 @@ class InsertObservationResponse:
                         try:
                             a = pgdb.executeInTransaction(sql,params)
                             com=True
-                            print >> sys.stderr, "==FORCE FLAG ON: begin time of procedure updated=========="
                         except:
                             raise sosException.SOSException(3,"SQL: %s" %(pgdb.mogrify(sql,params)))
                     
@@ -112,7 +108,6 @@ class InsertObservationResponse:
                         try:
                             b = pgdb.executeInTransaction(sql,params)
                             com=True   
-                            print >> sys.stderr, "==FORCE FLAG ON: end time of procedure updated=========="
                         except Exception as err:
                             raise sosException.SOSException(3,"SQL: %s - %s" %(pgdb.mogrify(sql,params), err.pgerror))
 
@@ -143,7 +138,6 @@ class InsertObservationResponse:
                     try:
                         b = pgdb.executeInTransaction(sql,params)
                         com=True
-                        print >> sys.stderr, "==FORCE FLAG OFF: end time of procedure updated=========="
                     except Exception as err:
                         raise sosException.SOSException(3,"SQL: %s - %s" %(pgdb.mogrify(sql,params), err.pgerror))
             
@@ -154,7 +148,6 @@ class InsertObservationResponse:
                 try:
                     b = pgdb.executeInTransaction(sql,params)
                     com=True
-                    print >> sys.stderr, "==stime & etime NULL: start & end time of procedure updated=========="
                 except:
                     raise sosException.SOSException(3,"SQL: %s" %(pgdb.mogrify(sql,params)))
             
@@ -168,8 +161,6 @@ class InsertObservationResponse:
         params = (prc["id_prc"],)
         try:
             opr = pgdb.select(sql,params)
-            print >> sys.stderr, "==OPR INFO=========="
-            print >> sys.stderr, pprint.pprint(opr)
         except Exception as err:
             raise sosException.SOSException(3,"SQL2: %s -%s" %(pgdb.mogrify(sql,params), err.pgerror))
             
@@ -199,15 +190,11 @@ class InsertObservationResponse:
             oprIds.append(row["id_opr"])
             proIds.append(row["id_pro"])
             
-            
-            
-            print >> sys.stderr, "------------------>> constr_opr: %s" % row["constr_opr"]
             if not row["constr_opr"] in [None,'']:
                 obsPropConstr.append(json.loads(row["constr_opr"]))
             else:
                 obsPropConstr.append(None)
                 
-            print >> sys.stderr, "------------------>> constr_pro: %s" % row["constr_pro"]
             if not row["constr_pro"] in [None,'']:
                 procConstr.append(json.loads(row["constr_pro"]))
             else:
@@ -316,7 +303,6 @@ class InsertObservationResponse:
         # verify that eventime are in provided samplingTime
         #---------------------------------------------------------------
         if not iso.parse_datetime(max(filter.data[tpar]["vals"]))<= end and iso.parse_datetime(min(filter.data[tpar]["vals"]))>= start:
-            print >> sys.stderr, "maxvals=%s,end=%s,minval=%s,start=%s============" %(max(filter.data[tpar]["vals"], end, min(filter.data[tpar]["vals"]), start))
             raise sosException.SOSException(3,"provided data are not included in provided <samplingTime> period")
         
         #======================        
@@ -369,15 +355,6 @@ class InsertObservationResponse:
                     
                     if not filter.data[par]["vals"][ii] in ['NULL',u'NULL',None,-999,"-999",u"-999",filter.sosConfig.aggregate_nodata]:
                         
-                        print >> sys.stderr, "------------------------------------------"
-                        print >> sys.stderr, "------------------------------------------"
-                        print >> sys.stderr, (i,", ", par ,", ", pprint.pprint(parsConsObs[i]))
-                        print >> sys.stderr, "i: %s" % i
-                        print >> sys.stderr, "par: %s" % par
-                        print >> sys.stderr, "parsConsObs: %s" % pprint.pprint(parsConsObs[i])
-                        print >> sys.stderr, "------------------------------------------"
-                        print >> sys.stderr, "------------------------------------------"
-                        
                         pqi = int(filter.data[par+":qualityIndex"]["vals"][ii])
                         
                         # Constraint quality is done only if the quality index is equal to the default qi (RAW DATA)
@@ -385,7 +362,7 @@ class InsertObservationResponse:
                             
                             # quality check level I (gross error)
                             #------------------------------------
-                            if filter.sosConfig.correct_qi and parsConsObs[i] != None:
+                            if filter.sosConfig.correct_qi != None and parsConsObs[i] != None:
                                 
                                 if 'max' in parsConsObs[i]:
                                     if float(filter.data[par]["vals"][ii]) <= float(parsConsObs[i]['max']):
@@ -399,30 +376,24 @@ class InsertObservationResponse:
                                 elif 'valueList' in parsConsObs[i]:
                                     if float(filter.data[par]["vals"][ii]) in [float(p) for p in parsConsObs[i]['valueList']]:
                                         pqi = int(filter.sosConfig.correct_qi)
-                            
+                                    
                             # quality check level II (statistical range)
                             #-------------------------------------------
-                            if filter.sosConfig.stat_qi and parsConsPro[i] != None:
+                            if filter.sosConfig.stat_qi != None and parsConsPro[i] != None:
                                 
                                 if 'max' in parsConsPro[i]:
                                     if float(filter.data[par]["vals"][ii]) <= float(parsConsPro[i]['max']):
-                                        pqi = int(filter.sosConfig.correct_qi)
+                                        pqi = int(filter.sosConfig.stat_qi)
                                 elif 'min' in parsConsPro[i]:
                                     if float(filter.data[par]["vals"][ii]) >= float(parsConsPro[i]['min']):
-                                        pqi = int(filter.sosConfig.correct_qi)
+                                        pqi = int(filter.sosConfig.stat_qi)
                                 elif 'interval' in parsConsPro[i]:
                                     if float(parsConsPro[i]['interval'][0]) <= float(filter.data[par]["vals"][ii]) <= float(parsConsPro[i]['interval'][1]):
-                                        pqi = int(filter.sosConfig.correct_qi)
+                                        pqi = int(filter.sosConfig.stat_qi)
                                 elif 'valueList' in parsConsPro[i]:
                                     if float(filter.data[par]["vals"][ii]) in [float(p) for p in parsConsPro[i]['valueList']]:
-                                        pqi = int(filter.sosConfig.correct_qi)
-                                    
-                        # insert observation
-                        #-------------------------------------------     
-                        #print >> sys.stderr, "insert par values============"
-                        #print >> sys.stderr, "%s %s %s %s" % (parsConsPro[i],parsConsObs[i],pqi,float(filter.data[par]["vals"][ii]))
-                        #-------------------------------------------
-                        
+                                        pqi = int(filter.sosConfig.stat_qi)
+                           
                         params = (int(parsId[i]),int(id_et),pqi,float(filter.data[par]["vals"][ii]))
                         try:
                             nid_msr = pgdb.executeInTransaction(sql,params)
@@ -467,7 +438,6 @@ class InsertObservationResponse:
             except:
                 raise sosException.SOSException(1,"SQL: %s" %(pgdb.mogrify(sqlLog,params)))
         
-        print >> sys.stderr, "Committing: %s" % com
         if com==True:
             pgdb.commitTransaction()
             
