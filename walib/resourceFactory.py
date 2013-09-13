@@ -62,7 +62,7 @@ def initResource(waEnviron):
                 from walib.istsos.services import services
                 return services.waServices(waEnviron)
             else:
-                #print >> sys.stderr, pathinfo.pop(0)  # remove service name
+                pathinfo.pop(0) #print >> sys.stderr, pathinfo.pop(0)  # remove service name
                 resource = pathinfo.pop(0)
                 
                 # ---------------------------------------
