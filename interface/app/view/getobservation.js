@@ -43,7 +43,6 @@ Ext.define('istsos.view.getobservation', {
             {
                 name: 'display',
                 convert: function(v, record){
-                    console.log(record);
                     return record.get('code') + " - " + record.get('name') + " (" + record.get('description') + ")";
                 }
             }
@@ -53,7 +52,15 @@ Ext.define('istsos.view.getobservation', {
         me.callParent(arguments);
         
         if (this.istService!='default') {
-            Ext.getCmp('getobsconfig').add({
+            Ext.getCmp('getobsconfig').add([{
+                xtype: 'checkboxfield',
+                name: 'transactional_log',
+                fieldLabel: 'Transactional request logger',
+                boxLabel: 'Enabled if checked',
+                inputValue: 'True',
+                uncheckedValue: 'False',
+                anchor: '100%'
+            },{
                 xtype: 'combobox',
                 name: 'defaultqi',
                 fieldLabel: 'Default quality index',
@@ -67,8 +74,8 @@ Ext.define('istsos.view.getobservation', {
             },
             {
                 xtype: 'combobox',
-                name: 'aggregatenodataqi',
-                fieldLabel: 'Aggregation no-data quality index',
+                name: 'correct_qi',
+                fieldLabel: 'Correct quality index',
                 displayField: 'display',
                 forceSelection: true,
                 queryMode: 'local',
@@ -91,8 +98,8 @@ Ext.define('istsos.view.getobservation', {
             },
             {
                 xtype: 'combobox',
-                name: 'correct_qi',
-                fieldLabel: 'Correct quality index',
+                name: 'aggregatenodataqi',
+                fieldLabel: 'Aggregation no-data quality index',
                 displayField: 'display',
                 forceSelection: true,
                 queryMode: 'local',
@@ -100,11 +107,11 @@ Ext.define('istsos.view.getobservation', {
                 typeAhead: true,
                 valueField: 'code',
                 anchor: '100%'
-            });
+            }]);
         //Ext.getCmp('defaultqi').setVisible(false);
         //Ext.getCmp('aggregatenodataqi').setVisible(false);
         }else{
-            Ext.getCmp('getobsconfig').add({
+            Ext.getCmp('getobsconfig').add([{
                 xtype: 'textfield',
                 name: 'defaultqi',
                 fieldLabel: 'Default quality index',
@@ -112,8 +119,8 @@ Ext.define('istsos.view.getobservation', {
             },
             {
                 xtype: 'textfield',
-                name: 'aggregatenodataqi',
-                fieldLabel: 'Aggregation no-data quality index',
+                name: 'correct_qi',
+                fieldLabel: 'Correct quality index',
                 anchor: '100%'
             },
             {
@@ -124,16 +131,16 @@ Ext.define('istsos.view.getobservation', {
             },
             {
                 xtype: 'textfield',
-                name: 'correct_qi',
-                fieldLabel: 'Correct quality index',
+                name: 'aggregatenodataqi',
+                fieldLabel: 'Aggregation no-data quality index',
                 anchor: '100%'
-            });
+            }]);
         }
-        Ext.getCmp('getobsconfig').add({
+        Ext.getCmp('getobsconfig').add([{
             xtype: 'textfield',
             name: 'aggregatenodata',
             fieldLabel: 'Aggregation no-data value',
             anchor: '100%'
-        });
+        }]);
     }
 });

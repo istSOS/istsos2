@@ -6843,6 +6843,7 @@
                             "codeClass": null,
                             "userConfig": {
                                 "dataIndex": "name",
+                                "flex": 1,
                                 "text": "Name",
                                 "designer|userClassName": "MyColumn42"
                             }
@@ -6857,6 +6858,7 @@
                             "codeClass": null,
                             "userConfig": {
                                 "dataIndex": "definition",
+                                "flex": 1,
                                 "text": "Definition",
                                 "designer|userClassName": "MyColumn43"
                             }
@@ -6871,6 +6873,7 @@
                             "codeClass": null,
                             "userConfig": {
                                 "dataIndex": "description",
+                                "flex": 1,
                                 "text": "Description",
                                 "designer|userClassName": "MyColumn44"
                             }
@@ -6885,6 +6888,7 @@
                             "codeClass": null,
                             "userConfig": {
                                 "dataIndex": "procedures",
+                                "flex": 1,
                                 "text": "Procedures",
                                 "designer|userClassName": "MyColumn45"
                             }
@@ -6899,6 +6903,7 @@
                             "codeClass": null,
                             "userConfig": {
                                 "dataIndex": "constraint2str",
+                                "flex": 1,
                                 "text": "Constraint",
                                 "designer|userClassName": "MyColumn50"
                             }

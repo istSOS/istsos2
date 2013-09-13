@@ -44,7 +44,6 @@ Ext.define('istsos.view.qualityindexEditor', {
                 {
                     name: 'display',
                     convert: function(v, record){
-                        console.log(record);
                         return record.get('code') + " - " + record.get('name') + " (" + record.get('description') + ")";
                     }
                 }

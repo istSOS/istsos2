@@ -267,8 +267,6 @@ Ext.define('istsos.view.MainMenu2', {
             
         for (var i = 0; i < cmps.length; i++) {
                 
-            console.dir(cmps[i]);
-                
             var el = cmps[i].getEl();
             el.fadeIn({
                 duration: time,

@@ -271,6 +271,7 @@ Ext.define('istsos.view.ui.CenterPage', {
                 jsonData: json,
                 success: function(response){
                     var json = Ext.decode(response.responseText);
+                    /*
                     if (Ext.getCmp('messageField') != undefined) {
                         if (json.success && !Ext.isEmpty(json.message)) {
                             Ext.getCmp('messageField').setVisible(true);
@@ -278,8 +279,7 @@ Ext.define('istsos.view.ui.CenterPage', {
                         }else{
                             Ext.getCmp('messageField').setVisible(false);
                         }
-                    }
-                    var msg = Ext.getCmp('messagesbox');
+                    }var msg = Ext.getCmp('messagesbox');
                     if (msg){
                         var el = msg.getEl();
                         msg.update(json['message']);
@@ -292,7 +292,7 @@ Ext.define('istsos.view.ui.CenterPage', {
                             easing: null
                         });
                         
-                    }
+                    }*/
                     this.istForm.loadRecord(json);
                     this.mask.hide();
                     this.fireEvent("operationSubmit",json);

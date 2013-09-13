@@ -96,7 +96,6 @@ istsos.engine.pageManager.menuClick = function (menuLinkId, istService){
 
 istsos.engine.pageManager.openPage = function (conf){
     // Loading page content
-    console.log("openPage: " + conf);
     var mainCenter = Ext.getCmp("mainCenter");
     mainCenter.removeAll(true);
     try{
