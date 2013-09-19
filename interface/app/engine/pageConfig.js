@@ -87,7 +87,7 @@ istsos.engine.serviceConfig = {
         },
         "Virtual Procedures": {
             istTitle: "Virtual Procedures",
-            icon: 'system-run.svg',
+            icon: 'virtual.svg',
             istBody: ["istsos.view.VirtualProcedureEditor"],
             wapage: 'MainCenter',
             istFooter: istsos.EMPTY
