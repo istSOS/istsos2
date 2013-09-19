@@ -307,6 +307,24 @@ def getFoiNamesList(pgdb,service,offering=None):
         return None
 
 
+def getGeoJSONFromProcedure(pgdb, service, procedure, epsg):
+    """
+    >>> Return example:
+        {"type":"Point","coordinates":[8.961270000000001,46.027230000000003,344.100000000000023]}    
+    """
+    import json
+    sql = """ 
+        SELECT st_asgeojson(ST_Transform(geom_foi,%s)) as gjson
+        FROM %s.foi, %s.procedures    
+        WHERE id_foi = id_foi_fk
+    """ % (epsg,service,service)
+    sql += "AND name_prc=%s"
+    rows = pgdb.select(sql,(procedure,))
+    if rows:
+        return  json.loads(rows[0]["gjson"])
+    else:
+        return None
+    
 def getObservedPropertiesFromProcedure(pgdb,service,procedure):
     """
     Return the list of observed properties related to the given procedure
@@ -331,6 +349,7 @@ def getObservedPropertiesFromProcedure(pgdb,service,procedure):
     sql += " WHERE po.id_prc_fk=p.id_prc AND po.id_opr_fk=o.id_opr AND po.id_uom_fk=u.id_uom"
     sql += " AND name_prc=%s"
     params = (procedure,)
+    # @todo check this double tuple ?
     rows = pgdb.select(sql,(params,))
     if rows:
         return [ { "id":row["id_opr"] , "name":row["name_opr"], "uom":row["name_uom"]} for row in rows ]

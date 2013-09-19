@@ -146,6 +146,10 @@ def initResource(waEnviron):
                             if resource == "getlist":
                                 from walib.istsos.services.procedures import procedures
                                 return procedures.waGetlist(waEnviron)
+                            
+                            elif resource == "geojson":
+                                from walib.istsos.services.procedures import procedures
+                                return procedures.waGetGeoJson(waEnviron)
                         
                 # ---------------------------------------
                 # Entering istsos.services.virtualprocedures

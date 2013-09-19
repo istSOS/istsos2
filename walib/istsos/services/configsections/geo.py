@@ -17,7 +17,6 @@
 
 from walib.resource import waResourceConfigurator
 from walib import databaseManager
-import sys
 
 class waGeo(waResourceConfigurator):
     template = {

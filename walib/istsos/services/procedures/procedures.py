@@ -415,4 +415,70 @@ class waGetlist(waResourceService):
             self.setData(data)
             self.setMessage("Procedures of service <%s> successfully retrived" % self.servicename)
             
+
+class waGetGeoJson(waResourceService):
+    """
+    Class to execute istsos/services/{serviceName}/procedures/operations/geojson/{epsg}
+    """
+    def __init__(self,waEnviron):
+        waResourceService.__init__(self,waEnviron)
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        print >> sys.stderr, "\n\nENVIRON: %s" % pp.pprint(self.serviceconf.get("geo")['istsosepsg'])
+        if self.waEnviron['parameters'] and self.waEnviron['parameters']['epsg']:
+            self.epsg = self.waEnviron['parameters']['epsg'][0]
+        else:
+            self.epsg = self.serviceconf.get("geo")['istsosepsg']
+        
+    def executeGet(self):
+        if self.service == "default":
+            raise Exception("getlist operation can not be done for default service instance.")
+        else:
+            try:
+                data = {
+                    "type": "FeatureCollection",
+                    "features": []
+                }
+                servicedb = databaseManager.PgDB(self.serviceconf.connection['user'],
+                                                self.serviceconf.connection['password'],
+                                                self.serviceconf.connection['dbname'],
+                                                self.serviceconf.connection['host'],
+                                                self.serviceconf.connection['port']
+                )
+                proceduresList = utils.getProcedureNamesList(servicedb,self.service)
+                for proc in proceduresList:
+                    elem = {}
+                    elem.update(proc)
+                    #elem["name"] = proc["name"]
+                    ops = utils.getObservedPropertiesFromProcedure(servicedb,self.service,proc["name"])
+                    if ops != None:
+                        elem["observedproperties"] = [ {"name" : op["name"], "uom" : op["uom"]  } for op in ops ]
+                    else:
+                        elem["observedproperties"] = []
+                    offs = utils.getOfferingsFromProcedure(servicedb,self.service,proc["name"])
+                    if offs != None:
+                        elem["offerings"] = [ off["name"] for off in offs ]
+                    else:
+                        elem["offerings"] = []
+                        
+                     
+                    geom = utils.getGeoJSONFromProcedure(servicedb, self.service,proc["name"], self.epsg)
+                    if geom == None:
+                        continue
+                    
+                    data["features"].append({
+                        "type": "Feature",
+                        "geometry": geom,
+                        "properties": elem
+                    })
+                
+                self.setData(data)
+            except Exception as e:
+                self.setMessage("%s" % e)
+                
+            
+    
+    def setData(self,data):
+        """ Set data in response """
+        self.response = data
         
