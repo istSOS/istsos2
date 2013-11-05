@@ -228,7 +228,6 @@ def execute (args):
                 else:
                     print " > Insert observation success: %s" % res.json['success']
                 
-            
         pass
         
     except Exception as e:    

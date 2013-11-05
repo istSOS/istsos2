@@ -116,6 +116,12 @@ Ext.define('istsos.view.proceduresList', {
             }  
             return ret.join(",&nbsp;")
         };
+        this.columns[5].renderer = function(value, p, record){
+            return value['beginposition']
+        };
+        this.columns[6].renderer = function(value, p, record){
+            return value['endposition']
+        };
     },
     operationLoad: function(){
         if (Ext.isEmpty(this.mask)) {

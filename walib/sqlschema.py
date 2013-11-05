@@ -346,10 +346,23 @@ CREATE INDEX ety_prc_date ON event_time USING btree (id_eti, time_eti);
 --=====================================
 -- CONSTANT/DEFAULT VALUES
 --=====================================
+
+
+INSERT INTO sos.quality_index (name_qi, desc_qi, id_qi) VALUES ('100','Dato caricato in banca dati formato corretto',100);
+INSERT INTO sos.quality_index (name_qi, desc_qi, id_qi) VALUES ('110','Valore nullo',110);
+INSERT INTO sos.quality_index (name_qi, desc_qi, id_qi) VALUES ('120','Valore non convertibile',120);
+INSERT INTO sos.quality_index (name_qi, desc_qi, id_qi) VALUES ('210','Valore sensato per il sensore all''interno di soglie minime e massime',210);
+INSERT INTO sos.quality_index (name_qi, desc_qi, id_qi) VALUES ('220','Controllo di plausibilità sulla base dei dati delle ultime 24/48 ore',220);
+INSERT INTO sos.quality_index (name_qi, desc_qi, id_qi) VALUES ('230','Confronto con i dati di altri sensori vicini o dati radar e verifica di affidabilità',230);
+INSERT INTO sos.quality_index (name_qi, desc_qi, id_qi) VALUES ('310','Dato analizzato manualmente e ritenuto NON corretto',310);
+INSERT INTO sos.quality_index (name_qi, desc_qi, id_qi) VALUES ('320','Dato analizzato manualmente e ritenuto corretto grazie ad una correzione manuale',320);
+INSERT INTO sos.quality_index (name_qi, desc_qi, id_qi) VALUES ('330','Dato analizzato manualmente e ritenuto corretto senza alcuna correzione',330);
+
+
 INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('aggregation no data', 'no values are present for this aggregation interval', -100);
 INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('outboud', 'gross error', 0);
-INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('raw', 'the format is correct', 100);
-INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('acceptable', 'the value is acceptable for the observed property', 110);
+--INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('raw', 'the format is correct', 100);
+--INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('acceptable', 'the value is acceptable for the observed property', 110);
 INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('reasonable', 'the value is in a resonable range for that observed property and station', 200);
 INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('timely coherent', 'the value is coherent with time-series', 300);
 INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('spatilly coherent', 'the value is coherent with close by observations', 400);

@@ -60,8 +60,6 @@ class istsosConfig():
             "port" : serviceobj.serviceconf.connection["port"],
         }
         
-        print >> sys.stderr, serviceobj.serviceconf 
-        
         self.schema = serviceobj.service
         self.authority =  serviceobj.serviceconf.identification["authority"]
         self.urnversion = serviceobj.serviceconf.identification["urnversion"]

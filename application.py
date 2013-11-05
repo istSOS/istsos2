@@ -27,7 +27,7 @@ def application(environ, start_response):
     
     path = environ['PATH_INFO'].strip()[1:].split("/")
     #print >> sys.stderr, "pathInfo: %s" % path
-    print >> sys.stderr, "\n\nENVIRON: %s" % pp.pprint(environ)
+    #print >> sys.stderr, "\n\nENVIRON: %s" % pp.pprint(environ)
     
     if path[0]=='wa':
         return executeWa(environ, start_response)
@@ -114,7 +114,8 @@ def executeSos(environ, start_response):
     
     
 def executeWa(environ, start_response):
-
+    
+    from urlparse import parse_qs
     import config
     import traceback
     from walib import resourceFactory as factory
@@ -159,17 +160,18 @@ def executeWa(environ, start_response):
         "server_port" : environ['SERVER_PORT'],
         "script_name" : environ['SCRIPT_NAME'] if environ.get('SCRIPT_NAME', '') else None,
         "query_string" : environ['QUERY_STRING'] if environ.get('QUERY_STRING') else None,
+        "parameters": parse_qs(environ['QUERY_STRING']) if environ.get('QUERY_STRING') else None,
         "services_path" : config.services_path,
         "istsos_path" : config.istsoslib_path,
         "errorlog_path" : config.errorlog_path
     }
+    print >> sys.stderr, "\n\nENVIRON: %s" % pp.pprint(waEnviron)
     
     try:   
         
         try:
             op = None
             op = factory.initResource(waEnviron)
-            print >> sys.stderr, "Class: %s" % op.__class__.__name__
             
             try:
                 if op.response['success']:
@@ -197,8 +199,9 @@ def executeWa(environ, start_response):
                     if 'log' in op.response:
                         logger.info("Executing %s on %s: %s" % (waEnviron["method"], 
                                             environ['PATH_INFO'],str(op.response['log']) ))
-                                            
-                    logger.info("Executing %s on %s: %s" % (waEnviron["method"], 
+                    
+                    if 'message' in op.response:
+                        logger.info("Executing %s on %s: %s" % (waEnviron["method"], 
                                             environ['PATH_INFO'],str(op.response['message']) ))
                     
                     

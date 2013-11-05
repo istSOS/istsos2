@@ -417,6 +417,9 @@ class sosGOfilter(f.sosFilter):
             #-------------- AGGREGATE INTERVAL & FUNCTION
             self.aggregate_interval = None
             self.aggregate_function = None
+            self.aggregate_nodata = None
+            self.aggregate_nodata_qi = None
+            
             aggint = requestObject.getElementsByTagName('aggregateInterval')
             aggfun = requestObject.getElementsByTagName('aggregateFunction')
             aggnodata = requestObject.getElementsByTagName('aggregateNodata')

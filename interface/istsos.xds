@@ -6736,6 +6736,34 @@
                         "text": "Observedproperties",
                         "designer|userClassName": "MyColumn33"
                     }
+                },
+                {
+                    "id": "ExtBox1-ext-gen32388",
+                    "type": "gridcolumn",
+                    "reference": {
+                        "name": "columns",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "dataIndex": "samplingTime",
+                        "text": "BeginPosition",
+                        "designer|userClassName": "MyColumn53"
+                    }
+                },
+                {
+                    "id": "ExtBox1-ext-gen33294",
+                    "type": "gridcolumn",
+                    "reference": {
+                        "name": "columns",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "dataIndex": "samplingTime",
+                        "text": "EndPosition",
+                        "designer|userClassName": "MyColumn53"
+                    }
                 }
             ]
         },
@@ -13525,6 +13553,19 @@
                     "userConfig": {
                         "name": "observedproperties",
                         "designer|userClassName": "MyField51"
+                    }
+                },
+                {
+                    "id": "ExtBox1-ext-gen32778",
+                    "type": "datafield",
+                    "reference": {
+                        "name": "fields",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "name": "samplingTime",
+                        "designer|userClassName": "MyField89"
                     }
                 }
             ]
