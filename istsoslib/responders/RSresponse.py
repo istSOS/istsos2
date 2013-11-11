@@ -98,7 +98,7 @@ class RegisterSensorResponse:
             #--insitu-fixed-point (this is the default if no system type defined in XML request)
             if filter.systemType=='insitu-fixed-point' or filter.systemType == None or filter.systemType =="virtual":
                 oty = 'virtual' if filter.systemType =="virtual" else 'insitu-fixed-point'
-                if not par.split(":")[-1]=="iso8601": #forse basta vedere se ha iso8601 nella stringa???
+                if not par.split(":")[-1]=="iso8601":
                     if par in filter.oprDef:
                         i = filter.oprDef.index(par)
                         oprDef = par
