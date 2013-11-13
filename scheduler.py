@@ -20,6 +20,19 @@
 #---------------------------------------------------------------------------
 """
 description:
+    the scheduler dynamically check if scheduled job for each service
+    are changed, and update the defined job.
+    The scheduled job for a service are instantiated by a file named
+    "serviceName.aps" that includes the jobs according the decoration methods
+    of the python APScheduler library; for example:
+    
+    @sched.interval_schedule(seconds=4)
+    def demo_job4():
+        print 'demo job4'
+    
+    @sched.cron_schedule(second='*/30')
+    def demo_decorated_task():
+        print "I am printed at every minute at the 30th second!"
     
 """
 
