@@ -20,17 +20,13 @@ This script get minimal metadata from an existing SOS and populate an istsos ins
 '''
 
 import sys
-import os
 import traceback
 import json
 import pprint
-import glob
-from datetime import datetime
 from datetime import timedelta
 import calendar
 import time
 from StringIO import StringIO
-from io import BytesIO
 from os import path
 
 print path.abspath(".")
@@ -44,7 +40,6 @@ try:
     import lib.argparse as argparse
     from lib.etree import et
     import lib.isodate as iso
-    from walib import utils as ut
 except ImportError as e:
     
     print "\nError loading internal libs:\n >> did you run the script from the istSOS root folder?\n\n"
