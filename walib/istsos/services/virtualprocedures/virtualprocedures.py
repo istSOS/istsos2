@@ -51,7 +51,7 @@ class waVirtualProcedures(waProcedures):
         if self.procedurename==None:
             raise Exception("GET action without url procedure name not supported")
         #==================================
-        # delete the procedure
+        # get the procedure
         #==================================
         waProcedures.executeGet(self)
         
@@ -59,7 +59,7 @@ class waVirtualProcedures(waProcedures):
         if self.procedurename==None:
             raise Exception("GET action without url procedure name not supported")
         #==================================
-        # delete the procedure
+        # update the procedure
         #==================================
         waProcedures.executePut(self)
  

@@ -32,8 +32,8 @@ class waRatingcurves(waResourceService):
           "C": "1.358",
           "K": "0",
           "from": "1982-01-01T00:00+00:00",
-          "low_val": "0",
           "to": "1983-01-01T00:00+00:00",
+          "low_val": "0",          
           "up_val": "1000"
          }, 
          {...},{...},...
@@ -78,7 +78,7 @@ def RCload(filename):
     cvlist=[]
     with open(filename) as f:
         lines = f.readlines()
-        items = [ i.strip().split("|") for i in lines ]
+        items = [ i.strip().split("|") for i in lines if i.strip()!=""]
         fields = items[0]
         for i in range(1,len(items)):
             cvdict = {}
