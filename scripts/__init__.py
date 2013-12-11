@@ -1,2 +1,2 @@
 # -*- coding: utf-8 -*-
-__all__ = [ "csvacquisition","importer","sosimporter"]
+__all__ = [ "csv2istsos","raw2csv","sos2istsos"]

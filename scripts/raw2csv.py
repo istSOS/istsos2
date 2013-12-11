@@ -27,15 +27,18 @@ from os import path
 import glob
 from datetime import datetime
 import decimal
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
 
 try:
     sys.path.insert(0, path.abspath("."))
     import lib.requests as requests
+    import lib.isodate as iso
 except ImportError as e:
     print "\nError loading internal libs:\n >> please run the script from the istSOS root folder.\n\n"
     raise e
     
-class Importer():
+class Converter():
     req = requests.session()
     def __init__(self, name, url, service, folderIn, pattern, folderOut, qualityIndex=False, exceptionBehaviour={}, user=None, password=None, debug=False, csvlength=5000):
         """
@@ -74,6 +77,13 @@ class Importer():
         self.describe = None
         self.endPosition = None
         
+        if self.debug:
+            print "%s initialized." % self.name
+            
+        # Load describeSensor from istSOS WALib (http://localhost/istsos/wa/istsos/services/demo/procedures/T_LUGANO)
+        self.loadSensorMetadata()
+        
+        
     def parse(self, fileObj, name=None):
         raise Exception("This function must be overwritten")
         
@@ -84,15 +94,9 @@ class Importer():
         self.describe = None
         self.endPosition = None
         
-        if self.debug:
-            print self.name
-            
-        # Load describeSensor from istSOS WALib (http://localhost/istsos/wa/istsos/services/demo/procedures/T_LUGANO)
-        self.loadSensorMetadata()
-        
         # Load and Check folderIn + pattern and sort alfabetically
-        fileArray = self.prepareFiles()   
-        
+        fileArray = self.prepareFiles()
+            
         for fileObj in fileArray:
             if self.debug:
                 print " > working on file %s" % os.path.split(fileObj)[1]
@@ -105,7 +109,11 @@ class Importer():
         self.validate()
         
         # Save the CSV file in text/csv;subtype='istSOS/2.0.0'
-        self.save()
+        if isinstance(self.getIOEndPosition(), datetime) and self.getIOEndPosition() > self.getDSEndPosition():
+            self.save()
+        else:
+            if self.debug:
+                print " > Nothing to save"
         
         return
         
@@ -130,13 +138,38 @@ class Importer():
             raise IstSOSError ("Description of procedure %s can not be loaded: %s" % (self.name, res.json['message']))
         self.describe = res.json['data']
         
-        
         self.obsindex = []
         for out in self.describe['outputs']:
             if (out['definition'].find(":qualityIndex")>=0) and (self.qualityIndex==False):
                 continue
             self.obsindex.append(out['definition'])
             
+    def getDSBeginPosition(self):
+        if 'constraint' in self.describe['outputs'][0]:
+            return iso.parse_datetime(self.describe['outputs'][0]['constraint']['interval'][0])
+        else:
+            return None
+        
+    def getDSEndPosition(self):
+        if 'constraint' in self.describe['outputs'][0]:
+            return iso.parse_datetime(self.describe['outputs'][0]['constraint']['interval'][1])
+        else:
+            return None
+    
+    def getDefinitions(self):
+        ret = []
+        for key in self.describe['outputs']:
+            ret.append(key['definition'])
+        return ret
+    
+    def getIOEndPosition(self):
+        return self.endPosition
+        
+    def setEndPosition(self, endPosition):
+        if isinstance(endPosition, datetime):
+            self.endPosition = endPosition
+        else:
+            raise IstSOSError("If you are setting the endPosition manually you shall use a datetime object")
     
     def prepareFiles(self):
         """
@@ -153,7 +186,7 @@ class Importer():
         files.sort()
         
         if self.debug:
-            print " > %s %s found" % (len(files), "files" if len(files)>1 else "file")
+            print " > %s %s found" % (len(files), "Files" if len(files)>1 else "File")
             
         return files
         
@@ -165,7 +198,7 @@ class Importer():
         Validity check and raise exceptions (raise RedundacyError or manage)
         
         try:
-            importer.Importer.addObservation(self,observation)
+            importer.Converter.addObservation(self,observation)
         except RedundacyError as e:
             if "RedundacyError" in self.exceptionBehaviour:
                 pass
@@ -184,12 +217,6 @@ class Importer():
             
         self.observations.append(observation)
         self.observationsCheck[observation.getEventime()]=observation
-
-    def setEndPosition(self, endPosition):
-        if isinstance(endPosition, datetime):
-            self.endPosition = endPosition
-        else:
-            raise IstSOSError("If you are setting the endPosition manually you shall use a datetime object")
     
     def save(self):
         """
