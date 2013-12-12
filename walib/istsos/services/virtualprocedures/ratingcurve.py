@@ -101,11 +101,12 @@ def RCsave(cvlist,filename):
         except Exception as e:
             raise Exception("Error: invalid HQ parameter list; %s" % str(e) )
     
-    
-
     lines.sort()
     for i in range(1,len(lines)):
-        if not lines[i][0]==lines[i-1][1]:
+        if lines[i][0]==lines[i-1][0] and lines[i][1]==lines[i-1][1]:
+            if not lines[i][2] == lines[i-1][3]:
+                raise Exception, 'Error: series of HQ curve same period multilevel wrong; check <from> %s' %(lines[i][0])
+        elif not lines[i][0]==lines[i-1][1]:
             raise Exception, 'Error: series of HQ curve not continue; check <from> %s' %(lines[i][0])
     
     with open (filename, 'w') as f:
