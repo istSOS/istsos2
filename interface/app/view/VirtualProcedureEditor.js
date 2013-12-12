@@ -346,8 +346,14 @@ Ext.define('istsos.view.VirtualProcedureEditor', {
             if (c===0){
                 from = rec.get('from');
                 to = rec.get('to');
+                low = rec.get('low_val');
+                up = rec.get('up_val');
             }else{
-                if (rec.get('from').getTime()  != to.getTime() ){
+                if (rec.get('from').getTime() == from.getTime() && rec.get('to').getTime() == to.getTime()){
+                    if (rec.get('low_val') != up){
+                        throw 'Line ' + (c+1) + ' [Low/Up error]: \"Low\" must be equal to \"Up\" in previous line';
+                    }
+                }else if (rec.get('from').getTime()  != to.getTime() ){
                     throw 'Line ' + (c+1) + ' [Date error]: \"From\" must be equal to \"To\" in previous line';
                 }
                 from = rec.get('from');
