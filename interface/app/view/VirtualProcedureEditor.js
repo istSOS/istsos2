@@ -358,6 +358,8 @@ Ext.define('istsos.view.VirtualProcedureEditor', {
                 }
                 from = rec.get('from');
                 to = rec.get('to');
+                low = rec.get('low_val');
+                up = rec.get('up_val');
             }
             if (from>=to){
                 throw 'Line ' + (c+1) + ' [Date error]: \"From\" must be prior to \"To\"';
