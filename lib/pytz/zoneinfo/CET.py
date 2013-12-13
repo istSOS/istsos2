@@ -1,7 +1,7 @@
 '''tzinfo timezone information for CET.'''
-from pytz.tzinfo import DstTzInfo
-from pytz.tzinfo import memorized_datetime as d
-from pytz.tzinfo import memorized_ttinfo as i
+from lib.pytz.tzinfo import DstTzInfo
+from lib.pytz.tzinfo import memorized_datetime as d
+from lib.pytz.tzinfo import memorized_ttinfo as i
 
 class CET(DstTzInfo):
     '''CET timezone definition. See datetime.tzinfo for details'''
