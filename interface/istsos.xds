@@ -11429,6 +11429,7 @@
                                                     "userConfig": {
                                                         "fieldLabel": "Label",
                                                         "hideLabel": true,
+                                                        "decimalPrecision": 4,
                                                         "designer|userClassName": "MyNumberField10"
                                                     }
                                                 }
@@ -11461,6 +11462,7 @@
                                                     "userConfig": {
                                                         "fieldLabel": "Label",
                                                         "hideLabel": true,
+                                                        "decimalPrecision": 4,
                                                         "designer|userClassName": "MyNumberField11"
                                                     }
                                                 }
