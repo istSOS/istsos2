@@ -11415,6 +11415,7 @@
                                                 "dataIndex": "low_val",
                                                 "flex": 0.13,
                                                 "text": "Low",
+                                                "format": "0,000.0000",
                                                 "designer|userClassName": "MyNumberColumn4"
                                             },
                                             "cn": [
@@ -11448,6 +11449,7 @@
                                                 "dataIndex": "up_val",
                                                 "flex": 0.13,
                                                 "text": "Up",
+                                                "format": "0,000.0000",
                                                 "designer|userClassName": "MyNumberColumn5"
                                             },
                                             "cn": [
@@ -11481,6 +11483,7 @@
                                                 "dataIndex": "A",
                                                 "flex": 0.13,
                                                 "text": "A",
+                                                "format": "0,000.0000",
                                                 "designer|userClassName": "MyNumberColumn6"
                                             },
                                             "cn": [
@@ -11495,6 +11498,7 @@
                                                     "userConfig": {
                                                         "fieldLabel": "Label",
                                                         "hideLabel": true,
+                                                        "decimalPrecision": 4,
                                                         "designer|userClassName": "MyNumberField12"
                                                     }
                                                 }
@@ -11513,6 +11517,7 @@
                                                 "dataIndex": "B",
                                                 "flex": 0.13,
                                                 "text": "B",
+                                                "format": "0,000.0000",
                                                 "designer|userClassName": "MyNumberColumn7"
                                             },
                                             "cn": [
@@ -11527,6 +11532,7 @@
                                                     "userConfig": {
                                                         "fieldLabel": "Label",
                                                         "hideLabel": true,
+                                                        "decimalPrecision": 4,
                                                         "designer|userClassName": "MyNumberField13"
                                                     }
                                                 }
@@ -11545,6 +11551,7 @@
                                                 "dataIndex": "C",
                                                 "flex": 0.13,
                                                 "text": "C",
+                                                "format": "0,000.0000",
                                                 "designer|userClassName": "MyNumberColumn8"
                                             },
                                             "cn": [
@@ -11559,6 +11566,7 @@
                                                     "userConfig": {
                                                         "fieldLabel": "Label",
                                                         "hideLabel": true,
+                                                        "decimalPrecision": 4,
                                                         "designer|userClassName": "MyNumberField14"
                                                     }
                                                 }
@@ -11577,6 +11585,7 @@
                                                 "dataIndex": "K",
                                                 "flex": 0.13,
                                                 "text": "K",
+                                                "format": "0,000.0000",
                                                 "designer|userClassName": "MyNumberColumn9"
                                             },
                                             "cn": [
@@ -11591,6 +11600,7 @@
                                                     "userConfig": {
                                                         "fieldLabel": "Label",
                                                         "hideLabel": true,
+                                                        "decimalPrecision": 4,
                                                         "designer|userClassName": "MyNumberField15"
                                                     }
                                                 }
