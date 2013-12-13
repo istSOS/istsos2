@@ -69,13 +69,60 @@ class VirtualProcess():
         giving the procedure name from witch the data are derived 
         as single string or array of strings.
         
-        If an array is give by default it will return the minimum begin position 
-        and the maximum end position among all the procedures name given.
+        If derivation procedures are more than one it will return the minimum 
+        begin position and the maximum end position among all the procedures 
+        name given.
+        
+        It supports alsa SamplingTime calculation from cascading Virtual Procedures.
         """
+                
         if len(self.procedures)==0:
             self.samplingTime = (None,None)
         else:
-            if len(self.procedures)>1: 
+            
+            # Identify if procedures are virtual
+            
+            tmp = self.procedures.keys()
+            procedures = []
+            
+            # Handle cascading virtual procedures
+            for p in tmp:
+                
+                sql = """
+                    SELECT name_oty 
+                    FROM %s.obs_type, %s.procedures 
+                    WHERE id_oty=id_oty_fk""" % ((self.filter.sosConfig.schema,)*2)
+                sql += " AND name_prc = %s"
+                
+                result = self.pgdb.select(sql, (p,))
+                    
+                if len(result)==0:
+                    raise sosException.SOSException(3,"Virtual Procedure Error: procedure %s not found in the database" % (p) )
+                
+                result = result[0]
+                
+                if result[0] == 'virtual':
+                    vpFolder = os.path.join(self.filter.sosConfig.virtual_processes_folder,p)
+                    try:
+                        if vpFolder not in sys.path:
+                            sys.path.append(vpFolder)
+                    except Exception as e:
+                        raise sosException.SOSException(2,"error in loading virtual procedure path (%s):\n%s" % (vpFolder,e))
+                        
+                    # check if python file exist
+                    if os.path.isfile("%s/%s.py" % (vpFolder,p)):
+                        exec "import %s as vproc" %(p)
+                        vp = vproc.istvp()
+                        if len(vp.procedures)>0:
+                            tmp.extend(vp.procedures.keys())
+                        
+                else:
+                    procedures.append(p)
+            
+            # removing duplicates
+            procedures = list(set(procedures))
+                
+            if len(procedures)>1: 
                 sql = """ 
                     SELECT min(stime_prc), max(etime_prc)
                     FROM %s.procedures 
@@ -83,9 +130,9 @@ class VirtualProcess():
                     AND etime_prc IS NOT NULL)
                     AND (
                 """ % self.filter.sosConfig.schema
-                sql += " OR ".join(["name_prc=%s"] * len(self.procedures))
+                sql += " OR ".join(["name_prc=%s"] * len(procedures))
                 sql += ") GROUP BY stime_prc, etime_prc"
-                param = tuple(self.procedures.keys())
+                param = tuple(procedures)
             else:
                 sql = """ 
                     SELECT stime_prc, etime_prc
@@ -94,7 +141,7 @@ class VirtualProcess():
                     AND etime_prc IS NOT NULL)
                 """ % self.filter.sosConfig.schema
                 sql += "AND name_prc=%s"
-                param = (self.procedures.keys()[0],)
+                param = (procedures[0],)
                 
             try:
                 result = self.pgdb.select(sql, param)
