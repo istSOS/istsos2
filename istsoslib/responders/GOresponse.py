@@ -83,7 +83,7 @@ class VirtualProcess():
                     AND etime_prc IS NOT NULL)
                     AND (
                 """ % self.filter.sosConfig.schema
-                sql += ("name_prc=%s OR "*len(self.procedures))
+                sql += " OR ".join(["name_prc=%s"] * len(self.procedures))
                 sql += ") GROUP BY stime_prc, etime_prc"
                 param = tuple(self.procedures.keys())
             else:

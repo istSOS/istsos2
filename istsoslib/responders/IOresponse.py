@@ -200,27 +200,6 @@ class InsertObservationResponse:
             else:
                 procConstr.append(None)
                 
-            '''
-            try:
-                cos = row["constr_opr"].split(":")
-                obsPropConstr.append({'mode': cos[0], 'val': cos[1].strip()})
-            except:
-                if row["constr_opr"] in [None,'']:
-                    cos = [{'mode': None, 'val': None}]
-                    obsPropConstr.append({'mode': None, 'val': None})
-                else:
-                    raise sosException.SOSException(3,"observed property constrain '%s' malformatted" %(row["constr_opr"]))
-                    
-            try:
-                cos = row["constr_pro"].split(":")
-                procConstr.append({'mode': cos[0], 'val': cos[1].strip()})
-            except:
-                if row["constr_pro"] in [None,'']:
-                    cos = [None,None]
-                    procConstr.append([{'mode': None, 'val': None}])
-                else:
-                    raise sosException.SOSException(3,"procedure specific constrain '%s' malformatted" %(row["constr_pro"]))'''
-        
         #---- get ordered list of observed properties in data----
         dataKeys = [ key for key in filter.data.keys() ] 
         
