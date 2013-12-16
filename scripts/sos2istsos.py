@@ -29,10 +29,10 @@ import time
 from StringIO import StringIO
 from os import path
 
-print path.abspath(".")
-print path.normpath("%s/../" % path.abspath("."))
-print path.abspath(path.dirname(__file__))
-print path.normpath("%s/../../" % path.abspath(__file__))
+#print path.abspath(".")
+#print path.normpath("%s/../" % path.abspath("."))
+#print path.abspath(path.dirname(__file__))
+#print path.normpath("%s/../../" % path.abspath(__file__))
 
 sys.path.insert(0, path.abspath("."))
 try:
@@ -225,15 +225,22 @@ def execute (args):
                 
                 ds, dsNs = parse_and_get_ns(StringIO(res.content))
                 
+                #print res.content
+                
+                
+                #print "Root: %s" % ds.getroot().tag
                 if ds.getroot().tag == 'ExceptionReport':
                     print "Error on DS for %s" % pname
                     continue
                     
                 elDescribe = ds.findall("member/{%s}System/{%s}outputs/{%s}OutputList/{%s}output" % (dsNs['sml'],dsNs['sml'],dsNs['sml'],dsNs['sml']) )
                 
+                #print "Outputs found: %s" % len(elDescribe)
+                
                 observedProperties = []
                 for ds in elDescribe:
                     definition = ds.find("{%s}ObservableProperty" % (dsNs['swe'])).get('definition').replace('urn:ogc:def:parameter:x-ist::','')
+                    #print definition
                     if definition.find('time:iso8601')<0:
                         observedProperties.append(definition)
                 
@@ -251,7 +258,15 @@ def execute (args):
                 
                 
                 if go.getroot().tag == 'ExceptionReport':
-                    print "Error on GO for %s" % pname
+                    print "Error on GO for %s:\nparams:%s\n%s" % (pname,{
+                        'service': 'SOS', 
+                        'version': '1.0.0',
+                        'request': 'GetObservation',
+                        'offering': offeringName,
+                        'responseFormat': 'text/xml;subtype=\'sensorML/1.0.0\'',
+                        'procedure': pname,
+                        'observedProperty': ",".join(observedProperties)
+                    },res.content)
                     continue
                 
                 # Extracting begin and end position
@@ -355,10 +370,10 @@ def execute (args):
                     # ~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
                     
                     oOrder = []
-                    
-                    loops = (
-                        calendar.timegm(end.utctimetuple())-calendar.timegm(_begin.utctimetuple())
-                    )/interval.total_seconds()
+#                    
+#                    loops = (
+#                        calendar.timegm(end.utctimetuple())-calendar.timegm(_begin.utctimetuple())
+#                    )/interval.total_seconds()
                     passedLoops = 0
                     
                     lastPrint = ""
@@ -470,7 +485,7 @@ def execute (args):
                         begin = nextPosition
                         if begin<end and begin+interval>end:
                             interval = end-begin
-                            nextOut = True
+#                            nextOut = True
                             
                         if percentage < 100:
                             lastPrint = "%s - Step time: '%s' - Elapsed: %s  " % (

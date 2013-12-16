@@ -91,7 +91,6 @@ class Converter():
         
         self.observations = []
         self.observationsCheck = {}
-        self.describe = None
         self.endPosition = None
         
         # Load and Check folderIn + pattern and sort alfabetically
@@ -138,6 +137,10 @@ class Converter():
             raise IstSOSError ("Description of procedure %s can not be loaded: %s" % (self.name, res.json['message']))
         self.describe = res.json['data']
         
+        if self.debug:
+            print self.describe
+                
+        
         self.obsindex = []
         for out in self.describe['outputs']:
             if (out['definition'].find(":qualityIndex")>=0) and (self.qualityIndex==False):
@@ -145,13 +148,13 @@ class Converter():
             self.obsindex.append(out['definition'])
             
     def getDSBeginPosition(self):
-        if 'constraint' in self.describe['outputs'][0]:
+        if u'constraint' in self.describe['outputs'][0]:
             return iso.parse_datetime(self.describe['outputs'][0]['constraint']['interval'][0])
         else:
             return None
         
     def getDSEndPosition(self):
-        if 'constraint' in self.describe['outputs'][0]:
+        if u'constraint' in self.describe['outputs'][0]:
             return iso.parse_datetime(self.describe['outputs'][0]['constraint']['interval'][1])
         else:
             return None

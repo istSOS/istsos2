@@ -17,16 +17,23 @@
 
 '''
 This script get creates an HQ virtual procedure from an existing virtual procedure and curve rating file
+
+Usage example: 
+    
+python scripts/sos_virtual_importer.py \
+    -s http://localhost/istsos \
+    -n sos \
+    -vp Q_MAG_LOD \
+    -sp A_MAG_LOD \
+    -so urn:ogc:def:parameter:x-istsos:1.0:river:water:height \
+    -sf test/scripts/data/in/HQ_curves/A_MAG_LOD_HQ.dat
+
 '''
 
 import sys
 import traceback
 import json
 import pprint
-from datetime import timedelta
-import calendar
-import time
-from StringIO import StringIO
 from os import path
 
 print path.abspath(".")
@@ -35,10 +42,10 @@ print path.abspath(path.dirname(__file__))
 print path.normpath("%s/../../" % path.abspath(__file__))
 
 sys.path.insert(0, path.abspath("."))
+
 try:
     import lib.requests as req
     import lib.argparse as argparse
-    import lib.isodate as iso
 except ImportError as e:
     
     print "\nError loading internal libs:\n >> did you run the script from the istSOS root folder?\n\n"
@@ -79,6 +86,7 @@ proc = """{"system_id":"V_TEST",
                 "description":"",
                 "constraint":{}}],
             "history":[]}"""
+            
 def RCload(filename):
     #load HQ virtual procedure conf file to a list of dictionaries
     cvlist=[]
@@ -100,100 +108,87 @@ def execute (args):
         sosurl = args['s']
         sosservice = args['n']
         vproc = args['vproc']
-#        vobs = args['vobs']
         sproc = args['sproc']
         sobs = args['sobs']
         sfile = args['sfile']
-        verbose = args['v']
-
-#        print args
-        
-                
-#        print "%s/wa/istsos/services/%s/procedures/%s" % (sosurl,sosservice,sproc[0])
+        #verbose = args['v']
         
         # get source procedure
         #======================
         spr = req.get("%s/wa/istsos/services/%s/procedures/%s" % (sosurl,sosservice,sproc))
+        if not spr.json["success"]:
+            raise Exception("Getting procedure description for '%s' unsuccessfull" % sproc)
         
         # creating the virtual procedure
         #======================
         npv = json.loads(proc)
-
-#        print npv   
-#        print " "
-#        print spr.json
         
         #-- set new procedure name        
         npv['system_id'] = vproc
         npv['system'] = vproc
+        
         #-- set new procedure systemType
         for c in npv['classification']:
             c['value']='virtual'
+            
         #-- set new procedure FOI
         npv['location'] = spr.json['data']['location']
+        
         #-- register new procedure 
-        print 
         res = req.post("%s/wa/istsos/services/%s/procedures" % (sosurl,sosservice), 
-                            data=json.dumps(npv)
-                    )  
-        if not res.json["success"]:
-            raise Exception("Registering procedure %s failed: \n%s" % (vproc, res.json["message"]))
-                    
-        # loading the virtual procedure code
-        #===================================
-        code = ""
-        code += """# -*- coding: utf-8 -*-\n"""
-        code += """from istsoslib.responders.GOresponse import VirtualProcessHQ\n"""
-        code += """class istvp(VirtualProcessHQ):\n"""
-        code += """    # Declaring procedure from witch data will be calculated\n"""
-        code += """    procedures = {\n"""
-        found = False        
-        for out in spr.json["data"]["outputs"]:
-            if out["definition"]==sobs:
-                found = True
-        if found:
-            code += """        "%s": "%s"\n""" %(sproc,sobs)
-        else:
-            raise Exception("%s not observed by %s procedure" %(sproc,sobs) )
-        code += """    }\n"""
+                data=json.dumps(npv)
+        )
         
-
-        scode = {"code":code}        
-        
-        res = req.post("%s/wa/istsos/services/%s/virtualprocedures/%s/code" % (sosurl,sosservice,vproc), 
-                            data=json.dumps(scode)
-                    )  
         if not res.json["success"]:
-            raise Exception("Saving code %s failed: \n%s" % (vproc, res.json["message"]))
-         
-        
-        # loading the HQ cureve file
-        #===================================
-#        print sfile
-#        if not sfile==None:
-#            cvlist=[]
-#            with open(sfile) as f:
-#                lines = f.readlines()
-#                items = [ i.strip().split("|") for i in lines ]
-#                fields = items[0]
-#                for i in range(1,len(items)):
-#                    cvdict = {}
-#                    for f, field in enumerate(fields):
-#                        cvdict[field]= items[i][f]
-#                    cvlist.append(cvdict)
-#        print cvlist
-        cvlist = RCload(sfile)
-        print cvlist
-        res = req.post("%s/wa/istsos/services/%s/virtualprocedures/%s/ratingcurve" % (sosurl,sosservice,vproc), 
-                            data=json.dumps(cvlist)
-                    )  
-        if not res.json["success"]:
-            raise Exception("Saving rating curve %s failed: \n%s" % (vproc, res.json["message"]))
+            if res.json["message"].find("already exist")<0:
+                raise Exception("Registering procedure %s failed: \n%s" % (vproc, res.json["message"]))
+            else:
+                cvlist = RCload(sfile)
+                res = req.post("%s/wa/istsos/services/%s/virtualprocedures/%s/ratingcurve" % (sosurl,sosservice,vproc), 
+                    data=json.dumps(cvlist)
+                )  
+                if not res.json["success"]:
+                    raise Exception("Saving rating curve %s failed: \n%s" % (vproc, res.json["message"]))
+        else:            
+            # loading the virtual procedure code
+            #===================================
+            code = "# -*- coding: utf-8 -*-\n"
+            code += "from istsoslib.responders.GOresponse import VirtualProcessHQ\n"
+            code += "class istvp(VirtualProcessHQ):\n"
+            code += "    # Declaring procedure from witch data will be calculated\n"
+            code += "    procedures = {\n"
+            found = False        
+            for out in spr.json["data"]["outputs"]:
+                if out["definition"]==sobs:
+                    found = True
+            if found:
+                code += """        "%s": "%s"\n""" %(sproc,sobs)
+            else:
+                raise Exception("%s not observed by %s procedure" %(sproc,sobs))
+            code += """    }\n"""
+            
+    
+            scode = {"code":code}        
+            
+            res = req.post("%s/wa/istsos/services/%s/virtualprocedures/%s/code" % (sosurl,sosservice,vproc), 
+                data=json.dumps(scode)
+            )  
+                        
+            if not res.json["success"]:
+                raise Exception("Saving code %s failed: \n%s" % (vproc, res.json["message"]))
+             
+            cvlist = RCload(sfile)
+            print cvlist
+            res = req.post("%s/wa/istsos/services/%s/virtualprocedures/%s/ratingcurve" % (sosurl,sosservice,vproc), 
+                                data=json.dumps(cvlist)
+                        )  
+            if not res.json["success"]:
+                raise Exception("Saving rating curve %s failed: \n%s" % (vproc, res.json["message"]))
         
             
     except Exception as e:    
         print "ERROR: %s\n\n" % e
-        traceback.print_exc()
+        #traceback.print_exc()
         
 if __name__ == "__main__":
 
