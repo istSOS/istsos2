@@ -31,12 +31,14 @@ class waVirtualProcedures(waProcedures):
             
     def executeDelete(self):
         if self.procedurename==None:
-            raise Exception("POST action without url procedure name not supported")
+            raise Exception("Delete action without url procedure name not supported")
         
         #==================================
         # delete the procedure
         #==================================
+        #print >> sys.stderr, "Deleting procedure.."
         waProcedures.executeDelete(self)
+        #print >> sys.stderr, " > success: %s"  % self.response['success']
         if self.response['success'] == True:
             #==================================
             # remove the virtual files and folders
