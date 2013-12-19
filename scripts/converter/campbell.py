@@ -62,7 +62,7 @@ class CampbellImporter(raw2csv.Converter):
             "column": 6,
             "date": [1,2,3,4]
         }
-        """    
+        """
         self.config = config
         raw2csv.Converter.__init__(self, procedureName, url, service,
             inputDir, fileNamePattern, outputDir,

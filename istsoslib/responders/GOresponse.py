@@ -73,7 +73,7 @@ class VirtualProcess():
         begin position and the maximum end position among all the procedures 
         name given.
         
-        It supports alsa SamplingTime calculation from cascading Virtual Procedures.
+        It supports also SamplingTime calculation from cascading Virtual Procedures.
         """
                 
         if len(self.procedures)==0:

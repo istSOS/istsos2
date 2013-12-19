@@ -165,7 +165,7 @@ def executeWa(environ, start_response):
         "istsos_path" : config.istsoslib_path,
         "errorlog_path" : config.errorlog_path
     }
-    print >> sys.stderr, "\n\nENVIRON: %s" % pp.pprint(waEnviron)
+    #print >> sys.stderr, "\n\nENVIRON: %s" % pp.pprint(waEnviron)
     
     try:   
         

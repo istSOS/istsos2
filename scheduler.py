@@ -53,20 +53,22 @@ schedmd5 = {}
 services_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "services")
 #schedfile = '/home/maxi/virtualenvDIR/scheduler/mytest.py'
 #---------------------------------
-from apscheduler.scheduler import Scheduler
+from lib.apscheduler.scheduler import Scheduler
 sched = Scheduler(daemonic=False)
 #sched = Scheduler()
 sched.start()
 
-sched.add_cron_job()
+#sched.add_cron_job()
 #===========================
 #START THE ISTSOS SCHEDULER 
 #===========================
-@sched.interval_schedule(seconds=1)
+@sched.interval_schedule(seconds=5)
 def istsos_job():
     global schedmd5
 #    print schedmd5
+    print "Checking changes"
     if not schedmd5:
+        print " > Initialization.."
         for service,scheduler in recursive_glob(rootdir=services_path ,suffix=".aps"):
             schedmd5[service]=hashlib.md5(open(scheduler).read()).hexdigest()
             execfile(scheduler)
@@ -74,9 +76,11 @@ def istsos_job():
         for service,scheduler in recursive_glob(rootdir=services_path ,suffix=".aps"):
             md5_now = hashlib.md5(open(scheduler).read()).hexdigest()
             if not schedmd5[service] == md5_now:
+                print "  > Change detectd: %s" % service
                 schedmd5[service] = md5_now
                 jobs = sched.get_jobs()
                 for j in jobs[1:]:
+                    print " job: %s" % j.name
                     if j.name.startswith(service):
                         sched.unschedule_job(j)
                 execfile(scheduler)

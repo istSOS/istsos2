@@ -1,2 +1,2 @@
 # -*- coding: utf-8 -*-
-__all__ = [ "testImporter"]
+__all__ = [ "testConverter", "importvp"]
