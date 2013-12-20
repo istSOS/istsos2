@@ -18,16 +18,16 @@
 from lib import isodate as iso
 
 def render(GO,sosConfig):
-    if GO.filter.responseFormat in ["text/xml;subtype='sensorML/1.0.0'","text/xml"]:
+    if GO.filter.responseFormat in ['text/xml;subtype="sensorML/1.0.0"',"text/xml"]:
         return XMLformat(GO)
     elif GO.filter.responseFormat=="text/plain":
         return CSVformat(GO)
-    elif GO.filter.responseFormat=="image/png":
-        return CHARTformat(GO)
+#    elif GO.filter.responseFormat=="image/png":
+#        return CHARTformat(GO)
     elif GO.filter.responseFormat in ["application/json","text/x-json"]:
         return JSONformat(GO)
     else:
-        raise Exception("not supported format: %s, try one of text/xml;subtype='sensorML/1.0.0' - text/csv - image/png")
+        raise Exception("not supported format: %s, try one of %s" % (GO.filter.responseFormat,"; ".join(sosConfig.parameters["GO_responseFormat"])))
 
 def XMLformat(GO):
     r = """<om:ObservationCollection xmlns:sos="http://www.opengis.net/sos/1.0"
