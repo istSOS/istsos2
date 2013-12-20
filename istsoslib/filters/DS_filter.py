@@ -80,7 +80,7 @@ class sosDSfilter(f.sosFilter):
                         """
                         prc = str(val.data).split(":")
                         if len(prc)>1:
-                            if ":".join(prc[0:-1]) == sosConfig.urn["procedure"]:
+                            if prc[0:-1] == filter(None,sosConfig.urn["procedure"].split(":")):
                                 pass
                             else:
                                 err_txt = "Supported \"procedure\" urn is: " + sosConfig.urn["procedure"]
