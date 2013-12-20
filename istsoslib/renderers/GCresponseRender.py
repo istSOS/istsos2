@@ -151,7 +151,7 @@ def render(GC,sosConfig):
                 r += "        <sos:time />\n"
                 
             for pr in ofl.procedures:
-                r += "        <sos:procedure xlink:href=\"" + pr + "\" />\n"
+                r += "        <sos:procedure xlink:href=\"" + sosConfig.urn["procedure"] + pr + "\" />\n"
             
             for op in ofl.obsProp:
                 r += "        <sos:observedProperty xlink:href=\"" + op + "\" />\n"
