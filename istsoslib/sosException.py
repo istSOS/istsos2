@@ -4,7 +4,7 @@
 import xml.sax.saxutils as sax
 
 class SOSException(ValueError):
-  exceptionreport = '''<?xml version="1.0" encoding="UTF-8" standalone="no"?><ExceptionReport xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.opengis.net/ows/1.0.0/owsExceptionReport.xsd" version="1.0.0" language="en">
+  exceptionreport = '''<?xml version="1.0" encoding="UTF-8" standalone="no"?><ExceptionReport xmlns="http://www.opengis.net/ows/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.opengis.net/ows/1.0.0/owsExceptionReport.xsd" version="1.0.0" language="en">
 %s  
 </ExceptionReport>'''
   exceptionLoc = ''' <Exception locator="%s" exceptionCode="%s">
