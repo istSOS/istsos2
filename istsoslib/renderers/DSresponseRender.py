@@ -183,4 +183,5 @@ def render(DS,sosConfig):
                 raise Exception("Constraint definition invalid in the database for %s" % field["def_opr"])
         
     root = tree.getroot()
+    root.attrib["xmlns"]="http://www.opengis.net/sensorML/1.0.1"
     return """<?xml version="1.0" encoding="UTF-8"?>\n%s""" % et.tostring(root)
