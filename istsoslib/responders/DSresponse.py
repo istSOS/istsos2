@@ -34,11 +34,11 @@ class DescribeSensorResponse:
         try:
             res=pgdb.select(sql,params)
         except:
-            raise sosException.SOSException(1,"Error! sql: %s." %(pgdb.mogrify(sql,params)) )
+            raise Exception("Error! sql: %s." %(pgdb.mogrify(sql,params)) )
         
         # raise error if the procedure is not found in db
         if res==None:
-            raise sosException.SOSException(1,"Error! Procedure '%s' not exist or can't be found.")
+            raise sosException.SOSException("InvalidParameterValue","procedure","Procedure '%s' not exist or can't be found.")
         
         
         # look for observation end time
@@ -53,7 +53,7 @@ class DescribeSensorResponse:
             try:
                 sys.path.append(vpFolder)
             except:
-                raise sosException.SOSException(2,"error in loading virtual procedure path")
+                raise Exception("Error in loading virtual procedure path")
                 
             # check if python file exist
             if os.path.isfile("%s/%s.py" % (vpFolder,filter.procedure)):
@@ -88,20 +88,20 @@ class DescribeSensorResponse:
         
         # check if folder containing SensorML exists
         if not os.path.isdir(filter.sosConfig.sensorMLpath):
-            raise sosException.SOSException(1,"istsos configuration error, cannot find sensorMLpath!")
+            raise Exception("istsos configuration error, cannot find sensorMLpath!")
         
         # clean up the procedure name to produce a valid file name
         filename = filter.procedure
         valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
         for c in filename:
             if not c in valid_chars:
-                raise sosException.SOSException(1,"procedure name '%s' is not a valid: use only letters or digits!"%(filter.procedure))
+                raise Exception("procedure name '%s' is not a valid: use only letters or digits!"%(filter.procedure))
         filename += '.xml'
         
         self.smlFile = os.path.join(filter.sosConfig.sensorMLpath, filename)
         # check if file exist                
         if not os.path.isfile(self.smlFile):
-            raise sosException.SOSException(1,"SensorML file for procedure '%s' not found!"%(filter.procedure))
+            raise Exception("SensorML file for procedure '%s' not found!"%(filter.procedure))
         
         sqlProc  = "SELECT def_opr, name_opr, desc_opr, constr_pro, name_uom"
         sqlProc += " FROM %s.observed_properties opr, %s.proc_obs po," %(filter.sosConfig.schema,filter.sosConfig.schema)
@@ -112,6 +112,6 @@ class DescribeSensorResponse:
         try:
             self.observedProperties=pgdb.select(sqlProc,params)
         except Exception as exe:
-            raise sosException.SOSException(1,"Error! sql: %s." % pgdb.mogrify(sqlProc,params))
+            raise sException("Error! sql: %s." % pgdb.mogrify(sqlProc,params))
         
         
