@@ -51,7 +51,8 @@ def sosFactoryRender(response,sosConfig):
         return USDresponseRender.render(response,sosConfig)
    
     else:
-        raise sosException.SOSException(1,str(response.__class__.__name__))
+        raise sosException.SOSException("InvalidRequest","request","\"request\": %s not supported" %(str(response.__class__.__name__)))
+        
 
 
     

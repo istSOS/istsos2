@@ -48,7 +48,7 @@ class VirtualProcess():
         
     def execute(self):
         "This method must be overridden to implement data gathering for this virtual procedure"
-        raise sosException.SOSException(3,"function execute must be overridden")
+        raise Exception("function execute must be overridden")
     
     def calculateObservations(self, observation):
         self.observation = observation
@@ -97,7 +97,7 @@ class VirtualProcess():
                 result = self.pgdb.select(sql, (p,))
                     
                 if len(result)==0:
-                    raise sosException.SOSException(3,"Virtual Procedure Error: procedure %s not found in the database" % (p) )
+                    raise Exception("Virtual Procedure Error: procedure %s not found in the database" % (p) )
                 
                 result = result[0]
                 
@@ -107,7 +107,7 @@ class VirtualProcess():
                         if vpFolder not in sys.path:
                             sys.path.append(vpFolder)
                     except Exception as e:
-                        raise sosException.SOSException(2,"error in loading virtual procedure path (%s):\n%s" % (vpFolder,e))
+                        raise Exception("error in loading virtual procedure path (%s):\n%s" % (vpFolder,e))
                         
                     # check if python file exist
                     if os.path.isfile("%s/%s.py" % (vpFolder,p)):
@@ -146,10 +146,10 @@ class VirtualProcess():
             try:
                 result = self.pgdb.select(sql, param)
                 if len(result)==0:
-                    raise sosException.SOSException(3,"Virtual Procedure Error: procedure %s not found in the database" % (", ".join(param)) )
+                    raise Exception("Virtual Procedure Error: procedure %s not found in the database" % (", ".join(param)) )
                 result = result[0]
             except Exception as e:
-                raise sosException.SOSException(3,"Database error: %s - %s" % (sql, e))    
+                raise Exception("Database error: %s - %s" % (sql, e))    
                 
             self.samplingTime = (result[0],result[1])
         
@@ -162,11 +162,11 @@ class VirtualProcess():
         # If procedure is None, it is supposed that only one procedure has been added
         if procedure is None:
             if len(self.procedures)==0:
-                raise sosException.SOSException(3,"Virtual Procedure Error: no procedures added")    
+                raise Exception("Virtual Procedure Error: no procedures added")    
             procedure = self.procedures.keys()[0]
             
         elif procedure not in self.procedures.keys():
-            raise sosException.SOSException(3,"Virtual Procedure Error: procedure %s has not been added to this virtual procedure" % procedure)    
+            raise Exception("Virtual Procedure Error: procedure %s has not been added to this virtual procedure" % procedure)    
         
         virtualFilter = copy.deepcopy(self.filter)
         virtualFilter.procedure = [procedure]
@@ -193,10 +193,10 @@ class VirtualProcess():
         try:
             result = self.pgdb.select(sql, (procedure,))
             if len(result)==0:
-                raise sosException.SOSException(3,"Virtual Procedure Error: procedure %s not found in the database" % procedure)
+                raise Exception("Virtual Procedure Error: procedure %s not found in the database" % procedure)
             result = result[0]
         except Exception as e:
-            raise sosException.SOSException(3,"Database error: %s - %s" % (sql, e))    
+            raise Exception("Database error: %s - %s" % (sql, e))    
         
         obs = Observation()
         
@@ -266,7 +266,7 @@ class VirtualProcess():
             self.observation.data = data
             
         except Exception as e:
-            raise sosException.SOSException(3,"Error while applying aggregate function on virtual procedures: %s" % (e))
+            raise Exception("Error while applying aggregate function on virtual procedures: %s" % (e))
         
 
 class VirtualProcessHQ(VirtualProcess):
@@ -302,7 +302,7 @@ class VirtualProcessHQ(VirtualProcess):
         try:        
             hq_fh = open(hqFile,'r')
         except Exception as e:
-            raise sosException.SOSException(3,"Unable to open hq rating curve file at: %s" % hqFile)
+            raise Exception("Unable to open hq rating curve file at: %s" % hqFile)
         lines = hq_fh.readlines()
         #read header
         hqs = {'from':[],'to':[],'low':[],'up': [],'A':[],'B':[],'C':[],'K':[]}
@@ -317,7 +317,7 @@ class VirtualProcessHQ(VirtualProcess):
             C = head.index('C')         #use this C
             K = head.index('K')         #use this K
         except Exception as e:
-            raise sosException.SOSException(3,"setDischargeCurves: FILE %s ,%s error in header.\n %s" %(hqFile,head,e))
+            raise Exception("setDischargeCurves: FILE %s ,%s error in header.\n %s" %(hqFile,head,e))
         
         #get equations
         if not period[0] == None:
@@ -412,7 +412,7 @@ def BuildfeatureOfInterestList(pgdb,offering,sosConfig):
     try:
         rows=pgdb.select(sql)
     except:
-        raise sosException.SOSException(1,"sql: %s" %(sql))
+        raise Exception("sql: %s" %(sql))
     for row in rows:
         list.append(row["nfoi"])
     return list
@@ -512,7 +512,7 @@ def applyFunction(ob, filter):
         ob.data = data
         
     except Exception as e:
-        raise sosException.SOSException(3,"Error while applying aggregate function on virtual procedures: %s" % (e))
+        raise Exception("Error while applying aggregate function on virtual procedures: %s" % (e))
     
 
 class offInfo:
@@ -523,7 +523,7 @@ class offInfo:
             self.name=off["name_off"]
             self.desc=off["desc_off"]
         except:
-            raise sosException.SOSException(2,"Parameter \"offering\" sent with invalid value: %s"%(off_name))
+            raise sosException.SOSException("InvalidParameterValue","offering","Parameter \"offering\" sent with invalid value: %s"%(off_name))
 
 
 # @todo instantation with Builder pattern will be less confusing, observation class must be just a data container
@@ -556,7 +556,7 @@ class Observation:
         
         k = o.keys()
         if not ("id_prc" in k and "name_prc" in k and  "name_oty" in k and "stime_prc" in k and "etime_prc" in k and "time_res_prc" in k and "name_tru" in k ):
-            raise sosException.SOSException(3,"Error, baseInfo argument: %s"%(o))
+            raise Exception("Error, baseInfo argument: %s"%(o))
         
         #SET PROCEDURE NAME AND ID
         #===========================
@@ -571,7 +571,7 @@ class Observation:
             self.procedureType=o["name_oty"]
             #TO BE IMPLEMENTED FOR MORE OPTIONS
         else:
-            raise sosException.SOSException(2,"error in procedure type setting")
+            raise Exception("error in procedure type setting")
         
         #SET TIME: RESOLUTION VALUE AND UNIT
         #===================================
@@ -602,7 +602,7 @@ class Observation:
         try:
             resFoi = pgdb.select(sqlFoi)
         except:
-            raise sosException.SOSException(3,"SQL: %s"%(sqlFoi))
+            raise Exception("SQL: %s"%(sqlFoi))
         
         self.featureOfInterest = resFoi[0]["name_foi"]
         self.foi_urn = filter.sosConfig.urn["feature"] + resFoi[0]["name_fty"] + ":" + resFoi[0]["name_foi"]
@@ -623,7 +623,7 @@ class Observation:
         try:
             obspr_res = pgdb.select(sqlObsPro)
         except:
-            raise sosException.SOSException(3,"SQL: %s"%(sqlObsPro))
+            raise Exception("SQL: %s"%(sqlObsPro))
             
         self.observedProperty = []
         self.observedPropertyName = []
@@ -714,7 +714,7 @@ class Observation:
                         elif len(ft)==1:
                             etf.append("B%s.time_eti = timestamptz '%s' \n" %(idx,ft[0]))
                         else:
-                            raise sosException.SOSException(2,"error in time filter")
+                            raise Exception("error in time filter")
                     join_txt += " OR ".join(etf)
                     join_txt +=  ")\n"
                 else:
@@ -747,7 +747,7 @@ class Observation:
                         elif len(ft)==1:
                             etf.append("Bx.time_eti = timestamptz '%s' " %(ft[0]))                       
                         else:
-                            raise sosException.SOSException(2,"error in time filter")
+                            raise Exception("error in time filter")
                     join_txt += " OR ".join(etf)
                     join_txt +=  ")\n"
                 else:
@@ -790,7 +790,7 @@ class Observation:
                     elif len(ft)==1:
                         etf.append("et.time_eti = timestamptz '%s' " %(ft[0]))                        
                     else:
-                        raise sosException.SOSException(2,"error in time filter")
+                        raise Exception("error in time filter")
                 sqlData += " OR ".join(etf)
                 sqlData +=  ")"
             else:
@@ -881,7 +881,7 @@ class Observation:
             try:
                 data_res = pgdb.select(sql)
             except:
-                raise sosException.SOSException(3,"SQL: %s"%(sql))
+                raise Exception("SQL: %s"%(sql))
             
 
             #------------------------------------            
@@ -913,13 +913,13 @@ class Observation:
             vpFolder = os.path.join(os.path.join(filter.sosConfig.virtual_processes_folder,self.name))
             
             if not os.path.isfile("%s/%s.py" % (vpFolder,self.name)):
-                raise sosException.SOSException(2,"Virtual procedure folder does not contain any Virtual Procedure code for %s" % self.name)
+                raise Exception("Virtual procedure folder does not contain any Virtual Procedure code for %s" % self.name)
                 
             #----- VIRTUAL PROCESS LOADING -----
             try:
                 sys.path.append(vpFolder)
             except:
-                raise sosException.SOSException(2,"error in loading virtual procedure path")
+                raise Exception("error in loading virtual procedure path")
             #import procedure process
             exec "import %s as vproc" %(self.name)
             
@@ -942,12 +942,12 @@ class observations:
             pl = BuildProcedureList(pgdb,filter.offering,filter.sosConfig)
             for p in filter.procedure:
                 if not p in pl:
-                    raise sosException.SOSException(2,"Parameter \"procedure\" sent with invalid value: %s -  available options for offering \"%s\": %s"%(p,filter.offering,pl))
+                    raise sosException.SOSException("InvalidParameterValue","procedure","Parameter \"procedure\" sent with invalid value: %s -  available options for offering \"%s\": %s"%(p,filter.offering,pl))
         
         if filter.featureOfInterest:
             fl = BuildfeatureOfInterestList(pgdb,filter.offering,filter.sosConfig)
             if not filter.featureOfInterest in fl:
-                raise sosException.SOSException(2,"Parameter \"featureOfInterest\" sent with invalid value: %s - available options: %s"%(filter.featureOfInterest,fl))
+                raise sosException.SOSException("InvalidParameterValue","featureOfInterest","Parameter \"featureOfInterest\" sent with invalid value: %s - available options: %s"%(filter.featureOfInterest,fl))
         
         if filter.observedProperty:
             opl = BuildobservedPropertyList(pgdb, filter.offering,filter.sosConfig)
@@ -959,9 +959,9 @@ class observations:
             try:
                 opr_filtered = pgdb.select(opr_sel)
             except:
-                raise sosException.SOSException(3,"SQL: %s"%(opr_sel))
+                raise Exception("SQL: %s"%(opr_sel))
             if not len(opr_filtered)>0:
-                raise sosException.SOSException(2,"Parameter \"observedProperty\" sent with invalid value: %s - available options: %s"%(filter.observedProperty,opl))
+                raise sosException.SOSException("InvalidParameterValue","observedProperty","Parameter \"observedProperty\" sent with invalid value: %s - available options: %s"%(filter.observedProperty,opl))
         
         #SET TIME PERIOD
         #=========================================
@@ -1035,7 +1035,7 @@ class observations:
         try:
             res = pgdb.select(sqlSel + " " + sqlFrom + " " + sqlWhere)
         except:
-            raise sosException.SOSException(3,"SQL: %s"%(sqlSel + " " + sqlFrom + " " + sqlWhere))
+            raise Exception("SQL: %s"%(sqlSel + " " + sqlFrom + " " + sqlWhere))
         
         #FOR EACH PROCEDURE
         #=========================================

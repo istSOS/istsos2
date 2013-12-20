@@ -26,17 +26,17 @@ def getElemTxt(node):
             return str(val.data)
         else:
             err_txt = "get node text value: \"%s\" is not of type TEXT" %(node.nodeName)
-            raise sosException.SOSException(1,err_txt)
+            raise Exception(err_txt)
     else:
             err_txt = "get node text value: \"%s\" has no child node" %(node.nodeName)
-            raise sosException.SOSException(1,err_txt)
+            raise Exception(err_txt)
         
 def getElemAtt(node,att):
     if att in node.attributes.keys():
         return str(node.getAttribute(att))
     else:
         err_txt = "get node attribute value: \"%s\"has no \"%s\" attribute" %(node.nodeName,att)
-        raise sosException.SOSException(1,err_txt)
+        raise Exception(err_txt)
     
 def get_name_from_urn(stringa,urnName,sosConfig):
     a = stringa.split(":")
@@ -47,7 +47,7 @@ def get_name_from_urn(stringa,urnName,sosConfig):
             if urn[index]==a[index]:
                 pass
             else:
-                raise sosException.SOSException(1,"Urn \"%s\" is not valid: %s."%(a,urn))
+                raise Exception(1,"Urn \"%s\" is not valid: %s."%(a,urn))
     return name 
 
 class sosGFfilter(f.sosFilter):
@@ -58,14 +58,14 @@ class sosGFfilter(f.sosFilter):
         if method == "GET":
             #---FeatureOfInterest
             if not requestObject.has_key("FeatureOfInterestId"):
-                raise sosException.SOSException(1,"Parameter \"FeatureOfInterestId\" is required with multiplicity 1")
+                raise sosException.SOSException("MissingParameterValue","FeatureOfInterestId","Parameter \"FeatureOfInterestId\" is required with multiplicity 1")
             else:
                 self.featureOfInterest = get_name_from_urn(requestObject["FeatureOfInterestId"],"feature",sosConfig) #one-many ID
             #---srsName
             if requestObject.has_key("srsName"):
                 self.srsName = get_name_from_urn(requestObject["srsName"],"refsystem",sosConfig)
                 if not self.srsName in sosConfig.parameters["GO_srs"]:
-                    raise sosException.SOSException(2,"Supported \"srsName\" valueas are: " + ",".join(sosConfig.parameters["GO_srs"]))
+                    raise sosException.SOSException("OptionNotSupported","srsName","Supported \"srsName\" valueas are: " + ",".join(sosConfig.parameters["GO_srs"]))
             else:
                 self.srsName = sosConfig.parameters["GO_srs"][0]
         if method == "POST":
@@ -79,20 +79,23 @@ class sosGFfilter(f.sosFilter):
                         self.featureOfInterest = get_name_from_urn(getElemTxt(fets[0]),"feature",sosConfig)
                     except:
                         err_txt = "XML parsing error (get value: FeatureOfInterestId)"
-                        raise sosException.SOSException(1,err_txt)
+                        raise sosException.SOSException("NoApplicableCode",None,err_txt)
             else:
                 err_txt = "parameter \"FeatureOfInterestId\" is mandatory with multiplicity 1"
-                raise sosException.SOSException(1,err_txt)
+                if len(fets)==0:
+                    raise sosException.SOSException("MissingParameterValue","FeatureOfInterestId",err_txt)
+                else:
+                    raise sosException.SOSException("NoApplicableCode",None,err_txt)
 
             #---srsName
             srss = requestObject.getElementsByTagName('srsName')
             if len(srss) ==1:
                 self.srsName = get_name_from_urn(getElemTxt(srss[0]),"refsystem",sosConfig)
                 if not self.srsName in sosConfig.parameters["GO_srs"]:
-                    raise sosException.SOSException(2,"Supported \"srsName\" valueas are: " + ",".join(sosConfig.parameters["GO_srs"]))
+                    raise sosException.SOSException("OptionNotSupported","srsName","Supported \"srsName\" valueas are: " + ",".join(sosConfig.parameters["GO_srs"]))
             elif len(srss) == 0:
                 self.srsName = sosConfig.parameters["GO_srs"][0]
             else:
                 err_txt = "parameter \"srsName\" is optional with multiplicity 1"
-                raise sosException.SOSException(1,err_txt)
+                raise sosException.SOSException("NoApplicableCode",None,err_txt)
             

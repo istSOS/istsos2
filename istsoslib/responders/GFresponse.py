@@ -49,7 +49,7 @@ class foi:
         try:
             foi = pgdb.select(sql,params)[0]
         except:
-            raise sosException.SOSException(3,"GFresponse: Feature of Interest '%s' not found."%(filter.featureOfInterest))
+            raise sosException.SOSException("InvalidParameterValue","FeatureOfInterestId","FeatureOfInterestId: Feature of Interest '%s' not found."%(filter.featureOfInterest))
         
         self.name=foi["name_foi"]
         self.desc=foi["desc_foi"]
@@ -65,7 +65,7 @@ class foi:
         try:
             prc = pgdb.select(sql,params)
         except:
-            raise sosException.SOSException(3,"GFresponse, SQL: %s"%(pgdb.mogrify(sql,params)))        
+            raise Exception("GFresponse, SQL: %s"%(pgdb.mogrify(sql,params)))        
         
         for p in prc:
             self.procedures.append(p["name_prc"])
@@ -80,7 +80,7 @@ class foi:
             try:
                 obs = pgdb.select(sql,params)
             except:
-                raise sosException.SOSException(3,"GFresponse, SQL: %s"%(pgdb.mogrify(sql,params)))    
+                raise Exception("GFresponse, SQL: %s"%(pgdb.mogrify(sql,params)))    
             obsArr = []
             for o in obs:
                 obsArr.append(o['name_opr'])       
@@ -92,7 +92,7 @@ class foi:
             try:
                 samplTime = pgdb.select(sql,params)
             except:
-                raise sosException.SOSException(3,"GFresponse, SQL: %s"%(pgdb.mogrify(sql,params)))    
+                raise Exception("GFresponse, SQL: %s"%(pgdb.mogrify(sql,params)))    
             samplTimeArr = []
             for st in samplTime:
                 samplTimeArr.append([st['firstet'],st['lastet']])

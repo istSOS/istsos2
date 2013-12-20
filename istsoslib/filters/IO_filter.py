@@ -50,7 +50,7 @@ class sosIOfilter(f.sosFilter):
         f.sosFilter.__init__(self,sosRequest,method,requestObject,sosConfig)
         #**************************
         if method == "GET":
-            raise sosException.SOSException(2,"insertObservation request support only POST method!")
+            raise sosException.SOSException("NoApplicableCode",None,"insertObservation request support only POST method!")
         
         if method == "POST":
             from StringIO import StringIO
@@ -61,7 +61,7 @@ class sosIOfilter(f.sosFilter):
             #----------------------
             AssignedSensorId = tree.find("{%s}AssignedSensorId" % ns['sos'] )
             if AssignedSensorId == None:
-                raise sosException.SOSException(1,"sos:AssignedSensorId parameter is mandatory with multiplicity 1")
+                raise sosException.SOSException("MissingParameterValue","AssignedSensorId",,"sos:AssignedSensorId parameter is mandatory with multiplicity 1")
             else:
                 self.assignedSensorId = AssignedSensorId.text.split(":")[-1]
             
@@ -74,26 +74,26 @@ class sosIOfilter(f.sosFilter):
                     self.forceInsert = False
                 else:
                     err_txt = "parameter \"ForceInsert\" can only be: 'true' or 'false'"
-                    raise sosException.SOSException(1,err_txt)
+                    raise sosException.SOSException("InvalidParameterValue","ForceInsert",err_txt)
             else:
                 self.forceInsert = False
                 
             #---om:observation
             Observation = tree.find("{%s}Observation" % ns['om'] )
             if Observation == None:
-                raise sosException.SOSException(1,"om:Observation tag is mandatory with multiplicity 1")
+                raise sosException.SOSException("MissingParameterValue","Observation","om:Observation tag is mandatory with multiplicity 1")
             
             #-------procedure
             procedure = Observation.find("{%s}procedure" % ns['om'] )
             if procedure == None:
-                raise sosException.SOSException(1,"om:procedure tag is mandatory with multiplicity 1")
+                raise sosException.SOSException("NoApplicableCode",None,"om:procedure tag is mandatory with multiplicity 1")
             self.procedure = procedure.attrib[ "{%s}href" % ns['xlink'] ].split(":")[-1]
 
             #-------ObservedProperties
             self.oprName=[]
             observedProperty = Observation.find("{%s}observedProperty" % ns['om'] )
             if observedProperty == None:
-                raise sosException.SOSException(1,"om:observedProperty tag is mandatory with multiplicity 1")
+                raise sosException.SOSException("NoApplicableCode",None,"om:observedProperty tag is mandatory with multiplicity 1")
             
             
             CompositPhenomenon = observedProperty.find("{%s}CompositePhenomenon" % ns['swe'] )
@@ -109,7 +109,7 @@ class sosIOfilter(f.sosFilter):
                             name = co.find("{%s}name" % ns['gml'] )
                             self.oprName.append(name.text)
                         except:
-                            raise sosException.SOSException(1,"om:observedProperty Name is missing: 'xlink:href' or 'gml:name' required")
+                            raise sosException.SOSException("NoApplicableCode",None,"om:observedProperty Name is missing: 'xlink:href' or 'gml:name' required")
             else:
                 try:
                     self.oprName.append(observedProperty.attrib[ "{%s}href" % ns['xlink'] ])
@@ -118,13 +118,13 @@ class sosIOfilter(f.sosFilter):
                         name = co.find( "{%s}name" % ns['gml'] )
                         self.oprName.append(name.text)
                     except:
-                        raise sosException.SOSException(1,"om:observedProperty Name is missing: 'xlink:href' or 'gml:name' required")
+                        raise sosException.SOSException("NoApplicableCode",None,"om:observedProperty Name is missing: 'xlink:href' or 'gml:name' required")
                     
             #-----samplingTime
             samplingTime = Observation.find("{%s}samplingTime" % ns['om'] )
             if samplingTime==None:
                 err_txt = "om:samplingTime is mandatory in multiplicity 1"
-                raise sosException.SOSException(1,err_txt)
+                raise sosException.SOSException("NoApplicableCode",None,err_txt)
             
             TimePeriod = samplingTime.find("{%s}TimePeriod" % ns['gml'] )
             if not TimePeriod == None:
@@ -132,7 +132,7 @@ class sosIOfilter(f.sosFilter):
                 ep = TimePeriod.find("{%s}endPosition" % ns['gml'] )
                 if bp==None or ep==None:
                     err_txt = "gml:TimePeriod is mandatory in multiplicity 1"
-                    raise sosException.SOSException(1,err_txt)
+                    raise sosException.SOSException("NoApplicableCode",None,err_txt)
                 self.samplingTime = bp.text + "/" + ep.text
 
             else:
@@ -142,12 +142,12 @@ class sosIOfilter(f.sosFilter):
                     self.samplingTime = tpos.text
                 else:
                     err_txt = "one of gml:TimePeriod or gml:TimeInstant is mandatory in multiplicity 1"
-                    raise sosException.SOSException(1,err_txt)
+                    raise sosException.SOSException("NoApplicableCode",None,err_txt)
             
             #------featureOfInterest
             featureOfInterest = Observation.find("{%s}featureOfInterest" % ns['om'] )
             if featureOfInterest == None:
-                raise sosException.SOSException(1,"om:featureOfInterest tag is mandatory with multiplicity 1")
+                raise sosException.SOSException("NoApplicableCode",None,"om:featureOfInterest tag is mandatory with multiplicity 1")
             try:
                 self.foiName = featureOfInterest.attrib[ "{%s}href" % ns['xlink'] ].split(":")[-1]
             except:
@@ -155,11 +155,11 @@ class sosIOfilter(f.sosFilter):
                     gml_name = featureOfInterest.find("{%s}name" % ns['gml'] ).split(":")[-1]
                     self.foiName = gml_name.text
                 except:
-                    raise sosException.SOSException(1,"om:featureOfInterest name is missing: 'xlink:href' or 'gml:name' is required")
+                    raise sosException.SOSException("NoApplicableCode",None,"om:featureOfInterest name is missing: 'xlink:href' or 'gml:name' is required")
             
             #--result
             if Observation.find("{%s}result" % ns['om'] ) == None:
-                raise sosException.SOSException(1,"om:result tag is required")
+                raise sosException.SOSException("NoApplicableCode",None,"om:result tag is required")
             
             SimpleDataRecord = Observation.find("{%s}result/{%s}SimpleDataRecord" %(ns['om'],ns['swe']) )
             DataArray = Observation.find("{%s}result/{%s}DataArray" %(ns['om'],ns['swe']) )
@@ -206,7 +206,7 @@ class sosIOfilter(f.sosFilter):
                         vals.append( qf.find("{%s}value" % ns['swe']).text )
                     else:
                         err_txt = "swe:Time or swe:Quantity is mandatory in multiplicity 1"
-                        raise sosException.SOSException(1,err_txt)
+                        raise sosException.SOSException("NoApplicableCode",None,err_txt)
                     self.data[defin]={"uom":uom,"vals":vals}
             
             #Case DataArray
@@ -231,14 +231,14 @@ class sosIOfilter(f.sosFilter):
                            uom = sweq.find("{%s}uom" % ns['swe']).attrib["code"]
                     else:
                         err_txt = "swe:Time or swe:Quantity is mandatory in multiplicity 1"
-                        raise sosException.SOSException(1,err_txt)
+                        raise sosException.SOSException("NoApplicableCode",None,err_txt)
                     self.data[defin]={"uom":uom,"vals":vals}
                 #encoding
                 encodingTxtBlock = Observation.find("{%s}result/{%s}DataArray/{%s}encoding/{%s}TextBlock" 
                                             %(ns['om'],ns['swe'],ns['swe'],ns['swe']) )
                 if encodingTxtBlock == None:
                     rr_txt = "swe:encoding is mandatory in multiplicity 1"
-                    raise sosException.SOSException(1,err_txt)
+                    raise sosException.SOSException("NoApplicableCode",None,err_txt)
                 tokenSeparator = encodingTxtBlock.attrib["tokenSeparator"]
                 blockSeparator = encodingTxtBlock.attrib["blockSeparator"]
                 decimalSeparator = encodingTxtBlock.attrib["decimalSeparator"]
@@ -246,7 +246,7 @@ class sosIOfilter(f.sosFilter):
                 values = Observation.find("{%s}result/{%s}DataArray/{%s}values" %(ns['om'],ns['swe'],ns['swe']) )
                 if values == None:
                     err_txt = "swe:values is mandatory in multiplicity 1"
-                    raise sosException.SOSException(1,err_txt)
+                    raise sosException.SOSException("NoApplicableCode",None,err_txt)
                 valsplit=[i.split(tokenSeparator) for i in values.text.split(blockSeparator)]
                 for index,c in enumerate(urnlist):
                     col = []
@@ -266,7 +266,7 @@ class sosIOfilter(f.sosFilter):
             #error
             else:
                 err_txt = "om:SimpleDataRecord in multiplicity N or om:DataArray in multiplicity 1 is mandatory"
-                raise sosException.SOSException(1,err_txt) 
+                raise sosException.SOSException("NoApplicableCode",None,err_txt) 
              
         
                         

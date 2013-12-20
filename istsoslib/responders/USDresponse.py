@@ -35,7 +35,7 @@ def get_name_from_urn(stringa,urnName,sosConfig):
             if urn[index]==a[index]:
                 pass
             else:
-                raise sosException.SOSException(1,"Urn \"%s\" is not valid: %s."%(a,urn))
+                raise Exception("Urn \"%s\" is not valid: %s."%(a,urn))
     return name
 
 class UpdateSensorDescriptionResponse:
@@ -47,7 +47,7 @@ class UpdateSensorDescriptionResponse:
         try:
             prc = pgdb.select(sql)[0]
         except:
-            raise sosException.SOSException(3,"assignedSensorId '%s' is invalid! SQL: %s" %(filter.assignedSensorId,sql))
+            raise sosException.SOSException("InvalidParameterValue","assignedSensorId","assignedSensorId: '%s' is not valid!" %(filter.assignedSensorId))
     
         #----------------------------------------
         # create SensorML for inserted procedure

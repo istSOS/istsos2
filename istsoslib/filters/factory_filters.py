@@ -36,7 +36,7 @@ def sosFactoryFilter(environ,sosConfig):
         if requestObject.has_key("request"):
             sosRequest = requestObject["request"].lower()
         else:
-            raise sosException.SOSException(1,"Parameter \"request\" is required") 
+            raise sosException.SOSException("MissingParameterValue","request","Parameter \"request\" is mandatory") 
 
     elif method=="POST":
         # the environment variable CONTENT_LENGTH may be empty or missing
@@ -54,7 +54,7 @@ def sosFactoryFilter(environ,sosConfig):
             if form.has_key("request"):
                 xmldoc = minidom.parseString(form["request"][0])
             else:
-                raise sosException.SOSException(3,"Request not found")
+                raise sosException.SOSException("MissingParameterValue","request","Parameter \"request\" is mandatory")
 
         else:
             xmldoc = minidom.parseString(content)
@@ -64,7 +64,7 @@ def sosFactoryFilter(environ,sosConfig):
             
     else:
         err_txt = "Allowed \"http request\" are GET and POST: %s" %(method=="GET")
-        raise sosException.SOSException(1,err_txt)
+        raise sosException.SOSException("InvalidRequest",None,err_txt)
         
     #--- if request is allowed instantiate the rigth filter ---
     if sosRequest in sosConfig.parameters["requests"]:
@@ -90,6 +90,6 @@ def sosFactoryFilter(environ,sosConfig):
             from istsoslib.filters import USD_filter
             return USD_filter.sosUSDfilter(sosRequest,method,requestObject,sosConfig)
     else:
-        raise sosException.SOSException(1,"\"request\": %s not supported" %(sosRequest))
+        raise sosException.SOSException("InvalidRequest","request","\"request\": %s not supported" %(sosRequest))
     
 

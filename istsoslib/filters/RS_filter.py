@@ -56,7 +56,7 @@ class sosRSfilter(f.sosFilter):
         f.sosFilter.__init__(self,sosRequest,method,requestObject,sosConfig)
         #**************************
         if method == "GET":
-            raise sosException.SOSException(2,"registerSensor request support only POST method!")
+            raise sosException.SOSException("NoApplicableCode",None,"registerSensor request support only POST method!")
 
         if method == "POST":
             from StringIO import StringIO
@@ -67,7 +67,7 @@ class sosRSfilter(f.sosFilter):
             #----------------------
             SensorDescription = tree.find("{%s}SensorDescription" % ns['sos'] )
             if SensorDescription == None:
-                raise sosException.SOSException(1,"sos:SensorDescription parameter is mandatory with multiplicity 1")
+                raise sosException.SOSException("MissingParameterValue","SensorDescription","sos:SensorDescription parameter is mandatory with multiplicity 1")
             
             #---Procedure Name
             name = tree.find("{%s}SensorDescription/{%s}member/{%s}System/{%s}name" 
@@ -111,17 +111,17 @@ class sosRSfilter(f.sosFilter):
             #----------------------
             ObservationTemplate = tree.find("{%s}ObservationTemplate" % ns['sos'] )
             if ObservationTemplate==None:
-                raise sosException.SOSException(1,"ObservationTemplate parameter is mandatory with multiplicity 1")
+                raise sosException.SOSException("MissingParameterValue","ObservationTemplate","ObservationTemplate parameter is mandatory with multiplicity 1")
             
             Observation = ObservationTemplate.find("{%s}Observation" % ns['om'] )
             if Observation==None:
-                raise sosException.SOSException(1,"om:Observation tag is mandatory with multiplicity 1")
+                raise sosException.SOSException("NoApplicableCode",None,"om:Observation tag is mandatory with multiplicity 1")
             
             #-------procedure
             procedure = Observation.find("{%s}procedure" % ns['om'] )
             self.procedure = procedure.attrib["{%s}href" % ns['xlink']].split(":")[-1]
             if procedure == None:
-                raise sosException.SOSException(1,"om:procedure tag is mandatory with multiplicity 1")
+                raise sosException.SOSException("NoApplicableCode",None,"om:procedure tag is mandatory with multiplicity 1")
             
             #-------ObservedProperties
             self.oprDef=[]
@@ -133,7 +133,7 @@ class sosRSfilter(f.sosFilter):
                 name = Observation.find("{%s}observedProperty/{%s}CompositePhenomenon/{%s}name" 
                                         %(ns['om'],ns['swe'],ns['gml']) )            
             except:
-                raise sosException.SOSException(1,
+                raise sosException.SOSException("NoApplicableCode",None,
                                 "swe:CompositePhenomenon mandatory name element is missing")
             
             components = Observation.findall("{%s}observedProperty/{%s}CompositePhenomenon/{%s}component" 
@@ -143,7 +143,7 @@ class sosRSfilter(f.sosFilter):
                     try:
                         self.oprDef.append(comp.attrib["{%s}href" % ns['xlink']])
                     except:
-                        raise sosException.SOSException(1,
+                        raise sosException.SOSException("NoApplicableCode",None,
                                 "om:observedProperty/component attribute missing: 'xlink:href' required")
                         
                         """ NON STANDARD                        
@@ -184,7 +184,7 @@ class sosRSfilter(f.sosFilter):
             #-------samplingTime
             samplingTime = Observation.find("{%s}samplingTime" % ns['om'] )
             if samplingTime == None:
-                raise sosException.SOSException(1,"om:samplingTime tag is mandatory with multiplicity 1")
+                raise sosException.SOSException("NoApplicableCode",None,"om:samplingTime tag is mandatory with multiplicity 1")
             else:
                 duration = samplingTime.find("{%s}TimePeriod/{%s}TimeLength/{%s}duration" 
                                             %(ns['gml'],ns['gml'],ns['gml'], ) ) 
@@ -207,11 +207,11 @@ class sosRSfilter(f.sosFilter):
             #------featureOfInterest
             featureOfInterest = Observation.find("{%s}featureOfInterest" % ns['om'] )
             if featureOfInterest == None:
-                raise sosException.SOSException(1,"om:featureOfInterest tag is mandatory with multiplicity 1")
+                raise sosException.SOSException("NoApplicableCode",None,"om:featureOfInterest tag is mandatory with multiplicity 1")
             try:
                 self.foiName = featureOfInterest.attrib["{%s}href" % ns['xlink']]
             except:
-                raise sosException.SOSException(1,"om:featureOfInterest: attribute 'xlink:href' is required")
+                raise sosException.SOSException("NoApplicableCode",None,"om:featureOfInterest: attribute 'xlink:href' is required")
                 """ NON COMPLIANT                 
                 name = Observation.find("{%s}featureOfInterest/{%s}name" %(ns['om'],ns['gml']) )                               
                 try:
@@ -241,7 +241,7 @@ class sosRSfilter(f.sosFilter):
                     self.foiSRS = GMLfeature.attrib["srsName"].split(":")[-1]
                     self.foiGML = et.tostring(GMLfeature, encoding="UTF-8").replace("<?xml version='1.0' encoding='UTF-8'?>","")
             if self.foiType == None:
-                raise sosException.SOSException(1,"not found valid GML feature, supported: %s "
+                raise sosException.SOSException("NoApplicableCode",None,"not found valid GML feature, supported: %s "
                                     %(";".join(sosConfig.foiGeometryType)))
             
             
@@ -264,7 +264,7 @@ class sosRSfilter(f.sosFilter):
                     fields = da.findall("{%s}elementType/{%s}DataRecord/{%s}field" %(ns['swe'],ns['swe'],ns['swe']))
                 else:
                     err_txt = "in <swe:result>: <swe:DataRecord> or <swe:DataArray> are mandatory in multiplicity 1"
-                    raise sosException.SOSException(1,err_txt)
+                    raise sosException.SOSException("NoApplicableCode",None,err_txt)
                 
                 timetag = False
                 for field in fields:
@@ -313,7 +313,7 @@ class sosRSfilter(f.sosFilter):
                             allow = constraint.find("{%s}AllowedValues" %(ns['swe']))
                             if allow is None:
                                 err_txt = "in <swe:constraint>: <swe:AllowedValues> is mandatory in multiplicity 1"
-                                raise sosException.SOSException(1,err_txt)
+                                raise sosException.SOSException("NoApplicableCode",None,err_txt)
                             else:
                                 
                                 cvals = None
@@ -321,47 +321,47 @@ class sosRSfilter(f.sosFilter):
                                     ct = allow[0].tag
                                     if not ct in ["{%s}min" % ns["swe"],"{%s}max" % ns["swe"],"{%s}interval" % ns["swe"],"{%s}valueList" % ns["swe"]]:
                                         err_txt = "in <swe:constraint>: support only min, max, interval, valueList tag" 
-                                        raise sosException.SOSException(1,err_txt)
+                                        raise sosException.SOSException("NoApplicableCode",None,err_txt)
                                     
                                     xvals = allow[0].text.strip().split(" ")
                                     if ct == "{%s}min" % ns["swe"]: 
                                         ct = "min"
                                         if not len(xvals)==1:
                                             err_txt = "'%s' constraint support/need one values" % ct
-                                            raise sosException.SOSException(1,err_txt)
+                                            raise sosException.SOSException("NoApplicableCode",None,err_txt)
                                         if not xvals[0].isdigit:
                                             err_txt = "'%s' constraint support/need one values" % ct
-                                            raise sosException.SOSException(1,err_txt)
+                                            raise sosException.SOSException("NoApplicableCode",None,err_txt)
                                         cvals = " ".join(xvals)
                                    
                                     elif ct == "{%s}max" % ns["swe"]:
                                         ct = "max"
                                         if not len(xvals)==1:
                                             err_txt = "'%s' constraint support/need one values" % ct
-                                            raise sosException.SOSException(1,err_txt)
+                                            raise sosException.SOSException("NoApplicableCode",None,err_txt)
                                         if not xvals[0].isdigit:
                                             err_txt = "'%s' constraint support/need one values" % ct
-                                            raise sosException.SOSException(1,err_txt)
+                                            raise sosException.SOSException("NoApplicableCode",None,err_txt)
                                         cvals = " ".join(xvals)
                                         
                                     elif ct == "{%s}interval" % ns["swe"]: 
                                         ct = "interval"
                                         if not len(xvals)==2:
                                             err_txt = "'%s' constraint support/need two values" % ct
-                                            raise sosException.SOSException(1,err_txt)
+                                            raise sosException.SOSException("NoApplicableCode",None,err_txt)
                                         if not xvals[0].isdigit:
                                             err_txt = "'%s' constraint support/need two values" % ct
-                                            raise sosException.SOSException(1,err_txt)
+                                            raise sosException.SOSException("NoApplicableCode",None,err_txt)
                                         cvals = " ".join(xvals)
                                 
                                     elif ct == "{%s}valueList" % ns["swe"]:
                                         ct = "valueList"
                                         if not len(xvals)>0:
                                             err_txt = "'%s' constraint support/need at least one values" % ct
-                                            raise sosException.SOSException(1,err_txt)
+                                            raise sosException.SOSException("NoApplicableCode",None,err_txt)
                                         if not xvals[0].isdigit:
                                             err_txt = "'%s' constraint support/needat least one values" % ct
-                                            raise sosException.SOSException(1,err_txt)
+                                            raise sosException.SOSException("NoApplicableCode",None,err_txt)
                                         cvals = " ".join(xvals)
                                     
                                     if crole:
@@ -376,10 +376,10 @@ class sosRSfilter(f.sosFilter):
                         
                     else:
                         err_txt = "swe:Time or swe:Quantity is mandatory in multiplicity 1:N"
-                        raise sosException.SOSException(1,err_txt)
+                        raise sosException.SOSException("NoApplicableCode",None,err_txt)
             else:
                 err_txt = "om:result is mandatory in multiplicity 1:N"
-                raise sosException.SOSException(1,err_txt)
+                raise sosException.SOSException("NoApplicableCode",None,err_txt)
                 
                 #case simple om:result
                 """ WAS

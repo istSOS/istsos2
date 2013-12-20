@@ -45,17 +45,17 @@ class InsertObservationResponse:
         try:
             prc = pgdb.select(sql,params)[0]
         except:
-            raise sosException.SOSException(3,"assignedSensorId '%s' is invalid! SQL: %s" %(filter.assignedSensorId,pgdb.mogrify(sql,params)))
+            raise sosException.SOSException("InvalidParameterValue","assignedSensorId","assignedSensorId '%s' is not valid!" %(filter.assignedSensorId))
                 
         #--check requested procedure name exists
         #=============================================
         if not prc["name_prc"]==filter.procedure:
-            raise sosException.SOSException(3,"procedure '%s' not associated with provided assignedSensorId!" %(filter.procedure))
+            raise sosException.SOSException("NoApplicableCode",None,"procedure '%s' not associated with provided assignedSensorId!" %(filter.procedure))
         
         #--check requested  foi name exists
         #=============================================
         if not filter.foiName == prc["name_foi"]:
-            raise sosException.SOSException(3,"featureOfInterest '%s' not associated with provided assignedSensorId" %(filter.foiName))
+            raise sosException.SOSException("NoApplicableCode",None,"featureOfInterest '%s' not associated with provided assignedSensorId" %(filter.foiName))
         
         #--check provided samplingTime and upadate 
         #  begin/end time procedure if necessary  
@@ -71,10 +71,10 @@ class InsertObservationResponse:
             elif len(stime)==1: # is a TimeInstant
                 start = end = iso.parse_datetime(stime[0])
             else:
-                raise sosException.SOSException(3," filter samplingTime error! given '%s'" %(filter.samplingTime))
+                raise Exception(" filter samplingTime error! given '%s'" %(filter.samplingTime))
 
             if start>end:
-                raise sosException.SOSException(3," endPosition (%s) must be after beginPosition (%s)" %(end,start))
+                raise Exception(" endPosition (%s) must be after beginPosition (%s)" %(end,start))
             
             #-- check samplingTime
             #==========================================
@@ -98,7 +98,7 @@ class InsertObservationResponse:
                             a = pgdb.executeInTransaction(sql,params)
                             com=True
                         except:
-                            raise sosException.SOSException(3,"SQL: %s" %(pgdb.mogrify(sql,params)))
+                            raise Exception("SQL: %s" %(pgdb.mogrify(sql,params)))
                     
                     #-- update end time of procedure
                     if end>prc["etime_prc"]:
@@ -109,7 +109,7 @@ class InsertObservationResponse:
                             b = pgdb.executeInTransaction(sql,params)
                             com=True   
                         except Exception as err:
-                            raise sosException.SOSException(3,"SQL: %s - %s" %(pgdb.mogrify(sql,params), err.pgerror))
+                            raise Exception("SQL: %s - %s" %(pgdb.mogrify(sql,params), err.pgerror))
 
                 # check eventTime interval and update begin/end position when force flag is off
                 #----------------------------------------------------------------------------------                            
@@ -125,11 +125,11 @@ class InsertObservationResponse:
                     if lastMsr!=None:
                         #-- verify begin observation is minor/equal then end time procedure and later then last observation
                         if not (end>=prc["etime_prc"] and start<=prc["etime_prc"] and start>=lastMsr):
-                            raise sosException.SOSException(3,"begin observation (%s) must be between last observation (%s) and end procedure (%s); end observation (%s) must be after end procedure (%s)" %(start,lastMsr,prc["etime_prc"],end,prc["etime_prc"]))
+                            raise Exception("begin observation (%s) must be between last observation (%s) and end procedure (%s); end observation (%s) must be after end procedure (%s)" %(start,lastMsr,prc["etime_prc"],end,prc["etime_prc"]))
                     else:
                         #-- verify begin observation is minor/equal then end time procedure and later then first observation
                         if not (end>=prc["etime_prc"] and start<=prc["etime_prc"] and start>=prc["stime_prc"]) :
-                            raise sosException.SOSException(3,"begin observation (%s) must be between start procedure (%s) and end procedure (%s); end observation (%s) must be after end procedure (%s)" %(start,prc["stime_prc"],prc["etime_prc"],end,prc["etime_prc"]))
+                            raise Exception("begin observation (%s) must be between start procedure (%s) and end procedure (%s); end observation (%s) must be after end procedure (%s)" %(start,prc["stime_prc"],prc["etime_prc"],end,prc["etime_prc"]))
                         
                     #-- update end time of procedure
                     sql  = "UPDATE %s.procedures" %(filter.sosConfig.schema)
@@ -139,7 +139,7 @@ class InsertObservationResponse:
                         b = pgdb.executeInTransaction(sql,params)
                         com=True
                     except Exception as err:
-                        raise sosException.SOSException(3,"SQL: %s - %s" %(pgdb.mogrify(sql,params), err.pgerror))
+                        raise Exception("SQL: %s - %s" %(pgdb.mogrify(sql,params), err.pgerror))
             
             else:
                 sql  = "UPDATE %s.procedures" %(filter.sosConfig.schema)
@@ -149,7 +149,7 @@ class InsertObservationResponse:
                     b = pgdb.executeInTransaction(sql,params)
                     com=True
                 except:
-                    raise sosException.SOSException(3,"SQL: %s" %(pgdb.mogrify(sql,params)))
+                    raise Exception("SQL: %s" %(pgdb.mogrify(sql,params)))
             
         #  check data definition and uom (compare registered 
         #  observed properties with provided observations)
@@ -162,7 +162,7 @@ class InsertObservationResponse:
         try:
             opr = pgdb.select(sql,params)
         except Exception as err:
-            raise sosException.SOSException(3,"SQL2: %s -%s" %(pgdb.mogrify(sql,params), err.pgerror))
+            raise Exception("SQL2: %s -%s" %(pgdb.mogrify(sql,params), err.pgerror))
             
         #---- get list of available ObservedProperty, unit of measure, property id for this procedure -----
         oprNames=[]
@@ -219,10 +219,10 @@ class InsertObservationResponse:
             try: 
                 k = dataKeys.index(opr)
             except:
-                raise sosException.SOSException(3,"parameter '%s' not observed by RegisteredSensor %s - %s" %(opr,oprNames,dataKeys))
+                raise sosException.SOSException("NoApplicableCode",None,"parameter '%s' not observed by RegisteredSensor %s - %s" %(opr,oprNames,dataKeys))
             #if not str(dataUoms[k])==str(oprUoms[i]):
             if not dataUoms[k]==oprUoms[i]:
-                raise sosException.SOSException(3,"parameter '%s' not observed with provided unit of measure" %(opr))
+                raise sosException.SOSException("NoApplicableCode",None,"parameter '%s' not observed with provided unit of measure" %(opr))
         
         #---------------------------------------------------------------    
         # verify if time and coordinates are passed as data parameters
@@ -255,7 +255,7 @@ class InsertObservationResponse:
                         parsConsObs.append(obsPropConstr[oprNames.index(dn)])
                         parsConsPro.append(procConstr[oprNames.index(dn)])
                     except:
-                        raise sosException.SOSException(3,"parameter %s not observed by this sensor %s - %s" %(dn,pars,oprNames))
+                        raise Exception("parameter %s not observed by this sensor %s - %s" %(dn,pars,oprNames))
                         
         #----------------------------------------------------------------------------------
         # set default quality index if not provided
@@ -270,19 +270,19 @@ class InsertObservationResponse:
         # verify that mobile sensors provide coordinates as X,Y,Z
         #---------------------------------------------------------------
         if (xobs==False and yobs==False and zobs==False) and prc["name_oty"] == "insitu-mobile-point":
-            raise sosException.SOSException(3,"Mobile sensors require x,y,z parameters")
+            raise Exception("Mobile sensors require x,y,z parameters")
         
         #---------------------------------------------------------------
         # verify that time parameter is provided
         #---------------------------------------------------------------
         if not tpar:
-            raise sosException.SOSException(3,"parameter 'time:iso8601' is required for InsertObservation")
+            raise Exception("parameter 'time:iso8601' is required for InsertObservation")
         
         #---------------------------------------------------------------
         # verify that eventime are in provided samplingTime
         #---------------------------------------------------------------
         if not iso.parse_datetime(max(filter.data[tpar]["vals"]))<= end and iso.parse_datetime(min(filter.data[tpar]["vals"]))>= start:
-            raise sosException.SOSException(3,"provided data are not included in provided <samplingTime> period")
+            raise Exception("provided data are not included in provided <samplingTime> period")
         
         #======================        
         #-- insert observation
@@ -297,7 +297,7 @@ class InsertObservationResponse:
                 b = pgdb.executeInTransaction(sql,params)
                 com=True
             except:
-                raise sosException.SOSException(3,"SQL: %s" %(pgdb.mogrify(sql,params)))
+                raise Exception("SQL: %s" %(pgdb.mogrify(sql,params)))
         
         #----------------------------------------
         # CASE I: observations list is void
@@ -380,7 +380,7 @@ class InsertObservationResponse:
                         except Exception as e:
                             com=False
                             raise e
-                            raise sosException.SOSException(3,"L: %s - %s - %s - %s") %(int(parsId[i]),int(id_et),pqi,float(filter.data[par]["vals"][ii]))
+                            raise Exception("L: %s - %s - %s - %s") %(int(parsId[i]),int(id_et),pqi,float(filter.data[par]["vals"][ii]))
             
             #-------------------------------------
             #--insert position values if required 
@@ -399,7 +399,7 @@ class InsertObservationResponse:
                         com=True
                     except Exception as a:
                         com=False
-                        raise sosException.SOSException(3,"%s\nSQL: %s" %(a,pgdb.mogrify(sql,params)))
+                        raise Exception("%s\nSQL: %s" %(a,pgdb.mogrify(sql,params)))
             
             # register assigned IDs of measures
             self.assignedId = "@".join([str(p) for p in ids_eti])
@@ -415,7 +415,7 @@ class InsertObservationResponse:
                 pgdb.executeInTransaction(sqlLog,params)
                 com=True
             except:
-                raise sosException.SOSException(1,"SQL: %s" %(pgdb.mogrify(sqlLog,params)))
+                raise Exception("SQL: %s" %(pgdb.mogrify(sqlLog,params)))
         
         if com==True:
             pgdb.commitTransaction()

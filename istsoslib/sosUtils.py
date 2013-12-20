@@ -41,7 +41,7 @@ def ogcSpatCons2PostgisSql(ogcSpatialOperator,geomField,epsgField):
     try:
         ogcOperator = ogcSpatialOperator.nodeName.encode()
     except:
-        raise sosException.SOSException(1,"ogcSpatCons2PostgisSql: argunment must be an ''XML object'' or a valid ''XML string''")
+        raise sosException.SOSException("NoApplicableCode",None,"ogcSpatCons2PostgisSql: argunment must be an ''XML object'' or a valid ''XML string''")
     
     sql=''
 
@@ -57,7 +57,7 @@ def ogcSpatCons2PostgisSql(ogcSpatialOperator,geomField,epsgField):
         except:
             epsg = None
         if not epsg.isdigit() and not epsg == None:
-            raise sosException.SOSException(1,"Error: srsName '%s' must be numeric!" %(epsg))
+            raise sosException.SOSException("NoApplicableCode",None,"Error: srsName '%s' must be numeric!" %(epsg))
         GMLgeom = str(geometry.toxml()).replace("epsg:","EPSG:")
         if epsgField == epsg or epsg == None:
             sql = "%s(%s,ST_GeomFromGML('%s'),%s))" %(ogcSupportedSpatialOperators[ogcOperator],geomField,GMLgeom,epsgField)
@@ -74,7 +74,7 @@ def ogcSpatCons2PostgisSql(ogcSpatialOperator,geomField,epsgField):
         except:
             epsg = None
         if not epsg.isdigit() and not epsg == None:
-            raise sosException.SOSException(1,"Error: srsName '%s' must be numeric!" %(epsg))            
+            raise sosException.SOSException("NoApplicableCode",None,"Error: srsName '%s' must be numeric!" %(epsg))            
         
         coords_llur=",".join(geometry.getElementsByTagName('gml:coordinates')[0].firstChild.data.split(" "))
         ce=[ float(a) for a in coords_llur.split(",")]
@@ -95,7 +95,7 @@ def ogcSpatCons2PostgisSql(ogcSpatialOperator,geomField,epsgField):
         except:
             epsg = None        
         if not epsg.isdigit() and not epsg == None:
-            raise sosException.SOSException(1,"Error: srsName '%s' must be numeric!" %(epsg))
+            raise sosException.SOSException("NoApplicableCode",None,"Error: srsName '%s' must be numeric!" %(epsg))
         GMLgeom = str(geometry.toxml()).replace("epsg:","EPSG:")
         if epsgField == epsg or epsg == None:
             sql = "ST_DWithin(%s,ST_GeomFromGML('%s'),%s)" %(geomField,GMLgeom,distance)
@@ -104,10 +104,10 @@ def ogcSpatCons2PostgisSql(ogcSpatialOperator,geomField,epsgField):
         return sql
     
     elif ogcOperator in ogcUnsupportedSpatialOperators:
-        raise sosException.SOSException(1,"Spatial Operator nor supported. Available methods are: %s" %(",".join(ogcSupportedSpatialOperators.keys())))
+        raise sosException.SOSException("NoApplicableCode",None,"Spatial Operator nor supported. Available methods are: %s" %(",".join(ogcSupportedSpatialOperators.keys())))
     
     else:
-        raise sosException.SOSException(1,"ogcSpatialOperator format ERROR")
+        raise sosException.SOSException("NoApplicableCode",None,"ogcSpatialOperator format ERROR")
         
 
 def ogcCompCons2PostgisSql(ogcComparisonOperator):
@@ -143,7 +143,7 @@ def ogcCompCons2PostgisSql(ogcComparisonOperator):
     try:
         ogcOperator = ogcComparisonOperator.nodeName.encode()
     except:
-        raise sosException.SOSException(1,"ogcCompCons2PostgisSql: argunment must be an ''XML object'' or a valid ''XML string''")
+        raise sosException.SOSException("NoApplicableCode",None,"ogcCompCons2PostgisSql: argunment must be an ''XML object'' or a valid ''XML string''")
     
     
     prop = ''
@@ -166,13 +166,13 @@ def ogcCompCons2PostgisSql(ogcComparisonOperator):
             """
             literal = literalObj[0].firstChild.data.encode().strip()
             if not literal.isdigit() and not literal == None:
-                raise sosException.SOSException(1,"Sorry istsos support only numeric constraints, provided: \'%s\'" %(literal))
+                raise sosException.SOSException("NoApplicableCode",None,"Sorry istsos support only numeric constraints, provided: \'%s\'" %(literal))
         else:
-            raise sosException.SOSException(2,"ogcCompCons2PostgisSql: ogc:comparisonOps allow only two expression")
+            raise sosException.SOSException("NoApplicableCode",None,"ogcCompCons2PostgisSql: ogc:comparisonOps allow only two expression")
         
         return ("%s" %(propertyName),"%s %s" %(ogcSupportedCompOperators[ogcOperator],literal))
     else:
-        raise sosException.SOSException(2,"ogcCompCons2PostgisSql: ogc:comparisonOps not jet supported")
+        raise sosException.SOSException("NoApplicableCode",None,"ogcCompCons2PostgisSql: ogc:comparisonOps not jet supported")
         
 def CQLvalueFilter2PostgisSql(fildName,CQLfilter):
     """parse a CQL filter and returen an SQL filter"""
@@ -182,14 +182,14 @@ def CQLvalueFilter2PostgisSql(fildName,CQLfilter):
         if CQLfilter[0] in ["<",">","="]:
             if CQLfilter[1] in ["="]:
                 if not CQLfilter[2:].isdigit():
-                    raise sosException.SOSException(2,"CQLvalueFilter2PostgisSql: only numeric comparison supported")
+                    raise sosException.SOSException("NoApplicableCode",None,"CQLvalueFilter2PostgisSql: only numeric comparison supported")
             else:
                 if not CQLfilter[1:].isdigit():
-                    raise sosException.SOSException(2,"CQLvalueFilter2PostgisSql: only numeric comparison supported")
+                    raise sosException.SOSException("NoApplicableCode",None,"CQLvalueFilter2PostgisSql: only numeric comparison supported")
         else:
-            raise sosException.SOSException(2,"CQLvalueFilter2PostgisSql: only filter by comparing values is supported")
+            raise sosException.SOSException("NoApplicableCode",None,"CQLvalueFilter2PostgisSql: only filter by comparing values is supported")
     else:
-        raise sosException.SOSException(2,"CQLvalueFilter2PostgisSql: input must be a string")
+        raise sosException.SOSException("NoApplicableCode",None,"CQLvalueFilter2PostgisSql: input must be a string")
     return "%s %s" %(fildName,CQLfilter)
     
     

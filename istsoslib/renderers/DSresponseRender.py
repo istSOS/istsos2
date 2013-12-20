@@ -51,7 +51,7 @@ def render(DS,sosConfig):
         #---parse xml
         tree, ns = parse_and_get_ns(DS.smlFile)
     except Exception as ex:
-        raise sosException.SOSException(1,"sensorML description for procedure '%s' not found or corrupted! [%s]"%(DS.smlFile,ex))    
+        raise Exception("sensorML description for procedure '%s' not found or corrupted! [%s]"%(DS.smlFile,ex))    
     
     #---map namespaces---
     try:

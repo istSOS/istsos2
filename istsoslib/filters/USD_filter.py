@@ -26,10 +26,10 @@ def getElemTxt(node):
             return str(val.data)
         else:
             err_txt = "get node text value: \"%s\" is not of type TEXT" %(node.nodeName)
-            raise sosException.SOSException(1,err_txt)
+            raise Exception(,err_txt)
     else:
             err_txt = "get node text value: \"%s\" has no child node" %(node.nodeName)
-            raise sosException.SOSException(1,err_txt)
+            raise Exception(err_txt)
         
 def getElemAtt(node,att):
     if att in node.attributes.keys():
@@ -48,7 +48,7 @@ def get_name_from_urn(stringa,urnName,sosConfig):
             if urn[index]==a[index]:
                 pass
             else:
-                raise sosException.SOSException(1,"Urn \"%s\" is not valid: %s."%(a,urn))
+                raise Exception("Urn \"%s\" is not valid: %s."%(a,urn))
     return name 
 
 class sosUSDfilter(f.sosFilter): 
@@ -62,7 +62,7 @@ class sosUSDfilter(f.sosFilter):
         f.sosFilter.__init__(self,sosRequest,method,requestObject,sosConfig)
         #**************************
         if method == "GET":
-            raise sosException.SOSException(2,"registerSensor request support only POST method!")
+            raise sosException.SOSException("NoApplicableCode",None,"registerSensor request support only POST method!")
             
         if method == "POST":
             
@@ -71,14 +71,14 @@ class sosUSDfilter(f.sosFilter):
             if len(asid)==1:
                     self.assignedSensorId = getElemTxt(asid[0])
             else:
-                raise sosException.SOSException(1,"AssignedSensorId parameter is mandatory with multiplicity 1")
+                raise sosException.SOSException("MissingParameterValue","AssignedSensorId","AssignedSensorId parameter is mandatory with multiplicity 1")
             
             #---SensorDescription            
             sd = requestObject.getElementsByTagName('SensorDescription')
             if len(sd)==1:
                 self.xmlSensorDescription = sd[0]
             else:
-                raise sosException.SOSException(1,"SensorDescription parameter is mandatory with multiplicity 1")
+                raise sosException.SOSException("MissingParameterValue","SensorDescription","SensorDescription parameter is mandatory with multiplicity 1")
                 
                 
                 

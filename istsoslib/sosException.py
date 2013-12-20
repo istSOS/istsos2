@@ -7,15 +7,19 @@ class SOSException(ValueError):
   exceptionreport = '''<?xml version="1.0" encoding="UTF-8" standalone="no"?><ExceptionReport xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.opengis.net/ows/1.0.0/owsExceptionReport.xsd" version="1.0.0" language="en">
 %s  
 </ExceptionReport>'''
-  exception = ''' <Exception locator="service" exceptionCode="%s">
+  exceptionLoc = ''' <Exception locator="%s" exceptionCode="%s">
+%s  
+ </Exception>'''
+  exception = ''' <Exception exceptionCode="%s">
 %s  
  </Exception>'''
   exceptiontext = '''  <ExceptionText>
     %s
   </ExceptionText>'''
 
-  def __init__(self, code, msg, othermsgs = []):
+  def __init__(self, code, locator, msg, othermsgs = []):
     self.code = code
+    self.locator = locator
     self.msg = sax.escape(str(msg))
     self.children = []
     for msg in othermsgs:
@@ -34,5 +38,8 @@ class SOSException(ValueError):
     exchildren = [self.exceptiontext % (c,) for c in self.children]
     extextlist = [self.exceptiontext % (self.msg,)] + exchildren
     extext = "\n".join(extextlist)
-    body = self.exception % (self.code, extext)
+    if not self.locator==None:
+        body = self.exceptionLoc % (self.locator,self.code, extext)
+    else:
+        body = self.exception % (self.code, extext)
     return self.exceptionreport % (body,)

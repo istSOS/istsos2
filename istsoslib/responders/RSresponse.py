@@ -39,9 +39,9 @@ class RegisterSensorResponse:
         try:
             prc_name = pgdb.select(sqlId,params)
         except:
-            raise sosException.SOSException(1,"SQL: %s"%(pgdb.mogrify(sqlId,params)))
+            raise Exception("SQL: %s"%(pgdb.mogrify(sqlId,params)))
         if prc_name:
-            raise sosException.SOSException(1,"Procedure '%s' already exist, consider to change the name" %(prc_name))
+            raise Exception("Procedure '%s' already exist, consider to change the name" %(prc_name))
         
         #--get id_foi or create it if it does not exist yet
         sqlId  = "SELECT id_foi FROM %s.foi" %(filter.sosConfig.schema)
@@ -62,7 +62,7 @@ class RegisterSensorResponse:
                 try:
                     id_fty= pgdb.executeInTransaction(sqlIns,params)[0]["id_fty"]
                 except:
-                    raise sosException.SOSException(1,"SQL: %s"%(sqlIns))
+                    raise Exception("SQL: %s"%(sqlIns))
             
             sqlIns  = "INSERT INTO %s.foi (name_foi,desc_foi,geom_foi,id_fty_fk)" %(filter.sosConfig.schema)
             sqlIns += " VALUES (%s,%s,st_transform(ST_GeomFromGML(%s),%s),%s) RETURNING id_foi"   
@@ -71,7 +71,7 @@ class RegisterSensorResponse:
                 id_foi = pgdb.executeInTransaction(sqlIns,params)[0]["id_foi"]
                 com=True
             except:
-                raise sosException.SOSException(1,"SQL: %s"%(pgdb.mogrify(sqlIns,params)))
+                raise Exception("SQL: %s"%(pgdb.mogrify(sqlIns,params)))
         
         #--get id_tru or create it if it does not exist yet
         sqlId  = "SELECT id_tru FROM %s.time_res_unit" %(filter.sosConfig.schema)
@@ -87,7 +87,7 @@ class RegisterSensorResponse:
                 id_tru = pgdb.executeInTransaction(sqlIns,params)[0]["id_tru"]
                 com=True
             except:
-                raise sosException.SOSException(1,"SQL: %s"%(pgdb.mogrify(sqlIns,params)))
+                raise Exception("SQL: %s"%(pgdb.mogrify(sqlIns,params)))
         
         #--get a list of observed properties id (id_opr) and check if  
         # the fileds of the <Result> data record description
@@ -105,7 +105,7 @@ class RegisterSensorResponse:
                         oprName = filter.names[i]
                         #oprDesc = filter.oprDesc[i]
                     else:
-                        raise sosException.SOSException(1,"Field %s not found in Components %s"%(par,filter.oprDef))
+                        raise Exception("Field %s not found in Components %s"%(par,filter.oprDef))
                     sqlId  = "SELECT id_opr FROM %s.observed_properties" %(filter.sosConfig.schema)
                     sqlId += " WHERE def_opr=%s"
                     params = (str(oprDef),)
@@ -124,7 +124,7 @@ class RegisterSensorResponse:
                             com=True
                             opr_ids.append(id_opr)
                         except:
-                            raise sosException.SOSException(1,"SQL: %s"%(pgdb.mogrify(sqlIns,params)))
+                            raise Exception("SQL: %s"%(pgdb.mogrify(sqlIns,params)))
             #--virtual
             
             #--insitu-mobile-point
@@ -138,7 +138,7 @@ class RegisterSensorResponse:
                         oprName = filter.names[i]
                         #oprDesc = filter.oprDesc[i]
                     else:
-                        raise sosException.SOSException(1,"Field %s not found in Components %s"%(par,filter.oprDef))
+                        raise Exception("Field %s not found in Components %s"%(par,filter.oprDef))
                     sqlId  = "SELECT id_opr FROM %s.observed_properties" %(filter.sosConfig.schema)
                     sqlId += " WHERE def_opr=%s"
                     params = (str(oprDef),)
@@ -154,9 +154,9 @@ class RegisterSensorResponse:
                             com=True
                             opr_ids.append(id_opr)
                         except:
-                            raise sosException.SOSException(1,"SQL: %s"%(pgdb.mogrify(sqlIns,params)))
+                            raise Exception("SQL: %s"%(pgdb.mogrify(sqlIns,params)))
             else:
-                raise sosException.SOSException(1,"Error: observation type not supported")      
+                raise Exception("Error: observation type not supported")      
              
         #-- get id_oty or create it if it does not exist yet
         sqlId  = "SELECT id_oty FROM %s.obs_type" %(filter.sosConfig.schema)
@@ -172,7 +172,7 @@ class RegisterSensorResponse:
                 id_oty = pgdb.executeInTransaction(sqlIns,params)[0]["id_oty"]
                 com=True
             except:
-                raise sosException.SOSException(1,"SQL: %s"%(sqlIns))
+                raise Exception(,"SQL: %s"%(sqlIns))
         
         #--get id_uom or create it if it does not exist yet
         uom_ids=[]
@@ -196,7 +196,7 @@ class RegisterSensorResponse:
                             com=True
                             uom_ids.append(id_uom)
                         except:
-                            raise sosException.SOSException(1,"SQL: %s"%(pgdb.mogrify(sqlIns,params)))
+                            raise Exception("SQL: %s"%(pgdb.mogrify(sqlIns,params)))
             elif oty == 'insitu-mobile-point':
                 if not (par.split(":")[-1] in filter.sosConfig.parGeom["x"] or par.split(":")[-1] in filter.sosConfig.parGeom["y"] 
                    or par.split(":")[-1] in filter.sosConfig.parGeom["z"] or par.split(":")[-1]=="iso8601") :
@@ -215,10 +215,10 @@ class RegisterSensorResponse:
                             com=True
                             uom_ids.append(id_uom)
                         except:
-                            raise sosException.SOSException(1,"SQL: %s"%(pgdb.mogrify(sqlIns,params)))
+                            raise Exception("SQL: %s"%(pgdb.mogrify(sqlIns,params)))
                 
             else:
-                raise sosException.SOSException(1,"Error: observation type not supported")
+                raise Exception("Error: observation type not supported")
         
         #--get temporary id_off or create it if it does not exist yet
         sqlId  = "SELECT id_off FROM %s.offerings WHERE" %(filter.sosConfig.schema)
@@ -232,7 +232,7 @@ class RegisterSensorResponse:
                 id_off = pgdb.executeInTransaction(sqlIns)[0]["id_off"]
                 com=True
             except:
-                raise sosException.SOSException(1,"SQL: %s"%(pgdb.mogrify(sqlIns)))
+                raise Exception("SQL: %s"%(pgdb.mogrify(sqlIns)))
            
         #--insert procedure
         sqlIns  = "INSERT INTO %s.procedures (id_foi_fk, id_oty_fk, id_tru_fk, " %(filter.sosConfig.schema)
@@ -258,7 +258,7 @@ class RegisterSensorResponse:
             ret_prc = pgdb.executeInTransaction(sqlIns,params)[0]
             com=True
         except:
-            raise sosException.SOSException(1,"SQL: %s"%(pgdb.mogrify(sqlIns,params)))
+            raise Exception("SQL: %s"%(pgdb.mogrify(sqlIns,params)))
         
         #--link proc_obs
         sqlIns  = "INSERT INTO %s.proc_obs (id_prc_fk, id_uom_fk, id_opr_fk, constr_pro) VALUES " % (
@@ -274,7 +274,7 @@ class RegisterSensorResponse:
             res = pgdb.executeInTransaction(sqlIns,params)
             com=True
         except:
-            raise sosException.SOSException(1,"SQL: %s" %(pgdb.mogrify(sqlIns,params)))
+            raise Exception("SQL: %s" %(pgdb.mogrify(sqlIns,params)))
         
         #--link off_prc
         sqlIns  = "INSERT INTO %s.off_proc (id_off_fk, id_prc_fk)" %(filter.sosConfig.schema)
@@ -284,7 +284,7 @@ class RegisterSensorResponse:
             res = pgdb.executeInTransaction(sqlIns,params)
             com=True
         except:
-            raise sosException.SOSException(1,"SQL: %s" %(pgdb.mogrify(sqlIns,params)))
+            raise Exception("SQL: %s" %(pgdb.mogrify(sqlIns,params)))
         
         self.assignedSensorId = filter.sosConfig.urn["sensor"]+ret_prc["assignedid_prc"]
         
@@ -362,7 +362,7 @@ class RegisterSensorResponse:
                 pgdb.executeInTransaction(sqlLog,params)
                 com=True
             except:
-                raise sosException.SOSException(1,"SQL: %s" %(pgdb.mogrify(sqlLog,params)))
+                raise Exception("SQL: %s" %(pgdb.mogrify(sqlLog,params)))
         
         if com==True:
             pgdb.commitTransaction()

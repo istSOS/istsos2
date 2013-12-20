@@ -71,7 +71,7 @@ def BuildSensorIdList(pgdb,sosConfig):
     try:
         rows=pgdb.select(sql)
     except:
-        raise sosException.SOSException(1,"sql: %s" %(pgdb.mogrify(sql)))
+        raise Exception("sql: %s" %(pgdb.mogrify(sql)))
     for row in rows:
         list.append(sosConfig.urn["procedure"] + row["name_prc"])    
     return list
@@ -83,7 +83,7 @@ def BuildOfferingList(pgdb,sosConfig):
     try:
         rows=pgdb.select(sql)
     except:
-        raise sosException.SOSException(1,"sql: %s" %(pgdb.mogrify(sql)))
+        raise Exception("sql: %s" %(pgdb.mogrify(sql)))
     #rows=pgdb.select(sql)
     for row in rows:
         list.append(sosConfig.urn["offering"] +row["name_off"])
@@ -95,7 +95,7 @@ def BuildEventTimeRange(pgdb,sosConfig):
     try:
         rows=pgdb.select(sql)
     except:
-        raise sosException.SOSException(1,"sql: %s" %(pgdb.mogrify(sql)))
+        raise Exception("sql: %s" %(pgdb.mogrify(sql)))
     #check if not observation?!?!?!?
     return [rows[0]["b"],rows[0]["e"]]
 
@@ -116,7 +116,7 @@ def BuildfeatureOfInterestList(pgdb,sosConfig):
     try:
         rows=pgdb.select(sql)
     except:
-        raise sosException.SOSException(1,"sql: %s" %(pgdb.mogrify(sql)))
+        raise Exception("sql: %s" %(pgdb.mogrify(sql)))
     for row in rows:
         list.append(sosConfig.urn["feature"] + row["nfoi"])
     return list
@@ -140,7 +140,7 @@ def BuildOffEnvelope(pgdb,id,sosConfig):
     try:
         rows=pgdb.select(sql,params)
     except:
-        raise sosException.SOSException(1,"sql: %s" %(pgdb.mogrify(sql,params)))
+        raise Exception("sql: %s" %(pgdb.mogrify(sql,params)))
         
     # Retrieve any of the gml:* elements below to go inside the gml:Envelope tag.
     # Unfortunately, xml.etree.ElementTree.fromstring cannot parse xml elements with
@@ -169,11 +169,8 @@ def BuildOffTimePeriod(pgdb,id,sosConfig):
     try:
         rows=pgdb.select(sql,params)
     except Exception as err:
-        raise sosException.SOSException(3,"SQL2: %s - %s" %(pgdb.mogrify(sql,params), err))
-    '''
-    except:
-        raise sosException.SOSException(1,"sql: %s" %(sql))
-    '''
+        raise Exception("SQL2: %s - %s" %(pgdb.mogrify(sql,params), err))
+    
     return [rows[0]["b"],rows[0]["e"]]
 
 def BuildOffProcList(pgdb,id,sosConfig):
@@ -186,7 +183,7 @@ def BuildOffProcList(pgdb,id,sosConfig):
     try:
         rows=pgdb.select(sql,params)
     except:
-        raise sosException.SOSException(1,"sql: %s" %(pgdb.mogrify(sql,params)))
+        raise Exception("sql: %s" %(pgdb.mogrify(sql,params)))
     for row in rows:
         #list.append(sosConfig.urn["procedure"] + row["name_prc"])
         list.append(row["name_prc"])
@@ -204,7 +201,7 @@ def BuildOffObsPrList(pgdb,id,sosConfig):
     try:
         rows=pgdb.select(sql,params)
     except:
-        raise sosException.SOSException(1,"sql: %s"%(pgdb.mogrify(sql,params)))
+        raise Exception("sql: %s"%(pgdb.mogrify(sql,params)))
     for row in rows:
         list.append(row["def_opr"])
     return list
@@ -222,7 +219,7 @@ def BuildOffFoiList(pgdb,id,sosConfig):
     try:
         rows=pgdb.select(sql,params)
     except:
-        raise sosException.SOSException(1,"sql: %s" %(pgdb.mogrify(sql,params)))
+        raise Exception("sql: %s" %(pgdb.mogrify(sql,params)))
     for row in rows:
         list.append(sosConfig.urn["feature"] + row["fois"])
     return list
@@ -232,7 +229,7 @@ def BuildSensorList(pgdb,sosConfig):
     try:
         rows=pgdb.select(sql)
     except:
-        raise sosException.SOSException(1,"sql: %s" %(pgdb.mogrify(sql)))
+        raise Exception("sql: %s" %(pgdb.mogrify(sql)))
     return [ sosConfig.urn["sensor"]+str(sid["id"]) for sid in rows ]
 
 class OperationsMetadata:

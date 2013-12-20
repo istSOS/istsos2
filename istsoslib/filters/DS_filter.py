@@ -33,10 +33,10 @@ class sosDSfilter(f.sosFilter):
                     self.outputFormat = requestObject["outputFormat"]
                 else:
                     err_txt = "Supported \"outputFormat\" values are: " + ",".join(sosConfig.parameters["DS_outputFormats"])
-                    raise sosException.SOSException(1,err_txt)
+                    raise sosException.SOSException("InvalidParameterValue","outputFormat",err_txt)
             else:
-                self.outputFormat = sosConfig.parameters["DS_outputFormats"][0]
-                #raise sosException.SOSException(1,"Parameter \"outputFormat\" is mandatory")
+                #self.outputFormat = sosConfig.parameters["DS_outputFormats"][0]
+                raise sosException.SOSException("MissingParameterValue","outputFormat","Parameter \"outputFormat\" is mandatory")
             #---------PROCEDURES----
             if requestObject.has_key("procedure"):
                 """
@@ -51,9 +51,9 @@ class sosDSfilter(f.sosFilter):
                     else:
                         err_txt = "Supported \"procedure\" urn is: " + sosConfig.urn["procedure"]
                         err_txt += "\n passed: " + ":".join(prc) 
-                        raise sosException.SOSException(1,err_txt)
+                        raise sosException.SOSException("InvalidParameterValue","procedure",err_txt)
             else:
-                raise sosException.SOSException(1,"Parameter \"procedure\" is mandatory with multiplicity 1")
+                raise sosException.SOSException("MissingParameterValue","procedure","Parameter \"procedure\" is mandatory with multiplicity 1")
         #**************************            
         if method == "POST":            
             from xml.dom import minidom
@@ -64,10 +64,10 @@ class sosDSfilter(f.sosFilter):
                 self.outputFormat = str(requestObject.getAttribute("outputFormat"))
                 if self.outputFormat not in sosConfig.parameters["DS_outputFormats"]:
                     err_txt = "Allowed \"outputFormat\" values are: " + ",".join(sosConfig.parameters["DS_outputFormats"])
-                    raise sosException.SOSException(1,err_txt)
+                    raise sosException.SOSException("InvalidParameterValue","outputFormat",err_txt)
             else:
                 err_txt = "Parameter \"outputFormat\" is mandatory"
-                raise sosException.SOSException(1,err_txt)
+                raise sosException.SOSException("MissingParameterValue","outputFormat","Parameter \"outputFormat\" is mandatory")
             #-------PROCEDURES---
             procs=requestObject.getElementsByTagName('procedure')
             if len(procs) > 0:
@@ -88,10 +88,11 @@ class sosDSfilter(f.sosFilter):
                         self.procedure = prc[-1] 
                     else:
                         err_txt = "XML parsing error (get value: procedure)"
-                        raise sosException.SOSException(1,err_txt)
+                        raise sosException.SOSException("MissingParameterValue","procedure","Parameter \"procedure\" is mandatory with multiplicity 1",err_txt)
                 else:
                     err_txt = "Allowed only ONE parameter \"procedure\""
-                    raise sosException.SOSException(1,err_txt)
+                    raise sosException.SOSException("IvalidParameterValue","procedure",err_txt)
             else:
                 err_txt = "Parameter \"procedure\" is mandatory"
-                raise sosException.SOSException(1,err_txt)
+                raise sosException.SOSException("MissingParameterValue","procedure","Parameter \"procedure\" is mandatory with multiplicity 1")
+                

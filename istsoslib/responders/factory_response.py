@@ -50,7 +50,7 @@ def sosFactoryResponse(sosFilter,pgdb):
         return USDresponse.UpdateSensorDescription(sosFilter,pgdb)
    
     else:
-        raise sosException.SOSException(1,"\"request\": %s not supported" %(self.request))
+        raise sosException.SOSException("InvalidRequest","request","\"request\": %s not supported" %(self.request))
 
 
     

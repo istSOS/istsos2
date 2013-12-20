@@ -31,7 +31,7 @@ class sosGCfilter(f.sosFilter):
                 for s in self.sections:
                     if s not in sosConfig.parameters["GC_Section"]:
                         err_txt = "Allowed parameter \"section\" values are: " + ",".join(sosConfig.parameters["GC_Section"])
-                        raise sosException.SOSException(1,err_txt)
+                        raise sosException.SOSException("InvalidParameterValue","sections",err_txt)
             else:
                 self.sections=["all"]
         #**************************
@@ -47,7 +47,7 @@ class sosGCfilter(f.sosFilter):
                                 self.sections.append(str(val.data).lower())
                             else:
                                 err_txt = "Allowed parameter \"section\" values are: " + ",".join(sosConfig.parameters["GC_Section"])
-                                raise sosException.SOSException(1,err_txt)
+                                raise sosException.SOSException("InvalidParameterValue","sections",err_txt)
                 else:
                     self.sections = ["all"]
             
