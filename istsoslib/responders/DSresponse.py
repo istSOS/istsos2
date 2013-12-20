@@ -26,6 +26,8 @@ from istsoslib import sosException
 
 class DescribeSensorResponse:
     def __init__(self, filter, pgdb):
+        
+        pgdb.setTimeTZ("UTC")
     
         self.smlFile = ""
         sql = "SELECT id_prc, stime_prc, etime_prc, name_oty from %s.procedures, %s.obs_type" %(filter.sosConfig.schema,filter.sosConfig.schema)

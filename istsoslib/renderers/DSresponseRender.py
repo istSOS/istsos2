@@ -106,7 +106,7 @@ def render(DS,sosConfig):
         constraint =  et.SubElement(time, "{%s}constraint" % ns['swe'])
         allowedTimes =  et.SubElement(constraint, "{%s}AllowedTimes" % ns['swe'])
         interval = et.SubElement(allowedTimes, "{%s}interval" % ns['swe'])
-        interval.text = "%s %s" %(DS.stime.strftime("%Y-%m-%dT%H:%M:%S.%f%z"), DS.etime.strftime("%Y-%m-%dT%H:%M:%S.%f%z"))
+        interval.text = "%s %s" %(DS.stime.strftime("%Y-%m-%dT%H:%M:%S.%fZ"), DS.etime.strftime("%Y-%m-%dT%H:%M:%S.%fZ"))
     
     if DS.procedureType=="insitu-mobile-point": # Adding 3d coordinates observation
         
