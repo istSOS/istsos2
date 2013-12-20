@@ -84,7 +84,7 @@ class sosDSfilter(f.sosFilter):
                                 pass
                             else:
                                 err_txt = "Supported \"procedure\" urn is: " + sosConfig.urn["procedure"]
-                                raise sosException.SOSException("IvalidParameterValue","procedure",err_txt)
+                                raise sosException.SOSException("InvalidParameterValue","procedure",err_txt)
                         self.procedure = prc[-1] 
                     else:
                         err_txt = "XML parsing error (get value: procedure)"
