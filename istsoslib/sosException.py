@@ -23,7 +23,8 @@ class SOSException(ValueError):
     self.msg = sax.escape(str(msg))
     self.children = []
     for msg in othermsgs:
-        self.children.append(sax.escape(msg))
+#        self.children.append(sax.escape(msg))
+        self.children.append(msg)
   
   def __str__(self):
     return self.ToXML()
