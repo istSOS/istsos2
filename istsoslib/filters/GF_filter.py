@@ -57,10 +57,10 @@ class sosGFfilter(f.sosFilter):
         #**************************
         if method == "GET":
             #---FeatureOfInterest
-            if not requestObject.has_key("FeatureOfInterestId"):
+            if not requestObject.has_key("featureofinterestid"):
                 raise sosException.SOSException("MissingParameterValue","FeatureOfInterestId","Parameter \"FeatureOfInterestId\" is required with multiplicity 1")
             else:
-                self.featureOfInterest = get_name_from_urn(requestObject["FeatureOfInterestId"],"feature",sosConfig) #one-many ID
+                self.featureOfInterest = get_name_from_urn(requestObject["featureofinterestid"],"feature",sosConfig) #one-many ID
             #---srsName
             if requestObject.has_key("srsName"):
                 self.srsName = get_name_from_urn(requestObject["srsName"],"refsystem",sosConfig)

@@ -28,9 +28,9 @@ class sosDSfilter(f.sosFilter):
             self.outputFormat = None
             self.procedure = None
             #-------OUTPUTFORMAT----
-            if requestObject.has_key("outputFormat"):
-                if requestObject["outputFormat"] in sosConfig.parameters["DS_outputFormats"]:
-                    self.outputFormat = requestObject["outputFormat"]
+            if requestObject.has_key("outputformat"):
+                if requestObject["outputformat"] in sosConfig.parameters["DS_outputFormats"]:
+                    self.outputFormat = requestObject["outputformat"]
                 else:
                     err_txt = "Supported \"outputFormat\" values are: " + ",".join(sosConfig.parameters["DS_outputFormats"])
                     raise sosException.SOSException("InvalidParameterValue","outputFormat",err_txt)

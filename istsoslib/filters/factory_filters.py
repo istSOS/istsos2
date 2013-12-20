@@ -93,6 +93,6 @@ def sosFactoryFilter(environ,sosConfig):
             from istsoslib.filters import USD_filter
             return USD_filter.sosUSDfilter(sosRequest,method,requestObject,sosConfig)
     else:
-        raise sosException.SOSException("InvalidRequest","request","\"request\": %s not supported" %(sosRequest))
+        raise sosException.SOSException("InvalidParameterValue","request","\"request\": %s not supported" %(sosRequest))
     
 
