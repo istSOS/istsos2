@@ -282,6 +282,14 @@ class sosGOfilter(f.sosFilter):
             
             #OPTIONAL request parameters
             #---------- SRS OF RETURNED GML FEATURES
+            srs = requestObject.getAttributeNode('srsName')
+            if srs:
+                self.srsName = srs.nodeValue
+                if not self.srsName in sosConfig.parameters["GO_srs"]:
+                    raise sosException.SOSException("InvalidParameterValue","srsName","srsName \"%s\" not supported, use one of: %s" %(self.srsName,",".join(sosConfig.parameters["GO_srs"])))
+            else:
+                self.srsName = sosConfig.parameters["GO_srs"][0]
+            """
             srss = requestObject.getElementsByTagName('srsName')
             if len(srss) > 0:
                 if len(srss) < 2:
@@ -296,7 +304,7 @@ class sosGOfilter(f.sosFilter):
                     raise sosException.SOSException("NoApplicableCode",None,err_txt)
             else:
                 self.srsName = sosConfig.parameters["GO_srs"][0]
-            
+            """
             #---------- TIME FILTER  
             evtms = requestObject.getElementsByTagName('eventTime')
             self.eventTime = []
