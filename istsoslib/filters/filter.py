@@ -38,8 +38,8 @@ class sosFilter():
                 raise sosException.SOSException("MissingParameterValue","service","\"service\" parameter is mandatory")
             #---------VERSION NEGOTIATION -----------
             if self.request=="getcapabilities":
-                if requestObject.has_key("AcceptVersions"):
-                    AcceptVersions = requestObject["AcceptVersions"].split(",")
+                if requestObject.has_key("acceptversions"):
+                    AcceptVersions = requestObject["acceptversions"].split(",")
                     AcceptVersions.sort()
                     self.version = None
                     for version in AcceptVersions:
