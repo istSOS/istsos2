@@ -97,8 +97,11 @@ def executeSos(environ, start_response):
     
     except Exception, e:
         print >> sys.stderr, traceback.print_exc()
-        othertext = traceback.format_exception(*sys.exc_info())        
-        response_body = "%s" % (sosException.SOSException(e.__class__.__name__, e, othertext),)
+        othertext = traceback.format_exception(*sys.exc_info())
+        if sosConfig.debug:
+            response_body = "%s" % (sosException.SOSException("NoApplicableCode",None,e.__class__.__name__, e, othertext),)
+        else:
+            response_body = "%s" % (sosException.SOSException("NoApplicableCode",None,"istSOS internal error","Please activate debug level for more details"))
         # HTTP response code and message
         status = '200 OK'
         # prepare response header
