@@ -57,7 +57,10 @@ def sosFactoryFilter(environ,sosConfig):
                 raise sosException.SOSException("MissingParameterValue","request","Parameter \"request\" is mandatory")
 
         else:
-            xmldoc = minidom.parseString(content)
+            try:
+                xmldoc = minidom.parseString(content)
+            except:
+                raise sosException.SOSException("MissingParameterValue",None,"Unable to parse the request body: validation issue")
             
         requestObject = xmldoc.firstChild
         sosRequest = requestObject.localName.lower()
