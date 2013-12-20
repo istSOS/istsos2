@@ -31,7 +31,7 @@ def sosFactoryFilter(environ,sosConfig):
         rect = parse_qs(environ['QUERY_STRING'])
         requestObject = {}
         for key in rect.keys():
-            requestObject[key] = rect[key][0]
+            requestObject[key.lower()] = rect[key][0]
 
         if requestObject.has_key("request"):
             sosRequest = requestObject["request"].lower()
