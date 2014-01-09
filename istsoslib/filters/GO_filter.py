@@ -382,8 +382,8 @@ class sosGOfilter(f.sosFilter):
             # get sub-elements of FOI
             elements = [e for e in fets[0].childNodes if e.nodeType == e.ELEMENT_NODE]
             
-            import sys
-            print >> sys.stderr, "\n\nELE: %s" % len(elements)                    
+#            import sys
+#            print >> sys.stderr, "\n\nELE: %s" % len(elements)                    
 
             if not fets:
                 err_txt = "Parameter \"featureOfInterest\" is mandatory"
