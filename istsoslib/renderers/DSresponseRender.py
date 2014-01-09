@@ -181,7 +181,32 @@ def render(DS,sosConfig):
                 
             except Exception:
                 raise Exception("Constraint definition invalid in the database for %s" % field["def_opr"])
-        
+    
+    #verify that gml_id does not contain blanks 
+    #(workaround to be corrected in festure name sensor registration)
+#    ------------------------------------------
+#    NCName stands for "non-colonized name". 
+#    NCName can be defined as an XML Schema regular expression [\i-[:]][\c-[:]]*
+#    
+#    So in plain English it would mean "any initial character, but not :". 
+#    The whole regular expression reads as "One initial XML name character, 
+#    but not a colon, followed by zero or more XML name characters, but not a colon."
+#    
+#    The practical restrictions of NCName are that it cannot contain several symbol characters
+#    ------------------------------------------
+    
+    not_allowed_NCName = [' ', '!','"', '#', '$', '%', '&', '\'', 
+                          '(', ')', '*', '+', ',', '/', ':', ';', 
+                          '<', '=', '>', '?', '@', '[', '\\', ']', 
+                          '^', '`', '{', '|', '}', '~']
+                          
+    location = tree.find("{%s}member/{%s}System/{%s}location"
+                        %(ns['sml'],ns['sml'],ns['sml']) )
+    for feature in location:
+        for ch in not_allowed_NCName:
+            if ch in feature.attrib['{%s}id' %ns['gml']]:
+                feature.attrib['{%s}id' %ns['gml']] = feature.attrib['{%s}id' %ns['gml']].replace(ch,"_")
+    
     root = tree.getroot()
     root.attrib["xmlns"]="http://www.opengis.net/sensorML/1.0.1"
     return """<?xml version="1.0" encoding="UTF-8"?>\n%s""" % et.tostring(root)
