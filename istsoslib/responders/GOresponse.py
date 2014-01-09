@@ -97,7 +97,7 @@ class VirtualProcess():
                 result = self.pgdb.select(sql, (p,))
                     
                 if len(result)==0:
-                    raise Exception("Virtual Procedure Error: procedure %s not found in the database" % (p) )
+                    raise sosException.SOSException("InvalidParameterValue","procedure","Virtual Procedure Error: procedure %s not found in the database" % (p))
                 
                 result = result[0]
                 

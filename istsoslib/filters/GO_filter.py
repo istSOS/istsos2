@@ -57,7 +57,10 @@ class sosGOfilter(f.sosFilter):
         if method == "GET":
             #---------- THE OFFERING
             if requestObject.has_key("offering"):
-                self.offering = get_name_from_urn(requestObject["offering"],"offering",sosConfig)
+                try:
+                    self.offering = get_name_from_urn(requestObject["offering"],"offering",sosConfig)
+                except Exception as e:
+                    raise sosException.SOSException("InvalidParameterValue","offering","%s" % e)
             else:
                 raise sosException.SOSException("MissingParameterValue","offering","Parameter \"offering\" is mandatory with multiplicity 1")
                 
@@ -86,7 +89,11 @@ class sosGOfilter(f.sosFilter):
             #OPTIONAL request parameters
             #---------- SRS FILTER                
             if requestObject.has_key("srsname"):
-                self.srsName = get_name_from_urn(requestObject["srsname"],"refsystem",sosConfig)         
+                try:
+                    self.srsName = get_name_from_urn(requestObject["srsname"],"refsystem",sosConfig)
+                except Exception as e:
+                    raise sosException.SOSException("InvalidParameterValue","srsname","%s" % e)
+            
                 if not self.srsName in sosConfig.parameters["GO_srs"]:
                     raise sosException.SOSException("InvalidParameterValue","srsName","srsName \"%s\" not supported, use one of: %s" %(self.srsName,",".join(sosConfig.parameters["GO_srs"])))
             else:
@@ -125,7 +132,11 @@ class sosGOfilter(f.sosFilter):
                 self.procedure = []
                 prcs = requestObject["procedure"].split(",")
                 for prc in prcs:
-                    prcName = get_name_from_urn(prc,"procedure",sosConfig)
+                    try:
+                        prcName = get_name_from_urn(prc,"procedure",sosConfig)
+                    except Exception as e:
+                        raise sosException.SOSException("InvalidParameterValue","procedure","%s" % e)
+            
                     self.procedure.append(prcName)
             else:
                 self.procedure = None
@@ -139,8 +150,11 @@ class sosGOfilter(f.sosFilter):
                     #raise sosException.SOSException(3,"FOI SPATIAL: %s" %(foi))
                     self.featureOfInterestSpatial = sosUtils.ogcSpatCons2PostgisSql(foi,'geom_foi',sosConfig.istsosepsg)
                 else:
-                    self.featureOfInterest = get_name_from_urn(foi,"feature",sosConfig)
-                    
+                    try:
+                        self.featureOfInterest = get_name_from_urn(foi,"feature",sosConfig)
+                    except Exception as e:
+                        raise sosException.SOSException("InvalidParameterValue","featureofinterest","%s" % e)
+            
                 #fois = requestObject["featureOfInterest"].split(",")
                 #for foi in fois:
                 #    foiName = get_name_from_urn(foi,"feature")
@@ -238,7 +252,10 @@ class sosGOfilter(f.sosFilter):
             if len(offs) == 1:
                 val = offs[0].firstChild
                 if val.nodeType == val.TEXT_NODE:
-                    self.offering = get_name_from_urn(str(val.data),"offering",sosConfig)
+                    try:
+                        self.offering = get_name_from_urn(str(val.data),"offering",sosConfig)
+                    except Exception as e:
+                        raise sosException.SOSException("InvalidParameterValue","offering","%s" % e)
                 else:
                     err_txt = "XML parsing error (get value: offering)"
                     raise sosException.SOSException("NoApplicableCode",None,err_txt)
@@ -348,7 +365,10 @@ class sosGOfilter(f.sosFilter):
                     elif proc.hasChildNodes():
                         val = proc.firstChild
                         if val.nodeType == val.TEXT_NODE:
-                            self.procedure.append(get_name_from_urn(str(val.data),"procedure",sosConfig))
+                            try:
+                                self.procedure.append(get_name_from_urn(str(val.data),"procedure",sosConfig))
+                            except Exception as e:
+                                raise sosException.SOSException("InvalidParameterValue","procedure","%s" % e)
                     else:
                         err_txt = "XML parsing error (get value: procedure)"
                         raise sosException.SOSException("NoApplicableCode",None,err_txt)
@@ -370,7 +390,10 @@ class sosGOfilter(f.sosFilter):
                         elif fets[0].hasChildNodes():
                             val = fets[0].firstChild
                             if val.nodeType == val.TEXT_NODE:
-                                self.featureOfInterest = get_name_from_urn(str(val.data),"feature",sosConfig)
+                                try:
+                                    self.featureOfInterest = get_name_from_urn(str(val.data),"feature",sosConfig)
+                                except Exception as e:
+                                    raise sosException.SOSException("InvalidParameterValue","featureOfInterest","%s" % e)
                         else:
                             err_txt = "XML parsing error (get value: featureOfInterest)"
                             raise sosException.SOSException("NoApplicableCode",None,err_txt)

@@ -208,9 +208,9 @@ def render(DS,sosConfig):
                 feature.attrib['{%s}id' %ns['gml']] = feature.attrib['{%s}id' %ns['gml']].replace(ch,"_")
 
     # The unique identifier in the response document matches the procedure specified in the request
-    system = tree.find("{%s}member/{%s}System" %(ns['sml'],ns['sml']) )
-    system.attrib['{%s}id' %ns['gml']] = sosConfig.urn["procedure"]+system.attrib['{%s}id' %ns['gml']]
-    
+#    system = tree.find("{%s}member/{%s}System" %(ns['sml'],ns['sml']) )
+#    system.attrib['{%s}id' %ns['gml']] = sosConfig.urn["procedure"]+system.attrib['{%s}id' %ns['gml']]
+#    
     root = tree.getroot()
     root.attrib["xmlns"]="http://www.opengis.net/sensorML/1.0.1"
     return """<?xml version="1.0" encoding="UTF-8"?>\n%s""" % et.tostring(root)
