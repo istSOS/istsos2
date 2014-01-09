@@ -206,6 +206,10 @@ def render(DS,sosConfig):
         for ch in not_allowed_NCName:
             if ch in feature.attrib['{%s}id' %ns['gml']]:
                 feature.attrib['{%s}id' %ns['gml']] = feature.attrib['{%s}id' %ns['gml']].replace(ch,"_")
+
+    # The unique identifier in the response document matches the procedure specified in the request
+    system = tree.find("{%s}member/{%s}System" %(ns['sml'],ns['sml']) )
+    system.attrib['{%s}id' %ns['gml']] = sosConfig.urn["procedure"]+system.attrib['{%s}id' %ns['gml']]
     
     root = tree.getroot()
     root.attrib["xmlns"]="http://www.opengis.net/sensorML/1.0.1"
