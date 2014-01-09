@@ -1011,7 +1011,8 @@ class observations:
         
         #---where condition based on featureOfInterest
         if filter.featureOfInterest:
-            sqlWhere += " AND id_foi=id_foi_fk AND id_fty=id_fty_fk AND (name_foi='%s')" %(filter.featureOfInterest)
+            #sqlWhere += " AND id_foi=id_foi_fk AND id_fty=id_fty_fk AND (name_foi='%s')" %(filter.featureOfInterest)
+            sqlWhere += " AND id_foi=id_foi_fk AND id_fty=id_fty_fk AND (name_foi IN (%s))" %(",".join( [ "'"+f+"'" for f in filter.featureOfInterest.split(",")]))
         if filter.featureOfInterestSpatial:
             sqlWhere += " AND id_foi_fk=id_foi AND %s" %(filter.featureOfInterestSpatial)
         

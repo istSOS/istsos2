@@ -379,27 +379,40 @@ class sosGOfilter(f.sosFilter):
             fets = requestObject.getElementsByTagName('featureOfInterest')
             self.featureOfInterest = None
             self.featureOfInterestSpatial = None
-            if len(fets)>0:
-                if len(fets)<2:
-                    elements = [e for e in fets[0].childNodes if e.nodeType == e.ELEMENT_NODE]
-                    if len(elements)==1:
-                        self.featureOfInterestSpatial = sosUtils.ogcSpatCons2PostgisSql(elements[0],'geom_foi',sosConfig.istsosepsg)
-                    else:
-                        if "xlink:href" in fets[0].attributes.keys():
-                            self.featureOfInterest = str(fets[0].getAttribute("xlink:href"))
-                        elif fets[0].hasChildNodes():
-                            val = fets[0].firstChild
-                            if val.nodeType == val.TEXT_NODE:
-                                try:
-                                    self.featureOfInterest = get_name_from_urn(str(val.data),"feature",sosConfig)
-                                except Exception as e:
-                                    raise sosException.SOSException("InvalidParameterValue","featureOfInterest","%s" % e)
-                        else:
-                            err_txt = "XML parsing error (get value: featureOfInterest)"
-                            raise sosException.SOSException("NoApplicableCode",None,err_txt)
-                else:
-                    err_txt = "Allowed only ONE parameter \"featureOfInterest\""
-                    raise sosException.SOSException("NoApplicableCode",None,err_txt)
+            # get sub-elements of FOI
+            elements = [e for e in fets[0].childNodes if e.nodeType == e.ELEMENT_NODE]
+            
+            import sys
+            print >> sys.stderr, "\n\nELE: %s" % len(elements)                    
+
+            if not fets:
+                err_txt = "Parameter \"featureOfInterest\" is mandatory"
+                raise sosException.SOSException("MissingParameterValue","featureOfInterest",err_txt)            
+            
+            if len(elements)==0:
+                err_txt = "ObjectID or ogc:spatialOps elements in parameter \"featureOfInterest\" are mandatory"
+                raise sosException.SOSException("NoApplicableCode",None,err_txt)
+            # only one sub element                    
+            elif len(elements)==1 and elements[0].tagName!="ObjectID" :
+                self.featureOfInterestSpatial = sosUtils.ogcSpatCons2PostgisSql(elements[0],'geom_foi',sosConfig.istsosepsg)            
+            else:
+                tempfois=[]
+                for e in elements:
+                    if not elements[0].tagName=="ObjectID":
+                        err_txt = "Allowed only ObjectID or ogc:spatialOps elements in parameter \"featureOfInterest\""
+                        raise sosException.SOSException("NoApplicableCode",None,err_txt)
+                    try:
+                        val = e.firstChild
+                        if val.nodeType == val.TEXT_NODE:
+                            try:
+                                tempfois.append( get_name_from_urn(str(val.data),"feature",sosConfig) )
+                            except Exception as e:
+                                 raise sosException.SOSException("InvalidParameterValue","featureOfInterest","%s" % e)
+                    except Exception as e:
+                        raise Exception(e)
+                    
+                self.featureOfInterest = ",".join(tempfois)
+                
             
             #---------- FILTERS FOR QUERY NOT SUPPORTED YET            
             ress = requestObject.getElementsByTagName('result')
