@@ -218,7 +218,7 @@ def render(DS,sosConfig):
     value = et.SubElement(term,"{%s}value" % ns["sml"])
     value.text = sosConfig.urn["procedure"]+system.attrib['{%s}id' %ns['gml']]
     
-    system.insert(0,identification)
+    system.insert(1,identification)
     
     
     root = tree.getroot()
