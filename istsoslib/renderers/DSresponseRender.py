@@ -183,7 +183,7 @@ def render(DS,sosConfig):
                 raise Exception("Constraint definition invalid in the database for %s" % field["def_opr"])
     
     #verify that gml_id does not contain blanks 
-    #(workaround to be corrected in festure name sensor registration)
+    #(workaround to be corrected in future name sensor registration)
 #    ------------------------------------------
 #    NCName stands for "non-colonized name". 
 #    NCName can be defined as an XML Schema regular expression [\i-[:]][\c-[:]]*
@@ -209,8 +209,9 @@ def render(DS,sosConfig):
 
     # The unique identifier in the response document matches the procedure specified in the request
     system = tree.find("{%s}member/{%s}System" %(ns['sml'],ns['sml']))
+    identification = tree.find("{%s}member/{%s}System/{%s}identification" %(ns['sml'],ns['sml'],ns['sml']))
     
-    if not tree.find("{%s}member/{%s}System/{%s}identification" %(ns['sml'],ns['sml'],ns['sml'])):
+    if not identification:
         identification = et.Element("{%s}identification" % ns["sml"])
         identifierList = et.SubElement(identification,"{%s}IdentifierList" % ns["sml"])
         identifier = et.SubElement(identifierList,"{%s}identifier" % ns["sml"])
@@ -219,6 +220,32 @@ def render(DS,sosConfig):
         value = et.SubElement(term,"{%s}value" % ns["sml"])
         value.text = sosConfig.urn["procedure"]+system.attrib['{%s}id' %ns['gml']]
         system.insert(1,identification)
+    else:
+        identifierList = identification.find("{%s}IdentifierList")
+        if not identifierList:
+            identifierList = et.SubElement(identification,"{%s}IdentifierList" % ns["sml"])
+            identifier = et.SubElement(identifierList,"{%s}identifier" % ns["sml"])
+            term = et.SubElement(identifier,"{%s}Term" % ns["sml"])
+            term.attrib['definition'] = "urn:ogc:def:identifier:OGC:uniqueID"
+            value = et.SubElement(term,"{%s}value" % ns["sml"])
+            value.text = sosConfig.urn["procedure"]+system.attrib['{%s}id' %ns['gml']]
+#            system.insert(1,identification)
+        else:
+            identifiers = identifierList.findall("{%s}identifier" % ns["sml"])
+            unique = False
+            for identifier in identifiers:
+                if identifier.find("{%s}Term" % ns["sml"]).attrib['definition'] == "urn:ogc:def:identifier:OGC:uniqueID":
+                    unique = True
+                    break
+            if not unique:
+                identifier = et.SubElement(identifierList,"{%s}identifier" % ns["sml"])
+                term = et.SubElement(identifier,"{%s}Term" % ns["sml"])
+                term.attrib['definition'] = "urn:ogc:def:identifier:OGC:uniqueID"
+                value = et.SubElement(term,"{%s}value" % ns["sml"])
+                value.text = sosConfig.urn["procedure"]+system.attrib['{%s}id' %ns['gml']]
+#                system.insert(1,identification)
+    
+            
     
     
     root = tree.getroot()
