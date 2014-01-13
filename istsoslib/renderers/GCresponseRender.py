@@ -173,7 +173,7 @@ def render(GC,sosConfig):
         
         r += "      </ObservationOfferingList>\n"
         r += "      </Contents>\n"
-    r += "    </Capabilities>\n"
+    r += "    </Capabilities>"
     return r
     
 

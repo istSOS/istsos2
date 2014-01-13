@@ -429,11 +429,11 @@ def BuildProcedureList(pgdb,offering,sosConfig):
 
 def BuildOfferingList(pgdb,sosConfig):
     list=[]
-    sql = "SELECT distinct(name_off) FROM %s.procedures,%s.off_proc,%s.offerings" %(sosConfig.schema,sosConfig.schema,sosConfig.schema)
-    sql += " WHERE  id_prc=id_prc_o_fk AND id_off_fk=id_off ORDER BY name_off"
+    sql = "SELECT distinct(name_off) FROM %s.offerings" %(sosConfig.schema,)
     rows=pgdb.select(sql)
     for row in rows:
         list.append(row["name_off"])
+    return list
 
 '''
 def buildQuery(parameters):
@@ -938,6 +938,11 @@ class observations:
         
         #CHECK FILTER VALIDITY
         #=========================================
+        """        
+        off_list = BuildOfferingList(pgdb,filter.sosConfig)
+        if not filter.offering in off_list:
+            raise sosException.SOSException("InvalidParameterValue","offering","Parameter \"offering\" sent with invalid value: %s -  available options for offering are %s" %(filter.offering,off_list))
+        """    
         if filter.procedure:
             pl = BuildProcedureList(pgdb,filter.offering,filter.sosConfig)
             for p in filter.procedure:
