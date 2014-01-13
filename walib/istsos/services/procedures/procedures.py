@@ -341,12 +341,12 @@ class waProcedures(waResourceService):
             params={
                 "request": "DescribeSensor",
                 "procedure": self.procedurename,
-                "outputFormat": "text/xml;subtype=\"sensorML/1.0.0\"",
+                "outputFormat": "text/xml;subtype=\"sensorML/1.0.1\"",
                 "service": "SOS",
                 "version": "1.0.0"
             }
         )
-        
+
         smlobj = procedure.Procedure()
         try:
             smlobj.loadXML(res.content)
