@@ -210,15 +210,15 @@ def render(DS,sosConfig):
     # The unique identifier in the response document matches the procedure specified in the request
     system = tree.find("{%s}member/{%s}System" %(ns['sml'],ns['sml']))
     
-    identification = et.Element("{%s}identification" % ns["sml"])
-    identifierList = et.SubElement(identification,"{%s}IdentifierList" % ns["sml"])
-    identifier = et.SubElement(identifierList,"{%s}identifier" % ns["sml"])
-    term = et.SubElement(identifier,"{%s}Term" % ns["sml"])
-    term.attrib['definition'] = "urn:ogc:def:identifier:OGC:uniqueID"
-    value = et.SubElement(term,"{%s}value" % ns["sml"])
-    value.text = sosConfig.urn["procedure"]+system.attrib['{%s}id' %ns['gml']]
-    
-    system.insert(1,identification)
+    if not tree.find("{%s}member/{%s}System/{%s}identification" %(ns['sml'],ns['sml'],ns['sml'])):
+        identification = et.Element("{%s}identification" % ns["sml"])
+        identifierList = et.SubElement(identification,"{%s}IdentifierList" % ns["sml"])
+        identifier = et.SubElement(identifierList,"{%s}identifier" % ns["sml"])
+        term = et.SubElement(identifier,"{%s}Term" % ns["sml"])
+        term.attrib['definition'] = "urn:ogc:def:identifier:OGC:uniqueID"
+        value = et.SubElement(term,"{%s}value" % ns["sml"])
+        value.text = sosConfig.urn["procedure"]+system.attrib['{%s}id' %ns['gml']]
+        system.insert(1,identification)
     
     
     root = tree.getroot()
