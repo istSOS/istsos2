@@ -117,7 +117,7 @@ class Procedure():
         for ident in idents:
             try:
                 item={}
-                item["name"] = ident.attrib['name']
+                #item["name"] = ident.attrib['name']
                 item["definition"] = ident.find('{%s}Term' % ns['sml']).attrib['definition']
                 item["value"] = ident.find('{%s}Term/{%s}value' %(ns['sml'],ns['sml'])).text.strip()
                 self.data['identification'].append(item)
