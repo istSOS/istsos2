@@ -380,12 +380,11 @@ class sosGOfilter(f.sosFilter):
             self.featureOfInterest = None
             self.featureOfInterestSpatial = None
             # get sub-elements of FOI
-            elements = [e for e in fets[0].childNodes if e.nodeType == e.ELEMENT_NODE]
-            
-#            import sys
-#            print >> sys.stderr, "\n\nELE: %s" % len(elements)                    
-
-            if not fets:
+            if fets:
+                elements = [e for e in fets[0].childNodes if e.nodeType == e.ELEMENT_NODE]
+            else:
+#               import sys
+#               print >> sys.stderr, "\n\nELE: %s" % len(elements)                    
                 err_txt = "Parameter \"featureOfInterest\" is mandatory"
                 raise sosException.SOSException("MissingParameterValue","featureOfInterest",err_txt)            
             
