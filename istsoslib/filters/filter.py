@@ -95,5 +95,7 @@ class sosFilter():
                             raise sosException.SOSException("InvalidParameterValue","version","\"version\": %s not supported" %(self.version))
                     else:
                         self.version = sosConfig.parameters["version"][0]
+            else:
+                raise sosException.SOSException("NoApplicableCode","","XML body is expected")
 
             
