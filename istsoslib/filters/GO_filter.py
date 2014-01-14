@@ -82,7 +82,7 @@ class sosGOfilter(f.sosFilter):
                 if not requestObject["responseformat"] in sosConfig.parameters["GO_responseFormat"]:   
                     raise sosException.SOSException("InvalidParameterValue","responseFormat","Parameter \"responseFormat\" sent with invalid value : use one of %s" % "; ".join(sosConfig.parameters["GO_responseFormat"]))
                 else:
-                    self.responseFormat = requestObject["responseFormat"]
+                    self.responseFormat = requestObject["responseformat"]
             else:
                 raise sosException.SOSException("MissingParameterValue","responseFormat","Parameter \"responseFormat\" is mandatory with multiplicity 1") #one
                 

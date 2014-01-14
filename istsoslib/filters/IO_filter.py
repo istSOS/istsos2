@@ -61,7 +61,7 @@ class sosIOfilter(f.sosFilter):
             #----------------------
             AssignedSensorId = tree.find("{%s}AssignedSensorId" % ns['sos'] )
             if AssignedSensorId == None:
-                raise sosException.SOSException("MissingParameterValue","AssignedSensorId",,"sos:AssignedSensorId parameter is mandatory with multiplicity 1")
+                raise sosException.SOSException("MissingParameterValue","AssignedSensorId","sos:AssignedSensorId parameter is mandatory with multiplicity 1")
             else:
                 self.assignedSensorId = AssignedSensorId.text.split(":")[-1]
             
