@@ -18,34 +18,56 @@
 #---------------------------------------------------------------------------
 """
 
+@todo to be enhanced, it is a little bit hardcoded :(
+
 Usage example:
     
-sts = testConverter.StsImporter('A_MAR_MAR2', 
+# File example: test/scripts/data/in/sts/100190_WTemp.csv
+# =====================================
+# 100190 Maggia;WTemp ˚C
+# 2013-11-24 00:00:00;4.67401
+# 2013-11-24 00:10:00;4.67672
+# 2013-11-24 00:20:01;4.67909
+# 2013-11-24 00:30:00;4.67354
+# 2013-11-24 00:40:01;4.68056
+# 2013-11-24 00:50:00;4.67847
+# 2013-11-24 01:00:00;4.67735
+# 2013-11-24 01:10:00;4.67884
+# 2013-11-24 01:20:01;4.67987
+# 2013-11-24 01:30:00;4.68368
+# =====================================
+
+sts = testConverter.StsImporter('A_MAR_MAR2', {
+        "tz": "+04:30"
+    },
     'http://localhost/istsos', 'pippo', 
-    "istsos/test/scripts/data/in", '100640_mWC.csv', 
-    "istsos/test/scripts/data/out",
+    "test/scripts/data/in", '100640_mWC.csv', 
+    "test/scripts/data/out"
+)
 sts.execute()
     
 """
 
 from scripts import raw2csv
 from datetime import datetime
-from lib.pytz import timezone
 
 class StsImporter(raw2csv.Converter):
-    def __init__(self, procedureName, url, service, inputDir, fileNamePattern, outputDir, debug):
+    def __init__(self, procedureName, config, url, service, inputDir, fileNamePattern, outputDir, debug):
+        self.config = config
         raw2csv.Converter.__init__(self, procedureName, url, service,
             inputDir, fileNamePattern, outputDir,
             debug=debug)
         
     def parse(self, fileObj, fileName):
         
+        skipline = fileName.split("_")[0]
+        
         dateformat = "%Y-%m-%d %H:%M:%S"
         op = self.getDefinitions()[1]
         
         for line in fileObj.readlines():
             
-            if line.find('100640')>-1 or line.find('100190')>-1:
+            if line.find(skipline)==0:
                 continue
             
             pair = line.split(";")
@@ -55,9 +77,8 @@ class StsImporter(raw2csv.Converter):
             }
             
             data = datetime.strptime(pair[0], dateformat)
-            data = datetime(
-                    data.year, data.month, data.day, data.hour, 
-                    data.minute, 0, tzinfo=timezone("CET"))
+            if "tz" in self.config:
+                data = self.getDateTimeWithTimeZone(data, self.config["tz"])
             
             self.setEndPosition(data)
             self.addObservation(

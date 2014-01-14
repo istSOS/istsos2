@@ -42,11 +42,17 @@ class waProcedures(waResourceService):
         The POST must be in Json format:
                 
         >>> {
-                "system_id": "P_TRE3",
-                "system": "P_TRE4",
+                "system_id": "P_TRE",
+                "system": "P_TRE",
                 "description": "ciao",
                 "keywords": "uno,due,tre",
-                "identification": [],
+                "identification": [
+                    {
+                        "definition":"urn:ogc:def:identifier:OGC:P_TRE",
+                        "name":"uniqueID",
+                        "value":"urn:ogc:def:procedure:x-istsos:1.0:test"
+                    }
+                ],
                 "classification": [
                     {
                         "name": "System Type",
@@ -130,6 +136,29 @@ class waProcedures(waResourceService):
             raise Exception("POST action with url procedure name not supported")
         
         proc = procedure.Procedure(self.serviceconf)
+        
+        # Workaround for uniqueID requirement
+        '''if type(self.json['identification']) == type([]):
+            for identification in self.json['identification']:
+                uniqueidPresent = False
+                if identification['definition'] == 'urn:ogc:def:identifier:OGC:uniqueID':
+                    uniqueidPresent = True
+                    break
+            if not uniqueidPresent:
+                self.json['identification'].append({
+                    "definition":'urn:ogc:def:identifier:OGC:uniqueID',
+                    "name":"uniqueID",
+                    "value":"%s:%s" % (self.serviceconf.urn['procedure'],self.json['system_id'])
+                })
+        else:
+            self.json['identification'] = [
+                {
+                    "definition":'urn:ogc:def:identifier:OGC:uniqueID',
+                    "name":"uniqueID",
+                    "value":"%s:%s" % (self.serviceconf.urn['procedure'],self.json['system_id'])
+                }
+            ]'''
+            
         proc.loadDICT(self.json)
         smlstring = proc.toRegisterSensor(indent=False)
         

@@ -116,9 +116,10 @@ class Procedure():
         idents = tree.findall("{%s}member/{%s}System/{%s}identification/{%s}IdentifierList/{%s}identifier" %((ns['sml'],)*5))
         for ident in idents:
             try:
+                defin = ident.find('{%s}Term' % ns['sml']).attrib['definition']
                 item={}
-                #item["name"] = ident.attrib['name']
-                item["definition"] = ident.find('{%s}Term' % ns['sml']).attrib['definition']
+                item["name"] = defin.split(':')[-1]
+                item["definition"] = defin
                 item["value"] = ident.find('{%s}Term/{%s}value' %(ns['sml'],ns['sml'])).text.strip()
                 self.data['identification'].append(item)
             except:
@@ -459,18 +460,23 @@ class Procedure():
             system.append(et.Comment("System Identifiers"))
             identification = et.SubElement(system, "{%s}identification" % ns['sml'] )
             IdentifierList = et.SubElement(identification, "{%s}IdentifierList" % ns['sml'] )
+            uniqueidPresent = False
             for i in  self.data["identification"]:
+                if i["definition"] == 'urn:ogc:def:identifier:OGC:uniqueID':
+                    uniqueidPresent = True
                 identifier = et.SubElement(IdentifierList, "{%s}identifier" % ns['sml'] )
                 identifier.attrib["name"] = i["name"]
                 term = et.SubElement(identifier, "{%s}Term" % ns['sml'] )
                 term.attrib["definition"] = i["definition"]
-                value = et.SubElement(term, "{%s}value" % ns['sml'] )
+                value = et.SubElement(term, "{%s}value" % ns['sml'])
                 value.text = i["value"]
+            if not uniqueidPresent:
+                raise Exception("self.data['identification']: 'uniqueID' is mandatory")
         
         #--- System Classifiers
         system.append(et.Comment("System Classifiers"))
         classification = et.SubElement(system, "{%s}classification" % ns['sml'] )
-        ClassifierList = et.SubElement(classification, "{%s}ClassifierList" % ns['sml'] )
+        ClassifierList = et.SubElement(classification, "{%s}ClassifierList" % ns['sml'])
         for c in self.data["classification"]:
             classifier = et.SubElement(ClassifierList, "{%s}classifier" % ns['sml'] )
             classifier.attrib["name"] = c["name"]
@@ -789,13 +795,7 @@ class Procedure():
         TimePeriod = et.SubElement(samplingTime, "{%s}TimePeriod" % ns['gml'])
         beginPosition = et.SubElement(TimePeriod, "{%s}beginPosition" % ns['gml'])
         endPosition = et.SubElement(TimePeriod, "{%s}endPosition" % ns['gml'])
-        #duration = et.SubElement(TimePeriod, "{%s}duration" % ns['gml'])
-        #TimeLength = et.SubElement(TimePeriod, "{%s}TimeLength" % ns['gml'])
-        '''duration = et.SubElement(TimeLength, "{%s}duration" % ns['gml'])
-        for c in self.data["capabilities"]:
-            if c["name"] == "Sampling time resolution":
-                duration.text = c["value"]
-                break'''
+
         observedProperty = et.SubElement(Observation, "{%s}observedProperty" % ns['om'])
         CompositePhenomenon = et.SubElement(observedProperty, "{%s}CompositePhenomenon" % ns['swe'])
         CompositePhenomenon.attrib["{%s}id" % ns['gml']] = str("comp_XXX")

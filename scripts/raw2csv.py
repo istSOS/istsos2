@@ -19,6 +19,9 @@
 """
 description:
     
+    Base class to be extended by specialized implementation to 
+    handle different raw source files.
+    
 """
 
 import sys
@@ -26,12 +29,14 @@ import os
 from os import path
 import glob
 from datetime import datetime
+from datetime import timedelta
 import decimal
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
 try:
     sys.path.insert(0, path.abspath("."))
+    from lib.pytz import timezone
     import lib.requests as requests
     import lib.isodate as iso
 except ImportError as e:
@@ -86,7 +91,12 @@ class Converter():
         
     def parse(self, fileObj, name=None):
         raise Exception("This function must be overwritten")
-        
+    
+    def getDateTimeWithTimeZone(self, dt, tz):
+        dt = dt.replace(tzinfo=timezone('UTC'))
+        offset = tz.split(":")
+        return dt - timedelta(hours=int(offset[0]), minutes=int(offset[1]))
+    
     def execute(self):
         
         self.observations = []

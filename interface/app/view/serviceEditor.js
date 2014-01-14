@@ -11,7 +11,7 @@ Ext.define('istsos.view.serviceEditor', {
         Ext.getCmp("btnNew").on("click",function(){
             this.resetForm();
         },this);
-                
+        
         Ext.getCmp("btnForm").on("click",function(){
             var f = Ext.getCmp('frmServices');
             var btn = Ext.getCmp("btnForm");

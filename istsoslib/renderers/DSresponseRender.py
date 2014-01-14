@@ -221,7 +221,7 @@ def render(DS,sosConfig):
         value.text = sosConfig.urn["procedure"]+system.attrib['{%s}id' %ns['gml']]
         system.insert(1,identification)
     else:
-        identifierList = identification.find("{%s}IdentifierList")
+        identifierList = identification.find("{%s}IdentifierList" % ns["sml"])
         if not identifierList:
             identifierList = et.SubElement(identification,"{%s}IdentifierList" % ns["sml"])
             identifier = et.SubElement(identifierList,"{%s}identifier" % ns["sml"])

@@ -172,7 +172,7 @@ class RegisterSensorResponse:
                 id_oty = pgdb.executeInTransaction(sqlIns,params)[0]["id_oty"]
                 com=True
             except:
-                raise Exception(,"SQL: %s"%(sqlIns))
+                raise Exception("SQL: %s"%(sqlIns))
         
         #--get id_uom or create it if it does not exist yet
         uom_ids=[]

@@ -84,7 +84,11 @@ class Procedure():
             ],
             "description": "",
             "keywords": "",
-            "identification": [],
+            "identification": [{
+                    "definition":'urn:ogc:def:identifier:OGC:uniqueID',
+                    "name":"uniqueID",
+                    "value":""
+            }],
             "characteristics": "",
             "contacts": [{"role":"urn:x-ogc:def:classifiers:x-istsos:1.0:contactType:owner","organizationName":"Istituto scienze della Terra","individualName":"Maurizio Pozzoni","voice":"+41(0)586666200","fax":"+41(0)586666209","email":"ist@supsi.ch","web":"http://www.supsi.ch/ist","deliveryPoint":"Via Trevano, c.p. 72","city":"Canobbio","administrativeArea":"Ticino","postalcode":"6952","country":"Svizzera"}],
             "documentation": [],
@@ -95,6 +99,7 @@ class Procedure():
         }
         self.data["system"] = name
         self.data["system_id"] = name
+        self.data["identification"][0]["value"] = "urn:ogc:def:procedure:x-istsos:1.0:%s" % (name)
     
     def __str__(self):
         return "%s" % (self.data["system"])
@@ -329,11 +334,10 @@ def execute (args):
                     # Registering procedure to istSOS   
                     res = req.post("%s/wa/istsos/services/%s/procedures" % (dst,srv), 
                             data=json.dumps(procedures[pname].data)
-                    )  
+                    ) 
                     if not res.json["success"]:
                         print json.dumps(procedures[pname].data)
                         raise Exception("Registering procedure %s failed: \n%s" % (pname, res.json["message"]))
-                    
                     
                     # Getting details (describe sensor) to get the assignedSensorId
                     res = req.get("%s/wa/istsos/services/%s/procedures/%s" % (dst,srv,pname))  

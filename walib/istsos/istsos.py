@@ -73,7 +73,7 @@ class waStatus(waIstsos):
             else:
                 urlget = config.serviceurl["url"]
             
-            request = "?request=getCapabilities&section=serviceidentification"
+            request = "?request=getCapabilities&section=serviceidentification&service=SOS"
                         
             srv["availability"] = utils.verifyxmlservice(urlget+request)
             

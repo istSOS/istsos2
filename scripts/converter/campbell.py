@@ -20,14 +20,29 @@
 
 Usage example:
 
+# File example: test/scripts/data/in/campbell/LUGANO.dat
+# =====================================
+# 101,2013,276,400,13.86,19.77,13.46,89.1,983
+# 101,2013,276,410,13.86,19.71,13.32,90.8,984
+# 101,2013,276,420,13.86,19.61,13.12,92.1,984
+# 101,2013,276,430,13.86,19.5,12.96,93.8,984
+# 99,2013,276,436,43
+# 101,2013,276,440,13.86,19.37,12.64,94.6,984
+# 101,2013,276,450,13.86,19.22,12.56,95.4,984
+# 101,2013,276,500,13.86,19.08,12.44,95.6,984
+# 101,2013,276,510,13.86,18.94,12.4,96.2,984
+# 101,2013,276,520,13.86,18.8,12.23,96.4,984
+# =====================================
+
 lugano = CampbellImporter('T_LUGANO', {
+        "tz": "+02:00",
         "rowid": "99",
         "observedProperty": "urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall",
         "column": 6,
         "date": [1,2,3,4]
     }, 'http://localhost/istsos', 'demo',
-    "istsos/test/scripts/data/in", 'LUGANO.dat', 
-    "istsos/test/scripts/data/out",
+    "test/scripts/data/in", 'LUGANO.dat', 
+    "test/scripts/data/out",
     debug=True)
 
 lugano.execute();
@@ -57,10 +72,10 @@ class CampbellImporter(raw2csv.Converter):
         }
         
         Temperature example 2: {
-            "rowid": "99",
-            "observedProperty": "urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall",
-            "column": 6,
-            "date": [1,2,3,4]
+            "rowid": "101",
+            "observedProperty": "urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature",
+            "column": 4,
+            "date": [1,2,3]
         }
         """
         self.config = config
@@ -89,11 +104,17 @@ class CampbellImporter(raw2csv.Converter):
             m = int(hour[2] + hour[3])
         if second!=None:
             s = int(second)
-        return (datetime(y, 1, 1, h, m, s, 0) + timedelta(days=(d-dDiff)))
+        
+        ret = (datetime(y, 1, 1, h, m, s, 0) + timedelta(days=(d-dDiff)))
+        
+        if "tz" in self.config:
+            ret = self.getDateTimeWithTimeZone(ret, self.config["tz"])
+            
+        return ret
     
     def parse(self, fileObj, name, conf, dateConf=[1,2,3]):
         for line in fileObj.readlines():
-            arr = line.strip(' \t\n\r').split(",")            
+            arr = line.strip(' \t\n\r').split(",")
             if len(arr)>0:
                 
                 date = self.getDate(arr[dateConf[0]],arr[dateConf[1]],arr[dateConf[2]])

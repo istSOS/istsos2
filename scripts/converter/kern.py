@@ -21,8 +21,11 @@
 Single Observed property usage example:
     
 sts = KernImporter('WT_LAV_RSV', {
-        "observedProperty": "urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall",
-        "column": 6
+        "tz": "+02:00",
+        "observations": {
+            "observedProperty": "urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall",
+            "column": 6
+        }
     },
     'http://localhost/istsos', 'pippo',
     "istsos/test/scripts/data/in", 'HBTIa-04_*',
@@ -33,13 +36,16 @@ sts.execute()
 
 Multiple Observed property usage example:
 
-sts = KernImporter('WT_LAV_RSV', [{
-        "observedProperty": "urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall",
-        "column": 6
-    },{
-        "observedProperty": "urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature",
-        "column": 7
-    }],
+sts = KernImporter('WT_LAV_RSV', {
+        "tz": "+02:00",
+        "observations": [{
+            "observedProperty": "urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall",
+            "column": 6
+        },{
+            "observedProperty": "urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature",
+            "column": 7
+        }]
+    },
     'http://localhost/istsos', 'pippo',
     "istsos/test/scripts/data/in", 'HBTIa-04_*',
     "istsos/test/scripts/data/out",
@@ -63,7 +69,10 @@ class KernImporter(raw2csv.Converter):
             
     def minutesdate(self, year, minutes):
         d1 = datetime(year=int(year),month=1,day=1)
-        return (d1 + timedelta(minutes=int(minutes)))
+        d1 = (d1 + timedelta(minutes=int(minutes)))
+        if "tz" in self.config:
+            d1 = self.getDateTimeWithTimeZone(d1, self.config["tz"])
+        return d1
         
     def parse(self, fileObj, fileName):
         
@@ -72,9 +81,9 @@ class KernImporter(raw2csv.Converter):
         mins = upDate[-2] # 183730
         
         upDate = self.minutesdate(year,mins)
-        upDate = datetime(
-                    upDate.year, upDate.month, upDate.day, upDate.hour, 
-                    upDate.minute, upDate.second, tzinfo=timezone("CET"))
+        #upDate = datetime(
+        #   upDate.year, upDate.month, upDate.day, upDate.hour, 
+        #   upDate.minute, upDate.second, tzinfo=timezone("CET"))
         
         if self.getDSEndPosition() != None and (isinstance(self.getDSEndPosition(), datetime) and  upDate <= self.getDSEndPosition()):
             if self.debug:
@@ -133,11 +142,11 @@ class KernImporter(raw2csv.Converter):
                     
                     val = {}
                     
-                    if type(self.config) == type([]):
-                        for conf in self.config:
-                            val[conf['observedProperty']]=line[conf['column']]
+                    if type(self.config["observations"]) == type([]):
+                        for obs in self.config["observations"]:
+                            val[obs['observedProperty']]=line[obs['column']]
                     else:
-                        val[self.config['observedProperty']]=line[self.config['column']]
+                        val[self.config["observations"]['observedProperty']]=line[self.config["observations"]['column']]
                         
                     self.addObservation(
                         raw2csv.Observation(d,val)

@@ -216,6 +216,24 @@ Ext.define('istsos.view.procedure', {
         
         me.callParent(arguments);
         
+        Ext.getCmp('procedurename').on('change',function(field, newValue, oldValue, eOpts){
+            var gridIdentification = Ext.getCmp('gridIdentification');
+            var rec = gridIdentification.store.findRecord(
+                'definition',
+                'urn:ogc:def:identifier:OGC:uniqueID'
+            );
+            if (Ext.isEmpty(rec)){ // unique id still not exist
+                gridIdentification.store.insert(0, 
+                    Ext.create('smlfield', {
+                        'name': 'uniqueID',
+                        'definition': 'urn:ogc:def:identifier:OGC:uniqueID',
+                        'value': this.istSections.urn.procedure+newValue
+                    })
+                );
+            }else{ // UniqueID exist and must be updated
+                rec.set('value',this.istSections.urn.procedure+newValue);
+            }
+        },this);
         
         Ext.getCmp("constrChoose").select(0);
 
@@ -243,7 +261,7 @@ Ext.define('istsos.view.procedure', {
                   to.setVisible(true);
                   list.setVisible(false);
                   break;
-                case 3:
+                case 3:Bookmarks
                   from.setVisible(true);
                   to.setVisible(true);
                   list.setVisible(false);
@@ -554,8 +572,6 @@ Ext.define('istsos.view.procedure', {
         
         this.loadedJson = json;
         
-        // GENERAL INFORMATION
-        Ext.getCmp('generalInfo').loadRecord(json);
         
         // IDENTIFICATION
         var store = Ext.getCmp("smlIdentification").getComponent('gridSml').getStore();
@@ -564,6 +580,10 @@ Ext.define('istsos.view.procedure', {
             var r = Ext.create('smlfield', Ext.apply({}, c[i]));
             store.insert(0, r);
         }
+        
+        // GENERAL INFORMATION
+        Ext.getCmp('generalInfo').loadRecord(json);
+        
         
         // CLASSIFICATION
         var data = {}
@@ -818,6 +838,7 @@ Ext.define('istsos.view.procedure', {
             jsonData = Ext.apply(jsonData,{
                 "identification": me.getSmlStore("smlIdentification")
             });
+            
             
             jsonData['classification']=me.getClassification();
             jsonData = Ext.apply(jsonData,me.getCharacteristics());
@@ -1161,6 +1182,17 @@ Ext.define('istsos.view.procedure', {
             this.addSmlfield(name,skipRemove);
         },this);
         cmp.getComponent('gridSml').getComponent('gridToolbar').getComponent('btnRemoveSml').on('click',function(){
+            var recs = Ext.getCmp('gridIdentification').getSelectionModel().getSelection();
+            if (recs.length>0){
+                if (recs[0].get('definition') == 'urn:ogc:def:identifier:OGC:uniqueID'){
+                    Ext.MessageBox.show({
+                        title: 'Warning',
+                        msg: 'UniqueID is mandatory and cannot be removed',
+                        buttons: Ext.MessageBox.OK
+                    });
+                }
+                return
+            }
             this.removeSmlfield(name,skipInsert);
         },this);
     },
