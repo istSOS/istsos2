@@ -3,7 +3,9 @@ Ext.define('istsos.view.serviceEditor', {
 
     initComponent: function() {
         var me = this;
-        Ext.create('istsos.store.Services');
+        var strsrv = Ext.create('istsos.store.Services');
+        strsrv.getProxy().url = Ext.String.format('{0}/istsos/services', wa.url);
+            
         me.callParent(arguments);
         
         Ext.getCmp("btnNew").on("click",function(){
