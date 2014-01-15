@@ -40,7 +40,7 @@ def XMLformat(GO):
     r += "<gml:name>" + GO.offInfo.name + "</gml:name>\n"    
     
     if len(GO.obs)==0:
-        r += "<om:member\>\n"
+        r += "<om:member/>\n"
     for ob in GO.obs:
         
         #OBSERVATION OBJ
