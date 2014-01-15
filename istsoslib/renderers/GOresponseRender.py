@@ -18,7 +18,7 @@
 from lib import isodate as iso
 
 def render(GO,sosConfig):
-    if GO.filter.responseFormat in ['text/xml;subtype="sensorML/1.0.1"',"text/xml","text/xml;subtype='sensorML/1.0.0'"]:
+    if GO.filter.responseFormat in ['text/xml;subtype="sensorML/1.0.1"',"text/xml"]:
         return XMLformat(GO)
     elif GO.filter.responseFormat=="text/plain":
         return CSVformat(GO)
@@ -52,11 +52,15 @@ def XMLformat(GO):
         if ob.samplingTime != None:
             r += "    <om:samplingTime>\n"
             r += "      <gml:TimePeriod>\n"
-            r += "        <gml:beginPosition>" + ob.samplingTime[0].astimezone(GO.reqTZ).strftime("%Y-%m-%dT%H:%M:%S.%f%z") + "</gml:beginPosition>\n"
+#            r += "        <gml:beginPosition>" + ob.samplingTime[0].astimezone(GO.reqTZ).strftime("%Y-%m-%dT%H:%M:%S.%f%z") + "</gml:beginPosition>\n"
+            r += "        <gml:beginPosition>" + iso.datetime_isoformat(ob.samplingTime[0].astimezone(GO.reqTZ)) + "</gml:beginPosition>\n"
+                        
             if ob.samplingTime[1]:
-                r += "        <gml:endPosition>" + ob.samplingTime[1].astimezone(GO.reqTZ).strftime("%Y-%m-%dT%H:%M:%S.%f%z") + "</gml:endPosition>\n"
+#                r += "        <gml:endPosition>" + ob.samplingTime[1].astimezone(GO.reqTZ).strftime("%Y-%m-%dT%H:%M:%S.%f%z") + "</gml:endPosition>\n"
+                r += "        <gml:endPosition>" + iso.datetime_isoformat(ob.samplingTime[1].astimezone(GO.reqTZ)) + "</gml:endPosition>\n"
             else:
-                r += "        <gml:endPosition>" + ob.samplingTime[0].astimezone(GO.reqTZ).strftime("%Y-%m-%dT%H:%M:%S.%f%z") + "</gml:endPosition>\n"
+#                r += "        <gml:endPosition>" + ob.samplingTime[0].astimezone(GO.reqTZ).strftime("%Y-%m-%dT%H:%M:%S.%f%z") + "</gml:endPosition>\n"
+                r += "        <gml:endPosition>" + iso.datetime_isoformat(ob.samplingTime[0].astimezone(GO.reqTZ)) + "</gml:endPosition>\n"
             if ob.samplingTime[1]:
                 r += "        <gml:duration>"  + iso.duration_isoformat(ob.samplingTime[1]-ob.samplingTime[0]) + "</gml:duration>\n"
             r += "      </gml:TimePeriod>\n"
@@ -166,7 +170,8 @@ def XMLformat(GO):
             data=[]
             for row in range(len(ob.data)):
                 #str_data=[ob.data[row][0].astimezone(GO.reqTZ).strftime("%Y-%m-%dT%H:%M:%S.%f%z")]
-                str_data=[ob.data[row][0].strftime("%Y-%m-%dT%H:%M:%S.%f%z")]
+#                str_data=[ob.data[row][0].strftime("%Y-%m-%dT%H:%M:%S.%f%z")]
+                str_data=[iso.datetime_isoformat(ob.data[row][0])]
                 for i in range(1,len(ob.data[0])):
                     str_data.append(str(ob.data[row][i]))
                 data.append(",".join(str_data))
@@ -197,12 +202,16 @@ def JSONformat(GO):
             "procedure": ob.procedure
         }
         if ob.samplingTime != None:
-            member["samplingTime"]["beginPosition"] = ob.samplingTime[0].astimezone(GO.reqTZ).strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+#            member["samplingTime"]["beginPosition"] = ob.samplingTime[0].astimezone(GO.reqTZ).strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+            member["samplingTime"]["beginPosition"] = iso.datetime_isoformat(ob.samplingTime[0].astimezone(GO.reqTZ))
             if ob.samplingTime[1]:
-                member["samplingTime"]["endPosition"] = ob.samplingTime[1].astimezone(GO.reqTZ).strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+#                member["samplingTime"]["endPosition"] = ob.samplingTime[1].astimezone(GO.reqTZ).strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+                member["samplingTime"]["endPosition"] = iso.datetime_isoformat(ob.samplingTime[1].astimezone(GO.reqTZ))
                 member["samplingTime"]["duration"] = iso.duration_isoformat(ob.samplingTime[1]-ob.samplingTime[0])
+                
             else:
-                member["samplingTime"]["endPosition"] = ob.samplingTime[0].astimezone(GO.reqTZ).strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+#                member["samplingTime"]["endPosition"] = ob.samplingTime[0].astimezone(GO.reqTZ).strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+                member["samplingTime"]["endPosition"] = iso.datetime_isoformat(ob.samplingTime[0].astimezone(GO.reqTZ))
                 """      
                 member["samplingTime"]["timeInterval"] = {
                     "unit": ob.timeResUnit,
@@ -278,7 +287,8 @@ def JSONformat(GO):
         member['result']['DataArray']['values'] = []
         for row in range(len(ob.data)):
             #data = [ob.data[row][0].astimezone(GO.reqTZ).strftime("%Y-%m-%dT%H:%M:%S.%f%z")]
-            data = [ob.data[row][0].strftime("%Y-%m-%dT%H:%M:%S.%f%z")]
+#            data = [ob.data[row][0].strftime("%Y-%m-%dT%H:%M:%S.%f%z")]
+            data = [iso.datetime_isoformat(ob.data[row][0])]
             for i in range(1,len(ob.data[0])):
                 data.append(str(ob.data[row][i]))
             member['result']['DataArray']['values'].append(data)
@@ -334,7 +344,8 @@ def CSVformat(GO):
         for vals in ob.data:
             row = [""] * len(columns)
             #row[0] = vals[0].astimezone(GO.reqTZ).strftime("%Y-%m-%dT%H:%M:%S.%f%z")
-            row[0] = vals[0].strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+#            row[0] = vals[0].strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+            row[0] = iso.datetime_isoformat(vals[0])
             row[1] = ob.procedure.split(":")[-1]
             for i in range(1,len(vals)):
                 row[lut[i]] = str(vals[i])
