@@ -16,6 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 from lib import isodate as iso
+from istsoslib import sosException
 
 def render(GO,sosConfig):
     if GO.filter.responseFormat in ['text/xml;subtype="om/1.0"',"text/xml"]:
@@ -40,6 +41,8 @@ def XMLformat(GO):
     r += "<gml:name>" + GO.offInfo.name + "</gml:name>\n"    
     
     if len(GO.obs)==0:
+        raise sosException.SOSException("NoApplicableCode","","No matching observation was found according the request parameters!")
+                
         r += "<om:member/>\n"
     for ob in GO.obs:
         
