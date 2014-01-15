@@ -18,7 +18,7 @@
 from lib import isodate as iso
 
 def render(GO,sosConfig):
-    if GO.filter.responseFormat in ['text/xml;subtype="sensorML/1.0.1"',"text/xml"]:
+    if GO.filter.responseFormat in ['text/xml;subtype="sensorML/1.0.1"',"text/xml","text/xml;subtype='sensorML/1.0.0'"]:
         return XMLformat(GO)
     elif GO.filter.responseFormat=="text/plain":
         return CSVformat(GO)
