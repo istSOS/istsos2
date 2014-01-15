@@ -60,7 +60,6 @@ class sosFilter():
                     raise sosException.SOSException("MissingParameterValue","version","\"version\" parameter is mandatory")
         #********************
         if method == "POST":
-            from xml.dom import minidom
             if not type(requestObject)==type("pp"):                            
                 #--------SERVICE------------
                 if "service" in requestObject.attributes.keys():
@@ -95,7 +94,5 @@ class sosFilter():
                             raise sosException.SOSException("InvalidParameterValue","version","\"version\": %s not supported" %(self.version))
                     else:
                         self.version = sosConfig.parameters["version"][0]
-            else:
-                raise sosException.SOSException("NoApplicableCode","","XML body is expected")
 
             
