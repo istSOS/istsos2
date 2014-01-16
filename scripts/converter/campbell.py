@@ -79,6 +79,8 @@ class CampbellImporter(raw2csv.Converter):
         }
         """
         self.config = config
+        if not "date" in config:
+            self.config['date']=[1,2,3]
         raw2csv.Converter.__init__(self, procedureName, url, service,
             inputDir, fileNamePattern, outputDir,
             qualityIndex, exceptionBehaviour, user, password, debug, csvlength)
@@ -112,20 +114,21 @@ class CampbellImporter(raw2csv.Converter):
             
         return ret
     
-    def parse(self, fileObj, name, conf, dateConf=[1,2,3]):
+    def parse(self, fileObj, name):
         for line in fileObj.readlines():
-            arr = line.strip(' \t\n\r').split(",")
-            if len(arr)>0:
+            s = line.strip(' \t\n\r')
+            arr = s.split(",")
+            if not s and len(arr)>0:
                 
-                date = self.getDate(arr[dateConf[0]],arr[dateConf[1]],arr[dateConf[2]])
+                date = self.getDate(arr[self.config['date'][0]],arr[self.config['date'][1]],arr[self.config['date'][2]])
                 self.setEndPosition(date)
                 
-                if arr[0] == self.config['rowid']:
+                if str(arr[0]) == str(self.config['rowid']):
                     
-                    if len(dateConf)==3:
-                        date = self.getDate(arr[dateConf[0]],arr[dateConf[1]],arr[dateConf[2]])
-                    elif len(dateConf)==4:
-                        date = self.getDate(arr[dateConf[0]],arr[dateConf[1]],arr[dateConf[2]],arr[dateConf[3]])
+                    if len(self.config['date'])==3:
+                        date = self.getDate(arr[self.config['date'][0]],arr[self.config['date'][1]],arr[self.config['date'][2]])
+                    elif len(self.config['date'])==4:
+                        date = self.getDate(arr[self.config['date'][0]],arr[self.config['date'][1]],arr[self.config['date'][2]],arr[self.config['date'][3]])
                     else:
                         raise raw2csv.IstSOSError("Date configuration mismatch.")
                     self.setEndPosition(date)

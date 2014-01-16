@@ -182,6 +182,9 @@ def execute (args):
         
         appendData = args['a']
         
+        
+        registerOnly = args['r']
+        
         virtual = False
         hq = False
         
@@ -361,153 +364,148 @@ def execute (args):
                 interval = timedelta(days=int(days))
                 
                 
+                if not registerOnly:
                 
-                if virtual and hq:
-                    # ~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
-                    # VIRTUAL PROCEDURE CODE INITIALIZATION
-                    # ~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
-                    pass
-                    
-                else:
-                    # ~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
-                    # PROCEDURE OBSERVATIONS MIGRATION
-                    # ~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
-                    
-                    oOrder = []
-#                    
-#                    loops = (
-#                        calendar.timegm(end.utctimetuple())-calendar.timegm(_begin.utctimetuple())
-#                    )/interval.total_seconds()
-                    passedLoops = 0
-                    
-                    lastPrint = ""
-                    
-                    startTime = time.time()
-                    
-                    print "%s: %s - %s" % (pname, procedures[pname].begin, procedures[pname].end)
-                    
-                    nextOut = False
-                    
-                    if begin<end and begin+interval>end:
-                        interval = end-begin
-                    
-                    while (begin+interval)<=end:
-                        loopTotalTime = time.time()
-                            
-                        nextPosition = begin + interval
+                    if virtual and hq:
+                        # ~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
+                        # VIRTUAL PROCEDURE CODE INITIALIZATION
+                        # ~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
+                        pass
                         
-                        passedLoops = passedLoops+1
+                    else:
+                        # ~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
+                        # PROCEDURE OBSERVATIONS MIGRATION
+                        # ~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
                         
-                        t = float(calendar.timegm(end.utctimetuple())-calendar.timegm(_begin.utctimetuple()))
-                        t1 = float(calendar.timegm(nextPosition.utctimetuple())-calendar.timegm(_begin.utctimetuple()))
-                        percentage = round((t1/t)*100,2)
-                        if percentage > 100:
-                            percentage = 100
-                        lastPrint = "%s > %s%% (%s / %s %s days)" % ("\b"*len(lastPrint),percentage, begin.strftime(fmtshort), nextPosition.strftime(fmtshort), days)
+                        oOrder = []
                         
-                        looptime = time.time()
-                        # GetObservation from source SOS
-                        params={
-                            'service': 'SOS', 
-                            'version': '1.0.0',
-                            'request': 'GetObservation',
-                            'eventTime': '%s/%s' % (
-                                    begin.strftime(fmt),
-                                    nextPosition.strftime(fmt)),
-                            'qualityIndex': 'True',
-                            'offering': offeringName,
-                            'responseFormat': 'text/xml;subtype=\'sensorML/1.0.0\'',
-                            'procedure': pname,
-                            'observedProperty': ",".join(observedProperties)
-                        }
-                        try:
-                            res = req.get("%s" % (src), params=params, prefetch=True, verify=False)
-                        except Exception:
-                            res = req.get("%s" % (src), params=params, prefetch=True, verify=False)
+                        passedLoops = 0
                         
-                        gotime = timedelta(seconds=int(time.time() - looptime))
+                        lastPrint = ""
                         
-                        if gotime > timedelta(seconds=int(10)):
-                            if days > 1:
-                                days = int(days/2)
-                                if days <= 1:
-                                    days = 1 
-                            interval = timedelta(days=days)
-                        elif gotime < timedelta(seconds=int(5)):
-                            days = days + 1
-                            interval = timedelta(days=days)
+                        startTime = time.time()
                         
-                        lastPrint = "%s - GO: '%s'" % (lastPrint, gotime)
+                        print "%s: %s - %s" % (pname, procedures[pname].begin, procedures[pname].end)
                         
-                        go, goNs = parse_and_get_ns(StringIO(res.content))
-                        
-                        #print res.text
-                        
-                        if len(oOrder)==0:
-                            fields = go.findall("{%s}member/{%s}Observation/{%s}result/{%s}DataArray/{%s}elementType/{%s}DataRecord/{%s}field" % (
-                                goNs['om'], goNs['om'], goNs['om'], goNs['swe'], goNs['swe'], goNs['swe'], goNs['swe'])
-                            )
-                            for field in fields:
-                                oOrder.append(qty.get('definition').replace('urn:ogc:def:parameter:x-ist::',''))
-                        
-                        values = go.find("{%s}member/{%s}Observation/{%s}result/{%s}DataArray/{%s}values" % (
-                            goNs['om'], goNs['om'], goNs['om'], goNs['swe'], goNs['swe'])
-                        )
-                        
-                        if values.text:
-                        
-                            rows = values.text.strip().split("@")
-                            
-                            lastPrint = "%s " % (lastPrint)
-                            
-                            copy = []
-                            
-                            for row in rows:
-                                copy.append(row.split(","))
-                            
-                            # InsertObservation to istSOS
-                            template['result']['DataArray']['values'] = copy
-                            template['samplingTime'] = {
-                                "beginPosition": begin.strftime(fmt),
-                                "endPosition": nextPosition.strftime(fmt)
-                            }
-                            
-                            template[u"AssignedSensorId"] = procedures[pname].oid
-                            
-                            looptime = time.time() 
-                            res = req.post("%s/wa/istsos/services/%s/operations/insertobservation" % (
-                                dst,
-                                srv
-                            ),data = json.dumps({
-                                u"AssignedSensorId": procedures[pname].oid,
-                                u"ForceInsert": u"true",
-                                u"Observation": template
-                            }))
-                            iotime = timedelta(seconds=int(time.time() - looptime))
-                            lastPrint = "%s - IO: '%s'" % (lastPrint, iotime)
-                                                
-                        begin = nextPosition
                         if begin<end and begin+interval>end:
                             interval = end-begin
-#                            nextOut = True
-                            
-                        if percentage < 100:
-                            lastPrint = "%s - Step time: '%s' - Elapsed: %s  " % (
-                                lastPrint, 
-                                timedelta(seconds=int(time.time() - loopTotalTime)), 
-                                timedelta(seconds=int(time.time() - startTime))
-                            )
-                        else:
-                            lastPrint = "%s - Step time: '%s'  " % (
-                                lastPrint, 
-                                timedelta(seconds=int(time.time() - loopTotalTime))
-                            )
                         
-                        sys.stdout.write(lastPrint)
-                        sys.stdout.flush()
-                    
-                    
-                    print " > Completed in %s" % timedelta(seconds=int(time.time() - startTime))
+                        while (begin+interval)<=end:
+                            loopTotalTime = time.time()
+                                
+                            nextPosition = begin + interval
+                            
+                            passedLoops = passedLoops+1
+                            
+                            t = float(calendar.timegm(end.utctimetuple())-calendar.timegm(_begin.utctimetuple()))
+                            t1 = float(calendar.timegm(nextPosition.utctimetuple())-calendar.timegm(_begin.utctimetuple()))
+                            percentage = round((t1/t)*100,2)
+                            if percentage > 100:
+                                percentage = 100
+                            lastPrint = "%s > %s%% (%s / %s %s days)" % ("\b"*len(lastPrint),percentage, begin.strftime(fmtshort), nextPosition.strftime(fmtshort), days)
+                            
+                            looptime = time.time()
+                            # GetObservation from source SOS
+                            params={
+                                'service': 'SOS', 
+                                'version': '1.0.0',
+                                'request': 'GetObservation',
+                                'eventTime': '%s/%s' % (
+                                        begin.strftime(fmt),
+                                        nextPosition.strftime(fmt)),
+                                'qualityIndex': 'True',
+                                'offering': offeringName,
+                                'responseFormat': 'text/xml;subtype=\'sensorML/1.0.0\'',
+                                'procedure': pname,
+                                'observedProperty': ",".join(observedProperties)
+                            }
+                            try:
+                                res = req.get("%s" % (src), params=params, prefetch=True, verify=False)
+                            except Exception:
+                                res = req.get("%s" % (src), params=params, prefetch=True, verify=False)
+                            
+                            gotime = timedelta(seconds=int(time.time() - looptime))
+                            
+                            if gotime > timedelta(seconds=int(10)):
+                                if days > 1:
+                                    days = int(days/2)
+                                    if days <= 1:
+                                        days = 1 
+                                interval = timedelta(days=days)
+                            elif gotime < timedelta(seconds=int(5)):
+                                days = days + 1
+                                interval = timedelta(days=days)
+                            
+                            lastPrint = "%s - GO: '%s'" % (lastPrint, gotime)
+                            
+                            go, goNs = parse_and_get_ns(StringIO(res.content))
+                            
+                            #print res.text
+                            
+                            if len(oOrder)==0:
+                                fields = go.findall("{%s}member/{%s}Observation/{%s}result/{%s}DataArray/{%s}elementType/{%s}DataRecord/{%s}field" % (
+                                    goNs['om'], goNs['om'], goNs['om'], goNs['swe'], goNs['swe'], goNs['swe'], goNs['swe'])
+                                )
+                                for field in fields:
+                                    oOrder.append(qty.get('definition').replace('urn:ogc:def:parameter:x-ist::',''))
+                            
+                            values = go.find("{%s}member/{%s}Observation/{%s}result/{%s}DataArray/{%s}values" % (
+                                goNs['om'], goNs['om'], goNs['om'], goNs['swe'], goNs['swe'])
+                            )
+                            
+                            if values.text:
+                            
+                                rows = values.text.strip().split("@")
+                                
+                                lastPrint = "%s " % (lastPrint)
+                                
+                                copy = []
+                                
+                                for row in rows:
+                                    copy.append(row.split(","))
+                                
+                                # InsertObservation to istSOS
+                                template['result']['DataArray']['values'] = copy
+                                template['samplingTime'] = {
+                                    "beginPosition": begin.strftime(fmt),
+                                    "endPosition": nextPosition.strftime(fmt)
+                                }
+                                
+                                template[u"AssignedSensorId"] = procedures[pname].oid
+                                
+                                looptime = time.time() 
+                                res = req.post("%s/wa/istsos/services/%s/operations/insertobservation" % (
+                                    dst,
+                                    srv
+                                ),data = json.dumps({
+                                    u"AssignedSensorId": procedures[pname].oid,
+                                    u"ForceInsert": u"true",
+                                    u"Observation": template
+                                }))
+                                iotime = timedelta(seconds=int(time.time() - looptime))
+                                lastPrint = "%s - IO: '%s'" % (lastPrint, iotime)
+                                                    
+                            begin = nextPosition
+                            if begin<end and begin+interval>end:
+                                interval = end-begin
+                                
+                            if percentage < 100:
+                                lastPrint = "%s - Step time: '%s' - Elapsed: %s  " % (
+                                    lastPrint, 
+                                    timedelta(seconds=int(time.time() - loopTotalTime)), 
+                                    timedelta(seconds=int(time.time() - startTime))
+                                )
+                            else:
+                                lastPrint = "%s - Step time: '%s'  " % (
+                                    lastPrint, 
+                                    timedelta(seconds=int(time.time() - loopTotalTime))
+                                )
+                            
+                            sys.stdout.write(lastPrint)
+                            sys.stdout.flush()
+                        
+                        
+                        print " > Completed in %s" % timedelta(seconds=int(time.time() - startTime))
             
     except Exception as e:    
         print "ERROR: %s\n\n" % e
@@ -553,6 +551,12 @@ if __name__ == "__main__":
         dest   = 'n',
         metavar= 'service',
         help   = 'The name of the service instance.')
+    
+    parser.add_argument('-r','--registeronly',
+        action = 'store_true',
+        dest   = 'r',
+        help   = 'Add this parameter if you want to register the procedures without migrating the data.')
+    
     
     parser.add_argument('-a',
         action = 'store_true',

@@ -49,7 +49,9 @@ def execute (args):
         service = args['s']
         
         # Quality index
-        quality = args['q']
+        quality = '100'
+        if 'q' in args:
+            quality = args['q']
         
         # Service instance name
         procs = args['p']
@@ -58,14 +60,25 @@ def execute (args):
         wd = args['wd']
         
         # File extension
-        ext = args['e']
+        ext = '.dat'
+        if 'e' in args:
+            ext = args['e']
         
-        debug = args['v']
-        test = args['t']
+        debug = False
+        if 'v' in args:
+            debug = args['v']
         
-        user = args['usr']
-        passw = args['pwd']
+        test = False
+        if 't' in args:
+            test = args['t']
         
+        user = None
+        if 'usr' in args:
+            user = args['usr']
+        passw = None
+        if 'pwd' in args:
+            passw = args['pwd']
+            
         req = requests.session()
         
         for proc in procs:

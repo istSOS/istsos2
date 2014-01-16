@@ -532,7 +532,7 @@ Ext.define('istsos.utils', {
                 );
                     
             var match = iso.match(/[.]|[,]/g);
-            if (Ext.Array.contains(match, '.') || Ext.Array.contains(match, ',')) {
+            if (match != null && ( Ext.Array.contains(match, '.') || Ext.Array.contains(match, ','))) {
                 var micro = parseFloat("0."+splitted[4]);
                 
                 //console.log(istsos.utils.micro2iso((milli * 1000) + (micro * 1000000)));

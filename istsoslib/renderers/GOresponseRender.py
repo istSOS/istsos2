@@ -56,14 +56,15 @@ def XMLformat(GO):
             r += "    <om:samplingTime>\n"
             r += "      <gml:TimePeriod>\n"
 #            r += "        <gml:beginPosition>" + ob.samplingTime[0].astimezone(GO.reqTZ).strftime("%Y-%m-%dT%H:%M:%S.%f%z") + "</gml:beginPosition>\n"
-            r += "        <gml:beginPosition>" + iso.datetime_isoformat(ob.samplingTime[0].astimezone(GO.reqTZ)) + "</gml:beginPosition>\n"
-                        
+            
+            r += "        <gml:beginPosition>" + ob.samplingTime[0].astimezone(GO.reqTZ).isoformat() + "</gml:beginPosition>\n"
+            
+                
             if ob.samplingTime[1]:
-#                r += "        <gml:endPosition>" + ob.samplingTime[1].astimezone(GO.reqTZ).strftime("%Y-%m-%dT%H:%M:%S.%f%z") + "</gml:endPosition>\n"
-                r += "        <gml:endPosition>" + iso.datetime_isoformat(ob.samplingTime[1].astimezone(GO.reqTZ)) + "</gml:endPosition>\n"
+                r += "        <gml:endPosition>" + ob.samplingTime[1].astimezone(GO.reqTZ).isoformat() + "</gml:endPosition>\n"
             else:
-#                r += "        <gml:endPosition>" + ob.samplingTime[0].astimezone(GO.reqTZ).strftime("%Y-%m-%dT%H:%M:%S.%f%z") + "</gml:endPosition>\n"
-                r += "        <gml:endPosition>" + iso.datetime_isoformat(ob.samplingTime[0].astimezone(GO.reqTZ)) + "</gml:endPosition>\n"
+                r += "        <gml:endPosition>" + ob.samplingTime[0].astimezone(GO.reqTZ).isoformat() + "</gml:endPosition>\n"
+                
             if ob.samplingTime[1]:
                 r += "        <gml:duration>"  + iso.duration_isoformat(ob.samplingTime[1]-ob.samplingTime[0]) + "</gml:duration>\n"
             r += "      </gml:TimePeriod>\n"
@@ -172,9 +173,7 @@ def XMLformat(GO):
             r += "        <swe:values>"
             data=[]
             for row in range(len(ob.data)):
-                #str_data=[ob.data[row][0].astimezone(GO.reqTZ).strftime("%Y-%m-%dT%H:%M:%S.%f%z")]
-#                str_data=[ob.data[row][0].strftime("%Y-%m-%dT%H:%M:%S.%f%z")]
-                str_data=[iso.datetime_isoformat(ob.data[row][0])]
+                str_data=[ob.data[row][0].isoformat()]
                 for i in range(1,len(ob.data[0])):
                     str_data.append(str(ob.data[row][i]))
                 data.append(",".join(str_data))
@@ -205,22 +204,13 @@ def JSONformat(GO):
             "procedure": ob.procedure
         }
         if ob.samplingTime != None:
-#            member["samplingTime"]["beginPosition"] = ob.samplingTime[0].astimezone(GO.reqTZ).strftime("%Y-%m-%dT%H:%M:%S.%f%z")
-            member["samplingTime"]["beginPosition"] = iso.datetime_isoformat(ob.samplingTime[0].astimezone(GO.reqTZ))
+            member["samplingTime"]["beginPosition"] = ob.samplingTime[0].astimezone(GO.reqTZ).isoformat()
             if ob.samplingTime[1]:
-#                member["samplingTime"]["endPosition"] = ob.samplingTime[1].astimezone(GO.reqTZ).strftime("%Y-%m-%dT%H:%M:%S.%f%z")
-                member["samplingTime"]["endPosition"] = iso.datetime_isoformat(ob.samplingTime[1].astimezone(GO.reqTZ))
+                member["samplingTime"]["endPosition"] = ob.samplingTime[1].astimezone(GO.reqTZ).isoformat()
                 member["samplingTime"]["duration"] = iso.duration_isoformat(ob.samplingTime[1]-ob.samplingTime[0])
                 
             else:
-#                member["samplingTime"]["endPosition"] = ob.samplingTime[0].astimezone(GO.reqTZ).strftime("%Y-%m-%dT%H:%M:%S.%f%z")
-                member["samplingTime"]["endPosition"] = iso.datetime_isoformat(ob.samplingTime[0].astimezone(GO.reqTZ))
-                """      
-                member["samplingTime"]["timeInterval"] = {
-                    "unit": ob.timeResUnit,
-                    "value": ob.timeResVal
-                }
-                """
+                member["samplingTime"]["endPosition"] = ob.samplingTime[0].astimezone(GO.reqTZ).isoformat()
         if ob.procedureType == "insitu-fixed-point":
             ii=1
         elif ob.procedureType == "insitu-mobile-point":
@@ -289,9 +279,7 @@ def JSONformat(GO):
         
         member['result']['DataArray']['values'] = []
         for row in range(len(ob.data)):
-            #data = [ob.data[row][0].astimezone(GO.reqTZ).strftime("%Y-%m-%dT%H:%M:%S.%f%z")]
-#            data = [ob.data[row][0].strftime("%Y-%m-%dT%H:%M:%S.%f%z")]
-            data = [iso.datetime_isoformat(ob.data[row][0])]
+            data = [ob.data[row][0].isoformat()]
             for i in range(1,len(ob.data[0])):
                 data.append(str(ob.data[row][i]))
             member['result']['DataArray']['values'].append(data)
@@ -346,14 +334,11 @@ def CSVformat(GO):
         #append row
         for vals in ob.data:
             row = [""] * len(columns)
-            #row[0] = vals[0].astimezone(GO.reqTZ).strftime("%Y-%m-%dT%H:%M:%S.%f%z")
-#            row[0] = vals[0].strftime("%Y-%m-%dT%H:%M:%S.%f%z")
-            row[0] = iso.datetime_isoformat(vals[0])
+            row[0] = vals[0].isoformat()
             row[1] = ob.procedure.split(":")[-1]
             for i in range(1,len(vals)):
                 row[lut[i]] = str(vals[i])
             rows.append(row)
-            #raise Exception( "%s - %s -%s" %(lut,columns,rows))
                 
     #write results as CSV    
     r  = ",".join(columns_name) + "\n"

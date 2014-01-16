@@ -92,6 +92,9 @@ class Converter():
     def parse(self, fileObj, name=None):
         raise Exception("This function must be overwritten")
     
+    def skipFile(self, name):
+        return False
+    
     def getDateTimeWithTimeZone(self, dt, tz):
         dt = dt.replace(tzinfo=timezone('UTC'))
         offset = tz.split(":")
@@ -107,9 +110,15 @@ class Converter():
         fileArray = self.prepareFiles()
             
         for fileObj in fileArray:
+            if self.skipFile(os.path.split(fileObj)[1]):
+                if self.debug:
+                    print " > Skipping file %s" % os.path.split(fileObj)[1]
+                continue
             if self.debug:
-                print " > working on file %s" % os.path.split(fileObj)[1]
-            self.parse(open(fileObj,'rU'),os.path.split(fileObj)[1])
+                print " > Working on file %s" % os.path.split(fileObj)[1]
+            dat = open(fileObj,'rU')
+            self.parse(dat,os.path.split(fileObj)[1])
+            dat.close()
         
         if self.debug:
             print " > Parsed %s observations" % len(self.observations)
@@ -118,13 +127,16 @@ class Converter():
         self.validate()
         
         # Save the CSV file in text/csv;subtype='istSOS/2.0.0'
-        if isinstance(self.getIOEndPosition(), datetime) and self.getIOEndPosition() > self.getDSEndPosition():
+        if self.isEmpty(): # The procedure is registered but there are no observations
             self.save()
+            return True
+        elif isinstance(self.getIOEndPosition(), datetime) and self.getIOEndPosition() > self.getDSEndPosition():
+            self.save()
+            return True
         else:
             if self.debug:
-                print " > Nothing to save"
-        
-        return
+                print " > Nothing to save"        
+            return False
         
     
     def loadSensorMetadata(self):
@@ -160,14 +172,19 @@ class Converter():
     def getDSBeginPosition(self):
         if u'constraint' in self.describe['outputs'][0]:
             return iso.parse_datetime(self.describe['outputs'][0]['constraint']['interval'][0])
-        else:
-            return None
+        return None
         
     def getDSEndPosition(self):
         if u'constraint' in self.describe['outputs'][0]:
             return iso.parse_datetime(self.describe['outputs'][0]['constraint']['interval'][1])
-        else:
-            return None
+        return None
+    
+    def isEmpty(self):
+        if self.getDSBeginPosition() == None and self.getDSEndPosition() == None:
+            return True
+        elif self.getDSBeginPosition() == self.getDSEndPosition():
+            return True
+        return False
     
     def getDefinitions(self):
         ret = []
@@ -250,11 +267,13 @@ class Converter():
             for o in self.observations:
                 f.write("%s\n" % o.csv(",",self.obsindex))
         else:
-            if self.endPosition == None:
-                raise IstSOSError("The file has no observations, if this can happens, you shall use the setEndPosition function to set the endPosition manually")
+            # End position is used to advance the sampling time in cases where 
+            # there is a "no data" observation (rain)
+            if self.getIOEndPosition() == None:
+                raise IstSOSError("The file has no observations, if this happens, you shall use the setEndPosition function to set the endPosition manually")
             f = open(os.path.join(self.folderOut,"%s_%s.dat" %(
                 self.name,
-                datetime.strftime(self.endPosition, "%Y%m%d%H%M%S"))), 'w')
+                datetime.strftime(self.getIOEndPosition(), "%Y%m%d%H%M%S"))), 'w')
             f.write("%s\n" % ",".join(self.obsindex))
         f.close()
         

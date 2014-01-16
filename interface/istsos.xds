@@ -2203,6 +2203,7 @@
                                             },
                                             "codeClass": null,
                                             "userConfig": {
+                                                "id": "procedurename",
                                                 "name": "system",
                                                 "fieldLabel": "Name",
                                                 "labelSeparator": null,
