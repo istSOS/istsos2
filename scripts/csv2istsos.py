@@ -212,6 +212,10 @@ def execute (args):
                         raise e
                         
             
+            # @todo should be handled situation where a freshly registerd procedure with irregular data
+            #       is inserting a csv data file without observaton but only with a trasmission date.
+            print jsonindex['urn:ogc:def:parameter:x-istsos:1.0:time:iso8601']
+            print data['result']['DataArray']['values']
             data["samplingTime"] = {
                 "beginPosition": data['result']['DataArray']['values'][0][jsonindex['urn:ogc:def:parameter:x-istsos:1.0:time:iso8601']],
 			   "endPosition": data['result']['DataArray']['values'][-1][jsonindex['urn:ogc:def:parameter:x-istsos:1.0:time:iso8601']]

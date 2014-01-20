@@ -182,6 +182,16 @@ def execute (args):
         
         appendData = args['a']
         
+        dfrom = None
+        dto = None
+        if 'from' in args and type('') == type(args['from']):
+            print "From: %s" % args['from']
+            dfrom = iso.parse_datetime(args['from'])
+            appendData = None
+        if 'to' in args and type('') == type(args['to']):
+            print "To: %s" % args['to']
+            dto = iso.parse_datetime(args['to'])
+            appendData = None
         
         registerOnly = args['r']
         
@@ -323,9 +333,17 @@ def execute (args):
                             uom.get('code')
                         )
                 
-                begin = iso.parse_datetime(procedures[pname].begin)
-                _begin = iso.parse_datetime(procedures[pname].begin)
-                end = iso.parse_datetime(procedures[pname].end)
+                if dfrom:
+                    begin = dfrom
+                    _begin = dfrom
+                else:
+                    begin = iso.parse_datetime(procedures[pname].begin)
+                    _begin = iso.parse_datetime(procedures[pname].begin)
+                    
+                if dto:
+                    end = dto
+                else:
+                    end = iso.parse_datetime(procedures[pname].end)
                 
                 # ~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
                 # REGISTRATION PROCESS
@@ -564,6 +582,18 @@ if __name__ == "__main__":
         default= True,
         help   = 'Set this parameter to "False" if you want to replace all the dataset instead of appending after existing observations, (default: %(default)s).')
     
+    parser.add_argument('--from', 
+        action='store',
+        dest='from',
+        default= None,
+        help='Import observations from date (ISODATE Format).')  
+        
+    parser.add_argument('--to', 
+        action='store',
+        dest='to',
+        default= None,
+        help='Import observations to date (ISODATE Format).')  
+        
     parser.add_argument('-i', 
         action='store',
         dest='i',

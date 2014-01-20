@@ -57,7 +57,10 @@ from scripts import raw2csv
 class CampbellImporter(raw2csv.Converter):
     
     
-    def __init__(self, procedureName, config, url, service, inputDir, fileNamePattern, outputDir, qualityIndex=False, exceptionBehaviour={}, user=None, password=None, debug=False, csvlength=5000):
+    def __init__(self, procedureName, config, url, service, inputDir, 
+                 fileNamePattern, outputDir, qualityIndex=False, 
+                 exceptionBehaviour={}, user=None, password=None, debug=False, 
+                 csvlength=5000, filenamecheck=None):
         """
         CampbellImporter constructor
         
@@ -83,7 +86,7 @@ class CampbellImporter(raw2csv.Converter):
             self.config['date']=[1,2,3]
         raw2csv.Converter.__init__(self, procedureName, url, service,
             inputDir, fileNamePattern, outputDir,
-            qualityIndex, exceptionBehaviour, user, password, debug, csvlength)
+            qualityIndex, exceptionBehaviour, user, password, debug, csvlength, filenamecheck)
     
     def getDate(self, year, day, hour, second=None):
         # Parsing date with year, days from 1 January and hours in integers
@@ -115,11 +118,11 @@ class CampbellImporter(raw2csv.Converter):
         return ret
     
     def parse(self, fileObj, name):
-        for line in fileObj.readlines():
+        lines = fileObj.readlines()
+        for line in lines:
             s = line.strip(' \t\n\r')
             arr = s.split(",")
-            if not s and len(arr)>0:
-                
+            if s != '' and len(arr)>0:
                 date = self.getDate(arr[self.config['date'][0]],arr[self.config['date'][1]],arr[self.config['date'][2]])
                 self.setEndPosition(date)
                 

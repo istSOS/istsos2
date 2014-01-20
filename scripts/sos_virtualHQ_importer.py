@@ -59,7 +59,11 @@ proc = """{"system_id":"V_TEST",
            "system":"V_TEST",
            "description":"",
            "keywords":"",
-           "identification":[],
+           "identification":[{
+                    "definition":"urn:ogc:def:identifier:OGC:uniqueID",
+                    "name":"uniqueID",
+                    "value":""
+            }],
            "classification":[
                {"name":"System Type",
                 "definition":"urn:ogc:def:classifier:x-istsos:1.0:systemType",
@@ -126,6 +130,7 @@ def execute (args):
         #-- set new procedure name        
         npv['system_id'] = vproc
         npv['system'] = vproc
+        npv["identification"][0]["value"] = "urn:ogc:def:procedure:x-istsos:1.0:%s" % (vproc)
         
         #-- set new procedure systemType
         for c in npv['classification']:
@@ -146,10 +151,10 @@ def execute (args):
                 cvlist = RCload(sfile)
                 res = req.post("%s/wa/istsos/services/%s/virtualprocedures/%s/ratingcurve" % (sosurl,sosservice,vproc), 
                     data=json.dumps(cvlist)
-                )  
+                )
                 if not res.json["success"]:
                     raise Exception("Saving rating curve %s failed: \n%s" % (vproc, res.json["message"]))
-        else:            
+        else:
             # loading the virtual procedure code
             #===================================
             code = "# -*- coding: utf-8 -*-\n"

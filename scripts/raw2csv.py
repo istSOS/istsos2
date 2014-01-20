@@ -45,7 +45,11 @@ except ImportError as e:
     
 class Converter():
     req = requests.session()
-    def __init__(self, name, url, service, folderIn, pattern, folderOut, qualityIndex=False, exceptionBehaviour={}, user=None, password=None, debug=False, csvlength=5000):
+    def __init__(self, name, url, service, folderIn, pattern, folderOut, 
+                 qualityIndex=False, exceptionBehaviour={}, 
+                 user=None, password=None, debug=False, 
+                 csvlength=5000, 
+                 filenamecheck = None):
         """
         Info:        
         
@@ -61,6 +65,12 @@ class Converter():
             "StrictTimeSeriesError": "raise"
         }
         user and password: if user and password are required
+        ...
+        filenamecheck = {
+            'dateformat': '12_%Y-%m-%d_%H%M%S.dat',
+            'datetz': '+01:00',
+            'replace': ['_P','_M']
+        }
         """
         self.name = name
         self.url = url
@@ -75,6 +85,17 @@ class Converter():
         self.password = password
         self.auth = (self.user, self.password) if (self.user != None and self.password != None) else None
         self.debug = debug
+        
+        # Used inf the function "skipFile"
+        self.fndtz = '+01:00'
+        self.fnre = self.fndf = None
+        if type(filenamecheck) == type({}):
+            if 'dateformat' in filenamecheck:
+                self.fndf = filenamecheck['dateformat'] 
+            if 'datetz' in filenamecheck:
+                self.fndtz = filenamecheck['datetz'] 
+            if 'replace' in filenamecheck:
+                self.fnre = filenamecheck['replace'] 
         
         # Array where Observation are stored during the parse operation
         self.observations = []
@@ -93,7 +114,37 @@ class Converter():
         raise Exception("This function must be overwritten")
     
     def skipFile(self, name):
-        return False
+        """
+        Usually the date of data transmission is inserted into the file name.
+        This function checks if the file is already registered, comparing the 
+        sampling time with the date of trasmission which shall be after 
+        the endPosition.
+        
+        To enable this check, self.fndf
+        
+        Some examples:
+            Filename / Date Format
+            12_2014-01-17_135000_M.dat / 12_%Y-%m-%d_%H%M%S_M.dat
+            
+        """
+        if not self.fndf: # Skip this filename check
+            return False
+            
+        ep = self.getDSEndPosition()
+        if ep == None:
+            return False
+        
+        n = name
+        if type(self.fnre) == type([]):
+            for rep in self.fnre:
+                n = n.replace(rep,'')
+            
+        dt = self.getDateTimeWithTimeZone(
+            datetime.strptime(n, self.fndf), self.fndtz
+        )
+        if not ep == None and ep < dt:
+            return False
+        return True
     
     def getDateTimeWithTimeZone(self, dt, tz):
         dt = dt.replace(tzinfo=timezone('UTC'))
