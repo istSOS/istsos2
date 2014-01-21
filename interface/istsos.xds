@@ -2566,8 +2566,8 @@
                                             "userConfig": {
                                                 "height": 28,
                                                 "layout": "hbox",
-                                                "fieldLabel": "Constraint",
-                                                "labelWidth": 120,
+                                                "fieldLabel": "Statistical Quality Index Constraints",
+                                                "labelWidth": 230,
                                                 "designer|userClassName": "MyFieldContainer2",
                                                 "container|align": "stretch"
                                             },
@@ -6954,6 +6954,9 @@
                         "maxWidth": null,
                         "width": null,
                         "bodyPadding": 10,
+                        "animCollapse": null,
+                        "collapseFirst": null,
+                        "collapsed": null,
                         "title": "",
                         "trackResetOnLoad": true,
                         "designer|userClassName": "MyForm33"
@@ -7030,7 +7033,7 @@
                                     "userConfig": {
                                         "height": 28,
                                         "layout": "hbox",
-                                        "fieldLabel": "Stat. QI",
+                                        "fieldLabel": "Correct Quality Index Constraints",
                                         "designer|userClassName": "MyFieldContainer2",
                                         "container|align": "stretch"
                                     },
