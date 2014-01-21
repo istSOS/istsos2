@@ -198,6 +198,7 @@ def execute (args):
         virtual = False
         hq = False
         
+        
         # Executing request
         res = req.get("%s" % (src), params={
             'service': 'SOS', 
@@ -232,7 +233,7 @@ def execute (args):
                 
                 if virtual:
                     procedures[pname].setSystemType('virtual')
-                                
+                               
                 res = req.get("%s" % (src), params={
                     'service': 'SOS', 
                     'version': '1.0.0',
@@ -579,8 +580,7 @@ if __name__ == "__main__":
     parser.add_argument('-a',
         action = 'store_true',
         dest   = 'a',
-        default= True,
-        help   = 'Set this parameter to "False" if you want to replace all the dataset instead of appending after existing observations, (default: %(default)s).')
+        help   = 'Add this parameter, if you want to replace all the dataset instead of appending after existing observations, (default: %(default)s).')
     
     parser.add_argument('--from', 
         action='store',
