@@ -571,10 +571,10 @@ def validateJsonConstraint(constraint):
     elif 'valueList' in constraint:
         if not type(constraint['valueList']) == type([]):
             raise Exception("Constraint valueList must be an array containint a series of numeric values")
-        if len(constraint['interval']) <= 2:
+        if len(constraint['valueList']) <= 2:
             raise Exception("Constraint valueList must be an array containint at least 1 numeric value")
         try:
-            for val in constraint['interval']:
+            for val in constraint['valueList']:
                 float(val)
         except ValueError:
             raise Exception("Constraint valueList must be an array containint a series of numeric values")

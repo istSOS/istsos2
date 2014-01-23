@@ -162,6 +162,10 @@ class waProcedures(waResourceService):
         proc.loadDICT(self.json)
         smlstring = proc.toRegisterSensor(indent=False)
         
+        #import pprint
+        #pp = pprint.PrettyPrinter(indent=4)
+        #print >> sys.stderr, "\n\nSML: %s" % pp.pprint(smlstring)
+        
         response = requests.post(
             self.serviceconf.serviceurl["url"], 
             data=smlstring,
@@ -252,6 +256,11 @@ class waProcedures(waResourceService):
         f.write(smlstring)
         f.close()
         self.setMessage("SensorML successfully updated")            
+        
+        #allows to update observed property constraints
+        if proc.data['outputs']:
+            #update database values
+            pass
         
         if proc.data['system'] != self.procedurename:
             
@@ -451,9 +460,11 @@ class waGetGeoJson(waResourceService):
     """
     def __init__(self,waEnviron):
         waResourceService.__init__(self,waEnviron)
+        
         import pprint
         pp = pprint.PrettyPrinter(indent=4)
         print >> sys.stderr, "\n\nENVIRON: %s" % pp.pprint(self.serviceconf.get("geo")['istsosepsg'])
+        
         if self.waEnviron['parameters'] and self.waEnviron['parameters']['epsg']:
             self.epsg = self.waEnviron['parameters']['epsg'][0]
         else:

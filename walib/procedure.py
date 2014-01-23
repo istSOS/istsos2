@@ -355,7 +355,7 @@ class Procedure():
                         pass #item["constraint"]["interval"] = ""
                     
                     try:
-                        item["constraint"]["valuelist"] = allow.find("{%s}valueList" % ns['swe']).text.strip().split(", ")
+                        item["constraint"]["valuelist"] = allow.find("{%s}valueList" % ns['swe']).text.strip().split(" ")
                     except:
                         pass #item["constraint"]["valuelist"] = ""
                 
@@ -594,7 +594,11 @@ class Procedure():
                 if item["value"].find("mobile")>0:
                     location.attrib[ "{%s}role" % ns['xlink'] ] = "urn:ogc:def:dataType:x-istsos:1.0:lastPosition"
         Point = et.SubElement(location, "{%s}Point" % ns['gml'])
-        Point.attrib[ "{%s}id" % ns['gml'] ] = self.data["location"]["properties"]["name"]
+
+        if self.data["location"]["properties"]["name"].isalnum():
+            Point.attrib[ "{%s}id" % ns['gml'] ] = self.data["location"]["properties"]["name"]
+        else:
+            raise Exception ("Invalid location name (gml:id only allows alphanumeric characters")
         Point.attrib[ "srsName" ] = "EPSG:"+str(self.data["location"]["crs"]["properties"]["name"])
         coordinates = et.SubElement(Point, "{%s}coordinates" % ns['gml'])
         coordinates.text = ",".join([ str(a) for a in self.data["location"]["geometry"]["coordinates"] ])
@@ -677,7 +681,7 @@ class Procedure():
                 
                 # The constraint object is not mandatory
                 if "constraint" in o and o["constraint"]!={}: # and o["constraint"]["role"]!="" and o["constraint"]["role"]!=None:
-                    
+                    print >> sys.stderr, o['constraint']                    
                     try:
                         ut.validateJsonConstraint(o['constraint'])
                     except Exception as ex:
@@ -696,9 +700,10 @@ class Procedure():
                         interval = et.SubElement(AllowedValues, "{%s}interval" % ns['swe'])
                         interval.text = " ".join([ str(a) for a in o["constraint"]["interval"] ])
                         
+                        
                     elif "valueList" in o["constraint"]:#.has_key("valueList"):
                         valueList = et.SubElement(AllowedValues, "{%s}valueList" % ns['swe'])
-                        valueList.text = ", ".join([ str(a) for a in o["constraint"]["valueList"] ])
+                        valueList.text = " ".join([ str(a) for a in o["constraint"]["valueList"] ])
                         
                     elif "min" in o["constraint"]:#.has_key("min"):
                         amin = et.SubElement(AllowedValues, "{%s}min" % ns['swe'])
