@@ -1190,8 +1190,8 @@ Ext.define('istsos.view.procedure', {
                         msg: 'UniqueID is mandatory and cannot be removed',
                         buttons: Ext.MessageBox.OK
                     });
+                    return
                 }
-                return
             }
             this.removeSmlfield(name,skipInsert);
         },this);
