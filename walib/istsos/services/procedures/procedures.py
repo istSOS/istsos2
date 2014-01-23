@@ -23,7 +23,7 @@ import sys
 
 class waProcedures(waResourceService):
     """class to handle SOS service objects, support GET and POST method"""
-    
+
     def __init__(self,waEnviron):
         waResourceService.__init__(self,waEnviron)
         self.servicename = self.pathinfo[2]
@@ -31,16 +31,16 @@ class waProcedures(waResourceService):
             self.procedurename = self.pathinfo[4]
         else:
             self.procedurename = None
-    
+
     def executePost(self,db=True):
         """
         Method for executing a POST requests that create a new SOS procedure
-                      
+
         @note: This method creates:
             1. Create a new procedure sending an XML to the istsos service
-        
+
         The POST must be in Json format:
-                
+
         >>> {
                 "system_id": "P_TRE",
                 "system": "P_TRE",
@@ -134,9 +134,9 @@ class waProcedures(waResourceService):
         #verify no service name in url
         if not self.procedurename==None:
             raise Exception("POST action with url procedure name not supported")
-        
+
         proc = procedure.Procedure(self.serviceconf)
-        
+
         # Workaround for uniqueID requirement
         '''if type(self.json['identification']) == type([]):
             for identification in self.json['identification']:
@@ -158,44 +158,44 @@ class waProcedures(waResourceService):
                     "value":"%s:%s" % (self.serviceconf.urn['procedure'],self.json['system_id'])
                 }
             ]'''
-            
+
         proc.loadDICT(self.json)
         smlstring = proc.toRegisterSensor(indent=False)
-        
+
         #import pprint
         #pp = pprint.PrettyPrinter(indent=4)
         #print >> sys.stderr, "\n\nSML: %s" % pp.pprint(smlstring)
-        
+
         response = requests.post(
-            self.serviceconf.serviceurl["url"], 
+            self.serviceconf.serviceurl["url"],
             data=smlstring,
-            headers={"Content-type": "text/xml"}, 
+            headers={"Content-type": "text/xml"},
             prefetch=True
         )
-        
+
         try:
-            response.raise_for_status() # raise exception if som comunication error occured            
+            response.raise_for_status() # raise exception if som comunication error occured
             if response.text.find("AssignedSensorId")>0:
                 self.setMessage("%s" % response.text)
             else:
-                self.setException("Register sensor failed - Communication: %s - Response: %s" 
+                self.setException("Register sensor failed - Communication: %s - Response: %s"
                                     %(response.status_code, response.text))
         except Exception as e:
-            self.setException("Register sensor failed - Communication: %s %s - Response: %s" 
+            self.setException("Register sensor failed - Communication: %s %s - Response: %s"
                                     %(response.status_code, e, response.text))
-        
-        
+
+
     def executeDelete(self):
         """
         Method for executing a DELETE requests that erase a SOS procedure
-                          
+
             @note: This method delete:
                 1. the given procedure
-            
+
         """
         if self.procedurename==None:
             raise Exception("DELETE action without url procedure name not supported")
-        
+
         try:
             servicedb = databaseManager.PgDB(self.serviceconf.connection['user'],
                                             self.serviceconf.connection['password'],
@@ -203,92 +203,130 @@ class waProcedures(waResourceService):
                                             self.serviceconf.connection['host'],
                                             self.serviceconf.connection['port']
             )
-            
+
             #DELETE from database in transaction
             sql  = "DELETE from %s.procedures" % self.service
             sql += " WHERE name_prc = %s"
             params = (self.procedurename,)
             servicedb.executeInTransaction(sql,params)
-            
+
             #DELETE sensorML
             procedureMLpath = os.path.join(self.sensormlpath,self.procedurename+".xml")
             os.remove(procedureMLpath)
-            
+
            #COMMIT transaction
             servicedb.commitTransaction()
             self.setMessage("Procedure '%s' successfully deleted" % self.procedurename)
         except Exception as e:
             self.setException("%s" %e)
-        
-    
+
+
     def executePut(self):
         """
         Method for executing a PUT requests that update a SOS sensorML procedure
-                          
-            @note: This method replace old sensorML with the new one, note that 
+
+            @note: This method replace old sensorML with the new one, note that
                     database objectes are not updated. To update entirely a procedure
                     consider to delete and recreate it.
                 1. ...
-            
+
             The Put must be in Json format:
-                    
+
             >>> {
                     ...
-                } 
+                }
         """
-        
+
         proc = procedure.Procedure()
         proc.loadDICT(self.json)
-        
+
         '''if proc.data['system'] == self.procedurename:
-            
+
             smlstring = proc.toXML()
             f = open(os.path.join(self.sensormlpath,self.json["system"]+".xml"), 'w')
             f.write(smlstring)
             f.close()
             self.setMessage("SensorML successfully updated")
-            
+
         else:'''
-            
-        
+
+        if not "system" in proc.data:
+            raise Exception("system parameter is mandatory for PUT request")
+
         smlstring = proc.toXML()
         f = open(os.path.join(self.sensormlpath,self.procedurename+".xml"), 'w')
         f.write(smlstring)
         f.close()
-        self.setMessage("SensorML successfully updated")            
-        
-        #allows to update observed property constraints
-        if proc.data['outputs']:
-            #update database values
-            pass
-        
+        self.setMessage("SensorML successfully updated")
+        servicedb = databaseManager.PgDB(self.serviceconf.connection['user'],
+                                         self.serviceconf.connection['password'],
+                                         self.serviceconf.connection['dbname'],
+                                         self.serviceconf.connection['host'],
+                                         self.serviceconf.connection['port']
+                                         )
+        msg1 = ""
+        msg2 = ""
+
         if proc.data['system'] != self.procedurename:
-            
             #rename procedure in transaction
-            servicedb = databaseManager.PgDB(self.serviceconf.connection['user'],
-                                            self.serviceconf.connection['password'],
-                                            self.serviceconf.connection['dbname'],
-                                            self.serviceconf.connection['host'],
-                                            self.serviceconf.connection['port']
-            )
-            
             sql  = "UPDATE %s.procedures" % self.service
             sql += " SET name_prc = %s WHERE name_prc= %s"
             params = (self.json["system"],self.procedurename)
             servicedb.executeInTransaction(sql,params)
-            
+
             #rename sensorML file
             os.rename(os.path.join(self.sensormlpath,self.procedurename+".xml"),
                       os.path.join(self.sensormlpath,self.json["system"]+".xml"))
-            
+
             #commit transaction
-            servicedb.commitTransaction()
-            self.setMessage("Procedure '%s' successfully renamed to '%s'" %(self.procedurename,str(self.json["system"])))
-        
+
+            msg1 = "Procedure '%s' successfully renamed to '%s'" %(self.procedurename,str(self.json["system"]))
+
+        #allows to update observed property constraints
+        for obsprop in proc.data['outputs']:
+            if "constraint" in obsprop:
+                #get obsprop_id, uom_id and proc_id
+                sql = "SELECT id_prc, id_opr, id_uom"
+                sql += " FROM %s.procedures, %s.observed_properties, %s.uoms" %(self.service,self.service,self.service)
+                sql += " WHERE name_prc=%s AND def_opr=%s AND name_uom=%s"
+                params = (proc.data['system'], obsprop["definition"], obsprop["uom"])
+                try:
+                    ids = servicedb.select(sql,params)
+                except Exception:
+                    raise Exception("Procedure-observedProperty-UnitOfMeasure triplet not found in system, SQL: %s" % servicedb.mogrify(sql,params) )
+
+                if len(ids)==1:
+                    #update database values for the constraints
+                    sql = "UPDATE %s.proc_obs" % self.service
+                    sql += " SET constr_pro = %s"
+                    sql += " WHERE id_prc_fk=%s AND id_uom_fk=%s AND id_opr_fk=%s"
+                    #calculate json string
+                    upd = {}
+                    if "role" in obsprop["constraint"]:
+                        upd["role"] = obsprop["constraint"]["role"]
+                    if "min" in obsprop["constraint"]:
+                        upd["min"]= obsprop["constraint"]["min"]
+                    elif "max" in obsprop["constraint"]:
+                        upd["max"]= obsprop["constraint"]["max"]
+                    elif "interval" in obsprop["constraint"]:
+                        upd["interval"]= " ".join( [ str(a) for a in obsprop["constraint"]["interval"] ] )
+                    elif "valueList" in obsprop["constraint"]:
+                        upd["valueList"]= " ".join( [ str(a) for a in obsprop["constraint"]["valueList"] ] )
+                        
+                    import json
+                    params = (json.dumps(upd), ids[0]['id_prc'], ids[0]['id_opr'], ids[0]['id_uom'])
+                    try:
+                        ids = servicedb.executeInTransaction(sql,params)
+                    except:
+                        raise Exception("Procedure-observedProperty-UnitOfMeasure triplet not found in system")
+                    msg2 = " and observed properties constraints have been updated"
+        servicedb.commitTransaction()
+        self.setMessage(msg1 + msg2)
+
     def executeGet(self):
         """
         Method for executing a GET requests that rename a SOS service
-        
+
         {
             "message": "Sensor Description secessfully loaded",
             "total": 1,
@@ -372,10 +410,10 @@ class waProcedures(waResourceService):
             "success": true
         }
         """
-        
+
         import lib.requests as requests
         res = requests.get(
-            self.serviceconf.serviceurl["url"], 
+            self.serviceconf.serviceurl["url"],
             params={
                 "request": "DescribeSensor",
                 "procedure": self.procedurename,
@@ -390,7 +428,7 @@ class waProcedures(waResourceService):
             smlobj.loadXML(res.content)
         except Exception as e:
             raise Exception("Error loading DescribeSensor of '%s': %s" % (self.procedurename,e))
-        
+
         # Searching for the assignedSensorId from the database
         servicedb = databaseManager.PgDB(
             self.serviceconf.connection['user'],
@@ -411,8 +449,8 @@ class waProcedures(waResourceService):
             self.setMessage("Sensor Description successfully loaded")
         else:
             self.setException("Unable to find the procedure's assignedSensorId")
-        
-        
+
+
 
 class waGetlist(waResourceService):
     """
@@ -421,7 +459,7 @@ class waGetlist(waResourceService):
     def __init__(self,waEnviron):
         waResourceService.__init__(self,waEnviron)
         self.servicename = self.pathinfo[2]
-        
+
     def executeGet(self):
         if self.servicename == "default":
             raise Exception("getlist operation can not be done for default service instance.")
@@ -449,10 +487,10 @@ class waGetlist(waResourceService):
                 else:
                     elem["offerings"] = []
                 data.append(elem)
-            
+
             self.setData(data)
             self.setMessage("Procedures of service <%s> successfully retrived" % self.servicename)
-            
+
 
 class waGetGeoJson(waResourceService):
     """
@@ -460,16 +498,16 @@ class waGetGeoJson(waResourceService):
     """
     def __init__(self,waEnviron):
         waResourceService.__init__(self,waEnviron)
-        
+
         import pprint
         pp = pprint.PrettyPrinter(indent=4)
         print >> sys.stderr, "\n\nENVIRON: %s" % pp.pprint(self.serviceconf.get("geo")['istsosepsg'])
-        
+
         if self.waEnviron['parameters'] and self.waEnviron['parameters']['epsg']:
             self.epsg = self.waEnviron['parameters']['epsg'][0]
         else:
             self.epsg = self.serviceconf.get("geo")['istsosepsg']
-        
+
     def executeGet(self):
         if self.service == "default":
             raise Exception("getlist operation can not be done for default service instance.")
@@ -500,25 +538,25 @@ class waGetGeoJson(waResourceService):
                         elem["offerings"] = [ off["name"] for off in offs ]
                     else:
                         elem["offerings"] = []
-                        
-                     
+
+
                     geom = utils.getGeoJSONFromProcedure(servicedb, self.service,proc["name"], self.epsg)
                     if geom == None:
                         continue
-                    
+
                     data["features"].append({
                         "type": "Feature",
                         "geometry": geom,
                         "properties": elem
                     })
-                
+
                 self.setData(data)
             except Exception as e:
                 self.setMessage("%s" % e)
-                
-            
-    
+
+
+
     def setData(self,data):
         """ Set data in response """
         self.response = data
-        
+
