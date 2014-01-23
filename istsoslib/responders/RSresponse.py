@@ -30,7 +30,7 @@ class RegisterSensorResponse:
         #-----------------------------
         # transaction: insert procedure in DB
         #-----------------------------
-                
+        
         #--check if proc_name exist
         prc_name=None
         sqlId  = "SELECT name_prc FROM %s.procedures" %(filter.sosConfig.schema)
@@ -264,6 +264,7 @@ class RegisterSensorResponse:
         sqlIns  = "INSERT INTO %s.proc_obs (id_prc_fk, id_uom_fk, id_opr_fk, constr_pro) VALUES " % (
             filter.sosConfig.schema
         )
+        
         params=[]
         
         for i in range(len(opr_ids)):

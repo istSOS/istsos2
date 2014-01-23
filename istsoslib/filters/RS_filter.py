@@ -285,7 +285,7 @@ class sosRSfilter(f.sosFilter):
                             self.descs.append(desc.text)
                         else:
                             self.descs.append("NULL")
-                        self.constr.append(None)
+                        #self.constr.append(None)
                         #self.constr.append("NULL")
                         
                     elif not qf==None and tf==None:
@@ -332,7 +332,7 @@ class sosRSfilter(f.sosFilter):
                                         if not xvals[0].isdigit:
                                             err_txt = "'%s' constraint support/need one values" % ct
                                             raise sosException.SOSException("NoApplicableCode",None,err_txt)
-                                        cvals = " ".join(xvals)
+                                        cvals = " ".join(xvals)[0]
                                    
                                     elif ct == "{%s}max" % ns["swe"]:
                                         ct = "max"
@@ -367,7 +367,7 @@ class sosRSfilter(f.sosFilter):
                                     if crole:
                                         cc["role"] = crole
                                     if cvals:
-                                        cc["%s" % ct] = xvals
+                                        cc["%s" % ct] = cvals
                         
                         if not cc=={}:
                             self.constr.append(json.dumps(cc))
@@ -377,40 +377,43 @@ class sosRSfilter(f.sosFilter):
                     else:
                         err_txt = "swe:Time or swe:Quantity is mandatory in multiplicity 1:N"
                         raise sosException.SOSException("NoApplicableCode",None,err_txt)
+                    
+                    
             else:
                 err_txt = "om:result is mandatory in multiplicity 1:N"
                 raise sosException.SOSException("NoApplicableCode",None,err_txt)
-                
-                #case simple om:result
-                """ WAS
-                elif len(sdr)==0 and len(da)==0:
-                    if len(observedProperties)==1:
-                        self.parameters.append(observedProperties[0])
-                        self.uoms.append(getElemAtt(res[0],"uom"))
-                    else:
-                        raise sosException.SOSException(1,"om:observedProperty is mandatory with multiplicity 1")
-                        
-                
-                
-                else:
-                    err_txt = "om:observation ERROR"
-                    raise sosException.SOSException(1,err_txt) 
-                """
+           
 
-                """
-                #####################################################################
-                # DEBUG
-                #####################################################################
-                err_txt = "xmlSensorDescription = %s @" %(self.xmlSensorDescription)
-                err_txt += "procedure = %s  @" %(self.procedure)
-                err_txt += "observedProperties = %s @" %(self.observedProperties)
-                err_txt += "uoms = %s @" %(self.uoms)
-                err_txt += "featureOfInterestUrn = %s @" %(self.featureOfInterestUrn)
-                err_txt += "featureOfInterestSRS = %s @" %(self.featureOfInterestSRS)
-                err_txt += "featureOfInterestWKT = %s @" %(self.featureOfInterestWKT)                
-                raise sosException.SOSException(1,err_txt)
-                #####################################################################
-                """
+            #case simple om:result
+            """ WAS
+            elif len(sdr)==0 and len(da)==0:
+                if len(observedProperties)==1:
+                    self.parameters.append(observedProperties[0])
+                    self.uoms.append(getElemAtt(res[0],"uom"))
+                else:
+                    raise sosException.SOSException(1,"om:observedProperty is mandatory with multiplicity 1")
+                    
+            
+            
+            else:
+                err_txt = "om:observation ERROR"
+                raise sosException.SOSException(1,err_txt) 
+            """
+
+            """
+            #####################################################################
+            # DEBUG
+            #####################################################################
+            err_txt = "xmlSensorDescription = %s @" %(self.xmlSensorDescription)
+            err_txt += "procedure = %s  @" %(self.procedure)
+            err_txt += "observedProperties = %s @" %(self.observedProperties)
+            err_txt += "uoms = %s @" %(self.uoms)
+            err_txt += "featureOfInterestUrn = %s @" %(self.featureOfInterestUrn)
+            err_txt += "featureOfInterestSRS = %s @" %(self.featureOfInterestSRS)
+            err_txt += "featureOfInterestWKT = %s @" %(self.featureOfInterestWKT)                
+            raise sosException.SOSException(1,err_txt)
+            #####################################################################
+            """
             
             
             

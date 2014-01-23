@@ -41,7 +41,7 @@ def XMLformat(GO):
     r += "<gml:name>" + GO.offInfo.name + "</gml:name>\n"    
     
     if len(GO.obs)==0:
-        raise sosException.SOSException("NoApplicableCode","","No matching observation was found according the request parameters!")
+        raise sosException.SOSException("NoApplicableCode",None,"No matching observation was found according the request parameters!")
                 
         r += "<om:member/>\n"
     for ob in GO.obs:
