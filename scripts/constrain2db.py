@@ -44,6 +44,13 @@ except ImportError as e:
     print "\nError loading internal libs:\n >> did you run the script from the istSOS root folder?\n\n"
     raise e
 
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
 def execute(args):  
     pp = pprint.PrettyPrinter(indent=2)
     try:
@@ -55,7 +62,7 @@ def execute(args):
         service = args['s']
         
         # const constraint role
-        role = args['r']
+        role = "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndex:check:reasonable"
         
         # filename
         csvfile = args['f']
@@ -64,10 +71,34 @@ def execute(args):
         
         # Open CSV file
         fo = open(csvfile, "rw+")
-        for row in fo.readlines():
-            if len(row.strip())>0:
-                #put line in line list
-                line = row.split(",")
+        
+        #check file validity
+        lines = [ row.strip().split(",") for row in fo.readlines() if row.strip() is not ""]
+        
+        # load sensor description
+        res = req.get("%s/procedures/operations/getlist" % (service), 
+                      prefetch=True, verify=False)
+        if verbose:
+            pp.pprint(res.json)
+            print "---------------------"
+        
+        procedures = dict( ( i["name"], [ j["name"] for j in i["observedproperties"] ] ) for i in json.loads(res.content)["data"] )
+        
+        for nr,line in enumerate(lines):
+            if len(line)==4:
+                if not line[0] in procedures.keys():
+                    raise Exception("[line %s]: procedure '%s' not observed by the istsos service!" %(nr,line[0]) )
+                if not "-".join(line[1].split(":")[-2:]) in procedures[line[0]]:
+                    raise Exception("[line %s]: procedure '%s' does not observe property '%s'!" %(nr,line[0],line[1]) )
+                if not (is_number(line[2]) or line[2] is ""):
+                    raise Exception("[line %s]: value '%s' at column 3 should represent min values if present, check it is a number!" %(nr,line[2]) )
+                if not (is_number(line[3]) or line[3] is ""):
+                    raise Exception("[line %s]: value '%s' at column 4 should represent min values if present, check it is a number!" %(nr,line[3]) )
+            else:
+                raise Exception("[line %s]: %s input file must contain 4 row: station name, observed property URI, min, max" %(nr,line))
+        
+        for nr,line in enumerate(lines):
+            if line:
                 # load sensor description
                 res = req.get("%s/procedures/%s" % (service,line[0]), 
                               prefetch=True, verify=False)
@@ -75,7 +106,6 @@ def execute(args):
                 if verbose:
                     pp.pprint(res.json)
                     print "---------------------"
-                
                     
                 ds = json.loads(res.content)
                                 
@@ -83,19 +113,13 @@ def execute(args):
                 for opr in ds["data"]["outputs"]:
                     if opr["definition"] == line[1]:
                         opr["constraint"] = {}
-                        if role:
-                            opr["constraint"]["role"]=role
-                        else:
-                            try:
-                                opr["constraint"]["role"]=line[4]
-                            except:
-                                pass
+                        opr["constraint"]["role"]=role
                         if line[2] and line[3]:
                             opr["constraint"]["interval"]=[float(line[2]),float(line[3])]
                         elif not line[2] and line[3]:
-                            opr["constraint"]["max"]=line[3]
+                            opr["constraint"]["max"]=line[3].strip()
                         elif line[2] and not line[3]:
-                            opr["constraint"]["min"]=line[2]
+                            opr["constraint"]["min"]=line[2].strip()
                 
                 # send Json request to update constrain on service
                 res = req.put("%s/procedures/%s" % (service,line[0]),
@@ -136,11 +160,6 @@ if __name__ == "__main__":
         dest='s',
         help='istSOS service address.')
     
-    parser.add_argument('-r', '--role',
-        action='store',
-        required=True,
-        dest='r',
-        help='constant constraint role.to use')
     
     args = parser.parse_args()
     #print args.__dict__
