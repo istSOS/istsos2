@@ -123,7 +123,7 @@ class waVirtualProcedures(waProcedures):
                 "uom": "Pressure",
                 "description": "foo bar",
                 "constraint": {
-                    "role": "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0",
+                    "role": "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndex:check:reasonable",
                     "interval": ["12","65"]
                 }
             }
