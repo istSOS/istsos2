@@ -500,11 +500,11 @@ class waGetobservation(waResourceService):
         
         obsjson = response.json
         
-        try:
+        '''try:
             obsjson["ObservationCollection"]["member"][0]["observedProperty"]["components"] = obsjson["ObservationCollection"]["member"][0]["observedProperty"]["component"]
         except:
             print >> sys.stderr,  "ERROR"
-            pass
+            pass'''
             
         # build the response --------------------------------------------------- 
         try:
