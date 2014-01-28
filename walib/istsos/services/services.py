@@ -478,7 +478,8 @@ class waGetobservation(waResourceService):
             "offering": offerings
         }
         
-        if 'qualityIndex' in self.waEnviron['parameters'] and 'False' in self.waEnviron['parameters']['qualityIndex']:
+        if self.waEnviron['parameters'] and (
+                'qualityIndex' in self.waEnviron['parameters'] and 'False' in self.waEnviron['parameters']['qualityIndex']):
             rparams["qualityIndex"] = "False"
         else:            
             rparams["qualityIndex"] = "True"
