@@ -62,7 +62,7 @@ def execute(args):
         service = args['s']
         
         # const constraint role
-        role = "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndex:check:reasonable"
+        role = "urn:ogc:def:classifiers:x-istsos:1.0:qualityIndex:check:reasonable"
         
         # filename
         csvfile = args['f']
@@ -75,10 +75,13 @@ def execute(args):
         #check file validity
         lines = [ row.strip().split(",") for row in fo.readlines() if row.strip() is not ""]
         
+        
+        
         # load sensor description
         res = req.get("%s/procedures/operations/getlist" % (service), 
                       prefetch=True, verify=False)
         if verbose:
+            print "RETRIVING PRECEDURES..."
             pp.pprint(res.json)
             print "---------------------"
         
@@ -104,6 +107,7 @@ def execute(args):
                               prefetch=True, verify=False)
                 
                 if verbose:
+                    print "RETRIVING PRECEDURE %s..." % line[0]
                     pp.pprint(res.json)
                     print "---------------------"
                     
@@ -129,6 +133,9 @@ def execute(args):
                         )
                         # read response
                 if verbose:
+                    print "SAVING PRECEDURE %s..." % line[0]
+                    pp.pprint(json.dumps(ds["data"]))
+                    print "---------------------"
                     pp.pprint(res.json)
                     print "---------------------"
                 else:
@@ -158,7 +165,7 @@ if __name__ == "__main__":
         action='store',
         required=True,
         dest='s',
-        help='istSOS service address.')
+        help='istSOS WA service address (e.g.: http://localhost/istsos/wa/istsos/services/demo).')
     
     
     args = parser.parse_args()
