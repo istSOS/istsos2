@@ -59,7 +59,6 @@ def XMLformat(GO):
             
             r += "        <gml:beginPosition>" + ob.samplingTime[0].astimezone(GO.reqTZ).isoformat() + "</gml:beginPosition>\n"
             
-                
             if ob.samplingTime[1]:
                 r += "        <gml:endPosition>" + ob.samplingTime[1].astimezone(GO.reqTZ).isoformat() + "</gml:endPosition>\n"
             else:
