@@ -318,7 +318,7 @@ class waProcedures(waResourceService):
                             import json
                             params = (json.dumps(upd), ids[0]['id_prc'], ids[0]['id_opr'], ids[0]['id_uom'])
                             try:
-                                print >> sys.stderr, servicedb.mogrify(sql,params)                                
+                                #print >> sys.stderr, servicedb.mogrify(sql,params)                                
                                 ids = servicedb.executeInTransaction(sql,params)
                                 msg2 = "observed properties constraints have been updated"
                             except:
