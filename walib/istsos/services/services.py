@@ -452,7 +452,7 @@ class waGetobservation(waResourceService):
                     },...
                 ],
                 "success": true
-            }   
+            }
         """
         #get the parameters
         #/istsos/services/{sosmaxi}/operations/{getobservation}/offerings/{temporary}/procedures/{P_BED&P_TRE}/observations/{rain}/eventtime/{last}
@@ -466,19 +466,7 @@ class waGetobservation(waResourceService):
                 eventtime = [ self.pathinfo[12] ] # {instant} | {"last"}
         except:
             raise Exception("ERROR in pathinfo scanning")
-            
-        '''
-        #build the SOS GetObservation request accordingly
-        #------------------------------------------------------        
-        sosRequest  = "request=GetObservation&service=SOS&version=1.0.0&responseFormat=application/json&qualityIndex=True"
-        sosRequest += "&offering=%s" % offerings
-        if not procedures == "*":
-            sosRequest += "&procedure=%s" % procedures
-        if not eventtime[0] == "last":
-            sosRequest += "&eventTime=%s" % "/".join(eventtime)
-        sosRequest += "&observedProperty=%s" % observations'''
-        
-        
+                    
         import lib.requests as requests
         
         rparams = {
@@ -487,9 +475,15 @@ class waGetobservation(waResourceService):
             "version": "1.0.0",
             "observedProperty": observations,
             "responseFormat": "application/json",
-            "qualityIndex": "True",
             "offering": offerings
         }
+        
+        if 'qualityIndex' in self.waEnviron['parameters'] and 'False' in self.waEnviron['parameters']['qualityIndex']:
+            rparams["qualityIndex"] = "False"
+        else:            
+            rparams["qualityIndex"] = "True"
+            
+            
         if not procedures == "*":
             rparams.update({
                 "procedure": procedures
@@ -512,7 +506,6 @@ class waGetobservation(waResourceService):
             print >> sys.stderr,  "ERROR"
             pass
             
-        
         # build the response --------------------------------------------------- 
         try:
             response.raise_for_status()
