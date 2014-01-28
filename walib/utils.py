@@ -543,10 +543,10 @@ def encodeobject(obj, encoding='utf-8'):
 def validateJsonConstraint(constraint):
     """
     Permitted conigurations:
-        {"role":"urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0","min":"10"}
-        {"role":"urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0","max":"10"}
-        {"role":"urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0","interval":["-10","10"]}
-        {"role":"urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0","valueList":["1","2","3","4","5","6"]}
+        {"role":"urn:ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0","min":"10"}
+        {"role":"urn:ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0","max":"10"}
+        {"role":"urn:ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0","interval":["-10","10"]}
+        {"role":"urn:ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0","valueList":["1","2","3","4","5","6"]}
     """
     if 'min' in constraint:
         try:

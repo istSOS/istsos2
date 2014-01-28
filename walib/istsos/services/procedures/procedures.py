@@ -87,19 +87,19 @@ class waProcedures(waResourceService):
                     {
                         "name": "Memory Capacity",
                         "description": "",
-                        "definition": "urn:x-ogc:def:classifier:x-istsos:1.0:memoryCapacity",
+                        "definition": "urn:ogc:def:classifier:x-istsos:1.0:memoryCapacity",
                         "uom": "Byte",
                         "value": "131"
                     },
                     {
                         "name": "Sampling time resolution",
-                        "definition": "urn:x-ogc:def:classifier:x-istsos:1.0:samplingTimeResolution",
+                        "definition": "urn:ogc:def:classifier:x-istsos:1.0:samplingTimeResolution",
                         "uom": "iso8601",
                         "value": "PT10M"
                     },
                     {
                         "name": "Acquisition time resolution",
-                        "definition": "urn:x-ogc:def:classifier:x-istsos:1.0:acquisitionTimeResolution",
+                        "definition": "urn:ogc:def:classifier:x-istsos:1.0:acquisitionTimeResolution",
                         "uom": "iso8601",
                         "value": "PT1H"
                     }
@@ -111,7 +111,7 @@ class waProcedures(waResourceService):
                         "uom": "iso8601",
                         "description": "",
                         "constraint": {
-                            "role": "urn:x-ogc:def:classifiers:x-istsos:1.0:dataAvailability",
+                            "role": "urn:ogc:def:classifiers:x-istsos:1.0:dataAvailability",
                             "min": "",
                             "max": "",
                             "interval": [123,456],
@@ -120,11 +120,11 @@ class waProcedures(waResourceService):
                     },
                     {
                         "name": "Conductivity",
-                        "definition": "urn:x-ogc:def:phenomenon:x-istsos:1.0:conductivity",
+                        "definition": "urn:ogc:def:phenomenon:x-istsos:1.0:conductivity",
                         "uom": "Pressure",
                         "description": "foo bar",
                         "constraint": {
-                            "role": "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndex:check:reasonable",
+                            "role": "urn:ogc:def:classifiers:x-istsos:1.0:qualityIndex:check:reasonable",
                             "interval": ["12","65"]
                         }
                     }
@@ -286,7 +286,7 @@ class waProcedures(waResourceService):
         for obsprop in proc.data['outputs']:
             if "constraint" in obsprop:
                 if "role" in obsprop["constraint"]:
-                    if obsprop["constraint"]["role"]=="urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndex:check:reasonable":
+                    if obsprop["constraint"]["role"]=="urn:ogc:def:classifiers:x-istsos:1.0:qualityIndex:check:reasonable":
                         #get obsprop_id, uom_id and proc_id
                         sql = "SELECT id_prc, id_opr, id_uom"
                         sql += " FROM %s.procedures, %s.observed_properties, %s.uoms" %(self.service,self.service,self.service)
@@ -319,11 +319,17 @@ class waProcedures(waResourceService):
                             params = (json.dumps(upd), ids[0]['id_prc'], ids[0]['id_opr'], ids[0]['id_uom'])
                             try:
                                 ids = servicedb.executeInTransaction(sql,params)
+                                msg2 = "observed properties constraints have been updated"
                             except:
                                 raise Exception("Procedure-observedProperty-UnitOfMeasure triplet not found in system")
-                            msg2 = " and observed properties constraints have been updated"
+                            
         servicedb.commitTransaction()
-        self.setMessage(msg1 + msg2)
+        if msg1 and msg2:
+            self.setMessage(" and ".join([msg1,msg2]) )
+        elif msg1:
+            self.setMessage(msg1)
+        else:
+            self.setMessage(msg2)
 
     def executeGet(self):
         """
