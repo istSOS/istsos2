@@ -303,76 +303,75 @@ class sosRSfilter(f.sosFilter):
                         #===================================================
                         #import sys
                         cc = {}
-                        constraint = qf.find("{%s}constraint" %(ns['swe']))
-                        if constraint:
-                            if "{%s}role" % ns["xlink"] in constraint.attrib:
-                                    crole = constraint.attrib[ "{%s}role" % ns["xlink"] ]
-                            else:
-                                crole = None
+                        constraints = qf.findall("{%s}constraint" %(ns['swe']))
+                        for constraint in constraints:
+                            if constraint:
+                                if "{%s}role" % ns["xlink"] in constraint.attrib:
+                                    if constraint.attrib[ "{%s}role" % ns["xlink"] ] == "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndex:check:reasonable":
+                                        crole = constraint.attrib[ "{%s}role" % ns["xlink"] ]
+                                                               
+                                        allow = constraint.find("{%s}AllowedValues" %(ns['swe']))
+                                        if allow is None:
+                                            err_txt = "in <swe:constraint>: <swe:AllowedValues> is mandatory in multiplicity 1"
+                                            raise sosException.SOSException("NoApplicableCode",None,err_txt)
+                                        else:
+                                            
+                                            cvals = None
+                                            if len(allow)==1:
+                                                ct = allow[0].tag
+                                                if not ct in ["{%s}min" % ns["swe"],"{%s}max" % ns["swe"],"{%s}interval" % ns["swe"],"{%s}valueList" % ns["swe"]]:
+                                                    err_txt = "in <swe:constraint>: support only min, max, interval, valueList tag" 
+                                                    raise sosException.SOSException("NoApplicableCode",None,err_txt)
+                                                
+                                                xvals = allow[0].text.strip().split(" ")
+                                                if ct == "{%s}min" % ns["swe"]: 
+                                                    ct = "min"
+                                                    if not len(xvals)==1:
+                                                        err_txt = "'%s' constraint support/need one values" % ct
+                                                        raise sosException.SOSException("NoApplicableCode",None,err_txt)
+                                                    if not xvals[0].isdigit:
+                                                        err_txt = "'%s' constraint support/need one values" % ct
+                                                        raise sosException.SOSException("NoApplicableCode",None,err_txt)
+                                                    cvals = " ".join(xvals)[0]
+                                               
+                                                elif ct == "{%s}max" % ns["swe"]:
+                                                    ct = "max"
+                                                    if not len(xvals)==1:
+                                                        err_txt = "'%s' constraint support/need one values" % ct
+                                                        raise sosException.SOSException("NoApplicableCode",None,err_txt)
+                                                    if not xvals[0].isdigit:
+                                                        err_txt = "'%s' constraint support/need one values" % ct
+                                                        raise sosException.SOSException("NoApplicableCode",None,err_txt)
+                                                    cvals = " ".join(xvals)
+                                                    
+                                                elif ct == "{%s}interval" % ns["swe"]: 
+                                                    ct = "interval"
+                                                    if not len(xvals)==2:
+                                                        err_txt = "'%s' constraint support/need two values" % ct
+                                                        raise sosException.SOSException("NoApplicableCode",None,err_txt)
+                                                    if not xvals[0].isdigit:
+                                                        err_txt = "'%s' constraint support/need two values" % ct
+                                                        raise sosException.SOSException("NoApplicableCode",None,err_txt)
+                                                    cvals = " ".join(xvals)
+                                            
+                                                elif ct == "{%s}valueList" % ns["swe"]:
+                                                    ct = "valueList"
+                                                    if not len(xvals)>0:
+                                                        err_txt = "'%s' constraint support/need at least one values" % ct
+                                                        raise sosException.SOSException("NoApplicableCode",None,err_txt)
+                                                    if not xvals[0].isdigit:
+                                                        err_txt = "'%s' constraint support/needat least one values" % ct
+                                                        raise sosException.SOSException("NoApplicableCode",None,err_txt)
+                                                    cvals = " ".join(xvals)
+                                                
+                                                cc["role"] = crole
+                                                cc["%s" % ct] = cvals
                             
-                            allow = constraint.find("{%s}AllowedValues" %(ns['swe']))
-                            if allow is None:
-                                err_txt = "in <swe:constraint>: <swe:AllowedValues> is mandatory in multiplicity 1"
-                                raise sosException.SOSException("NoApplicableCode",None,err_txt)
+                            if not cc=={}:
+                                self.constr.append(json.dumps(cc))
                             else:
-                                
-                                cvals = None
-                                if len(allow)==1:
-                                    ct = allow[0].tag
-                                    if not ct in ["{%s}min" % ns["swe"],"{%s}max" % ns["swe"],"{%s}interval" % ns["swe"],"{%s}valueList" % ns["swe"]]:
-                                        err_txt = "in <swe:constraint>: support only min, max, interval, valueList tag" 
-                                        raise sosException.SOSException("NoApplicableCode",None,err_txt)
-                                    
-                                    xvals = allow[0].text.strip().split(" ")
-                                    if ct == "{%s}min" % ns["swe"]: 
-                                        ct = "min"
-                                        if not len(xvals)==1:
-                                            err_txt = "'%s' constraint support/need one values" % ct
-                                            raise sosException.SOSException("NoApplicableCode",None,err_txt)
-                                        if not xvals[0].isdigit:
-                                            err_txt = "'%s' constraint support/need one values" % ct
-                                            raise sosException.SOSException("NoApplicableCode",None,err_txt)
-                                        cvals = " ".join(xvals)[0]
-                                   
-                                    elif ct == "{%s}max" % ns["swe"]:
-                                        ct = "max"
-                                        if not len(xvals)==1:
-                                            err_txt = "'%s' constraint support/need one values" % ct
-                                            raise sosException.SOSException("NoApplicableCode",None,err_txt)
-                                        if not xvals[0].isdigit:
-                                            err_txt = "'%s' constraint support/need one values" % ct
-                                            raise sosException.SOSException("NoApplicableCode",None,err_txt)
-                                        cvals = " ".join(xvals)
-                                        
-                                    elif ct == "{%s}interval" % ns["swe"]: 
-                                        ct = "interval"
-                                        if not len(xvals)==2:
-                                            err_txt = "'%s' constraint support/need two values" % ct
-                                            raise sosException.SOSException("NoApplicableCode",None,err_txt)
-                                        if not xvals[0].isdigit:
-                                            err_txt = "'%s' constraint support/need two values" % ct
-                                            raise sosException.SOSException("NoApplicableCode",None,err_txt)
-                                        cvals = " ".join(xvals)
-                                
-                                    elif ct == "{%s}valueList" % ns["swe"]:
-                                        ct = "valueList"
-                                        if not len(xvals)>0:
-                                            err_txt = "'%s' constraint support/need at least one values" % ct
-                                            raise sosException.SOSException("NoApplicableCode",None,err_txt)
-                                        if not xvals[0].isdigit:
-                                            err_txt = "'%s' constraint support/needat least one values" % ct
-                                            raise sosException.SOSException("NoApplicableCode",None,err_txt)
-                                        cvals = " ".join(xvals)
-                                    
-                                    if crole:
-                                        cc["role"] = crole
-                                    if cvals:
-                                        cc["%s" % ct] = cvals
+                                self.constr.append(None)
                         
-                        if not cc=={}:
-                            self.constr.append(json.dumps(cc))
-                        else:
-                            self.constr.append(None)
                         
                     else:
                         err_txt = "swe:Time or swe:Quantity is mandatory in multiplicity 1:N"

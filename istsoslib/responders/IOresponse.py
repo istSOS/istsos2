@@ -179,8 +179,8 @@ class InsertObservationResponse:
         oprUoms=        ["mm" , ...]
         oprIds=         [id_opr , ...]
         proIds=         [id_pro , ...]
-        obsPropConstr=  [{"interval": ["-40", "50"], "role": "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0"} , ...]
-        procConstr=     [{"max": "100", "role": "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0"} , ...]
+        obsPropConstr=  [{"interval": ["-40", "50"], "role": "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndex:check:acceptable"} , ...]
+        procConstr=     [{"max": "100", "role": "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndex:check:reasonable"} , ...]
         '''
         
         for row in opr:
