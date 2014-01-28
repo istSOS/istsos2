@@ -307,7 +307,7 @@ class sosRSfilter(f.sosFilter):
                         for constraint in constraints:
                             if constraint:
                                 if "{%s}role" % ns["xlink"] in constraint.attrib:
-                                    if constraint.attrib[ "{%s}role" % ns["xlink"] ] == "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndex:check:reasonable":
+                                    if constraint.attrib[ "{%s}role" % ns["xlink"] ] == "urn:ogc:def:classifiers:x-istsos:1.0:qualityIndex:check:reasonable":
                                         crole = constraint.attrib[ "{%s}role" % ns["xlink"] ]
                                                                
                                         allow = constraint.find("{%s}AllowedValues" %(ns['swe']))

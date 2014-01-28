@@ -145,10 +145,10 @@ def render(DS,sosConfig):
         """
         # Handling constraint
         Permitted conigurations:
-            {"role":"urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndex:check:reasonable","min":"10"}
-            {"role":"urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndex:check:reasonable","max":"10"}
-            {"role":"urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndex:check:reasonable","interval":["-10","10"]}
-            {"role":"urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndex:check:reasonable","valueList":["1","2","3","4","5","6"]}
+            {"role":"urn:ogc:def:classifiers:x-istsos:1.0:qualityIndex:check:reasonable","min":"10"}
+            {"role":"urn:ogc:def:classifiers:x-istsos:1.0:qualityIndex:check:reasonable","max":"10"}
+            {"role":"urn:ogc:def:classifiers:x-istsos:1.0:qualityIndex:check:reasonable","interval":["-10","10"]}
+            {"role":"urn:ogc:def:classifiers:x-istsos:1.0:qualityIndex:check:reasonable","valueList":["1","2","3","4","5","6"]}
         """
         if not (field["constr_pro"]=="" or field["constr_pro"]==None):
             try:
