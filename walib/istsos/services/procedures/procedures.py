@@ -301,7 +301,7 @@ class waProcedures(waResourceService):
                             #update database values for the constraints
                             sql = "UPDATE %s.proc_obs" % self.service
                             sql += " SET constr_pro = %s"
-                            sql += " WHERE id_prc_fk=%s AND id_uom_fk=%s AND id_opr_fk=%s"
+                            sql += " WHERE id_prc_fk=%s AND id_opr_fk=%s AND id_uom_fk=%s"
                             #calculate json string
                             upd = {}
                             if "role" in obsprop["constraint"]:
