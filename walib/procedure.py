@@ -818,7 +818,7 @@ class Procedure():
         location = et.SubElement(FeatureCollection, "{%s}location" % ns['gml'])
         Point = et.SubElement(location, "{%s}Point" % ns['gml'])
         Point.attrib[ "{%s}id" % ns['gml'] ] = "gmlfoi_" + self.data["location"]["properties"]["name"]
-        Point.attrib[ "srsName" ] = "EPSG:"+self.data["location"]["crs"]["properties"]["name"]
+        Point.attrib[ "srsName" ] = self.data["location"]["crs"]["properties"]["name"] if "EPSG:" in self.data["location"]["crs"]["properties"]["name"] else "EPSG:%s" % self.data["location"]["crs"]["properties"]["name"]
         coordinates = et.SubElement(Point, "{%s}coordinates" % ns['gml'])
         coordinates.text = ",".join([ str(a) for a in self.data["location"]["geometry"]["coordinates"] ])
         
@@ -845,7 +845,7 @@ class Procedure():
         TextBlock.attrib["blockSeparator"] = "@"
         TextBlock.attrib["decimalSeparator"] = "."
         
-        values = et.SubElement(DataArray, "{%s}values" % ns['swe'])
+        #values = et.SubElement(DataArray, "{%s}values" % ns['swe'])
         
         return root
         

@@ -261,7 +261,7 @@ Ext.define('istsos.view.procedure', {
                   to.setVisible(true);
                   list.setVisible(false);
                   break;
-                case 3:Bookmarks
+                case 3:
                   from.setVisible(true);
                   to.setVisible(true);
                   list.setVisible(false);
@@ -406,7 +406,8 @@ Ext.define('istsos.view.procedure', {
                 
             }
             
-            var role = "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0";
+            var role = "urn:ogc:def:classifiers:x-istsos:1.0:qualityIndex:check:reasonable";
+            
             var rec = cmb.findRecord('definition',cmb.getValue()), r = null;
             
             switch (json.ctype) {
@@ -417,8 +418,8 @@ Ext.define('istsos.view.procedure', {
                         "uom" : json.uom,
                         "description" : json.description,
                         "role" : role,
-                        "from" : json.from,
-                        "ctype": json.ctype
+                        "from" : json.from
+                        //,"ctype": json.ctype
                     });
                     break;
                 case 2: // Less then
@@ -428,8 +429,8 @@ Ext.define('istsos.view.procedure', {
                         "uom" : json.uom,
                         "description" : json.description,
                         "role" : role,
-                        "to" : json.to,
-                        "ctype": json.ctype
+                        "to" : json.to
+                        //,"ctype": json.ctype
                     });
                     break;
                 case 3: // Between
@@ -440,8 +441,8 @@ Ext.define('istsos.view.procedure', {
                         "description" : json.description,
                         "role" : role,
                         "to" : json['to'],
-                        "from" : json['from'],
-                        "ctype": json.ctype
+                        "from" : json['from']
+                        //,"ctype": json.ctype
                     });
                     break;
                 case 4: // List
@@ -451,8 +452,8 @@ Ext.define('istsos.view.procedure', {
                         "uom" : json.uom,
                         "description" : json.description,
                         "role" : role,
-                        "list" : json.list.split(",").toString(),
-                        "ctype": json.ctype
+                        "list" : json.list.split(",").toString()
+                        //,"ctype": json.ctype
                     });
                     break;
                 default:
@@ -1093,7 +1094,65 @@ Ext.define('istsos.view.procedure', {
         for (var i = 0; i < store.getCount(); i++) {
             var rec = store.getAt(i);
             
-            switch (rec.get('ctype')) {
+            if (!Ext.isEmpty(rec.get('from')) && !Ext.isEmpty(rec.get('to'))){
+                // Between
+                ret.push({
+                    "name" : rec.get('name'),
+                    "definition" : rec.get('definition'),
+                    "uom" : rec.get('uom'),
+                    "description" : rec.get('description'),
+                    "constraint" : {
+                        "role" : rec.get('role'),
+                        "interval" : [rec.get('from'), rec.get('to')]
+                    }
+                });
+            }else if(!Ext.isEmpty(rec.get('from'))){
+                // Greater then
+                ret.push({
+                    "name" : rec.get('name'),
+                    "definition" : rec.get('definition'),
+                    "uom" : rec.get('uom'),
+                    "description" : rec.get('description'),
+                    "constraint" : {
+                        "role" : rec.get('role'),
+                        "min" : rec.get('from')
+                    }
+                });
+            }else if (!Ext.isEmpty(rec.get('to'))){
+                // Less then
+                ret.push({
+                    "name" : rec.get('name'),
+                    "definition" : rec.get('definition'),
+                    "uom" : rec.get('uom'),
+                    "description" : rec.get('description'),
+                    "constraint" : {
+                        "role" : rec.get('role'),
+                        "max" : rec.get('to')
+                    }
+                });
+            }else if (!Ext.isEmpty(rec.get('list'))){
+                // List
+                ret.push({
+                    "name" : rec.get('name'),
+                    "definition" : rec.get('definition'),
+                    "uom" : rec.get('uom'),
+                    "description" : rec.get('description'),
+                    "constraint" : {
+                        "role" : rec.get('role'),
+                        "valueList" : rec.get('list').split(",")
+                    }
+                });
+            }else{
+                ret.push({
+                    "name" : rec.get('name'),
+                    "definition" : rec.get('definition'),
+                    "uom" : rec.get('uom'),
+                    "description" : rec.get('description'),
+                    "constraint" : {}
+                });         
+            }
+            
+            /*switch (rec.get('ctype')) {
                 case 1: // Greater then
                     ret.push({
                         "name" : rec.get('name'),
@@ -1151,7 +1210,7 @@ Ext.define('istsos.view.procedure', {
                         "constraint" : {}
                     });
                     break;
-            }
+            }*/
             
             
         }

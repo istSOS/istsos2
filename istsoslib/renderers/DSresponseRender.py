@@ -165,13 +165,13 @@ def render(DS,sosConfig):
                 # Factory on constraint min/max/interval/valuelist
                 if "interval" in constraintObj:
                     interval = et.SubElement(AllowedValues, "{%s}interval" % ns['swe'])
-                    #interval.text = " ".join([ str(a) for a in constraintObj["interval"] ])
-                    interval.text = constraintObj["interval"]
+                    interval.text = " ".join([ str(a) for a in constraintObj["interval"] ])
+                    #interval.text = " ".join(constraintObj["interval"])
                     
                 elif "valueList" in constraintObj:#.has_key("valueList"):
                     valueList = et.SubElement(AllowedValues, "{%s}valueList" % ns['swe'])
-                    #valueList.text = ", ".join([ str(a) for a in constraintObj["valueList"] ])
-                    valueList.text = constraintObj["valueList"]
+                    valueList.text = ", ".join([ str(a) for a in constraintObj["valueList"] ])
+                    #valueList.text = " ".join(constraintObj["valueList"])
                     
                 elif "min" in constraintObj:#.has_key("min"):
                     amin = et.SubElement(AllowedValues, "{%s}min" % ns['swe'])

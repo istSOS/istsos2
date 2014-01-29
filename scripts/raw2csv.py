@@ -31,7 +31,9 @@ import glob
 from datetime import datetime
 from datetime import timedelta
 import decimal
+from inspect import stack
 import pprint
+import tempfile
 pp = pprint.PrettyPrinter(indent=4)
 
 try:
@@ -45,11 +47,11 @@ except ImportError as e:
     
 class Converter():
     req = requests.session()
-    def __init__(self, name, url, service, folderIn, pattern, folderOut, 
+    def __init__(self, name, url, service, folderIn, pattern, folderOut=None, 
                  qualityIndex=False, exceptionBehaviour={}, 
                  user=None, password=None, debug=False, 
                  csvlength=5000, 
-                 filenamecheck = None):
+                 filenamecheck = None, archivefolder = None):
         """
         Info:        
         
@@ -69,26 +71,27 @@ class Converter():
         filenamecheck = {
             'dateformat': '12_%Y-%m-%d_%H%M%S.dat',
             'datetz': '+01:00',
-            'replace': ['_P','_M']
+            'replace': ['_P','_M'],
+            'timedelta': timedelta(days=1)
         }
         """
         self.name = name
         self.url = url
         self.service = service
-        self.url = url
-        self.service = service
         self.folderIn = folderIn
         self.pattern = pattern
-        self.folderOut = folderOut
+        self.folderOut = folderOut if folderOut is not None else tempfile.mkdtemp()
         self.qualityIndex = qualityIndex
         self.user = user
         self.password = password
         self.auth = (self.user, self.password) if (self.user != None and self.password != None) else None
         self.debug = debug
         
+        self.archivefolder = archivefolder
+        
         # Used inf the function "skipFile"
         self.fndtz = '+01:00'
-        self.fnre = self.fndf = None
+        self.fntd = self.fnre = self.fndf = None
         if type(filenamecheck) == type({}):
             if 'dateformat' in filenamecheck:
                 self.fndf = filenamecheck['dateformat'] 
@@ -96,7 +99,13 @@ class Converter():
                 self.fndtz = filenamecheck['datetz'] 
             if 'replace' in filenamecheck:
                 self.fnre = filenamecheck['replace'] 
+            if 'timedelta' in filenamecheck:
+                if not isinstance(filenamecheck['timedelta'], timedelta):
+                    raise InitializationError("filenamecheck configuration contains a timedelta attribute, it shall be and instance of datetime.timedelta.")
+                self.fntd = filenamecheck['timedelta'] 
         
+        # >>> year = timedelta(days=365)
+
         # Array where Observation are stored during the parse operation
         self.observations = []
         self.observationsCheck = {}
@@ -105,10 +114,39 @@ class Converter():
         
         if self.debug:
             print "%s initialized." % self.name
-            
+        
+        
+        # Messages collected during processing
+        self.messages = []
+        self.warnings = []
+        self.exceptions = []
+        
+        # Single loop execution information
+        self.executing = {
+            'file': None
+        }
+        
+        
         # Load describeSensor from istSOS WALib (http://localhost/istsos/wa/istsos/services/demo/procedures/T_LUGANO)
         self.loadSensorMetadata()
         
+    def addMessage(self, message):
+        self.messages.append({
+            "stack": stack(),
+            "text": message
+        })
+        
+    def addWarning(self, message):
+        self.warnings.append({
+            "stack": stack(),
+            "text": message
+        })
+        
+    def addException(self, message):
+        self.exceptions.append({
+            "stack": stack(),
+            "text": message
+        })
         
     def parse(self, fileObj, name=None):
         raise Exception("This function must be overwritten")
@@ -142,6 +180,8 @@ class Converter():
         dt = self.getDateTimeWithTimeZone(
             datetime.strptime(n, self.fndf), self.fndtz
         )
+        if self.fntd:
+            dt = dt + self.fntd
         if not ep == None and ep < dt:
             return False
         return True
@@ -151,6 +191,88 @@ class Converter():
         offset = tz.split(":")
         return dt - timedelta(hours=int(offset[0]), minutes=int(offset[1]))
     
+    def csv2istsos(self):
+        from scripts import csv2istsos
+        csv2istsos.execute({
+            'u': self.url,
+            's': self.service,
+            'wd': self.folderOut,
+            'p': [self.name]
+        })
+        
+    def istsos2istsos(self, ssrv, durl=None):
+        from scripts import istsos2istsos
+        istsos2istsos.execute({
+            'v': True,
+            'lm': True,
+            'procedure': self.name,
+            'surl': durl if durl is not None else self.url,
+            'ssrv': self.service,
+            'dsrv': ssrv
+        }) 
+    
+    def archive(self):
+        
+        import zipfile
+        
+        # Creating zip archive
+        archive = zipfile.ZipFile(
+            os.path.join(self.archivefolder, "%s_%s.zip" % (
+                self.name,
+                datetime.utcnow().strftime("%Y%m%d%H%M%S"))
+            ), "w") # Open the zip file for writing
+            
+        for root, dirs, files in os.walk(self.folderOut):
+            for f in files:
+                # adding files to zip archive
+                archive.write(os.path.join(root, f))
+         
+        archive.close()
+        
+        
+        '''
+        
+        def zipdir(path, zip):
+            for root, dirs, files in os.walk(path):
+                for file in files:
+                    zip.write(os.path.join(root, file))
+        
+        if __name__ == '__main__':
+            zipf = zipfile.ZipFile('Python.zip', 'w')
+            zipdir('tmp/', zipf)
+            zipf.close()
+            
+        
+        archive = zipfile.ZipFile(
+            os.path.join(archive_path, "%s.zip" % 
+                datetime.utcnow().strftime("%Y%m%d%H%M%S")
+            ), "w") # Open the zip file for writing
+            
+        if not os.path.isdir(self.folderOut):
+            msg = "Processing folder (%s) does not exist" % self.folderOut
+            self.addException(msg)
+            raise FileReaderError (msg)
+        
+        files = glob.glob(os.path.join(self.folderOut, "*"))
+        
+        def archiveFile(ff):
+            ff = ff.encode('ascii') #convert path to ascii for ZipFile Method
+            (filepath, filename) = os.path.split(ff)
+            archive.write(ff, filename, zipfile.ZIP_DEFLATED)
+            
+        def archiveFolder(ff):
+            ff = ff.encode('ascii') #convert path to ascii for ZipFile Method
+            ffiles = glob.glob(os.path.join(ff, "*"))
+            for fff in ffiles:
+        
+        for f in files:
+            if os.path.isfile(f):
+                archiveFile(f)
+            if os.path.isdir(f):
+                archiveFolder(f)'''
+
+        
+        
     def execute(self):
         
         self.observations = []
@@ -167,6 +289,9 @@ class Converter():
                 continue
             if self.debug:
                 print " > Working on file %s" % os.path.split(fileObj)[1]
+            self.executing = {
+                "file": fileObj
+            }
             dat = open(fileObj,'rU')
             self.parse(dat,os.path.split(fileObj)[1])
             dat.close()
@@ -180,9 +305,13 @@ class Converter():
         # Save the CSV file in text/csv;subtype='istSOS/2.0.0'
         if self.isEmpty(): # The procedure is registered but there are no observations
             self.save()
+            if self.archivefolder:
+                self.archive()
             return True
         elif isinstance(self.getIOEndPosition(), datetime) and self.getIOEndPosition() > self.getDSEndPosition():
             self.save()
+            if self.archivefolder:
+                self.archive()
             return True
         else:
             if self.debug:
@@ -210,8 +339,8 @@ class Converter():
             raise IstSOSError ("Description of procedure %s can not be loaded: %s" % (self.name, res.json['message']))
         self.describe = res.json['data']
         
-        if self.debug:
-            print self.describe
+        '''if self.debug:
+            print self.describe'''
                 
         
         self.obsindex = []
@@ -247,10 +376,10 @@ class Converter():
         return self.endPosition
         
     def setEndPosition(self, endPosition):
-        if isinstance(endPosition, datetime):
+        if isinstance(endPosition, datetime) and endPosition.tzinfo is not None:
             self.endPosition = endPosition
         else:
-            raise IstSOSError("If you are setting the endPosition manually you shall use a datetime object")
+            raise IstSOSError("If you are setting the endPosition you shall use a datetime object with timezone")
     
     def prepareFiles(self):
         """
@@ -261,7 +390,9 @@ class Converter():
             print " > Checking folder input (%s)" % self.folderIn
         
         if not os.path.isdir(self.folderIn):
-            raise FileReaderError ( "Input folder (%s) does not exist" % self.folderIn)
+            msg = "Input folder (%s) does not exist" % self.folderIn
+            self.addException(msg)
+            raise FileReaderError ( msg)
         
         files = filter(path.isfile, glob.glob(os.path.join(self.folderIn, "%s" % (self.pattern))))
         files.sort()
@@ -293,27 +424,43 @@ class Converter():
             if not o in self.obsindex:
                 raise ObservationError("Observation (%s) is not observed by this procedure." % (o))
         
+        # Check if duplicate dates are present
         if observation.getEventime() in self.observationsCheck:
-            raise RedundacyError("Observation (%s) is already present in the file." % (observation))
-            
-        self.observations.append(observation)
-        self.observationsCheck[observation.getEventime()]=observation
+            # If the date is already present and the data added are different then it laounch an exception
+            if str(self.observationsCheck[observation.getEventime()]) != str(observation):
+                msg = "Observation (%s) is already present in the file (%)." % (observation, self.executing['file'])
+                self.addException(msg)
+                raise RedundacyError(msg)
+            else:
+                self.addWarning("Identical observation (%s) has been already processed (file %s), skipping." % (observation, self.executing['file']))
+        else:
+            self.observations.append(observation)
+            self.observationsCheck[observation.getEventime()]=observation
     
     def save(self):
         """
         Save the collected observation in the text/csv;subtype=istSOS/2.0.0
+        
+        with a file name composed of 
+          - name procedure
+          - underscore _
+          - datetime in UTC
+          - extension (.dat)
+        .astimezone(pytz.utc).isoformat()
         """
-        if len(self.observations)>0:            
-            if self.endPosition == None:
+        print "End position: %s" % self.getIOEndPosition()
+        if len(self.observations)>0:
+            if self.getIOEndPosition() == None:
                 f = open(os.path.join(self.folderOut,"%s_%s.dat" %(
                     self.name,
-                    datetime.strftime(self.observations[-1].getEventime(), "%Y%m%d%H%M%S"))), 'w')
+                    datetime.strftime(self.observations[-1].getEventime().astimezone(timezone('UTC')), "%Y%m%d%H%M%S"))), 'w')
             else:
-                if self.endPosition < self.observations[-1].getEventime():
-                    raise IstSOSError("End position (%s) cannot be before the last observation event time (%s)" % (self.endPosition, self.observations[-1].getEventime()))
+                if self.getIOEndPosition() < self.observations[-1].getEventime():
+                    raise IstSOSError("End position (%s) cannot be before the last observation event time (%s)" % (
+                        self.getIOEndPosition(), self.observations[-1].getEventime()))
                 f = open(os.path.join(self.folderOut,"%s_%s.dat" %(
                     self.name,
-                    datetime.strftime(self.observations[-1].getEventime(), "%Y%m%d%H%M%S"))), 'w')
+                    datetime.strftime(self.getIOEndPosition().astimezone(timezone('UTC')), "%Y%m%d%H%M%S"))), 'w')
             f.write("%s\n" % ",".join(self.obsindex))
             for o in self.observations:
                 f.write("%s\n" % o.csv(",",self.obsindex))
@@ -324,7 +471,7 @@ class Converter():
                 raise IstSOSError("The file has no observations, if this happens, you shall use the setEndPosition function to set the endPosition manually")
             f = open(os.path.join(self.folderOut,"%s_%s.dat" %(
                 self.name,
-                datetime.strftime(self.getIOEndPosition(), "%Y%m%d%H%M%S"))), 'w')
+                datetime.strftime(self.getIOEndPosition().astimezone(timezone('UTC')), "%Y%m%d%H%M%S"))), 'w')
             f.write("%s\n" % ",".join(self.obsindex))
         f.close()
         
@@ -373,10 +520,10 @@ class Observation:
         return self.__eventime
 
     def setEventime(self, eventime):
-        if isinstance(eventime, datetime):
+        if isinstance(eventime, datetime) and eventime.tzinfo is not None:
             self.__eventime = eventime
         else:
-            raise TypeError, ('eventime arg.: it must be a Datetime Object. [%s]' % eventime)
+            raise TypeError, ('eventime arg.: it must be a Datetime Object with timezone. [%s]' % eventime)
         pass
     
     def setObservedValue(self,obs,value):

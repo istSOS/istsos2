@@ -180,7 +180,10 @@ def execute (args):
         dst = args['d']
         srv = args['n']
         
-        appendData = args['a']
+        appendData = False
+        if 'a' in args:
+            appendData = False
+        
         
         dfrom = None
         dto = None

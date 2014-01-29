@@ -26,6 +26,7 @@ import traceback
 import json
 import pprint
 import glob
+from datetime import datetime
 
 #print path.abspath(".")
 #print path.normpath("%s/../" % path.abspath("."))
@@ -34,18 +35,21 @@ sys.path.insert(0, path.abspath("."))
 try:
     import lib.argparse as argparse
     import lib.requests as requests
+    from lib.pytz import timezone
 except ImportError as e:
     print "\nError loading internal libs:\n >> did you run the script from the istSOS root folder?\n\n"
     raise e
     
-def execute (args):  
+def execute (args):
+    
     pp = pprint.PrettyPrinter(indent=2)
+    
     try:
     
         # Initializing URLs
         url = args['u']
         
-        # Procedures
+        # Service instance name
         service = args['s']
         
         # Quality index
@@ -53,7 +57,7 @@ def execute (args):
         if 'q' in args:
             quality = args['q']
         
-        # Service instance name
+        # Procedures
         procs = args['p']
         
         # Working directory, where the CSV files are located
@@ -212,14 +216,24 @@ def execute (args):
                         raise e
                         
             
+            
+            #print jsonindex['urn:ogc:def:parameter:x-istsos:1.0:time:iso8601']
+            #print data['result']['DataArray']['values']
+            
+            
             # @todo should be handled situation where a freshly registerd procedure with irregular data
             #       is inserting a csv data file without observaton but only with a trasmission date.
-            print jsonindex['urn:ogc:def:parameter:x-istsos:1.0:time:iso8601']
-            print data['result']['DataArray']['values']
             data["samplingTime"] = {
                 "beginPosition": data['result']['DataArray']['values'][0][jsonindex['urn:ogc:def:parameter:x-istsos:1.0:time:iso8601']],
-			   "endPosition": data['result']['DataArray']['values'][-1][jsonindex['urn:ogc:def:parameter:x-istsos:1.0:time:iso8601']]
+			   "endPosition":  datetime.strptime(
+                        os.path.split(f)[1].replace("%s_" % proc, "").replace(ext, ""),"%Y%m%d%H%M%S%f"
+                    ).replace(tzinfo=timezone('UTC')).isoformat()
             }
+            
+            '''data["samplingTime"] = {
+                "beginPosition": data['result']['DataArray']['values'][0][jsonindex['urn:ogc:def:parameter:x-istsos:1.0:time:iso8601']],
+			   "endPosition": data['result']['DataArray']['values'][-1][jsonindex['urn:ogc:def:parameter:x-istsos:1.0:time:iso8601']]
+            }'''
             
             data["result"]["DataArray"]["elementCount"] = str(len(data['result']['DataArray']['values']))
             

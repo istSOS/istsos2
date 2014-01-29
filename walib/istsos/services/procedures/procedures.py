@@ -307,13 +307,32 @@ class waProcedures(waResourceService):
                             if "role" in obsprop["constraint"]:
                                 upd["role"] = obsprop["constraint"]["role"]
                             if "min" in obsprop["constraint"]:
-                                upd["min"]= obsprop["constraint"]["min"]
+                                #upd["min"]= obsprop["constraint"]["min"]
+                                try:
+                                    upd["min"] = obsprop["constraint"]["min"]
+                                except:
+                                    raise Exception("'min' constraint requires float value")
                             elif "max" in obsprop["constraint"]:
-                                upd["max"]= obsprop["constraint"]["max"]
+                                #upd["max"]= obsprop["constraint"]["max"]
+                                try:
+                                    upd["max"] = obsprop["constraint"]["max"]
+                                except:
+                                    raise Exception("'max' constraint requires float value")
                             elif "interval" in obsprop["constraint"]:
-                                upd["interval"]= " ".join( [ str(a) for a in obsprop["constraint"]["interval"] ] )
+                                #upd["interval"]= [ str(a) for a in obsprop["constraint"]["interval"] ]
+                                try:
+                                    upd["interval"] = [
+                                        float(obsprop["constraint"]["interval"][0]),
+                                        float(obsprop["constraint"]["interval"][1])
+                                    ]
+                                except:
+                                    raise Exception("'interval' constraint requires an array of two float value")
                             elif "valueList" in obsprop["constraint"]:
-                                upd["valueList"]= " ".join( [ str(a) for a in obsprop["constraint"]["valueList"] ] )
+                                #upd["valueList"]= [ str(a) for a in obsprop["constraint"]["valueList"] ]
+                                try:
+                                    upd["valueList"] = [float(a) for a in obsprop["constraint"]["valueList"]]
+                                except:
+                                    raise Exception("'interval' constraint requires an array of two float value")
                                 
                             import json
                             params = (json.dumps(upd), ids[0]['id_prc'], ids[0]['id_opr'], ids[0]['id_uom'])
@@ -323,8 +342,34 @@ class waProcedures(waResourceService):
                                 msg2 = "observed properties constraints have been updated"
                             except:
                                 raise Exception("Procedure-observedProperty-UnitOfMeasure triplet not found in system")
-                            
+                
+                else:
+                    #get obsprop_id, uom_id and proc_id
+                    sql = "SELECT id_prc, id_opr, id_uom"
+                    sql += " FROM %s.procedures, %s.observed_properties, %s.uoms" %(self.service,self.service,self.service)
+                    sql += " WHERE name_prc=%s AND def_opr=%s AND name_uom=%s"
+                    params = (proc.data['system'], obsprop["definition"], obsprop["uom"])
+                    try:
+                        ids = servicedb.select(sql,params)
+                    except Exception:
+                        raise Exception("Procedure-observedProperty-UnitOfMeasure triplet not found in system, SQL: %s" % servicedb.mogrify(sql,params) )
+    
+                    if len(ids)==1:
+                        #update database values for the constraints
+                        sql = "UPDATE %s.proc_obs" % self.service
+                        sql += " SET constr_pro = NULL"
+                        sql += " WHERE id_prc_fk=%s AND id_opr_fk=%s AND id_uom_fk=%s"
+                        
+                        params = (ids[0]['id_prc'], ids[0]['id_opr'], ids[0]['id_uom'])
+                        try:
+                            #print >> sys.stderr, servicedb.mogrify(sql,params)                                
+                            ids = servicedb.executeInTransaction(sql,params)
+                            msg2 = "observed properties constraints have been updated"
+                        except:
+                            raise Exception("Procedure-observedProperty-UnitOfMeasure triplet not found in system")
+                
         servicedb.commitTransaction()
+        
         if msg1 and msg2:
             self.setMessage(" and ".join([msg1,msg2]) )
         elif msg1:

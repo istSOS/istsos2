@@ -52,18 +52,26 @@ from scripts import raw2csv
 from datetime import datetime
 
 class StsImporter(raw2csv.Converter):
-    def __init__(self, procedureName, config, url, service, inputDir, fileNamePattern, outputDir, debug):
+    
+    def __init__(self, procedureName, config, url, service, inputDir, 
+                 fileNamePattern, outputDir, qualityIndex=False, 
+                 exceptionBehaviour={}, user=None, password=None, debug=False, 
+                 csvlength=5000, filenamecheck=None, archivefolder = None):
+                     
         self.config = config
+        
         raw2csv.Converter.__init__(self, procedureName, url, service,
             inputDir, fileNamePattern, outputDir,
-            debug=debug)
+            qualityIndex, exceptionBehaviour, user, password, debug, csvlength, filenamecheck, archivefolder)
         
     def parse(self, fileObj, fileName):
         
         skipline = fileName.split("_")[0]
         
         dateformat = "%Y-%m-%d %H:%M:%S"
-        op = self.getDefinitions()[1]
+        
+        # STS procedures have only one observed property
+        op = self.getDefinitions()[1] 
         
         for line in fileObj.readlines():
             

@@ -57,10 +57,11 @@ from scripts import raw2csv
 class CampbellImporter(raw2csv.Converter):
     
     
-    def __init__(self, procedureName, config, url, service, inputDir, 
-                 fileNamePattern, outputDir, qualityIndex=False, 
-                 exceptionBehaviour={}, user=None, password=None, debug=False, 
-                 csvlength=5000, filenamecheck=None):
+    def __init__(self, procedureName, config, url, service, 
+                 inputDir, fileNamePattern, outputDir=None, 
+                 qualityIndex=False, exceptionBehaviour={}, 
+                 user=None, password=None, debug=False, 
+                 csvlength=5000, filenamecheck=None, archivefolder = None):
         """
         CampbellImporter constructor
         
@@ -86,7 +87,7 @@ class CampbellImporter(raw2csv.Converter):
             self.config['date']=[1,2,3]
         raw2csv.Converter.__init__(self, procedureName, url, service,
             inputDir, fileNamePattern, outputDir,
-            qualityIndex, exceptionBehaviour, user, password, debug, csvlength, filenamecheck)
+            qualityIndex, exceptionBehaviour, user, password, debug, csvlength, filenamecheck, archivefolder)
     
     def getDate(self, year, day, hour, second=None):
         # Parsing date with year, days from 1 January and hours in integers
@@ -123,6 +124,7 @@ class CampbellImporter(raw2csv.Converter):
             s = line.strip(' \t\n\r')
             arr = s.split(",")
             if s != '' and len(arr)>0:
+                
                 date = self.getDate(arr[self.config['date'][0]],arr[self.config['date'][1]],arr[self.config['date'][2]])
                 self.setEndPosition(date)
                 
@@ -134,6 +136,7 @@ class CampbellImporter(raw2csv.Converter):
                         date = self.getDate(arr[self.config['date'][0]],arr[self.config['date'][1]],arr[self.config['date'][2]],arr[self.config['date'][3]])
                     else:
                         raise raw2csv.IstSOSError("Date configuration mismatch.")
+                        
                     self.setEndPosition(date)
                     
                     values = {}

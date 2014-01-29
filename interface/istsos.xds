@@ -2380,7 +2380,6 @@
                                                 "allowBlank": false,
                                                 "displayField": "name",
                                                 "forceSelection": true,
-                                                "queryMode": "local",
                                                 "store": "locationEPSG",
                                                 "valueField": "name",
                                                 "designer|userClassName": "MyComboBox7",

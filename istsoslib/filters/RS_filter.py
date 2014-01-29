@@ -324,45 +324,50 @@ class sosRSfilter(f.sosFilter):
                                                     raise sosException.SOSException("NoApplicableCode",None,err_txt)
                                                 
                                                 xvals = allow[0].text.strip().split(" ")
+                                                
                                                 if ct == "{%s}min" % ns["swe"]: 
                                                     ct = "min"
                                                     if not len(xvals)==1:
                                                         err_txt = "'%s' constraint support/need one values" % ct
                                                         raise sosException.SOSException("NoApplicableCode",None,err_txt)
-                                                    if not xvals[0].isdigit:
-                                                        err_txt = "'%s' constraint support/need one values" % ct
+                                                    try:
+                                                        cvals = float(xvals[0])
+                                                    except:
+                                                        err_txt = "'%s' constraint requires float value" % ct
                                                         raise sosException.SOSException("NoApplicableCode",None,err_txt)
-                                                    cvals = " ".join(xvals)[0]
                                                
                                                 elif ct == "{%s}max" % ns["swe"]:
                                                     ct = "max"
                                                     if not len(xvals)==1:
                                                         err_txt = "'%s' constraint support/need one values" % ct
                                                         raise sosException.SOSException("NoApplicableCode",None,err_txt)
-                                                    if not xvals[0].isdigit:
-                                                        err_txt = "'%s' constraint support/need one values" % ct
+                                                    try:
+                                                        cvals = float(xvals[0])
+                                                    except:
+                                                        err_txt = "'%s' constraint requires float value" % ct
                                                         raise sosException.SOSException("NoApplicableCode",None,err_txt)
-                                                    cvals = " ".join(xvals)
                                                     
                                                 elif ct == "{%s}interval" % ns["swe"]: 
                                                     ct = "interval"
                                                     if not len(xvals)==2:
                                                         err_txt = "'%s' constraint support/need two values" % ct
                                                         raise sosException.SOSException("NoApplicableCode",None,err_txt)
-                                                    if not xvals[0].isdigit:
-                                                        err_txt = "'%s' constraint support/need two values" % ct
+                                                    try:
+                                                        cvals = [float(xvals[0]),float(xvals[1])]
+                                                    except:
+                                                        err_txt = "'%s' constraint requires float value" % ct
                                                         raise sosException.SOSException("NoApplicableCode",None,err_txt)
-                                                    cvals = " ".join(xvals)
                                             
                                                 elif ct == "{%s}valueList" % ns["swe"]:
                                                     ct = "valueList"
                                                     if not len(xvals)>0:
                                                         err_txt = "'%s' constraint support/need at least one values" % ct
                                                         raise sosException.SOSException("NoApplicableCode",None,err_txt)
-                                                    if not xvals[0].isdigit:
-                                                        err_txt = "'%s' constraint support/needat least one values" % ct
+                                                    try:
+                                                        cvals = [float(a) for a in xvals]
+                                                    except:
+                                                        err_txt = "'%s' constraint requires float value" % ct
                                                         raise sosException.SOSException("NoApplicableCode",None,err_txt)
-                                                    cvals = " ".join(xvals)
                                                 
                                                 cc["role"] = crole
                                                 cc["%s" % ct] = cvals

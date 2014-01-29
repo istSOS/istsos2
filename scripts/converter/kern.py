@@ -18,6 +18,16 @@
 #---------------------------------------------------------------------------
 """
 
+File example:
+=========================================================
+TI	2014	006020	000010	HBTIa	04	Laveggio Segoma
+Q	1	1	0	0	Pegel m
+Q	2	3	0	0	Temperatur
+Q	3	23	0	0	Spannung
+D	6030	1	10	0.427	2	10	8.47	3	10	27.56
+
+=========================================================
+
 Single Observed property usage example:
     
 sts = KernImporter('WT_LAV_RSV', {
@@ -61,11 +71,14 @@ from lib.pytz import timezone
 import traceback
 
 class KernImporter(raw2csv.Converter):
-    def __init__(self, procedureName, config, url, service, inputDir, fileNamePattern, outputDir, debug):
-        self.config = config
+    def __init__(self, procedureName, config, url, service, inputDir, 
+                 fileNamePattern, outputDir, qualityIndex=False, 
+                 exceptionBehaviour={}, user=None, password=None, debug=False, 
+                 csvlength=5000, filenamecheck=None, archivefolder = None):
+        self.config = config        
         raw2csv.Converter.__init__(self, procedureName, url, service,
             inputDir, fileNamePattern, outputDir,
-            debug=debug)
+            qualityIndex, exceptionBehaviour, user, password, debug, csvlength, filenamecheck, archivefolder)
             
     def minutesdate(self, year, minutes):
         d1 = datetime(year=int(year),month=1,day=1)
@@ -73,22 +86,20 @@ class KernImporter(raw2csv.Converter):
         if "tz" in self.config:
             d1 = self.getDateTimeWithTimeZone(d1, self.config["tz"])
         return d1
-        
-    def parse(self, fileObj, fileName):
-        
-        upDate = fileName.split('.')[0].split('_') # HBTIa-14_12_183730_10
+    
+    def skipFile(self, name):
+        upDate = name.split('.')[0].split('_') # HBTIa-14_12_183730_10
         year = datetime.strptime(upDate[-3],'%y').year # 12 -> 2012
         mins = upDate[-2] # 183730
         
         upDate = self.minutesdate(year,mins)
-        #upDate = datetime(
-        #   upDate.year, upDate.month, upDate.day, upDate.hour, 
-        #   upDate.minute, upDate.second, tzinfo=timezone("CET"))
-        
-        if self.getDSEndPosition() != None and (isinstance(self.getDSEndPosition(), datetime) and  upDate <= self.getDSEndPosition()):
-            if self.debug:
-                print " > Skipping file update: %s - endPosition = %s" % (upDate, self.getDSEndPosition())
-            return
+        if self.getDSEndPosition() != None and (
+                isinstance(self.getDSEndPosition(), datetime) and  
+                upDate <= self.getDSEndPosition()):
+            return True
+        return False
+    
+    def parse(self, fileObj, fileName):
         
         isHead = False
         isData = False
@@ -135,8 +146,9 @@ class KernImporter(raw2csv.Converter):
                         year = year + 1
                         
                     d = self.minutesdate(year,dataMinutes)
-                    d = datetime(d.year, d.month, d.day, d.hour, d.minute, d.second, 
-                        d.microsecond, tzinfo=timezone("CET"))
+                    
+                    #d = datetime(d.year, d.month, d.day, d.hour, d.minute, d.second, 
+                    #    d.microsecond, tzinfo=timezone("CET"))
                     
                     self.setEndPosition(d)
                     

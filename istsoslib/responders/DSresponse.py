@@ -114,6 +114,6 @@ class DescribeSensorResponse:
         try:
             self.observedProperties=pgdb.select(sqlProc,params)
         except Exception as exe:
-            raise sException("Error! sql: %s." % pgdb.mogrify(sqlProc,params))
+            raise Exception("Error! sql: %s." % pgdb.mogrify(sqlProc,params))
         
         
