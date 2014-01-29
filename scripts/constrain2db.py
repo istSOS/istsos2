@@ -73,10 +73,10 @@ def execute(args):
         fo = open(csvfile, "rw+")
         
         #check file validity
-        lines = [ row.strip().split(",") for row in fo.readlines() if row.strip() is not ""]
-        
-        
-        
+        rlines = [ row.strip().split(",") for row in fo.readlines() if row.strip() is not ""]
+        lines = []
+        for line in rlines:
+            lines.append([c.strip() for c in line ])
         # load sensor description
         res = req.get("%s/procedures/operations/getlist" % (service), 
                       prefetch=True, verify=False)
@@ -88,6 +88,7 @@ def execute(args):
         procedures = dict( ( i["name"], [ j["name"] for j in i["observedproperties"] ] ) for i in json.loads(res.content)["data"] )
         
         for nr,line in enumerate(lines):
+            line = [ l.strip() for l in line ]
             if len(line)==4:
                 if not line[0] in procedures.keys():
                     raise Exception("[line %s]: procedure '%s' not observed by the istsos service!" %(nr,line[0]) )
@@ -121,9 +122,9 @@ def execute(args):
                         if line[2] and line[3]:
                             opr["constraint"]["interval"]=[float(line[2]),float(line[3])]
                         elif not line[2] and line[3]:
-                            opr["constraint"]["max"]=line[3].strip()
+                            opr["constraint"]["max"]=float(line[3])
                         elif line[2] and not line[3]:
-                            opr["constraint"]["min"]=line[2].strip()
+                            opr["constraint"]["min"]=float(line[2])
                 
                 # send Json request to update constrain on service
                 res = req.put("%s/procedures/%s" % (service,line[0]),
