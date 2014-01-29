@@ -707,11 +707,11 @@ class Procedure():
                         
                     elif "min" in o["constraint"]:#.has_key("min"):
                         amin = et.SubElement(AllowedValues, "{%s}min" % ns['swe'])
-                        amin.text = o["constraint"]["min"]
+                        amin.text = str(o["constraint"]["min"])
                         
                     elif "max" in o["constraint"]:#.has_key("max"):
                         amax = et.SubElement(AllowedValues, "{%s}max" % ns['swe'])
-                        amax.text = o["constraint"]["max"]
+                        amax.text = str(o["constraint"]["max"])
                         
                         
         if timetag == False:
