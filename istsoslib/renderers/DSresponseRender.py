@@ -175,11 +175,11 @@ def render(DS,sosConfig):
                     
                 elif "min" in constraintObj:#.has_key("min"):
                     amin = et.SubElement(AllowedValues, "{%s}min" % ns['swe'])
-                    amin.text = constraintObj["min"]
+                    amin.text = str(constraintObj["min"])
                     
                 elif "max" in constraintObj:#.has_key("max"):
                     amax = et.SubElement(AllowedValues, "{%s}max" % ns['swe'])
-                    amax.text = constraintObj["max"]
+                    amax.text = str(constraintObj["max"])
                 
             except Exception:
                 raise Exception("Constraint definition invalid in the database for %s" % field["def_opr"])
