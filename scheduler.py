@@ -43,10 +43,10 @@ def recursive_glob(rootdir='.', suffix=''):
             for rootdir, dirnames, filenames in os.walk(rootdir)
             for filename in filenames if filename.endswith(suffix)]
 #---------------------------------
-import logging
+#import logging
 #logging.basicConfig()
-errorlog_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs","scheduler.log")
-logging.basicConfig(filename=errorlog_path,level=logging.INFO)            
+#errorlog_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs","scheduler.log")
+#logging.basicConfig(filename=errorlog_path,level=logging.INFO)            
 #---------------------------------
 import hashlib
 schedmd5 = {}
