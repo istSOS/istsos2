@@ -165,6 +165,6 @@ class KernImporter(raw2csv.Converter):
                     )
                    
             except Exception as e:
-                print "%s-%s:%s" % (fileName,cnt,line)
-                print traceback.print_exc()
+                self.log("%s-%s:%s" % (fileName,cnt,line))
+                self.log(traceback.print_exc())
                 raise e

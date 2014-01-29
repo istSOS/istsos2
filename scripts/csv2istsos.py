@@ -39,8 +39,16 @@ try:
 except ImportError as e:
     print "\nError loading internal libs:\n >> did you run the script from the istSOS root folder?\n\n"
     raise e
+
+
+
+def execute (args, logger=None):
     
-def execute (args):
+    def log(message):
+        if logger:
+            logger.log(message)
+        else:
+            print message
     
     pp = pprint.PrettyPrinter(indent=2)
     
@@ -87,7 +95,7 @@ def execute (args):
         
         for proc in procs:
             
-            print "\nProcedure: %s" % proc
+            log("\nProcedure: %s" % proc)
             
             # Load procedure description                
             res = req.get("%s/wa/istsos/services/%s/procedures/%s" % (

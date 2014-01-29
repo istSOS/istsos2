@@ -85,7 +85,13 @@ class Converter():
         self.user = user
         self.password = password
         self.auth = (self.user, self.password) if (self.user != None and self.password != None) else None
-        self.debug = debug
+
+        self.debugfile = False
+        if debug == 'file':
+            self.debug = True
+            self.debugfile = open(os.path.join(self.folderOut, "log.txt"), "w")
+        else:
+            self.debug = debug
         
         self.archivefolder = archivefolder
         
@@ -113,7 +119,7 @@ class Converter():
         self.endPosition = None
         
         if self.debug:
-            print "%s initialized." % self.name
+            self.log("%s initialized." % self.name)
         
         
         # Messages collected during processing
@@ -129,7 +135,21 @@ class Converter():
         
         # Load describeSensor from istSOS WALib (http://localhost/istsos/wa/istsos/services/demo/procedures/T_LUGANO)
         self.loadSensorMetadata()
-        
+    
+    def __del__(self):
+        if self.debugfile:
+            self.debugfile.flush()
+            self.debugfile.close()
+        if self.archivefolder:
+            self.archive() 
+    
+    def log(self, message):
+        if self.debug:
+            print message 
+            if self.debugfile:
+                self.debugfile.write("%s\n" % message)
+                
+    
     def addMessage(self, message):
         self.messages.append({
             "stack": stack(),
@@ -198,9 +218,9 @@ class Converter():
             's': self.service,
             'wd': self.folderOut,
             'p': [self.name]
-        })
+        },self)
         
-    def istsos2istsos(self, ssrv, durl=None):
+    def istsos2istsos(self, ssrv, durl=None, function=None, resolution=None, nodataValue=None, nodataQI=None):
         from scripts import istsos2istsos
         istsos2istsos.execute({
             'v': True,
@@ -208,8 +228,12 @@ class Converter():
             'procedure': self.name,
             'surl': durl if durl is not None else self.url,
             'ssrv': self.service,
-            'dsrv': ssrv
-        }) 
+            'dsrv': ssrv,
+            'function': function if function is not None else None,
+            'resolution': resolution if resolution is not None else None,
+            'nodataValue': nodataValue if nodataValue is not None else None,
+            'nodataQI': nodataQI if nodataQI is not None else None
+        },self)
     
     def archive(self):
         
@@ -225,52 +249,9 @@ class Converter():
         for root, dirs, files in os.walk(self.folderOut):
             for f in files:
                 # adding files to zip archive
-                archive.write(os.path.join(root, f))
+                archive.write(os.path.join(root, f),f)
          
         archive.close()
-        
-        
-        '''
-        
-        def zipdir(path, zip):
-            for root, dirs, files in os.walk(path):
-                for file in files:
-                    zip.write(os.path.join(root, file))
-        
-        if __name__ == '__main__':
-            zipf = zipfile.ZipFile('Python.zip', 'w')
-            zipdir('tmp/', zipf)
-            zipf.close()
-            
-        
-        archive = zipfile.ZipFile(
-            os.path.join(archive_path, "%s.zip" % 
-                datetime.utcnow().strftime("%Y%m%d%H%M%S")
-            ), "w") # Open the zip file for writing
-            
-        if not os.path.isdir(self.folderOut):
-            msg = "Processing folder (%s) does not exist" % self.folderOut
-            self.addException(msg)
-            raise FileReaderError (msg)
-        
-        files = glob.glob(os.path.join(self.folderOut, "*"))
-        
-        def archiveFile(ff):
-            ff = ff.encode('ascii') #convert path to ascii for ZipFile Method
-            (filepath, filename) = os.path.split(ff)
-            archive.write(ff, filename, zipfile.ZIP_DEFLATED)
-            
-        def archiveFolder(ff):
-            ff = ff.encode('ascii') #convert path to ascii for ZipFile Method
-            ffiles = glob.glob(os.path.join(ff, "*"))
-            for fff in ffiles:
-        
-        for f in files:
-            if os.path.isfile(f):
-                archiveFile(f)
-            if os.path.isdir(f):
-                archiveFolder(f)'''
-
         
         
     def execute(self):
@@ -285,10 +266,10 @@ class Converter():
         for fileObj in fileArray:
             if self.skipFile(os.path.split(fileObj)[1]):
                 if self.debug:
-                    print " > Skipping file %s" % os.path.split(fileObj)[1]
+                    self.log(" > Skipping file %s" % os.path.split(fileObj)[1])
                 continue
             if self.debug:
-                print " > Working on file %s" % os.path.split(fileObj)[1]
+                self.log(" > Working on file %s" % os.path.split(fileObj)[1])
             self.executing = {
                 "file": fileObj
             }
@@ -296,8 +277,7 @@ class Converter():
             self.parse(dat,os.path.split(fileObj)[1])
             dat.close()
         
-        if self.debug:
-            print " > Parsed %s observations" % len(self.observations)
+        self.log(" > Parsed %s observations" % len(self.observations))
         
         # Validating array of observations
         self.validate()
@@ -305,17 +285,12 @@ class Converter():
         # Save the CSV file in text/csv;subtype='istSOS/2.0.0'
         if self.isEmpty(): # The procedure is registered but there are no observations
             self.save()
-            if self.archivefolder:
-                self.archive()
             return True
         elif isinstance(self.getIOEndPosition(), datetime) and self.getIOEndPosition() > self.getDSEndPosition():
             self.save()
-            if self.archivefolder:
-                self.archive()
             return True
         else:
-            if self.debug:
-                print " > Nothing to save"        
+            self.log(" > Nothing to save")     
             return False
         
     
@@ -324,8 +299,8 @@ class Converter():
         Uses WALib to get the DescribeSensor document
         """
         # Loading the sensor description document using a DescribeSensor request
-        if self.debug:
-            print " > Loading Describe Sensor"
+        self.log(" > Loading Describe Sensor")
+        
         res = self.req.get("%s/wa/istsos/services/%s/procedures/%s" % (
                 self.url,
                 self.service,
@@ -338,10 +313,6 @@ class Converter():
         if res.json['success']==False:
             raise IstSOSError ("Description of procedure %s can not be loaded: %s" % (self.name, res.json['message']))
         self.describe = res.json['data']
-        
-        '''if self.debug:
-            print self.describe'''
-                
         
         self.obsindex = []
         for out in self.describe['outputs']:
@@ -386,8 +357,7 @@ class Converter():
         Check if folder exist, and if file exist. And if there is at least one file. > Raise Exception
         """
         
-        if self.debug:
-            print " > Checking folder input (%s)" % self.folderIn
+        self.log(" > Checking folder input (%s)" % self.folderIn)
         
         if not os.path.isdir(self.folderIn):
             msg = "Input folder (%s) does not exist" % self.folderIn
@@ -397,8 +367,7 @@ class Converter():
         files = filter(path.isfile, glob.glob(os.path.join(self.folderIn, "%s" % (self.pattern))))
         files.sort()
         
-        if self.debug:
-            print " > %s %s found" % (len(files), "Files" if len(files)>1 else "File")
+        self.log(" > %s %s found" % (len(files), "Files" if len(files)>1 else "File"))
             
         return files
         
@@ -448,7 +417,7 @@ class Converter():
           - extension (.dat)
         .astimezone(pytz.utc).isoformat()
         """
-        print "End position: %s" % self.getIOEndPosition()
+        self.log("End position: %s" % self.getIOEndPosition())
         if len(self.observations)>0:
             if self.getIOEndPosition() == None:
                 f = open(os.path.join(self.folderOut,"%s_%s.dat" %(
