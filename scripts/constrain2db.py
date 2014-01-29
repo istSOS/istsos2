@@ -58,6 +58,11 @@ def execute(args):
         # verbose
         verbose = args['v']
         
+        # veryverbose
+        veryverbose = args['vv']
+        if veryverbose:
+            verbose = True
+        
         # istSOS service
         service = args['s']
         
@@ -80,12 +85,18 @@ def execute(args):
         # load sensor description
         res = req.get("%s/procedures/operations/getlist" % (service), 
                       prefetch=True, verify=False)
-        if verbose:
+        
+        jj = json.loads(res.content)
+        if veryverbose:
             print "RETRIVING PRECEDURES..."
             pp.pprint(res.json)
             print "---------------------"
+        elif verbose:
+            if jj['success'] is False:
+                pp.pprint(res.json)
+                print "---------------------"
         
-        procedures = dict( ( i["name"], [ j["name"] for j in i["observedproperties"] ] ) for i in json.loads(res.content)["data"] )
+        procedures = dict( ( i["name"], [ j["name"] for j in i["observedproperties"] ] ) for i in jj["data"] )
         
         for nr,line in enumerate(lines):
             line = [ l.strip() for l in line ]
@@ -107,12 +118,15 @@ def execute(args):
                 res = req.get("%s/procedures/%s" % (service,line[0]), 
                               prefetch=True, verify=False)
                 
-                if verbose:
-                    print "RETRIVING PRECEDURE %s..." % line[0]
+                ds = json.loads(res.content)
+                if veryverbose:
+                    print "RETRIVING PRECEDURES..."
                     pp.pprint(res.json)
                     print "---------------------"
-                    
-                ds = json.loads(res.content)
+                elif verbose:
+                    if ds['success'] is False:
+                        pp.pprint(res.json)
+                        print "---------------------"
                                 
                 #update constraints in Json
                 for opr in ds["data"]["outputs"]:
@@ -132,15 +146,22 @@ def execute(args):
                             verify=False,
                             data=json.dumps(ds["data"])
                         )
-                        # read response
-                if verbose:
+                # read response
+                jj = json.loads(res.content)
+                if veryverbose:
                     print "SAVING PRECEDURE %s..." % line[0]
                     pp.pprint(json.dumps(ds["data"]))
                     print "---------------------"
-                    pp.pprint(res.json)
-                    print "---------------------"
-                else:
-                    print " > Updated procedure success: %s" % res.json['success']
+                
+                print "---------------------"
+                print " > Updated %s procedure success: %s" %(line[0],res.json['success'])
+
+                if verbose:
+                    if jj['success'] is False:
+                        pp.pprint(res.json)
+                
+                print "---------------------"
+                
                 
     except Exception as e:
         print "ERROR: %s\n\n" % e
@@ -155,6 +176,11 @@ if __name__ == "__main__":
         action = 'store_true',
         dest   = 'v',
         help   = 'Activate verbose debug')
+    
+    parser.add_argument('-vv','--veryverbose',
+        action = 'store_true',
+        dest   = 'vv',
+        help   = 'Activate very verbose debug')
         
     parser.add_argument('-f','--file',
         action = 'store',
