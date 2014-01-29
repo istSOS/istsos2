@@ -17,6 +17,16 @@
 
 import sys, traceback
 
+def valid_NCName(name):
+    not_allowed_NCName = [' ', '!','"', '#', '$', '%', '&', '\'', 
+                          '(', ')', '*', '+', ',', '/', ':', ';', 
+                          '<', '=', '>', '?', '@', '[', '\\', ']', 
+                          '^', '`', '{', '|', '}', '~']
+    for c in not_allowed_NCName:
+        if name.find(c)>0:
+            return False
+    return True                
+
 def validatedb(user,password,dbname,host,port=5432,service=None):
     """
     Validate a service db connection parameters

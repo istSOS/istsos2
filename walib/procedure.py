@@ -595,7 +595,7 @@ class Procedure():
                     location.attrib[ "{%s}role" % ns['xlink'] ] = "urn:ogc:def:dataType:x-istsos:1.0:lastPosition"
         Point = et.SubElement(location, "{%s}Point" % ns['gml'])
 
-        if self.data["location"]["properties"]["name"].isalnum():
+        if ut.valid_NCName(self.data["location"]["properties"]["name"]):
             Point.attrib[ "{%s}id" % ns['gml'] ] = self.data["location"]["properties"]["name"]
         else:
             raise Exception ("Invalid location name (gml:id only allows alphanumeric characters")
