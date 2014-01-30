@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #---------------------------------------------------------------------------
 # istSOS - Istituto Scienze della Terra
-# Copyright (C) 2012 Massimiliano Cannata, Milan Antonovic
+# Copyright (C) 2014 Massimiliano Cannata, Milan Antonovic
 #---------------------------------------------------------------------------
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,8 +16,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #---------------------------------------------------------------------------
-# Created on Tue Nov 12 17:15:04 2013
-#---------------------------------------------------------------------------
+
 """
 description:
     the scheduler dynamically check if scheduled job for each service
@@ -36,37 +35,28 @@ description:
     
 """
 
-#---------------------------------
 import os
+import hashlib
+from lib.apscheduler.scheduler import Scheduler
+            
+schedmd5 = {}
+services_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "services")
+
+sched = Scheduler(daemonic=False)
+sched.start()
+
+#===========================
+#START THE ISTSOS SCHEDULER 
+#===========================
+
 def recursive_glob(rootdir='.', suffix=''):
     return [( os.path.splitext(filename)[0] ,os.path.join(rootdir, filename) )
             for rootdir, dirnames, filenames in os.walk(rootdir)
             for filename in filenames if filename.endswith(suffix)]
-#---------------------------------
-#import logging
-#logging.basicConfig()
-#errorlog_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs","scheduler.log")
-#logging.basicConfig(filename=errorlog_path,level=logging.INFO)            
-#---------------------------------
-import hashlib
-schedmd5 = {}
-services_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "services")
-#schedfile = '/home/maxi/virtualenvDIR/scheduler/mytest.py'
-#---------------------------------
-from lib.apscheduler.scheduler import Scheduler
-sched = Scheduler(daemonic=False)
-#sched = Scheduler()
-sched.start()
-
-#sched.add_cron_job()
-#===========================
-#START THE ISTSOS SCHEDULER 
-#===========================
+            
 @sched.interval_schedule(seconds=5)
 def istsos_job():
     global schedmd5
-#    print schedmd5
-    print "Checking changes"
     if not schedmd5:
         print " > Initialization.."
         for service,scheduler in recursive_glob(rootdir=services_path ,suffix=".aps"):
@@ -84,26 +74,3 @@ def istsos_job():
                     if j.name.startswith(service):
                         sched.unschedule_job(j)
                 execfile(scheduler)
-            
-#while True:
-#    pass
-
-
-
-#=============================================
-# THE FILE TO BE RED AND EXECUTED
-#=============================================
-#@sched.interval_schedule(seconds=3)
-#def timed_job():
-#    print 'This job is run every three minutes.'
-#
-#@sched.interval_schedule(seconds=3)
-#def timed_job2():
-#    print 'This job2.'
-#
-#@sched.cron_schedule(day_of_week='mon-fri', hour=17)
-#def scheduled_job():
-#    print 'This job is run every weekday at 5pm.'
-#
-#
-#=============================================
