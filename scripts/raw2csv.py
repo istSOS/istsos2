@@ -137,6 +137,7 @@ class Converter():
         self.loadSensorMetadata()
     
     def __del__(self):
+        self.log(" > End of conversion 4 %s. Bye bye.. ;)" % self.name)
         if self.debugfile:
             self.debugfile.flush()
             self.debugfile.close()
