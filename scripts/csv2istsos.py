@@ -156,11 +156,7 @@ def execute (args, logger=None):
                 field = data['result']['DataArray']['field'][pos]
                 jsonindex[field['definition']] = pos
             
-            if debug:
-                print "\njsonindex:"
-                pp.pprint(jsonindex)
-                # find files
-                print "Searching: %s" % os.path.join(wd, "%s_[0-9]*%s" % (proc,ext))
+            log ("Searching: %s" % os.path.join(wd, "%s_[0-9]*%s" % (proc,ext)))
                 
             files = glob.glob(os.path.join(wd, "%s_*%s" % (proc,ext)))
             files.sort()
@@ -186,9 +182,6 @@ def execute (args, logger=None):
                         continue
                     else:
                         raise Exception ("Mandatory observed property %s is not present in the CSV." % k)
-                
-                '''begin = None
-                end = None'''
                 
                 # loop lines skipping the header
                 for i in range(1, len(lines)):
@@ -225,10 +218,6 @@ def execute (args, logger=None):
                         
             
             
-            #print jsonindex['urn:ogc:def:parameter:x-istsos:1.0:time:iso8601']
-            #print data['result']['DataArray']['values']
-            
-            
             # @todo should be handled situation where a freshly registerd procedure with irregular data
             #       is inserting a csv data file without observaton but only with a trasmission date.
             data["samplingTime"] = {
@@ -238,25 +227,12 @@ def execute (args, logger=None):
                     ).replace(tzinfo=timezone('UTC')).isoformat()
             }
             
-            '''data["samplingTime"] = {
-                "beginPosition": data['result']['DataArray']['values'][0][jsonindex['urn:ogc:def:parameter:x-istsos:1.0:time:iso8601']],
-			   "endPosition": data['result']['DataArray']['values'][-1][jsonindex['urn:ogc:def:parameter:x-istsos:1.0:time:iso8601']]
-            }'''
-            
             data["result"]["DataArray"]["elementCount"] = str(len(data['result']['DataArray']['values']))
             
-            print " > Begin: %s" % data["samplingTime"]["beginPosition"]
-            print "   + End: %s" % data["samplingTime"]["endPosition"]
-            print " > Values: %s" % len( data['result']['DataArray']['values'])
+            log (" > Begin: %s" % data["samplingTime"]["beginPosition"])
+            log ("   + End: %s" % data["samplingTime"]["endPosition"])
+            log (" > Values: %s" % len( data['result']['DataArray']['values']))
                 
-            if debug:
-                pp.pprint({
-                    "ForceInsert": "true",
-                    "AssignedSensorId": aid,
-                    "Observation": data
-                    })
-            
-            
             if not test and len(files)>0: # send to wa
                 res = req.post("%s/wa/istsos/services/%s/operations/insertobservation" % (
                     url,
@@ -271,10 +247,10 @@ def execute (args, logger=None):
                     })
                 )
                 # read response
-                if debug:
-                    pp.pprint(res.json)
-                else:
-                    print " > Insert observation success: %s" % res.json['success']
+                log (" > Insert observation success: %s" % res.json['success'])
+                if not res.json['success']:
+                    log (res.json['message'])
+                    
                 
                 print "~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~"
         pass
