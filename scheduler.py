@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #---------------------------------------------------------------------------
 # istSOS - Istituto Scienze della Terra
-# Copyright (C) 2014 Massimiliano Cannata, Milan Antonovic
+# Copyright (C) 2012 Massimiliano Cannata, Milan Antonovic
 #---------------------------------------------------------------------------
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,7 +16,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #---------------------------------------------------------------------------
-
+# Created on Tue Nov 12 17:15:04 2013
+#---------------------------------------------------------------------------
 """
 description:
     the scheduler dynamically check if scheduled job for each service
@@ -35,28 +36,28 @@ description:
     
 """
 
+#---------------------------------
 import os
-import hashlib
-from lib.apscheduler.scheduler import Scheduler
+def recursive_glob(rootdir='.', suffix=''):
+    return [( os.path.splitext(filename)[0] ,os.path.join(rootdir, filename) )
+            for rootdir, dirnames, filenames in os.walk(rootdir)
+            for filename in filenames if filename.endswith(suffix)]
             
+import hashlib
 schedmd5 = {}
 services_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "services")
 
+from lib.apscheduler.scheduler import Scheduler
 sched = Scheduler(daemonic=False)
 sched.start()
 
 #===========================
 #START THE ISTSOS SCHEDULER 
 #===========================
-
-def recursive_glob(rootdir='.', suffix=''):
-    return [( os.path.splitext(filename)[0] ,os.path.join(rootdir, filename) )
-            for rootdir, dirnames, filenames in os.walk(rootdir)
-            for filename in filenames if filename.endswith(suffix)]
-            
 @sched.interval_schedule(seconds=5)
 def istsos_job():
     global schedmd5
+    print "Checking changes"
     if not schedmd5:
         print " > Initialization.."
         for service,scheduler in recursive_glob(rootdir=services_path ,suffix=".aps"):
@@ -74,3 +75,4 @@ def istsos_job():
                     if j.name.startswith(service):
                         sched.unschedule_job(j)
                 execfile(scheduler)
+            
