@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-createsqlschema = """
+createsqlschema = u"""
 
 SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
@@ -12,6 +12,7 @@ SET default_with_oids = false;
 SET TimeZone='0';
 
 --=====================================
+
 CREATE TABLE event_time (
     id_eti bigint NOT NULL,
     id_prc_fk integer NOT NULL,
@@ -25,7 +26,9 @@ CREATE SEQUENCE event_time_id_eti_seq
     NO MINVALUE
     CACHE 1;
 ALTER SEQUENCE event_time_id_eti_seq OWNED BY event_time.id_eti;
+
 --=====================================
+
 CREATE TABLE feature_type (
     name_fty character varying(25) NOT NULL,
     id_fty integer NOT NULL
@@ -38,7 +41,9 @@ CREATE SEQUENCE feature_type_id_fty_seq
     NO MINVALUE
     CACHE 1;
 ALTER SEQUENCE feature_type_id_fty_seq OWNED BY feature_type.id_fty;
+
 --=====================================
+
 CREATE TABLE foi (
     desc_foi text,
     id_fty_fk integer NOT NULL,
@@ -59,6 +64,7 @@ ALTER SEQUENCE foi_id_foi_seq OWNED BY foi.id_foi;
 --=====================================
 
 --=====================================
+
 CREATE TABLE measures (
     id_msr bigint NOT NULL,
     id_eti_fk bigint NOT NULL,
@@ -74,7 +80,9 @@ CREATE SEQUENCE measures_id_msr_seq
     NO MINVALUE
     CACHE 1;
 ALTER SEQUENCE measures_id_msr_seq OWNED BY measures.id_msr;
+
 --=====================================
+
 CREATE TABLE positions (
     id_pos bigint NOT NULL,
     id_qi_fk integer NOT NULL,
@@ -89,7 +97,9 @@ CREATE SEQUENCE measures_mobile_id_mmo_seq
     NO MINVALUE
     CACHE 1;
 ALTER SEQUENCE measures_mobile_id_mmo_seq OWNED BY positions.id_pos;
+
 --=====================================
+
 CREATE TABLE observed_properties (
     name_opr character varying(60) NOT NULL,
     def_opr character varying(80) NOT NULL,
@@ -105,7 +115,9 @@ CREATE SEQUENCE obs_pr_id_opr_seq
     NO MINVALUE
     CACHE 1;
 ALTER SEQUENCE obs_pr_id_opr_seq OWNED BY observed_properties.id_opr;
+
 --=====================================
+
 CREATE TABLE obs_type (
     id_oty integer NOT NULL,
     name_oty character varying(60) NOT NULL,
@@ -119,7 +131,9 @@ CREATE SEQUENCE obs_type_id_oty_seq
     NO MINVALUE
     CACHE 1;
 ALTER SEQUENCE obs_type_id_oty_seq OWNED BY obs_type.id_oty;
+
 --=====================================
+
 CREATE TABLE off_proc (
     id_off_prc integer NOT NULL,
     id_off_fk integer NOT NULL,
@@ -133,7 +147,9 @@ CREATE SEQUENCE off_proc_id_opr_seq
     NO MINVALUE
     CACHE 1;
 ALTER SEQUENCE off_proc_id_opr_seq OWNED BY off_proc.id_off_prc;
+
 --=====================================
+
 CREATE TABLE offerings (
     name_off character varying(64) NOT NULL,
     desc_off text,
@@ -149,7 +165,9 @@ CREATE SEQUENCE offerings_id_off_seq
     NO MINVALUE
     CACHE 1;
 ALTER SEQUENCE offerings_id_off_seq OWNED BY offerings.id_off;
+
 --=====================================
+
 CREATE TABLE proc_obs (
     id_pro integer NOT NULL,
     id_prc_fk integer NOT NULL,
@@ -165,13 +183,16 @@ CREATE SEQUENCE prc_obs_id_pro_seq
     NO MINVALUE
     CACHE 1;
 ALTER SEQUENCE prc_obs_id_pro_seq OWNED BY proc_obs.id_pro;
+
 --=====================================
+
 CREATE TABLE procedures (
+    id_prc integer NOT NULL,
     name_prc character varying(30) NOT NULL,
     desc_prc text,
     stime_prc timestamp with time zone,
     etime_prc timestamp with time zone,
-    id_prc integer NOT NULL,
+
     id_tru_fk integer NOT NULL,
     time_res_prc integer,
     id_oty_fk integer,
@@ -186,14 +207,18 @@ CREATE SEQUENCE procedures_id_prc_seq
     NO MINVALUE
     CACHE 1;
 ALTER SEQUENCE procedures_id_prc_seq OWNED BY procedures.id_prc;
+
 --=====================================
+
 CREATE TABLE quality_index (
     name_qi character varying(25) NOT NULL,
     desc_qi text,
     id_qi integer NOT NULL
 );
 COMMENT ON TABLE quality_index IS 'Stores the QualityIndexes.';
+
 --=====================================
+
 CREATE TABLE time_res_unit (
     id_tru integer NOT NULL,
     name_tru character varying(15)
@@ -206,7 +231,9 @@ CREATE SEQUENCE time_res_unit_id_tru_seq
     NO MINVALUE
     CACHE 1;
 ALTER SEQUENCE time_res_unit_id_tru_seq OWNED BY time_res_unit.id_tru;
+
 --=====================================
+
 CREATE TABLE uoms (
     name_uom character varying(20) NOT NULL,
     desc_uom text,
@@ -220,7 +247,9 @@ CREATE SEQUENCE uoms_id_uom_seq
     NO MINVALUE
     CACHE 1;
 ALTER SEQUENCE uoms_id_uom_seq OWNED BY uoms.id_uom;
+
 --=====================================
+
 CREATE TABLE tran_log (
     id_trl integer NOT NULL,
     transaction_time_trl timestamp without time zone DEFAULT now(),
@@ -240,6 +269,7 @@ CREATE SEQUENCE tran_log_id_trl_seq
     NO MINVALUE
     CACHE 1;
 ALTER SEQUENCE tran_log_id_trl_seq OWNED BY tran_log.id_trl;
+
 --=====================================
 -- NEXTVALS
 --=====================================
@@ -279,7 +309,7 @@ ALTER TABLE ONLY measures
 ALTER TABLE ONLY positions
     ADD CONSTRAINT measures_mobile_pkey PRIMARY KEY (id_pos);
 ALTER TABLE ONLY observed_properties
-    ADD CONSTRAINT obs_pr_name_opr_key UNIQUE (name_opr);
+    ADD CONSTRAINT obs_pr_def_opr_key UNIQUE (def_opr);
 ALTER TABLE ONLY observed_properties
     ADD CONSTRAINT obs_pr_pkey PRIMARY KEY (id_opr);
 ALTER TABLE ONLY obs_type
@@ -348,39 +378,18 @@ CREATE INDEX ety_prc_date ON event_time USING btree (id_eti, time_eti);
 -- CONSTANT/DEFAULT VALUES
 --=====================================
 
-
-INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('100','Dato caricato in banca dati formato corretto',100);
-INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('110','Valore nullo',110);
-INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('120','Valore non convertibile',120);
-INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('210','Valore sensato per il sensore all''interno di soglie minime e massime',210);
-INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('220','Controllo di plausibilita sulla base dei dati delle ultime 24/48 ore',220);
-INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('230','Confronto con i dati di altri sensori vicini o dati radar e verifica di affidabilita',230);
-INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('310','Dato analizzato manualmente e ritenuto NON corretto',310);
-INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('320','Dato analizzato manualmente e ritenuto corretto grazie ad una correzione manuale',320);
-INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('330','Dato analizzato manualmente e ritenuto corretto senza alcuna correzione',330);
-
-
 INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('aggregation no data', 'no values are present for this aggregation interval', -100);
 INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('outboud', 'gross error', 0);
---INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('raw', 'the format is correct', 100);
---INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('acceptable', 'the value is acceptable for the observed property', 110);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('raw', 'the format is correct', 100);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('acceptable', 'the value is acceptable for the observed property', 110);
 INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('reasonable', 'the value is in a resonable range for that observed property and station', 200);
 INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('timely coherent', 'the value is coherent with time-series', 300);
 INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('spatilly coherent', 'the value is coherent with close by observations', 400);
 INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('manually adjusted', 'the value has been manually corrected', 500);
 INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('correct', 'the value has not been modified and is correct', 600);
 
-
 INSERT INTO obs_type (id_oty, name_oty, desc_oty) VALUES (1, 'insitu-fixed-point', 'fixed, in-situ, pointwise observation');
 INSERT INTO obs_type (id_oty, name_oty, desc_oty) VALUES (2, 'insitu-mobile-point', 'mobile, in-situ, pointwise observation');
 INSERT INTO obs_type (id_oty, name_oty, desc_oty) VALUES (3, 'virtual', 'virtual procedure');
 
-
-
-
--- Completed on 2010-10-07 16:53:49 CEST
-
---
--- PostgreSQL database dump complete
---
 """

@@ -164,8 +164,10 @@ class waProcedures(waResourceService):
 
         #import pprint
         #pp = pprint.PrettyPrinter(indent=4)
-        #print >> sys.stderr, "\n\nSML: %s" % pp.pprint(smlstring)
-
+        
+        #print >> sys.stderr, "\n\nSML: %s" % smlstring
+        #print >> sys.stderr, "\n\nSML: %s" % pp.pprint(self.json)
+        
         response = requests.post(
             self.serviceconf.serviceurl["url"],
             data=smlstring,
@@ -481,6 +483,7 @@ class waProcedures(waResourceService):
         try:
             smlobj.loadXML(res.content)
         except Exception as e:
+            print >> sys.stderr, "\n\nSML: %s\n\n" % res.content
             raise Exception("Error loading DescribeSensor of '%s': %s" % (self.procedurename,e))
 
         # Searching for the assignedSensorId from the database
