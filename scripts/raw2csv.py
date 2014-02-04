@@ -46,7 +46,6 @@ except ImportError as e:
     raise e
     
 class Converter():
-    req = requests.session()
     def __init__(self, name, url, service, folderIn, pattern, folderOut=None, 
                  qualityIndex=False, exceptionBehaviour={}, 
                  user=None, password=None, debug=False, 
@@ -75,6 +74,9 @@ class Converter():
             'timedelta': timedelta(days=1)
         }
         """
+        
+        self.req = requests.session()
+    
         self.name = name
         self.url = url
         self.service = service
