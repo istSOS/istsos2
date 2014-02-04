@@ -143,7 +143,7 @@ def test_procedures(doc):
         ], 
         "system_id": "test_post", 
         "history": []
-        }   
+    }   
         
     post_rat = [ 
          {
@@ -183,8 +183,6 @@ def test_procedures(doc):
     get8 = tget.services_name_procedures_name_ratingcurve_GET(sname, prat)
     post2 = tpost.services_name_procedures_name_ratingcurve_POST(sname, prat, post_rat)
     get9 = tget.services_name_procedures_name_ratingcurve_GET(sname, prat)
-    
-    
     
     #Check for two successful requests to have the same result
     if get1['success'] and get2['success']:
@@ -263,9 +261,22 @@ def test_procedures(doc):
             doc.write(pp.pformat(get3))
         #For the success, second get should be the same as first
         #apart from the modicifation done with put
+        
         else:
+            
+            print 'get3:\n'
+            print pp.pformat(get3)
+            print 'put, after:\n'
+            print pp.pformat(put)
+            
             temp = deldic(get3['data'], [['location', 'crs']])
-            putloc = deldic(put['location'], ['crs'])
+            ptloc = deldic(put['location'], ['crs'])
+            
+            
+            print '\ntemp:\n'
+            print pp.pformat(temp)
+            print '\nptloc, after:\n'
+            print pp.pformat(ptloc)
             
             if (temp['description'] == put['description']
                 and temp['inputs'] == put['inputs']

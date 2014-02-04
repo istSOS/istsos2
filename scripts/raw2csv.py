@@ -76,6 +76,7 @@ class Converter():
         """
         
         self.req = requests.session()
+        self.req.config['keep_alive'] = False
     
         self.name = name
         self.url = url

@@ -198,18 +198,20 @@ def run_tests(arg):
                 {'name': 'test'},
             'type': 'Feature'},
          'outputs': [
-             {'constraint': 
-                 {'interval': None, 'role': None},
-              'definition': 'urn:ogc:def:parameter:x-istsos:1.0:time:iso8601',
-              'description': '',
-              'name': 'Time',
-              'uom': 'iso8601'},
-             {'constraint': {'min': '0',
-              'role': 'urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0'},
-               'definition': 'urn:ogc:def:parameter:x-istsos:1.0:test',
-               'description': 'test opr',
-               'name': 'test',
-               'uom': 'test'}],
+             {
+                'definition': 'urn:ogc:def:parameter:x-istsos:1.0:time:iso8601',
+                'description': '',
+                'name': 'Time',
+                'uom': 'iso8601'
+             },
+             {
+                 'constraint': {'min': '0', 'role': 'urn:ogc:def:classifiers:x-istsos:1.0:qualityIndex:check:reasonable'},
+                 'definition': 'urn:ogc:def:parameter:x-istsos:1.0:test',
+                 'description': 'test opr',
+                 'name': 'test',
+                 'uom': 'test'
+             }
+         ],
          'system': 'test',
          'system_id': 'test'}
     address = 'http://localhost/istsos/wa/istsos/services/test/procedures'
@@ -255,7 +257,7 @@ def run_tests(arg):
         for el in observedproperties: print '\t\t|---' + el
     for k,v in offerings.items():
         passed.append(k) if v else failed.append(k)
-         
+        
     if verb: print '\t|---TESTING operations \n'
     operations = oper.test_operations(f)
     if verb:

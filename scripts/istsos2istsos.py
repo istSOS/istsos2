@@ -166,7 +166,7 @@ def execute (args, logger=None):
         raise Exception ("Description of procedure %s can not be loaded from destination service: %s" % (procedure, ddata['message']))
     else:
         log("   > DS Destination Ok.")
-            
+        
     # Load of a getobservation template =======================================
     res = req.get("%s/wa/istsos/services/%s/operations/getobservation/offerings/%s/procedures/%s/observedproperties/:/eventtime/last?qualityIndex=False" % (
             durl, dsrv, 'temporary', procedure
@@ -181,8 +181,7 @@ def execute (args, logger=None):
         dtemplate['AssignedSensorId'] = ddata['data']['assignedSensorId']
         dtemplate['result']['DataArray']['values'] = []
         log("     > GO Template Ok.")
-            
-            
+
     # Loading describe sensor from QI EXTRAPOLATION service ===================
     if aurl and asrv:
         res = req.get("%s/wa/istsos/services/%s/procedures/%s" % (
@@ -257,7 +256,7 @@ def execute (args, logger=None):
         log("   > Retro aggregation: %s minutes" % retro)
     
     # Insertion loop step timedelta
-    interval = timedelta(days=5)
+    interval = timedelta(days=15)
     if start<stop and start+interval>stop:
         interval = stop-start
     

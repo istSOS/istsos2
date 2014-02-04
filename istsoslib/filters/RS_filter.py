@@ -304,78 +304,81 @@ class sosRSfilter(f.sosFilter):
                         #import sys
                         cc = {}
                         constraints = qf.findall("{%s}constraint" %(ns['swe']))
-                        for constraint in constraints:
-                            if constraint:
-                                if "{%s}role" % ns["xlink"] in constraint.attrib:
-                                    if constraint.attrib[ "{%s}role" % ns["xlink"] ] == "urn:ogc:def:classifiers:x-istsos:1.0:qualityIndex:check:reasonable":
-                                        crole = constraint.attrib[ "{%s}role" % ns["xlink"] ]
-                                                               
-                                        allow = constraint.find("{%s}AllowedValues" %(ns['swe']))
-                                        if allow is None:
-                                            err_txt = "in <swe:constraint>: <swe:AllowedValues> is mandatory in multiplicity 1"
-                                            raise sosException.SOSException("NoApplicableCode",None,err_txt)
-                                        else:
-                                            
-                                            cvals = None
-                                            if len(allow)==1:
-                                                ct = allow[0].tag
-                                                if not ct in ["{%s}min" % ns["swe"],"{%s}max" % ns["swe"],"{%s}interval" % ns["swe"],"{%s}valueList" % ns["swe"]]:
-                                                    err_txt = "in <swe:constraint>: support only min, max, interval, valueList tag" 
-                                                    raise sosException.SOSException("NoApplicableCode",None,err_txt)
+                        if len(constraints)==0:
+                            self.constr.append(None)
+                        else:
+                            for constraint in constraints:
+                                if constraint:
+                                    if "{%s}role" % ns["xlink"] in constraint.attrib:
+                                        if constraint.attrib[ "{%s}role" % ns["xlink"] ] == "urn:ogc:def:classifiers:x-istsos:1.0:qualityIndex:check:reasonable":
+                                            crole = constraint.attrib[ "{%s}role" % ns["xlink"] ]
+                                                                   
+                                            allow = constraint.find("{%s}AllowedValues" %(ns['swe']))
+                                            if allow is None:
+                                                err_txt = "in <swe:constraint>: <swe:AllowedValues> is mandatory in multiplicity 1"
+                                                raise sosException.SOSException("NoApplicableCode",None,err_txt)
+                                            else:
                                                 
-                                                xvals = allow[0].text.strip().split(" ")
-                                                
-                                                if ct == "{%s}min" % ns["swe"]: 
-                                                    ct = "min"
-                                                    if not len(xvals)==1:
-                                                        err_txt = "'%s' constraint support/need one values" % ct
-                                                        raise sosException.SOSException("NoApplicableCode",None,err_txt)
-                                                    try:
-                                                        cvals = float(xvals[0])
-                                                    except:
-                                                        err_txt = "'%s' constraint requires float value" % ct
-                                                        raise sosException.SOSException("NoApplicableCode",None,err_txt)
-                                               
-                                                elif ct == "{%s}max" % ns["swe"]:
-                                                    ct = "max"
-                                                    if not len(xvals)==1:
-                                                        err_txt = "'%s' constraint support/need one values" % ct
-                                                        raise sosException.SOSException("NoApplicableCode",None,err_txt)
-                                                    try:
-                                                        cvals = float(xvals[0])
-                                                    except:
-                                                        err_txt = "'%s' constraint requires float value" % ct
+                                                cvals = None
+                                                if len(allow)==1:
+                                                    ct = allow[0].tag
+                                                    if not ct in ["{%s}min" % ns["swe"],"{%s}max" % ns["swe"],"{%s}interval" % ns["swe"],"{%s}valueList" % ns["swe"]]:
+                                                        err_txt = "in <swe:constraint>: support only min, max, interval, valueList tag" 
                                                         raise sosException.SOSException("NoApplicableCode",None,err_txt)
                                                     
-                                                elif ct == "{%s}interval" % ns["swe"]: 
-                                                    ct = "interval"
-                                                    if not len(xvals)==2:
-                                                        err_txt = "'%s' constraint support/need two values" % ct
-                                                        raise sosException.SOSException("NoApplicableCode",None,err_txt)
-                                                    try:
-                                                        cvals = [float(xvals[0]),float(xvals[1])]
-                                                    except:
-                                                        err_txt = "'%s' constraint requires float value" % ct
-                                                        raise sosException.SOSException("NoApplicableCode",None,err_txt)
-                                            
-                                                elif ct == "{%s}valueList" % ns["swe"]:
-                                                    ct = "valueList"
-                                                    if not len(xvals)>0:
-                                                        err_txt = "'%s' constraint support/need at least one values" % ct
-                                                        raise sosException.SOSException("NoApplicableCode",None,err_txt)
-                                                    try:
-                                                        cvals = [float(a) for a in xvals]
-                                                    except:
-                                                        err_txt = "'%s' constraint requires float value" % ct
-                                                        raise sosException.SOSException("NoApplicableCode",None,err_txt)
+                                                    xvals = allow[0].text.strip().split(" ")
+                                                    
+                                                    if ct == "{%s}min" % ns["swe"]: 
+                                                        ct = "min"
+                                                        if not len(xvals)==1:
+                                                            err_txt = "'%s' constraint support/need one values" % ct
+                                                            raise sosException.SOSException("NoApplicableCode",None,err_txt)
+                                                        try:
+                                                            cvals = float(xvals[0])
+                                                        except:
+                                                            err_txt = "'%s' constraint requires float value" % ct
+                                                            raise sosException.SOSException("NoApplicableCode",None,err_txt)
+                                                   
+                                                    elif ct == "{%s}max" % ns["swe"]:
+                                                        ct = "max"
+                                                        if not len(xvals)==1:
+                                                            err_txt = "'%s' constraint support/need one values" % ct
+                                                            raise sosException.SOSException("NoApplicableCode",None,err_txt)
+                                                        try:
+                                                            cvals = float(xvals[0])
+                                                        except:
+                                                            err_txt = "'%s' constraint requires float value" % ct
+                                                            raise sosException.SOSException("NoApplicableCode",None,err_txt)
+                                                        
+                                                    elif ct == "{%s}interval" % ns["swe"]: 
+                                                        ct = "interval"
+                                                        if not len(xvals)==2:
+                                                            err_txt = "'%s' constraint support/need two values" % ct
+                                                            raise sosException.SOSException("NoApplicableCode",None,err_txt)
+                                                        try:
+                                                            cvals = [float(xvals[0]),float(xvals[1])]
+                                                        except:
+                                                            err_txt = "'%s' constraint requires float value" % ct
+                                                            raise sosException.SOSException("NoApplicableCode",None,err_txt)
                                                 
-                                                cc["role"] = crole
-                                                cc["%s" % ct] = cvals
-                            
-                            if not cc=={}:
-                                self.constr.append(json.dumps(cc))
-                            else:
-                                self.constr.append(None)
+                                                    elif ct == "{%s}valueList" % ns["swe"]:
+                                                        ct = "valueList"
+                                                        if not len(xvals)>0:
+                                                            err_txt = "'%s' constraint support/need at least one values" % ct
+                                                            raise sosException.SOSException("NoApplicableCode",None,err_txt)
+                                                        try:
+                                                            cvals = [float(a) for a in xvals]
+                                                        except:
+                                                            err_txt = "'%s' constraint requires float value" % ct
+                                                            raise sosException.SOSException("NoApplicableCode",None,err_txt)
+                                                    
+                                                    cc["role"] = crole
+                                                    cc["%s" % ct] = cvals
+                                
+                                if not cc=={}:
+                                    self.constr.append(json.dumps(cc))
+                                else:
+                                    self.constr.append(None)
                         
                         
                     else:

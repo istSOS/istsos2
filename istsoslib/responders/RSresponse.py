@@ -267,8 +267,18 @@ class RegisterSensorResponse:
         
         params=[]
         
+        print >> sys.stderr, "opr_ids: %s" % opr_ids
+        print >> sys.stderr, "ret_prc: %s" % ret_prc
+        print >> sys.stderr, "uom_ids: %s" % uom_ids
+        print >> sys.stderr, "opr_ids: %s" % opr_ids
+        print >> sys.stderr, "filter.constr: %s" % filter.constr
         for i in range(len(opr_ids)):
-            params.append(( ret_prc["id_prc"], uom_ids[i], opr_ids[i], filter.constr[i]))
+            params.append((
+                ret_prc["id_prc"],
+                uom_ids[i],
+                opr_ids[i],
+                filter.constr[i]
+            ))
         sqlIns += ",".join(["%s"]*len(params))
         sqlIns += " RETURNING id_pro"
         try:

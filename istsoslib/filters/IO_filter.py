@@ -237,22 +237,24 @@ class sosIOfilter(f.sosFilter):
                 encodingTxtBlock = Observation.find("{%s}result/{%s}DataArray/{%s}encoding/{%s}TextBlock" 
                                             %(ns['om'],ns['swe'],ns['swe'],ns['swe']) )
                 if encodingTxtBlock == None:
-                    rr_txt = "swe:encoding is mandatory in multiplicity 1"
+                    err_txt = "swe:encoding is mandatory in multiplicity 1"
                     raise sosException.SOSException("NoApplicableCode",None,err_txt)
                 tokenSeparator = encodingTxtBlock.attrib["tokenSeparator"]
                 blockSeparator = encodingTxtBlock.attrib["blockSeparator"]
-                decimalSeparator = encodingTxtBlock.attrib["decimalSeparator"]
+                #decimalSeparator = encodingTxtBlock.attrib["decimalSeparator"]
                 #values
                 values = Observation.find("{%s}result/{%s}DataArray/{%s}values" %(ns['om'],ns['swe'],ns['swe']) )
                 if values == None:
                     err_txt = "swe:values is mandatory in multiplicity 1"
                     raise sosException.SOSException("NoApplicableCode",None,err_txt)
-                valsplit=[i.split(tokenSeparator) for i in values.text.split(blockSeparator)]
-                for index,c in enumerate(urnlist):
-                    col = []
-                    for l in valsplit:
-                        col.append(l[index])
-                    self.data[c]["vals"] = col
+                
+                if values.text:
+                    valsplit=[i.split(tokenSeparator) for i in values.text.split(blockSeparator)]
+                    for index,c in enumerate(urnlist):
+                        col = []
+                        for l in valsplit:
+                            col.append(l[index])
+                        self.data[c]["vals"] = col
                 
             
             #case simple om:result

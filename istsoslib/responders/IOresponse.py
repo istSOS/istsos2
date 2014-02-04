@@ -281,7 +281,10 @@ class InsertObservationResponse:
         #---------------------------------------------------------------
         # verify that eventime are in provided samplingTime
         #---------------------------------------------------------------
-        if not iso.parse_datetime(max(filter.data[tpar]["vals"]))<= end and iso.parse_datetime(min(filter.data[tpar]["vals"]))>= start:
+        
+        if (len(filter.data[tpar]["vals"])>0 and 
+                not iso.parse_datetime(max(filter.data[tpar]["vals"]))<= end and 
+                iso.parse_datetime(min(filter.data[tpar]["vals"]))>= start):
             raise Exception("provided data are not included in provided <samplingTime> period")
         
         #======================        
@@ -304,17 +307,16 @@ class InsertObservationResponse:
         #----------------------------------------
         if len(filter.data[tpar]["vals"])==0:
             self.assignedId = ""
-            
+            ids_eti = []
         #----------------------------------------
         # CASE I: observations list contains data
         #----------------------------------------
-
         elif len(filter.data[tpar]["vals"])>0:
             #--------------------
             # insert event times
-            #--------------------            
+            #--------------------   
+            ids_eti = []         
             params = []
-            ids_eti = []
             sql  = "INSERT INTO %s.event_time (id_prc_fk,time_eti)" %(filter.sosConfig.schema)
             sql += " VALUES (%s,%s::TIMESTAMPTZ) RETURNING id_eti" 
             for val in filter.data[tpar]["vals"]:
@@ -405,7 +407,7 @@ class InsertObservationResponse:
             self.assignedId = "@".join([str(p) for p in ids_eti])
             # commit executed operations                
         
-         #Register the transactional operation in Log table 
+        #Register the transactional operation in Log table 
         if filter.sosConfig.transactional_log in ['True','true',1]:
             sqlLog  = "INSERT INTO %s.tran_log" %(filter.sosConfig.schema)
             sqlLog  += " (operation_trl,procedure_trl,begin_trl,end_trl,count,stime_prc,etime_prc)"
