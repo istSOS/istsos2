@@ -220,14 +220,24 @@ def execute (args, logger=None):
             
             # @todo should be handled situation where a freshly registerd procedure with irregular data
             #       is inserting a csv data file without observaton but only with a trasmission date.
+            ep = datetime.strptime(
+                os.path.split(f)[1].replace("%s_" % proc, "").replace(ext, ""),"%Y%m%d%H%M%S%f"
+            ).replace(tzinfo=timezone('UTC')).isoformat()
+            
+            if len(data['result']['DataArray']['values'])>0:
+                bp = data['result']['DataArray']['values'][0][jsonindex['urn:ogc:def:parameter:x-istsos:1.0:time:iso8601']]
+            else:
+                if ep > data["samplingTime"]["endPosition"]:
+                    bp = data["samplingTime"]["endPosition"]
+                else:
+                    raise Exception("Somthing is wrong with begin position..")
+                    
             data["samplingTime"] = {
-                "beginPosition": data['result']['DataArray']['values'][0][jsonindex['urn:ogc:def:parameter:x-istsos:1.0:time:iso8601']],
-			   "endPosition":  datetime.strptime(
-                        os.path.split(f)[1].replace("%s_" % proc, "").replace(ext, ""),"%Y%m%d%H%M%S%f"
-                    ).replace(tzinfo=timezone('UTC')).isoformat()
+                "beginPosition": bp,
+			   "endPosition":  ep
             }
             
-            data["result"]["DataArray"]["elementCount"] = str(len(data['result']['DataArray']['values']))
+            #data["result"]["DataArray"]["elementCount"] = str(len(data['result']['DataArray']['values']))
             
             log (" > Begin: %s" % data["samplingTime"]["beginPosition"])
             log ("   + End: %s" % data["samplingTime"]["endPosition"])
