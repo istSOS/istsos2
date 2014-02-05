@@ -214,13 +214,16 @@ def execute (args, logger=None):
                 os.path.split(f)[1].replace("%s_" % proc, "").replace(ext, ""),"%Y%m%d%H%M%S%f"
             ).replace(tzinfo=timezone('UTC')).isoformat()
             
+            # @todo: date shall be converted in datetime objects
             if len(data['result']['DataArray']['values'])>0:
                 bp = data['result']['DataArray']['values'][0][jsonindex['urn:ogc:def:parameter:x-istsos:1.0:time:iso8601']]
+                if bp > data["samplingTime"]["beginPosition"]:
+                    bp = data["samplingTime"]["beginPosition"]
             else:
                 if ep > data["samplingTime"]["endPosition"]:
                     bp = data["samplingTime"]["endPosition"]
                 else:
-                    raise Exception("Somthing is wrong with begin position..")
+                    raise Exception("Something is wrong with begin position..")
                     
             data["samplingTime"] = {
                 "beginPosition": bp,
