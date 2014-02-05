@@ -209,7 +209,10 @@ def execute (args, logger=None):
                         print "Errore alla riga: %s" % i
                         raise e
                         
-                        
+            log ("Before insert ST:")
+            log (" > Begin: %s" % data["samplingTime"]["beginPosition"])
+            log ("   + End: %s" % data["samplingTime"]["endPosition"])
+            
             ep = datetime.strptime(
                 os.path.split(f)[1].replace("%s_" % proc, "").replace(ext, ""),"%Y%m%d%H%M%S%f"
             ).replace(tzinfo=timezone('UTC')).isoformat()
@@ -232,6 +235,7 @@ def execute (args, logger=None):
             
             #data["result"]["DataArray"]["elementCount"] = str(len(data['result']['DataArray']['values']))
             
+            log ("Insert ST:")
             log (" > Begin: %s" % bp)
             log ("   + End: %s" % ep)
             log (" > Values: %s" % len( data['result']['DataArray']['values']))
