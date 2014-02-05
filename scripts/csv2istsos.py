@@ -40,7 +40,7 @@ except ImportError as e:
     print "\nError loading internal libs:\n >> did you run the script from the istSOS root folder?\n\n"
     raise e
 
-
+datacache = {}
 
 def execute (args, logger=None):
     
@@ -91,7 +91,8 @@ def execute (args, logger=None):
         if 'pwd' in args:
             passw = args['pwd']
             
-        req = requests.session()
+        #req = requests.session()
+        req = requests
         
         for proc in procs:
             
@@ -201,14 +202,6 @@ def execute (args, logger=None):
                                 
                             observation[v] = val
                             
-                        # get first date
-                        '''if i == 1:
-                            begin = observation[jsonindex['urn:ogc:def:parameter:x-istsos:1.0:time:iso8601']]
-                            
-                        # get last date
-                        if i == (len(lines)-1):
-                            end   = observation[jsonindex['urn:ogc:def:parameter:x-istsos:1.0:time:iso8601']]
-                        '''
                         # attach to object
                         data['result']['DataArray']['values'].append(observation)
                         
@@ -216,10 +209,7 @@ def execute (args, logger=None):
                         print "Errore alla riga: %s" % i
                         raise e
                         
-            
-            
-            # @todo should be handled situation where a freshly registerd procedure with irregular data
-            #       is inserting a csv data file without observaton but only with a trasmission date.
+                        
             ep = datetime.strptime(
                 os.path.split(f)[1].replace("%s_" % proc, "").replace(ext, ""),"%Y%m%d%H%M%S%f"
             ).replace(tzinfo=timezone('UTC')).isoformat()
@@ -239,8 +229,8 @@ def execute (args, logger=None):
             
             #data["result"]["DataArray"]["elementCount"] = str(len(data['result']['DataArray']['values']))
             
-            log (" > Begin: %s" % data["samplingTime"]["beginPosition"])
-            log ("   + End: %s" % data["samplingTime"]["endPosition"])
+            log (" > Begin: %s" % bp)
+            log ("   + End: %s" % ep)
             log (" > Values: %s" % len( data['result']['DataArray']['values']))
                 
             if not test and len(files)>0: # send to wa

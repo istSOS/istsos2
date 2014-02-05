@@ -140,7 +140,8 @@ def execute (args, logger=None):
     log("\nistSOS > 2 > istSOS STARTED:")
     log("==============================\n")
     
-    req = requests.session()
+    #req = requests.session()
+    req = requests
     
     # Load procedure description        
     log("1. Loading procedure description: %s" % procedure)

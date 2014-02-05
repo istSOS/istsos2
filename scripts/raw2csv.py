@@ -217,6 +217,9 @@ class Converter():
     
     def csv2istsos(self):
         from scripts import csv2istsos
+        csv2istsos.datacache = {
+            self.name: self.describe
+        }
         csv2istsos.execute({
             'u': self.url,
             's': self.service,
