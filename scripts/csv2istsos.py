@@ -30,11 +30,12 @@ from datetime import datetime
 
 #print path.abspath(".")
 #print path.normpath("%s/../" % path.abspath("."))
-
+    
 sys.path.insert(0, path.abspath("."))
 try:
     import lib.argparse as argparse
     import lib.requests as requests
+    import lib.isodate as iso
     from lib.pytz import timezone
 except ImportError as e:
     print "\nError loading internal libs:\n >> did you run the script from the istSOS root folder?\n\n"
@@ -106,8 +107,7 @@ def execute (args, logger=None):
                 ), prefetch=True, auth=(user, passw), verify=False)
                 
             data = res.json
-            if debug:
-                pp.pprint(data)
+            #log(pp.pprint(data))
                 
             if data['success']==False:
                 raise Exception ("Description of procedure %s can not be loaded: %s" % (proc, data['message']))
@@ -215,29 +215,31 @@ def execute (args, logger=None):
             
             ep = datetime.strptime(
                 os.path.split(f)[1].replace("%s_" % proc, "").replace(ext, ""),"%Y%m%d%H%M%S%f"
-            ).replace(tzinfo=timezone('UTC')).isoformat()
+            ).replace(tzinfo=timezone('UTC')) # .isoformat()
             
             # @todo: date shall be converted in datetime objects
             if len(data['result']['DataArray']['values'])>0:
-                bp = data['result']['DataArray']['values'][0][jsonindex['urn:ogc:def:parameter:x-istsos:1.0:time:iso8601']]
-                if bp > data["samplingTime"]["endPosition"]:
-                    bp = data["samplingTime"]["endPosition"]
+                bp = iso.parse_datetime(
+                    data['result']['DataArray']['values'][0][jsonindex['urn:ogc:def:parameter:x-istsos:1.0:time:iso8601']]
+                )
+                if bp > iso.parse_datetime(data["samplingTime"]["endPosition"]):
+                    bp = iso.parse_datetime(data["samplingTime"]["endPosition"])
             else:
-                if ep > data["samplingTime"]["endPosition"]:
-                    bp = data["samplingTime"]["endPosition"]
+                if ep > iso.parse_datetime(data["samplingTime"]["endPosition"]):
+                    bp = iso.parse_datetime(data["samplingTime"]["endPosition"])
                 else:
                     raise Exception("Something is wrong with begin position..")
                     
             data["samplingTime"] = {
-                "beginPosition": bp,
-			   "endPosition":  ep
+                "beginPosition": bp.isoformat(),
+			   "endPosition":  ep.isoformat()
             }
             
             #data["result"]["DataArray"]["elementCount"] = str(len(data['result']['DataArray']['values']))
             
             log ("Insert ST:")
-            log (" > Begin: %s" % bp)
-            log ("   + End: %s" % ep)
+            log (" > Begin: %s" % bp.isoformat())
+            log ("   + End: %s" % ep.isoformat())
             log (" > Values: %s" % len( data['result']['DataArray']['values']))
                 
             if not test and len(files)>0: # send to wa

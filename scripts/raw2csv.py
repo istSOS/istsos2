@@ -429,14 +429,14 @@ class Converter():
             if self.getIOEndPosition() == None:
                 f = open(os.path.join(self.folderOut,"%s_%s.dat" %(
                     self.name,
-                    datetime.strftime(self.observations[-1].getEventime().astimezone(timezone('UTC')), "%Y%m%d%H%M%S"))), 'w')
+                    datetime.strftime(self.observations[-1].getEventime().astimezone(timezone('UTC')), "%Y%m%d%H%M%S%f"))), 'w')
             else:
                 if self.getIOEndPosition() < self.observations[-1].getEventime():
                     raise IstSOSError("End position (%s) cannot be before the last observation event time (%s)" % (
                         self.getIOEndPosition(), self.observations[-1].getEventime()))
                 f = open(os.path.join(self.folderOut,"%s_%s.dat" %(
                     self.name,
-                    datetime.strftime(self.getIOEndPosition().astimezone(timezone('UTC')), "%Y%m%d%H%M%S"))), 'w')
+                    datetime.strftime(self.getIOEndPosition().astimezone(timezone('UTC')), "%Y%m%d%H%M%S%f"))), 'w')
             f.write("%s\n" % ",".join(self.obsindex))
             for o in self.observations:
                 f.write("%s\n" % o.csv(",",self.obsindex))
@@ -447,7 +447,7 @@ class Converter():
                 raise IstSOSError("The file has no observations, if this happens, you shall use the setEndPosition function to set the endPosition manually")
             f = open(os.path.join(self.folderOut,"%s_%s.dat" %(
                 self.name,
-                datetime.strftime(self.getIOEndPosition().astimezone(timezone('UTC')), "%Y%m%d%H%M%S"))), 'w')
+                datetime.strftime(self.getIOEndPosition().astimezone(timezone('UTC')), "%Y%m%d%H%M%S%f"))), 'w')
             f.write("%s\n" % ",".join(self.obsindex))
         f.close()
         
