@@ -72,7 +72,7 @@ import traceback
 
 class KernImporter(raw2csv.Converter):
     def __init__(self, procedureName, config, url, service, inputDir, 
-                 fileNamePattern, outputDir, qualityIndex=False, 
+                 fileNamePattern, outputDir=None, qualityIndex=False, 
                  exceptionBehaviour={}, user=None, password=None, debug=False, 
                  csvlength=5000, filenamecheck=None, archivefolder = None):
         self.config = config        

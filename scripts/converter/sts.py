@@ -52,17 +52,17 @@ from scripts import raw2csv
 from datetime import datetime
 
 class StsImporter(raw2csv.Converter):
-    
+            
     def __init__(self, procedureName, config, url, service, inputDir, 
-                 fileNamePattern, outputDir, qualityIndex=False, 
+                 fileNamePattern, outputDir=None, qualityIndex=False, 
                  exceptionBehaviour={}, user=None, password=None, debug=False, 
-                 csvlength=5000, filenamecheck=None, archivefolder = None):
-                     
+                 csvlength=5000, filenamecheck=None, archivefolder = None):                     
         self.config = config
-        
-        raw2csv.Converter.__init__(self, procedureName, url, service,
-            inputDir, fileNamePattern, outputDir,
-            qualityIndex, exceptionBehaviour, user, password, debug, csvlength, filenamecheck, archivefolder)
+        raw2csv.Converter.__init__(self, procedureName, url, service, inputDir, 
+            fileNamePattern, outputDir, qualityIndex, 
+            exceptionBehaviour, user, password, debug, 
+            csvlength, filenamecheck, archivefolder)
+            
         
     def parse(self, fileObj, fileName):
         
