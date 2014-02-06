@@ -106,13 +106,18 @@ import traceback
 
 class CsvImporter(raw2csv.Converter):
     
-    def __init__(self, procedureName, config, url, service, inputDir, fileNamePattern, outputDir, debug):
+    def __init__(self, procedureName, config, url, service, inputDir, 
+                 fileNamePattern, outputDir=None, qualityIndex=False, 
+                 exceptionBehaviour={}, user=None, password=None, debug=False, 
+                 csvlength=5000, filenamecheck=None, archivefolder = None):
+        
         self.config = config
+        
         raw2csv.Converter.__init__(self, procedureName, url, service,
             inputDir, fileNamePattern, outputDir,
-            debug=debug)
-    
-    
+            qualityIndex, exceptionBehaviour, user, password, debug, csvlength, filenamecheck, archivefolder)
+
+            
     def parseDate(self, columns):
         
         if "column" in self.config["datetime"] and "format" in self.config["datetime"]:
