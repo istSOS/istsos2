@@ -134,8 +134,7 @@ class Converter():
         self.executing = {
             'file': None
         }
-        
-        
+                
         # Load describeSensor from istSOS WALib (http://localhost/istsos/wa/istsos/services/demo/procedures/T_LUGANO)
         self.loadSensorMetadata()
     
