@@ -182,7 +182,7 @@ def execute (args):
         
         appendData = False
         if 'a' in args:
-            appendData = False
+            appendData = True
         
         
         dfrom = None
@@ -376,7 +376,7 @@ def execute (args):
                     try:
                         if appendData and ('endPosition' in template['samplingTime']):
                             procedures[pname].begin = template['samplingTime']['endPosition']
-                            begin = iso.parse_datetime(template['samplingTime']['endPosition'])                            
+                            begin = iso.parse_datetime(template['samplingTime']['endPosition'])     
                     except Exception as exproc:
                         print res.text
                         raise exproc
@@ -583,7 +583,7 @@ if __name__ == "__main__":
     parser.add_argument('-a',
         action = 'store_true',
         dest   = 'a',
-        help   = 'Add this parameter, if you want to replace all the dataset instead of appending after existing observations, (default: %(default)s).')
+        help   = 'Add this parameter, if you want to replace all the dataset instead of appending after existing observations.')
     
     parser.add_argument('--from', 
         action='store',
