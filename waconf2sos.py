@@ -73,7 +73,7 @@ class istsosConfig():
         
         self.sensorMLpath = serviceobj.sensormlpath
         self.virtual_processes_folder = serviceobj.virtualpath
-        self.virtual_HQ_folder = serviceobj.serviceconf.discharges["virtual_HQ_folder"]
+        #self.virtual_HQ_folder = serviceobj.serviceconf.discharges["virtual_HQ_folder"]
         
         self.aggregate_nodata = serviceobj.serviceconf.getobservation["aggregate_nodata"]
         self.maxGoPeriod = serviceobj.serviceconf.getobservation["maxGoPeriod"]        
