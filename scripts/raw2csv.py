@@ -149,7 +149,7 @@ class Converter():
     def log(self, message):
         if self.debug:
             print message 
-	    if self.debugfile:
+        if self.debugfile:
             self.debugfile.write("%s\n" % message)
                 
     
