@@ -91,7 +91,7 @@ class Converter():
 
         self.debugfile = False
         if debug == 'file':
-            self.debug = True
+            self.debug = False
             self.debugfile = open(os.path.join(self.folderOut, "log.txt"), "w")
         else:
             self.debug = debug
@@ -149,8 +149,8 @@ class Converter():
     def log(self, message):
         if self.debug:
             print message 
-            if self.debugfile:
-                self.debugfile.write("%s\n" % message)
+	    if self.debugfile:
+            self.debugfile.write("%s\n" % message)
                 
     
     def addMessage(self, message):
