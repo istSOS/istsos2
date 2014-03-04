@@ -169,6 +169,8 @@ def execute (args):
     pp = pprint.PrettyPrinter(indent=2)
     try:
     
+        istsos_version = args['istsos'] if 'istsos' in args else None
+        
         debug = args['v']
         test = args['t']
         
@@ -260,11 +262,28 @@ def execute (args):
                 #print "Outputs found: %s" % len(elDescribe)
                 
                 observedProperties = []
-                for ds in elDescribe:
-                    definition = ds.find("{%s}ObservableProperty" % (dsNs['swe'])).get('definition').replace('urn:ogc:def:parameter:x-ist::','')
-                    #print definition
-                    if definition.find('time:iso8601')<0:
-                        observedProperties.append(definition)
+                if istsos_version != None and istsos_version == '2':
+                    for ds in elDescribe:
+                        if ds.find("{%s}DataRecord/{%s}field" % (dsNs['swe'],dsNs['swe'])).get('name') != 'Time':
+                            observedProperties.append(ds.find("{%s}DataRecord/{%s}field/{%s}Quantity" % (
+                                dsNs['swe'],dsNs['swe'],dsNs['swe'])
+                            ).get('name').replace('urn:ogc:def:parameter:x-ist::',''))
+                        
+                else:
+                    for ds in elDescribe:
+                        definition = ds.find("{%s}ObservableProperty" % (dsNs['swe'])).get('definition').replace('urn:ogc:def:parameter:x-ist::','')
+                        #print definition
+                        if definition.find('time:iso8601')<0:
+                            observedProperties.append(definition)
+                print {
+                    'service': 'SOS', 
+                    'version': '1.0.0',
+                    'request': 'GetObservation',
+                    'offering': offeringName,
+                    'responseFormat': 'text/xml;subtype=\'sensorML/1.0.0\'',
+                    'procedure': pname,
+                    'observedProperty': ",".join(observedProperties)
+                }
                 
                 res = req.get("%s" % (src), params={
                     'service': 'SOS', 
@@ -538,6 +557,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description='Import data from an external SOS to an istSOS instance.')
     
+    parser.add_argument('--istsos',
+        action = 'store',
+        dest   = 's',
+        metavar= 'istsos',
+        help   = 'Set source istSOS version (accepted verion is 2)')
+        
     parser.add_argument('-p', 
         action='store',
         dest='p',
