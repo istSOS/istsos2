@@ -165,103 +165,106 @@ def execute (args, logger=None):
             if debug:
                 print " > %s %s found" % (len(files), "Files" if len(files)>1 else "File")
                 
-            for f in files:
-            
-                # open file
-                file = open(f, 'rU')
+            if len(files)>0:    
+                for f in files:
                 
-                # loop lines
-                lines = file.readlines()
-                
-                obsindex = lines[0].strip(' \t\n\r').split(",")
-                
-                # Check if all the observedProperties of the procedure are included in the CSV file (quality index is optional)
-                for k, v in jsonindex.iteritems():
-                    if k in obsindex:
-                        continue
-                    elif ':qualityIndex' in k:
-                        continue
-                    else:
-                        raise Exception ("Mandatory observed property %s is not present in the CSV." % k)
-                
-                # loop lines skipping the header
-                for i in range(1, len(lines)):
-                    try:
-                        line = lines[i]
-                        lineArray = line.strip(' \t\n\r').split(",")
-                        
-                        # Creating an empty array where the values will be inserted
-                        observation =  ['']*len(jsonindex)
-                        
-                        for k, v in jsonindex.iteritems():
-                            val = None
-                            if k in obsindex:
-                                val = lineArray[obsindex.index(k)]
-                            elif ':qualityIndex' in k: # Quality index is not present in the CSV so the default value will be set
-                                val = quality
-                                
-                            observation[v] = val
+                    # open file
+                    file = open(f, 'rU')
+                    
+                    # loop lines
+                    lines = file.readlines()
+                    
+                    obsindex = lines[0].strip(' \t\n\r').split(",")
+                    
+                    # Check if all the observedProperties of the procedure are included in the CSV file (quality index is optional)
+                    for k, v in jsonindex.iteritems():
+                        if k in obsindex:
+                            continue
+                        elif ':qualityIndex' in k:
+                            continue
+                        else:
+                            raise Exception ("Mandatory observed property %s is not present in the CSV." % k)
+                    
+                    # loop lines skipping the header
+                    for i in range(1, len(lines)):
+                        try:
+                            line = lines[i]
+                            lineArray = line.strip(' \t\n\r').split(",")
                             
-                        # attach to object
-                        data['result']['DataArray']['values'].append(observation)
-                        
-                    except Exception as e:
-                        print "Errore alla riga: %s" % i
-                        raise e
-                        
-            log ("Before insert ST:")
-            log (" > Begin: %s" % data["samplingTime"]["beginPosition"])
-            log ("   + End: %s" % data["samplingTime"]["endPosition"])
-            
-            ep = datetime.strptime(
-                os.path.split(f)[1].replace("%s_" % proc, "").replace(ext, ""),"%Y%m%d%H%M%S%f"
-            ).replace(tzinfo=timezone('UTC')) # .isoformat()
-            
-            # @todo: date shall be converted in datetime objects
-            if len(data['result']['DataArray']['values'])>0:
-                bp = iso.parse_datetime(
-                    data['result']['DataArray']['values'][0][jsonindex['urn:ogc:def:parameter:x-istsos:1.0:time:iso8601']]
-                )
-                if bp > iso.parse_datetime(data["samplingTime"]["endPosition"]):
-                    bp = iso.parse_datetime(data["samplingTime"]["endPosition"])
-            else:
-                if ep > iso.parse_datetime(data["samplingTime"]["endPosition"]):
-                    bp = iso.parse_datetime(data["samplingTime"]["endPosition"])
+                            # Creating an empty array where the values will be inserted
+                            observation =  ['']*len(jsonindex)
+                            
+                            for k, v in jsonindex.iteritems():
+                                val = None
+                                if k in obsindex:
+                                    val = lineArray[obsindex.index(k)]
+                                elif ':qualityIndex' in k: # Quality index is not present in the CSV so the default value will be set
+                                    val = quality
+                                    
+                                observation[v] = val
+                                
+                            # attach to object
+                            data['result']['DataArray']['values'].append(observation)
+                            
+                        except Exception as e:
+                            print "Errore alla riga: %s" % i
+                            raise e
+                            
+                log ("Before insert ST:")
+                if 'beginPosition' in data["samplingTime"]:
+                    log (" > Begin: %s" % data["samplingTime"]["beginPosition"])
+                if 'endPosition' in data["samplingTime"]:
+                    log ("   + End: %s" % data["samplingTime"]["endPosition"])
+                
+                ep = datetime.strptime(
+                    os.path.split(f)[1].replace("%s_" % proc, "").replace(ext, ""),"%Y%m%d%H%M%S%f"
+                ).replace(tzinfo=timezone('UTC')) # .isoformat()
+                
+                # @todo: date shall be converted in datetime objects
+                if len(data['result']['DataArray']['values'])>0:
+                    bp = iso.parse_datetime(
+                        data['result']['DataArray']['values'][0][jsonindex['urn:ogc:def:parameter:x-istsos:1.0:time:iso8601']]
+                    )
+                    if 'beginPosition' in data["samplingTime"] and bp > iso.parse_datetime(data["samplingTime"]["endPosition"]):
+                        bp = iso.parse_datetime(data["samplingTime"]["endPosition"])
                 else:
-                    raise Exception("Something is wrong with begin position..")
-                    
-            data["samplingTime"] = {
-                "beginPosition": bp.isoformat(),
-			   "endPosition":  ep.isoformat()
-            }
-            
-            #data["result"]["DataArray"]["elementCount"] = str(len(data['result']['DataArray']['values']))
-            
-            log ("Insert ST:")
-            log (" > Begin: %s" % bp.isoformat())
-            log ("   + End: %s" % ep.isoformat())
-            log (" > Values: %s" % len( data['result']['DataArray']['values']))
+                    if ep > iso.parse_datetime(data["samplingTime"]["endPosition"]):
+                        bp = iso.parse_datetime(data["samplingTime"]["endPosition"])
+                    else:
+                        raise Exception("Something is wrong with begin position..")
+                        
+                data["samplingTime"] = {
+                    "beginPosition": bp.isoformat(),
+			       "endPosition":  ep.isoformat()
+                }
                 
-            if not test and len(files)>0: # send to wa
-                res = req.post("%s/wa/istsos/services/%s/operations/insertobservation" % (
-                    url,
-                    service), 
-                    prefetch=True,
-                    auth=(user, passw),
-                    verify=False,
-                    data=json.dumps({
-                    "ForceInsert": "true",
-                    "AssignedSensorId": aid,
-                    "Observation": data
-                    })
-                )
-                # read response
-                log (" > Insert observation success: %s" % res.json['success'])
-                if not res.json['success']:
-                    log (res.json['message'])
-                    
+                #data["result"]["DataArray"]["elementCount"] = str(len(data['result']['DataArray']['values']))
                 
-                print "~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~"
+                log ("Insert ST:")
+                log (" > Begin: %s" % bp.isoformat())
+                log ("   + End: %s" % ep.isoformat())
+                log (" > Values: %s" % len( data['result']['DataArray']['values']))
+                    
+                if not test and len(files)>0: # send to wa
+                    res = req.post("%s/wa/istsos/services/%s/operations/insertobservation" % (
+                        url,
+                        service), 
+                        prefetch=True,
+                        auth=(user, passw),
+                        verify=False,
+                        data=json.dumps({
+                        "ForceInsert": "true",
+                        "AssignedSensorId": aid,
+                        "Observation": data
+                        })
+                    )
+                    # read response
+                    log (" > Insert observation success: %s" % res.json['success'])
+                    if not res.json['success']:
+                        log (res.json['message'])
+                        
+                    
+                    print "~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~"
         pass
         
     except Exception as e:    

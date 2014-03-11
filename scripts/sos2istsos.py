@@ -257,33 +257,36 @@ def execute (args):
                     print "Error on DS for %s" % pname
                     continue
                     
-                elDescribe = ds.findall("member/{%s}System/{%s}outputs/{%s}OutputList/{%s}output" % (dsNs['sml'],dsNs['sml'],dsNs['sml'],dsNs['sml']) )
+                
                 
                 #print "Outputs found: %s" % len(elDescribe)
                 
                 observedProperties = []
+                #print "istsos_version: ", istsos_version
                 if istsos_version != None and istsos_version == '2':
-                    for ds in elDescribe:
-                        if ds.find("{%s}DataRecord/{%s}field" % (dsNs['swe'],dsNs['swe'])).get('name') != 'Time':
-                            observedProperties.append(ds.find("{%s}DataRecord/{%s}field/{%s}Quantity" % (
-                                dsNs['swe'],dsNs['swe'],dsNs['swe'])
-                            ).get('name').replace('urn:ogc:def:parameter:x-ist::',''))
+                    elFields = ds.findall("{%s}member/{%s}System/{%s}outputs/{%s}OutputList/{%s}output/{%s}DataRecord/{%s}field" % (
+                                    dsNs['sml'],dsNs['sml'],dsNs['sml'],dsNs['sml'],dsNs['sml'],dsNs['swe'],dsNs['swe']) )
+                    for fs in elFields:
+                        print fs.get('name')
+                        if fs.get('name') != 'Time':
+                            observedProperties.append(fs.find("{%s}Quantity" % (dsNs['swe'])).get('definition').replace('urn:ogc:def:parameter:x-ist::',''))
                         
                 else:
+                    elDescribe = ds.findall("member/{%s}System/{%s}outputs/{%s}OutputList/{%s}output" % (dsNs['sml'],dsNs['sml'],dsNs['sml'],dsNs['sml']) )
                     for ds in elDescribe:
                         definition = ds.find("{%s}ObservableProperty" % (dsNs['swe'])).get('definition').replace('urn:ogc:def:parameter:x-ist::','')
                         #print definition
                         if definition.find('time:iso8601')<0:
                             observedProperties.append(definition)
-                print {
-                    'service': 'SOS', 
-                    'version': '1.0.0',
-                    'request': 'GetObservation',
-                    'offering': offeringName,
-                    'responseFormat': 'text/xml;subtype=\'sensorML/1.0.0\'',
-                    'procedure': pname,
-                    'observedProperty': ",".join(observedProperties)
-                }
+                #print {
+                #    'service': 'SOS', 
+                #    'version': '1.0.0',
+                #    'request': 'GetObservation',
+                #    'offering': offeringName,
+                #    'responseFormat': 'text/xml;subtype=\'sensorML/1.0.0\'',
+                #    'procedure': pname,
+                #    'observedProperty': ",".join(observedProperties)
+                #}
                 
                 res = req.get("%s" % (src), params={
                     'service': 'SOS', 
@@ -329,12 +332,15 @@ def execute (args):
                 )
                 coord = point.find("{%s}coordinates" % (
                     goNs['gml'])
-                )
+                ).text.split(",")
+                
+                if len(coord) == 2:
+                    coord.append('0')
                 
                 procedures[pname].setFoi(
                     foi.get('{%s}href' % gcNs['xlink']).split(":")[-1],
                     point.get('srsName'),
-                    coord.text.split(",")
+                    coord
                 )
                 
                 # Extracting UOM
@@ -373,14 +379,15 @@ def execute (args):
                 # ~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
                 
                 # Check if procedure already exist
-                res = req.get("%s/wa/istsos/services/%s/procedures/%s" % (dst,srv,pname))  
+                #print ("%s/wa/istsos/services/%s/procedures/%s" % (dst,srv,pname))
+                res = req.get("%s/wa/istsos/services/%s/procedures/%s" % (dst,srv,pname), prefetch=True, verify=False)  
                 if not res.json["success"]:
                     # Registering procedure to istSOS   
                     res = req.post("%s/wa/istsos/services/%s/procedures" % (dst,srv), 
                             data=json.dumps(procedures[pname].data)
                     ) 
                     if not res.json["success"]:
-                        print json.dumps(procedures[pname].data)
+                        #print json.dumps(procedures[pname].data)
                         raise Exception("Registering procedure %s failed: \n%s" % (pname, res.json["message"]))
                     
                     # Getting details (describe sensor) to get the assignedSensorId
@@ -440,7 +447,10 @@ def execute (args):
                             
                             t = float(calendar.timegm(end.utctimetuple())-calendar.timegm(_begin.utctimetuple()))
                             t1 = float(calendar.timegm(nextPosition.utctimetuple())-calendar.timegm(_begin.utctimetuple()))
-                            percentage = round((t1/t)*100,2)
+                            try:
+                                percentage = round((t1/t)*100,2)
+                            except:
+                                percentage = 0
                             if percentage > 100:
                                 percentage = 100
                             lastPrint = "%s > %s%% (%s / %s %s days)" % ("\b"*len(lastPrint),percentage, begin.strftime(fmtshort), nextPosition.strftime(fmtshort), days)
@@ -480,9 +490,7 @@ def execute (args):
                             lastPrint = "%s - GO: '%s'" % (lastPrint, gotime)
                             
                             go, goNs = parse_and_get_ns(StringIO(res.content))
-                            
-                            #print res.text
-                            
+                                                        
                             if len(oOrder)==0:
                                 fields = go.findall("{%s}member/{%s}Observation/{%s}result/{%s}DataArray/{%s}elementType/{%s}DataRecord/{%s}field" % (
                                     goNs['om'], goNs['om'], goNs['om'], goNs['swe'], goNs['swe'], goNs['swe'], goNs['swe'])
@@ -547,7 +555,7 @@ def execute (args):
                         
                         
                         print " > Completed in %s" % timedelta(seconds=int(time.time() - startTime))
-            
+            break
     except Exception as e:    
         print "ERROR: %s\n\n" % e
         traceback.print_exc()
@@ -559,7 +567,7 @@ if __name__ == "__main__":
     
     parser.add_argument('--istsos',
         action = 'store',
-        dest   = 's',
+        dest   = 'istsos',
         metavar= 'istsos',
         help   = 'Set source istSOS version (accepted verion is 2)')
         
@@ -608,7 +616,7 @@ if __name__ == "__main__":
     parser.add_argument('-a',
         action = 'store_true',
         dest   = 'a',
-        help   = 'Add this parameter, if you want to replace all the dataset instead of appending after existing observations.')
+        help   = 'Add this parameter, if you want to append after existing observations instead of replacing all the dataset.')
     
     parser.add_argument('--from', 
         action='store',
