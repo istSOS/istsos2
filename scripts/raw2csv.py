@@ -103,7 +103,7 @@ class Converter():
         self.fntd = self.fnre = self.fndf = None
         if type(filenamecheck) == type({}):
             if 'dateformat' in filenamecheck:
-                self.fndf = filenamecheck['dateformat'] 
+                self.fndf = filenamecheck['dateformat']
             if 'datetz' in filenamecheck:
                 self.fndtz = filenamecheck['datetz'] 
             if 'replace' in filenamecheck:

@@ -516,9 +516,13 @@ def execute (args):
                                 # InsertObservation to istSOS
                                 template['result']['DataArray']['values'] = copy
                                 template['samplingTime'] = {
-                                    "beginPosition": begin.strftime(fmt),
+                                    "beginPosition": copy[0][0],
                                     "endPosition": nextPosition.strftime(fmt)
                                 }
+                                '''template['samplingTime'] = {
+                                    "beginPosition": begin.strftime(fmt),
+                                    "endPosition": nextPosition.strftime(fmt)
+                                }'''
                                 
                                 template[u"AssignedSensorId"] = procedures[pname].oid
                                 

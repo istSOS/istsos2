@@ -149,6 +149,7 @@ def execute (args, logger=None):
             data['AssignedSensorId'] = aid
             
             # Set values array empty (can contain 1 value if procedure not empty)
+            lastMeasure = data['result']['DataArray']['values'][0] if len(data['result']['DataArray']['values'])==1 else None
             data['result']['DataArray']['values'] = []
             
             # discover json observed property disposition
@@ -220,16 +221,20 @@ def execute (args, logger=None):
                     os.path.split(f)[1].replace("%s_" % proc, "").replace(ext, ""),"%Y%m%d%H%M%S%f"
                 ).replace(tzinfo=timezone('UTC')) # .isoformat()
                 
-                # @todo: date shall be converted in datetime objects
+                # Kick in the brain code snippet
+                
+                # If there is at least one measure:
                 if len(data['result']['DataArray']['values'])>0:
+                
+                    # taking first observation as begin position
                     bp = iso.parse_datetime(
                         data['result']['DataArray']['values'][0][jsonindex['urn:ogc:def:parameter:x-istsos:1.0:time:iso8601']]
                     )
-                    if 'beginPosition' in data["samplingTime"] and bp > iso.parse_datetime(data["samplingTime"]["endPosition"]):
-                        bp = iso.parse_datetime(data["samplingTime"]["endPosition"])
-                else:
+                        
+                else: # otherwise this can be an irrebular procedure where just the end position is moved forward
+                
                     if ep > iso.parse_datetime(data["samplingTime"]["endPosition"]):
-                        bp = iso.parse_datetime(data["samplingTime"]["endPosition"])
+                        bp = ep
                     else:
                         raise Exception("Something is wrong with begin position..")
                         
