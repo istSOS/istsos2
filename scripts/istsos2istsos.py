@@ -168,7 +168,7 @@ def execute (args, logger=None):
     else:
         log("   > DS Destination Ok.")
         
-    # Load of a getobservation template =======================================
+    # Load of a getobservation template from destination =======================================
     res = req.get("%s/wa/istsos/services/%s/operations/getobservation/offerings/%s/procedures/%s/observedproperties/:/eventtime/last?qualityIndex=False" % (
             durl, dsrv, 'temporary', procedure
         ),  params={
@@ -196,29 +196,29 @@ def execute (args, logger=None):
 
     log("\n2. Identifying processing interval:")
     
-    
-    # Check if mesaures are present in source procedure, if it is empty an exception is thrown
+    # Check if mesaures are present in source procedure, by identifying the sampling time constraint 
+    #  located always in the first position of the outputs, if it is empty an exception is thrown
     if (not 'constraint' in sdata['data']['outputs'][0] 
             or not 'interval' in sdata['data']['outputs'][0]['constraint'] ):
         raise Exception ("There is no data in the source procedure to be copied to the destination procedure.")
-    
-    # Check if the contraint interval contains a valid ISO date begin position
-    try:
-        iso.parse_datetime(sdata['data']['outputs'][0]['constraint']['interval'][0])
-    except Exception:
-        raise Exception ("The date in the source procedure constraint interval (%s) is not valid." % 
-            sdata['data']['outputs'][0]['constraint']['interval'][0])
-    
-    # Check if the contraint interval contains a valid ISO date end position
-    try:
-        iso.parse_datetime(sdata['data']['outputs'][0]['constraint']['interval'][1])
-    except Exception:
-        raise Exception ("The date in the source procedure constraint interval (%s) is not valid." % 
-            sdata['data']['outputs'][0]['constraint']['interval'][1])
+    else:
+        # Check if the contraint interval contains a valid ISO date begin position
+        try:
+            iso.parse_datetime(sdata['data']['outputs'][0]['constraint']['interval'][0])
+        except Exception:
+            raise Exception ("The date in the source procedure constraint interval (%s) is not valid." % 
+                sdata['data']['outputs'][0]['constraint']['interval'][0])
+        
+        # Check if the contraint interval contains a valid ISO date end position
+        try:
+            iso.parse_datetime(sdata['data']['outputs'][0]['constraint']['interval'][1])
+        except Exception:
+            raise Exception ("The date in the source procedure constraint interval (%s) is not valid." % 
+                sdata['data']['outputs'][0]['constraint']['interval'][1])
     
     log("   > Source interval is valid")
     
-    # Looking for start instant processing 
+    # Looking for start (IO beginPOsition) instant processing 
     #   If the default value (*) is used, then the endPosition of 
     #   the "destination" service procedure will be used. But if the destination
     # procedure is empty , then the begin position of the source will be used
@@ -228,7 +228,7 @@ def execute (args, logger=None):
         if ('constraint' in ddata['data']['outputs'][0] 
             and 'interval' in ddata['data']['outputs'][0]['constraint']):
                 try:
-                    # Using the end position of the destination will be used
+                    # The endPosition of the destination will be used as Start/IO BeginPosition
                     start = iso.parse_datetime(ddata['data']['outputs'][0]['constraint']['interval'][1])
                     # Retroactive aggregation
                     if retro > 0:
@@ -240,12 +240,13 @@ def execute (args, logger=None):
                     raise Exception ("The date in the destination procedure constraint interval (%s) is not valid." % 
                         ddata['data']['outputs'][0]['constraint']['interval'][0])
         else:
-            # Using the begin position of the source will be used
+            # The beginPosition of the source will be used as Start/IO BeginPosition
             start = iso.parse_datetime(sdata['data']['outputs'][0]['constraint']['interval'][0])           
     else:
         start = iso.parse_datetime(begin)
     
     if end == "*":
+        # The endPosition of the source will be used as Stop/IO EndPosition
         stop = iso.parse_datetime(sdata['data']['outputs'][0]['constraint']['interval'][1])   
     else:
         stop = iso.parse_datetime(end)
@@ -307,16 +308,15 @@ def execute (args, logger=None):
         
         log("   > %s measures from: %s to: %s" % (len(smeasures['result']['DataArray']['values']), start.isoformat(), nextStart.isoformat()))
         
-        dtemplate["samplingTime"] = {
-            "beginPosition": start.isoformat()
-        }
+        dtemplate["samplingTime"] = {}
         if lm and len(smeasures['result']['DataArray']['values'])>0:
+            dtemplate["samplingTime"]["beginPosition"] = smeasures['result']['DataArray']['values'][0][0]
             dtemplate["samplingTime"]["endPosition"] = smeasures['result']['DataArray']['values'][-1][0]
         else:
+            dtemplate["samplingTime"]["beginPosition"] = start.isoformat()
             dtemplate["samplingTime"]["endPosition"] = nextStart.isoformat()
             
         dtemplate['result']['DataArray']['values'] = smeasures['result']['DataArray']['values']
-            
         dtemplate['result']['DataArray']['field'] = smeasures['result']['DataArray']['field']
         
         # POST data to WA
