@@ -104,3 +104,5 @@
 <script type="text/javascript" src="app/store/gridOfferings.js"></script>
 <script type="text/javascript" src="app/store/MyArrayStore.js"></script>
 <script type="text/javascript" src="app/store/RatingCurve.js"></script>
+<script type="text/javascript" src="app/store/AggregateFunctionStore.js"></script>
+<script type="text/javascript" src="app/store/MyJsonStore23.js"></script>

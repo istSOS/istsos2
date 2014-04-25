@@ -493,7 +493,21 @@ class waGetobservation(waResourceService):
             rparams.update({
                 "eventTime": "/".join(eventtime)
             })
-            
+        
+        if self.waEnviron['parameters'] and 'aggregatefunction' in self.waEnviron['parameters']:
+            rparams.update({
+                "aggregatefunction": self.waEnviron['parameters']["aggregatefunction"],
+                "aggregateinterval": self.waEnviron['parameters']["aggregateinterval"]
+            })
+            if 'aggregatenodata' in self.waEnviron['parameters']:
+                rparams.update({
+                    "aggregatenodata": self.waEnviron['parameters']["aggregatenodata"]
+                })
+            if 'aggregatenodataqi' in self.waEnviron['parameters']:
+                rparams.update({
+                    "aggregatenodataqi": self.waEnviron['parameters']["aggregatenodataqi"]
+                })
+          
         response = requests.get(
             self.serviceconf.serviceurl["url"], 
             params=rparams

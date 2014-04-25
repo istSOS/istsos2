@@ -24,22 +24,31 @@ Ext.define('istsos.view.ProcedureChart', {
         var me = this;
         
         Ext.create('istsos.store.ObservedProperties');
+        Ext.create('istsos.store.AggregateFunctionStore').loadData([
+            ['AVG'],['SUM'],['COUNT'],['MAX'],['MIN']
+        ]);
         this.procedures = {};
         
         me.callParent(arguments);
         
         this.addEvents('queueLoaded','observedPropertyIsSet','clickCallback','pointClickCallback', 'seriesSelected', 'underlayCallback');
         
-        var offset = (new Date()).getTimezoneOffset()/-60;
-        var tz = ((offset > 0) ? "+"+this.pad(offset) : this.pad(offset));
-        Ext.getCmp('oeBeginTime').format = 'H:i ['+tz+']';
+        //var offset = (new Date()).getTimezoneOffset()/-60;
+        
+        //var tz = (parseInt(offset)>=0?'+':'-') + this.pad(parseInt(offset)) + ':' + this.pad(Math.abs(((offset - parseInt(offset)) * 60 )));
+        
+        //var tz = ((offset > 0) ? "+"+this.pad(offset) : this.pad(offset));
+        //Ext.getCmp('oeBeginTime').format = 'H:i ['+tz+']';
+        
+        Ext.getCmp('oeTZ').setValue(istsos.utils.minutesToTz());
+        
         Ext.getCmp('oeBeginTime').setValue(Ext.Date.parse("00:00", 'H:i'));
-        Ext.getCmp('oeEndTime').format = 'H:i ['+tz+']';
+        //Ext.getCmp('oeEndTime').format = 'H:i ['+tz+']';
         Ext.getCmp('oeEndTime').setValue(Ext.Date.parse("00:00", 'H:i'));
         
         Ext.getCmp("btnPlot").on("click",this.loadObservation, this);
         this.on("queueLoaded",this.rederChart, this);
-        
+                
         Ext.getCmp("btnRangeDay").on("click",function(btn, e, eOpts){
             // 86400000 ms = 1 day
             var range = this.chart.xAxisRange();
@@ -93,11 +102,17 @@ Ext.define('istsos.view.ProcedureChart', {
     
     },
     pad: function(n){
-        return n<10 ? '0'+n : n
+        if (n>=0 && n<10) {
+            return '0'+n;
+        }else if(n<0 && n>-10){
+            return '-0'+(-1*n);
+        }
+        return n;
+        // return n<10 ? '0'+n : n
     },
     rederChart: function(){
         
-        var obsprop = Ext.getCmp("oeCbObservedProperty").getValue();
+        this.obsprop = Ext.getCmp("oeCbObservedProperty").getValue();
         var procs = [];
         // get the json rapresentation of the tree menu of procedures
         //var checked = Ext.getCmp('proceduresTree').getValues();
@@ -121,13 +136,8 @@ Ext.define('istsos.view.ProcedureChart', {
         for (var c = 0; c < keys.length; c++) {
             var key = keys[c];
             // check if procedures loaded have the requested observed property
-            if (Ext.Array.contains(this.procedures[key].getObservedProperties(),obsprop)) {
+            if (Ext.Array.contains(this.procedures[key].getObservedProperties(),this.obsprop)) {
                 procs.push(this.procedures[key]);
-                /*if (!Ext.isEmpty(checked[key])) { // if the checkbox is selected
-                    visibility.push(true);
-                }else{
-                    visibility.push(false);
-                }*/
                 // Preparing labels and single native row template
                 template.push(null);
                 this.labels.push(key);
@@ -139,7 +149,6 @@ Ext.define('istsos.view.ProcedureChart', {
                             );
                     }
                 } 
-            
             }
         }
         // merging data
@@ -157,7 +166,7 @@ Ext.define('istsos.view.ProcedureChart', {
                     this.chartStore[recs[j].get("micro")] = Ext.Array.clone(template);
                 }
                 // Set the property choosen in the chart store in the right column
-                var v = parseFloat(recs[j].get(p.storeConvertFieldToId[obsprop]));
+                var v = parseFloat(recs[j].get(p.storeConvertFieldToId[this.obsprop]));
                 if (v<-900) {
                     this.chartStore[recs[j].get("micro")][idx] = NaN;  
                 }else{
@@ -222,7 +231,7 @@ Ext.define('istsos.view.ProcedureChart', {
                     axes: Ext.apply({
                         x: {
                             valueFormatter: function(ms) {
-                                return istsos.utils.micro2iso(ms);
+                                return istsos.utils.micro2iso(ms,istsos.utils.tzToMinutes(Ext.getCmp('oeTZ').getValue()));
                             },
                             axisLabelFormatter: function(ms, gran, b, chart){
                                 
@@ -446,6 +455,19 @@ Ext.define('istsos.view.ProcedureChart', {
      *  - observed property
      */
     loadObservation: function(){
+    
+        // validation
+        
+        if(!Ext.getCmp('plotdatafrm').form.isValid()){
+            Ext.Msg.show({
+                 title:'Warning',
+                 msg: 'Request parameters are not valid please check date ranges and observed properties',
+                 buttons: Ext.Msg.OK,
+                 icon: Ext.Msg.WARNING
+            });
+            return;
+        }
+    
         // Mask the container with loading message
         Ext.get('chartCnt').mask("Initializing chart..");
         
@@ -459,6 +481,8 @@ Ext.define('istsos.view.ProcedureChart', {
         end.setHours(et.getHours());
         end.setMinutes(et.getMinutes());
         
+        this.tz = Ext.getCmp('oeTZ').getValue();
+        
         // Load data based on the date-time fields
         this.loading = [];
         for (var key in this.procedures) {
@@ -471,7 +495,10 @@ Ext.define('istsos.view.ProcedureChart', {
             },this,{
                 single: true
             });
-            this.procedures[key].getObservation(begin,end);
+            this.procedures[key].getObservation(begin,end,
+                this.tz, // Setted timezoe
+                (Ext.isObject(this.procedures[key].aggregation)?this.procedures[key].aggregation:null) // Aggregation configuration
+            );
         }
     },
     _colorChanged: function(p, newColor, oldColor){

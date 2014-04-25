@@ -38,6 +38,7 @@ def executeSos(environ, start_response):
     import sys
     import traceback
     import waconf2sos as cfg
+    from urlparse import parse_qs
     sosConfig = cfg.istsosConfig(environ)
     
     if not sosConfig.istsos_librarypath=="" or sosConfig.istsos_librarypath==None:
@@ -77,6 +78,19 @@ def executeSos(environ, start_response):
         # prepare response header
         response_headers = [('Content-Type', content_type),
                             ('Content-Length', str(len(render.encode('utf-8'))))]
+                            
+        #Content-Disposition: attachment; filename="'.basename($file).'"'                    
+        if str(environ['REQUEST_METHOD']).upper()=='GET':
+            rect = parse_qs(environ['QUERY_STRING'])
+            requestObject = {}
+            for key in rect.keys():
+                requestObject[key.lower()] = rect[key][0]
+            if requestObject.has_key("attachment"):
+                '''from istsoslib.filters.GO_filter import sosGOfilter
+                if isinstance(req_filter,sosGOfilter):'''
+                response_headers.append(("Content-Disposition", "attachment; filename=%s" % requestObject["attachment"]))
+            
+                            
         # send response header
         start_response(status, response_headers)
         #send response body

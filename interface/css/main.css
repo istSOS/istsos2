@@ -587,11 +587,21 @@ table.x-datepicker-inner .x-datepicker-selected a {
     background-repeat: no-repeat;
     background-position: center center;
 } 
-
+.pchooserBtnDownload {
+    position: absolute;
+    right: 46px;
+    top: 2px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    /*border: thin solid whitesmoke;*/
+    background: transparent url(../images/menu/download.svg) no-repeat scroll center center;
+    background-size: contain; 
+}
 .pchooserBtnColor {
     position: absolute;
     right: 26px;
-    top: 3px;
+    top: 2px;
     width: 16px;
     height: 16px;
     cursor: pointer;
@@ -599,13 +609,15 @@ table.x-datepicker-inner .x-datepicker-selected a {
 } 
 .pchooserBtnRemove {
     position: absolute;
-    right: 8px;
-    top: 3px;
+    right: 6px;
+    top: 2px;
     width: 16px;
     height: 16px;
     font-size: 14;
     font-weight: bolder;
     cursor: pointer;
+    background: transparent url(../images/menu/close.svg) no-repeat scroll center center;
+    background-size: contain; 
 } 
 
 .pchooser {
@@ -626,6 +638,7 @@ table.x-datepicker-inner .x-datepicker-selected a {
     background-image :url(../images/istsos-logo.png);
     background-repeat: no-repeat;
     background-position: center center;
+    background-size: 280px;
 }
 
 

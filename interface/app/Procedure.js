@@ -99,7 +99,8 @@ Ext.define('istsos.Sensor', {
             "observationLoaded" : true,
             "observationSaved" : true,
             "colorchanged" : true,
-            "visibilitychanged" : true
+            "visibilitychanged" : true,
+            "aggregationchanged" : true
         });
         
         this.service = service;
@@ -113,24 +114,64 @@ Ext.define('istsos.Sensor', {
         
     },
     // can be an iso8601 date string, a Date object or microseconds in unix time
-    getObservation: function(from, to){
+    getObservation: function(from, to, tz, aggregateObj){
+        /*
+            [optional] 
+            aggregateObj = {
+                f: 'SUM', //aggregatefunction
+                i: 'SUM', //aggregateinterval
+                nd: '-999.9', //aggregatenodata
+                ndqi: '210' //aggregatenodataqi
+            }
+        */
+        
+        var params = {};
+        
+        var format = Ext.isEmpty(tz) ? "c": "Y-m-d\\TH:i:s";
         
         if (Ext.isDate(from)) {
-            from = Ext.Date.format(from,'c');
+            from = Ext.Date.format(from,format);
+            if(!Ext.isEmpty(tz)){
+                from = from + (Ext.isString(tz) ? tz: istsos.utils.minutesToTz(tz));
+            }
         }else if (Ext.isNumber(from)) {
-            from = istsos.utils.micro2iso(from);
+            if (Ext.isEmpty(tz)){
+                from = istsos.utils.micro2iso(from);
+            }else{
+                from = istsos.utils.micro2iso(from, (Ext.isString(tz) ? istsos.utils.minutesToTz(tz) : tz));
+            }
+            //from = istsos.utils.micro2iso(from);
         }else{
             // Check that is a valid string in iso format
             var d = Ext.Date.parse(from,'c');
+            throw "Error in istsos.utils.getObservation";
         }
         
         if (Ext.isDate(to)) {
-            to = Ext.Date.format(to,'c');
+            to = Ext.Date.format(to,format);
+            if(!Ext.isEmpty(tz)){
+                to = to + (Ext.isString(tz) ? tz: istsos.utils.minutesToTz(tz));
+            }
         }else if (Ext.isNumber(to)) {
-            to = istsos.utils.micro2iso(to);
+            if (Ext.isEmpty(tz)){
+                to = istsos.utils.micro2iso(to);
+            }else{
+                to = istsos.utils.micro2iso(to, (Ext.isString(tz) ? istsos.utils.minutesToTz(tz) : tz));
+            }
         }else{
             // Check that is a valid string in iso format
             var d = Ext.Date.parse(to,'c');
+            throw "Error in istsos.utils.getObservation";
+        }
+        
+        
+        if (Ext.isObject(aggregateObj)){
+            params = Ext.apply(params,{
+                aggregatefunction: aggregateObj.f,
+                aggregateinterval: aggregateObj.i,
+                aggregatenodata: aggregateObj.nd,
+                aggregatenodataqi: aggregateObj.ndqi
+            });
         }
         
         Ext.Ajax.request({
@@ -141,6 +182,7 @@ Ext.define('istsos.Sensor', {
                 this.getObservedProperties().join(','), from, to),
             scope: this,
             method: "GET",
+            params: params,
             success: function(response){
                 var json = Ext.decode(response.responseText);
                 if (json.success) {
@@ -450,6 +492,10 @@ Ext.define('istsos.Sensor', {
     },
     getVisibility: function(){
         return this.visible;
+    },
+    setAggregation: function(aggregation){
+        this.aggregation = aggregation;
+        this.fireEvent("aggregationchanged", this, this.aggregation);
     }
 });
 
@@ -467,7 +513,6 @@ Ext.define('istsos.utils', {
             
             var date = new Date(parseInt(m/1000));
             var micro = parseFloat("0."+m);
-            
             
             if (offset!=null) {
                 date.setUTCMinutes(date.getUTCMinutes()+offset);
@@ -496,12 +541,58 @@ Ext.define('istsos.utils', {
             return year + "-" + month + "-"  + day + "T" + hour+ ":" + minute + ":" + second + "" + micro + "" + tz;
             
         },
+        minutesToTz: function(offset){
+            if (Ext.isEmpty(offset)){
+                offset = (new Date()).getTimezoneOffset()/-60;
+            }
+            return (parseInt(offset)>=0?'+':'-') + this.pad(parseInt(offset)) + ':' + this.pad(Math.abs(((offset - parseInt(offset)) * 60 )));
+        },
+        tzToMinutes: function(tz){
+            var hm = tz.split(':');
+            return (parseInt(hm[0])*60) + parseInt(hm[1]);
+        },
+        validateTz: function (value){
+            /*
+                Validating TZ string:
+                Example: +02:00
+            */
+            var tz = "TZ format shall be +HH:MM";
+            if (value.length!=6) {
+                return tz;
+            }
+            if (value[0]!='-' && value[0]!='+') {
+                return tz;
+            }
+            if (value.indexOf(':')!=3){
+                return tz;
+            }
+            var h = parseInt( (value[1]+value[2]));
+            var m = parseInt( (value[4]+value[5]));
+            
+            if (h>23){
+                return tz;
+            }
+            if (m>59){
+                return tz;
+            }
+            return true;
+        },
+        pad: function(n){
+            if (n>=0 && n<10) {
+                return '0'+n;
+            }else if(n<0 && n>-10){
+                return '-0'+(-1*n);
+            }
+            return n;
+            // return n<10 ? '0'+n : n
+        },
         // Extract microseconds from an isodate string 
         //  > iso date with micro seconds: "2012-10-28T01:00:00.123456+0100"
         //  > iso date with micro seconds: "2012-10-28T01:00:00+0100"
         iso2micro: function(iso){
             
             // iso = "2012-10-28T00:50:00.123456+0100" | "2012-10-28T00:50:00+0100"
+            // iso = "2012-10-28T00:50:00.123456+0100" | "2012-10-28T00:50:00+01:00" << After OGC compl. tests
             //                0      1     2        3          4        5
             // splitted = ["2012", "10", "28", "00:50:00", "123456", "0100"]
             // splitted = ["2012", "10", "28", "00:50:00", "0100"]
@@ -514,6 +605,11 @@ Ext.define('istsos.utils', {
             var hoffset = 0;
             var moffset = 0;
             if (iso.match(/[Z]/g)==null) { // Already UTC
+                
+                if (splitted[splitted.length-1].indexOf(":")>-1){
+                    splitted[splitted.length-1] = splitted[splitted.length-1].replace(":","");
+                }
+            
                 hoffset = parseInt(parseInt(splitted[splitted.length-1])/100);
                 moffset = parseInt(splitted[splitted.length-1]) - (hoffset*100);
                 if (iso.match(/[+]/g)==null) {
@@ -783,589 +879,3 @@ Ext.define('istsos.utils', {
         }
     }
 });
-
-
-/*
-Ext.define('istsos.Procedure', {
-    extend: 'Ext.util.Observable',
-    constructor: function(config){
-        
-        
-        this.addEvents({
-            "saved" : true,
-            "loaded" : true
-        });
-        
-        Ext.applyIf(this, config);
-        
-        var qis = Ext.create('istsos.store.EditorQiStore',{
-            storeId: this.id+'-editorQiStore',
-            proxy: {
-                type: 'ajax',
-                url: Ext.String.format("{0}/istsos/services/{1}/dataqualities", wa.url,this.service),
-                reader: {
-                    type: 'json',
-                    root: 'data'
-                }
-            }
-        });
-        qis.load();
-        
-        // init store
-        this.store = null;
-        this.callParent(arguments)
-    },
-    load: function(begin, end){
-    
-    },
-    commit: function(){
-    
-    },
-    isDirty: function(){
-        return true;
-    },
-    initStore: function(obsColl){
-        
-        this.template = obsColl;
-        
-        
-        // ***********************************************
-        // Initializing grid columns
-        //   dynamic column grid initialization
-        // ***********************************************
-        this.columns = [{
-            xtype: 'datecolumn',
-            dataIndex: wa.isodef, // isodate is always present at position one
-            flex: 0.7,
-            header: 'Date',
-            format: 'c'
-        }];
-        
-        var properties = obsColl.result.DataArray.field;
-        for (var i = 1; i < properties.length; i++) {
-            
-            this.columns.push({
-                xtype: 'numbercolumn',
-                format: '0,000.000000',
-                dataIndex: properties[i].definition,
-                flex: 0.4,
-                text: properties[i].name,
-                field: {
-                    xtype: 'numberfield',
-                    decimalPrecision: 6,
-                    hideLabel: true,
-                    listeners: {
-                        change: function(form, newValue, oldValue, eOpts){
-                            console.log("change: ");
-                            console.dir(arguments);
-                        }
-                    }
-                }
-            },{
-                xtype: 'gridcolumn',
-                dataIndex: Ext.String.format('{0}:qualityIndex',properties[i].definition),
-                flex: 0.3,
-                text: 'qualityIndex',
-                //text: Ext.String.format('{0}:qualityIndex',properties[i].name),
-                field: {
-                    xtype: 'combobox',
-                    queryMode: 'local',
-                    allowBlank: false,
-                    hideLabel: true,
-                    displayField: 'name',
-                    store: this.id+'-editorQiStore',
-                    valueField: 'name',
-                    anchor: '100%'
-                }
-            });
-            i++;
-        }
-        
-        
-        // ***********************************************
-        // Initializing store fields
-        // ***********************************************
-        // Dynamic fields store initialization
-        this.strFields = [{
-            dateFormat: 'c',
-            name: wa.isodef,
-            type: 'date'
-        }];
-        
-        //var properties = obsColl.result.DataArray.field;
-        for (var i = 1; i < properties.length; i++) {
-            this.strFields.push({
-                name: properties[i].definition,
-                type: 'float'
-            });
-        }
-        
-        
-        Ext.define(this.description.system_id+'Model', {
-            extend: 'Ext.data.Model',
-            idProperty: wa.isodef,
-            fields: this.strFields
-        });
-        
-        this.storeId = Ext.id();
-        var obs = obsColl.result.DataArray.values;
-        this.store = Ext.create('istsos.store.ObservationEditor',{
-            storeId: this.storeId,
-            name: obsColl.name,
-            model: this.description.system_id+'Model',
-            totalCount: obs.length
-        });
-        var data = [];
-        
-        // *****************************************************
-        // When loading data some extra statistics are collected
-        // *****************************************************
-        // 1. Number of observations
-        this.total = obs.length;
-        // 2. Time resolution/interval 
-        //this.timeresolution = null;
-        this.timeresolutions = [];
-        if(obs.length>=2){
-            //this.timeresolution = Ext.Date.parse(obs[1][0], "c").getTime()-Ext.Date.parse(obs[0][0], "c").getTime();
-            this.timeresolutions = [Ext.Date.parse(obs[1][0], "c").getTime()-Ext.Date.parse(obs[0][0], "c").getTime()];
-        }
-        // 3. regular or irregular timeseries boolean
-        this.isregular = true;
-        this.bp = Ext.Date.parse(obs[0][0], "c");
-        this.ep = Ext.Date.parse(obs[obs.length-1][0], "c");
-        for (i = 0; i < obs.length; i++) {
-            var rec = [];
-            rec.push(Ext.Date.parse(obs[i][0], "c"));
-            //chartStore[rec[0]]=[];
-            for (var c = 1; c < obs[i].length; c++) {
-                rec.push(parseFloat(obs[i][c]));
-            //chartStore[rec[0]].push(parseFloat(obs[i][c]));
-            }
-            data.push(rec);
-            // Check resolution
-            if (i>=1) {
-                var res = data[i][0].getTime()-data[i-1][0].getTime();
-                if (!Ext.Array.contains(this.timeresolutions, res)) {
-                    console.log(data[i][0]);
-                    this.isregular = false;
-                    this.timeresolutions.push(res);
-                }
-            }
-        }
-        this.store.loadData(data);
-        
-        this.timeresolutions = Ext.Array.unique(this.timeresolutions);
-        
-        var f = Ext.getCmp(this.resid);
-        
-        var tr = [];
-        for (i = 0; i < this.timeresolutions.length; i++) {
-            if (this.timeresolutions[i]>10) {
-                tr.push(centisecsToISODuration(this.timeresolutions[i]/10));
-            }
-        }
-        
-        f.setValue(tr.join(", "));
-        f.setVisible(true);
-        
-        f = Ext.getCmp(this.obsid);
-        f.setValue(this.total + " observations");
-        f.setVisible(true);
-        
-        if (!this.isregular) {
-            f = Ext.getCmp(this.intid);
-            f.setVisible(true);
-        }
-    
-    },
-    //Create a grid that fit the internal store
-    getGrid: function(observedProperty){
-        for (var i = 1; i < this.columns.length; i++) {
-            if (this.columns[i]['dataIndex']!=observedProperty && 
-                this.columns[i]['dataIndex']!=observedProperty+':qualityIndex') {
-                this.columns[i]['hidden']=true;
-            }
-        }
-        this.grid = Ext.create('Ext.grid.Panel', {
-            xtype: 'grid',
-            id: 'oegrid',
-            title: '',
-            store: this.storeId,
-            autoRender: true,
-            autoScroll: true,
-            viewConfig: {
-            
-            },
-            columns: this.columns,
-            plugins: [Ext.create('Ext.grid.plugin.CellEditing')],
-            selModel: Ext.create('Ext.selection.RowModel', {
-                allowDeselect: true,
-                mode: 'MULTI'
-            }),
-            dockedItems: [
-            {
-                xtype: 'toolbar',
-                dock: 'top',
-                items: [
-                {
-                    xtype: 'filefield',
-                    //fieldLabel : 'CSV',
-                    emptyText: 'Load CSV..',
-                    labelWidth: 40,
-                    listeners: {
-                        change: this.loadCsv,
-                        scope: this
-                    }
-                },
-                {
-                    xtype: 'button',
-                    flex: 1,
-                    id: 'btnSelectAll',
-                    text: 'Select all',
-                    handler: function(){
-                        var selectionModel = this.grid.getSelectionModel();
-                        selectionModel.selectAll(true);
-                    },
-                    scope: this
-                }
-                ]
-            }
-            ]
-        });
-        return this.grid;
-    },
-    loadCsv: function(field, value, eOpts){
-        console.dir(arguments);
-        var files = field.fileInputEl.dom.files;
-        var reader = new FileReader();
-        try {
-            
-            // Checking file path format
-            var tmp = value.split(/[\\/]/);
-            if (tmp.length<2 || !Ext.isArray(tmp)) {
-                throw "File path error";
-            }
-            // Checking the file name format
-            tmp = tmp[tmp.length-1].split(".")[0];
-            // getting end position
-            var ep = tmp.split("_");
-            
-            if (ep.length<2 || !Ext.isArray(ep)) {
-                throw "File name format error";
-            }
-            
-            ep = ep[ep.length-1];
-            tmp = tmp.replace("_"+ep,"");
-            
-            // Extracting the end position date
-            //  > date in file names are always in Greenwich time (GMT)
-            ep = Ext.Date.parse(ep+"0", "YmdHisZ");
-            console.log(ep);
-            
-            // Checking File nema prefix must be equal the procedure name
-            if (tmp!=this.description.system_id) {
-                throw "File name format error, '" + tmp + "'"
-                + " is different from '" + this.description.system_id + "'";
-            }
-            
-            for (var i = 0; i < files.length; i++) {
-                reader.istProcedure = this;
-                reader.addEventListener('load', function (e) {
-                    this.istProcedure.parseCSV(e.target.result);
-                }, false);     
-                reader.readAsText(files[i]);
-            }
-        
-        } catch (exception) { 
-            Ext.Msg.alert('Warning', exception);           
-        } 
-    },
-    parseCSV: function(csvstring){
-        var lines = csvstring.split(/[\r\n|\n]+/); 
-        try {
-            if (lines.length<2) {
-                throw "CSV file contain less then the minimal 2 line (header + value)";
-            }
-            // Comparing CSV obsprop and real procedure's obsprop
-            var csvObsProp = lines[0].split(",");
-            // Detecting local store observation properties order
-            var tplObsprop = [];
-            var properties = this.template.result.DataArray.field;
-            for (c = 0; c < properties.length ; c++) {
-                tplObsprop.push(properties[c].definition);
-                if(!Ext.Array.contains(
-                    csvObsProp, properties[c].definition) ){
-                    throw "CSV observed properties in header are not correct"
-                }
-            }
-            
-            // Getting the time column position in the csv file
-            var idx = Ext.Array.indexOf(csvObsProp, wa.isodef);
-            // csv begin position
-            var bp = Ext.Date.parse(lines[1].split(",")[idx],"c");
-            // csv end position
-            var ep;
-            // loop because sometimes last rows are empty
-            for(var c=(lines.length-1);c>0;c--) { 
-                if (lines[c].split(",").length==tplObsprop.length) {
-                    ep = Ext.Date.parse(lines[c].split(",")[idx],"c");
-                    break;
-                }
-            }
-            
-            // Some statistics counter
-            var updated = 0, inserted = 0;
-            
-            var data = [];
-            this.store.suspendEvents();
-            try {
-                var idxStart=0;      
-                var lastDate;
-                for(c=1;c<lines.length;c++) { // start looping csv lines >>
-                    var row = [];
-                    var line = lines[c].split(",");
-                    // csv observed properties must be exacly as 
-                    //   the procedure observed property 
-                    if (line.length==tplObsprop.length) { 
-                        var id;
-                        for (var i = 0; i < tplObsprop.length; i++) {
-                            // finding the csv observed property position
-                            idx = Ext.Array.indexOf(csvObsProp, tplObsprop[i]);                    
-                            if (tplObsprop[i]==wa.isodef) {
-                                id = Ext.Date.parse(line[idx],"c");
-                                row.push(Ext.Date.clone(id));
-                                // check regularity
-                                if (lastDate) {
-                                    var res = id.getTime() - lastDate;
-                                    if (!Ext.Array.contains(this.timeresolutions, res)) {
-                                        console.log(data[i][0]);
-                                        this.isregular = false;
-                                        this.timeresolutions.push(res);
-                                    }
-                                }
-                                lastDate = id.getTime();
-                            }else{
-                                if(line[idx]!=''){
-                                    row.push(parseFloat(line[idx]));
-                                }
-                            }
-                        }
-                        
-                        if (this.bp.getTime() > id.getTime() || 
-                            this.ep.getTime() < id.getTime()) {
-                            //this.store.loadData([row],true);
-                            data.push(row);
-                            inserted++;
-                        }else{
-                            var index = this.store.find(wa.isodef,id,idxStart);
-                            if (index==-1) {
-                                //this.store.loadData([row],true);
-                                data.push(row);
-                                inserted++;
-                            }else{
-                                var rec = this.store.getAt(index);
-                                rec.beginEdit();
-                                for (i = 0; i < tplObsprop.length; i++) {
-                                    if (tplObsprop[i]!=wa.isodef) {
-                                        rec.set(tplObsprop[i],row[i]);
-                                    }
-                                }
-                                rec.endEdit(true);
-                                idxStart = index+1;
-                                updated++;
-                            }
-                        }
-                    }
-                };
-                this.store.loadData(data,true);
-                
-                if (this.bp.getTime() > bp.getTime()){
-                    this.bp = bp;
-                }
-                
-                if (this.ep.getTime() < ep.getTime()){
-                    this.ep = ep;
-                }
-                
-            } catch (exception) { 
-                throw "Riga [" + (c+1) + "]:" + exception;
-            } finally {
-                console.log("Sorting.. and resuming events.");
-                this.store.sort(wa.isodef, 'ASC');
-                this.store.resumeEvents();        
-            }
-            
-            console.log("CSV stats:");
-            console.log("Updated: " + updated);
-            console.log("Inserted: " + inserted);
-            
-            var f = Ext.getCmp(this.resid);
-            var tr = [];
-            for (i = 0; i < this.timeresolutions.length; i++) {
-                if (this.timeresolutions[i]>10) {
-                    tr.push(centisecsToISODuration(this.timeresolutions[i]/10));
-                }
-            }
-            f.setValue(tr.join(", "));
-        
-            Ext.getCmp('chartpanel').initChartStore(false);
-            
-            
-        // Check empty / no data holes ;)
-            
-            
-            
-            
-        } catch (exception) { 
-            Ext.Msg.alert('Warning', exception);   
-        }
-    
-    },
-    getCheckbox: function(){
-        this.formid = "proc-" + Ext.id();
-        this.resid = Ext.id();
-        this.obsid = Ext.id();
-        this.intid = Ext.id();
-        var begin, end;
-        var obsprop = [];
-        var d = this.description;      
-        for (var i = 0; i < d.outputs.length; i++) {
-            if (d.outputs[i]["definition"]==wa.isodef) {
-                if (!Ext.isEmpty(d.outputs[i]['constraint']['interval'])) {
-                    var interval = Ext.Array.clone(d.outputs[i]['constraint']['interval']);
-                    try{
-                        //begin = Ext.Date.format(interval[0],'c');
-                        begin = interval[0];
-                    }catch (e){
-                        begin = "null";
-                    }
-                    try{
-                        //end = Ext.Date.format(interval[1],'c');
-                        end = interval[1];
-                    }catch (e){
-                        end = "null";
-                    }
-                }
-            }else{
-                obsprop.push(d.outputs[i]["name"]);
-            }
-        }
-        
-        return {
-            xtype: 'fieldset',
-            layout: {
-                type: 'column'
-            },
-            id: this.formid,
-            padding: 10,
-            collapsible: false,
-            checkboxToggle: true,
-            checkboxName: this.description.system_id,
-            title: this.description.system_id,
-            defaults: {
-                labelWidth: 70,
-                xtype: 'displayfield',
-                anchor: '100%',
-                columnWidth: 1
-            },
-            items: [
-            {
-                fieldLabel: 'From',
-                value: begin
-            },
-            {
-                fieldLabel: 'To',
-                value: end
-            },
-            {
-                fieldLabel: 'Observed',
-                value: obsprop.join(", ")
-            },
-            {
-                fieldLabel: 'Resolution',
-                id: this.resid,
-                hidden: true,
-                value: ""
-            },
-            {
-                fieldLabel: 'Loaded',
-                id: this.obsid,
-                hidden: true,
-                value: ""
-            },
-            {
-                fieldLabel: 'Interpolate',
-                id: this.intid,
-                xtype: 'checkbox',
-                hidden: true,
-                value: false,
-                listeners: {
-                    change: function (field, newValue, oldValue, eOpts) {
-                        console.log(arguments, "id: " + this.intid);
-                        if(newValue){
-                            this.interpolate();
-                        }
-                    },
-                    scope: this
-                }
-            }
-            ]
-        };
-    },
-    getObservedProperties: function(){
-        var out = this.description.outputs;
-        var ret = [];
-        for (var i = 0; i < out.length; i++) {
-            if (out[i].definition!=wa.isodef) {
-                ret.push(out[i].definition);
-            }
-        }
-        return ret;
-    },
-    interpolate: function(){
-        var obsprop = Ext.getCmp("oeCbObservedProperty").getValue();
-        var chart = Ext.getCmp('chartpanel');
-        var cd = chart.chartdata;
-        var colIdx = chart.chart.indexFromSetName(this.store.name);
-        if(cd[0][colIdx]==null){
-            Ext.Msg.alert('Warning', 'Interpolation not possible if the series stars with no value.');
-        }
-        var templ = [];
-        var obsIdx = null; //Ext.Array.indexOf(this.strFields,obsprop);
-        for (i = 0; i < this.strFields.length; i++) {
-            if (this.strFields[i].name==obsprop) {
-                obsIdx = i;
-            }
-            templ.push(null);
-        }
-        this.store.suspendEvents();
-        for (var i = 1; i < cd.length; i++) {
-            if (cd[i][colIdx]==null) {
-                var id1 = i-1;
-                var id2 = id1+1;
-                var x = cd[i][0].getTime();
-                var rec0 = this.store.getAt(id1);
-                var rec1 = this.store.getAt(id2);
-                //var rec1 = this.store.findRecord(wa.isodef,id2);
-                var x0=rec0.get(wa.isodef).getTime();
-                var y0=rec0.get(obsprop);
-                var x1=rec1.get(wa.isodef).getTime();
-                var y1=rec1.get(obsprop);
-                // Interpolation function
-                var y = y0 + ((y1-y0)/(x1-x0))*(x-x0);
-                
-                var data = Ext.Array.clone(templ);
-                data[0] = Ext.Date.clone(cd[i][0]);
-                data[obsIdx] = y;
-                this.store.loadData([data],true);
-            }
-        }
-        this.store.sort(wa.isodef, 'ASC');
-        this.store.resumeEvents();
-        
-        chart._editedSeriesUpdate(this.store, this.store.getRange());
-    
-    }
-});*/
-
-

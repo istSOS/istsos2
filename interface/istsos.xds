@@ -5,7 +5,7 @@
         "directAPI": "",
         "spacesToIndent": "4",
         "codeGenFormat": "Class",
-        "exportPath": "/home/milan/workspace/istsos/google-svn/trunk/interface",
+        "exportPath": "/home/milan/workspace/istsos/trunk/interface",
         "extPath": "ext/",
         "lineEnding": "LF",
         "instantiateStore": true,
@@ -10095,6 +10095,7 @@
                                 "height": 250,
                                 "layout": "fit",
                                 "collapsible": true,
+                                "hideCollapseTool": null,
                                 "title": "Grid",
                                 "designer|userClassName": "MyPanel60",
                                 "layout|region": "south",
@@ -10695,6 +10696,7 @@
                                                 "id": "oeBegin",
                                                 "name": "begin",
                                                 "fieldLabel": null,
+                                                "allowBlank": false,
                                                 "format": "Y-m-d",
                                                 "designer|userClassName": "MyDateField",
                                                 "layout|flex": 0.3
@@ -10714,10 +10716,31 @@
                                                 "width": null,
                                                 "name": "begintime",
                                                 "fieldLabel": "Label",
+                                                "allowBlank": false,
                                                 "format": "H:i ",
                                                 "increment": 10,
                                                 "designer|userClassName": "MyTimeField",
                                                 "layout|flex": 0.2
+                                            }
+                                        },
+                                        {
+                                            "id": "ExtBox1-ext-gen34787",
+                                            "type": "textfield",
+                                            "reference": {
+                                                "name": "items",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "id": "oeTZ",
+                                                "minWidth": null,
+                                                "width": null,
+                                                "name": "timezone",
+                                                "fieldLabel": "Label",
+                                                "allowBlank": false,
+                                                "validator": "function (value){\n\n    var tz = \"TZ format shall be +HH:MM\";\n    if (value.length!=6) {\n        return tz;\n    }\n    if (value[0]!='-' && value[0]!='+') {\n        return tz;\n    }\n    if (value.indexOf(':')!=3){\n        return tz;\n    }\n    var h = parseInt( (value[1]+value[2]));\n    var m = parseInt( (value[4]+value[5]));\n    \n    if (h>23){\n        return tz;\n    }\n    if (m>59){\n        return tz;\n    }\n    return true;\n}",
+                                                "designer|userClassName": "MyTimeField",
+                                                "layout|flex": 0.08
                                             }
                                         },
                                         {
@@ -10749,6 +10772,7 @@
                                                 "id": "oeEnd",
                                                 "name": "end",
                                                 "fieldLabel": "Label",
+                                                "allowBlank": false,
                                                 "format": "Y-m-d",
                                                 "designer|userClassName": "MyDateField1",
                                                 "layout|flex": 0.3
@@ -10767,6 +10791,7 @@
                                                 "name": "endtime",
                                                 "value": null,
                                                 "fieldLabel": "Label",
+                                                "allowBlank": false,
                                                 "format": "H:i ",
                                                 "increment": 10,
                                                 "designer|userClassName": "MyTimeField1",
@@ -10803,7 +10828,9 @@
                                                 "name": "observedproperty",
                                                 "fieldLabel": "Property",
                                                 "labelWidth": 70,
+                                                "allowBlank": false,
                                                 "displayField": "name",
+                                                "forceSelection": true,
                                                 "queryMode": "local",
                                                 "store": "observedproperties",
                                                 "valueField": "definition",
@@ -14177,6 +14204,104 @@
                         "type": "float",
                         "designer|userClassName": "MyField83"
                     }
+                }
+            ]
+        },
+        {
+            "id": "ExtBox1-ext-gen34583",
+            "type": "arraystore",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "storeId": "aggregatefunctionstore",
+                "data": "[['AVG'],['SUM'],['COUNT'],['MAX'],['MIN']]",
+                "designer|userClassName": "AggregateFunctionStore"
+            },
+            "cn": [
+                {
+                    "id": "ExtBox1-ext-gen34587",
+                    "type": "ajaxproxy",
+                    "reference": {
+                        "name": "proxy",
+                        "type": "object"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "designer|userClassName": "Ajax Proxy24"
+                    },
+                    "cn": [
+                        {
+                            "id": "ExtBox1-ext-gen34593",
+                            "type": "arrayreader",
+                            "reference": {
+                                "name": "reader",
+                                "type": "object"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "idProperty": "name",
+                                "designer|userClassName": "Array Reader1"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ExtBox1-ext-gen34827",
+                    "type": "datafield",
+                    "reference": {
+                        "name": "fields",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "name": "name",
+                        "type": "string",
+                        "designer|userClassName": "MyField90"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "ExtBox1-ext-gen37101",
+            "type": "jsonstore",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "storeId": "MyJsonStore23",
+                "designer|userClassName": "MyJsonStore23"
+            },
+            "cn": [
+                {
+                    "id": "ExtBox1-ext-gen37105",
+                    "type": "ajaxproxy",
+                    "reference": {
+                        "name": "proxy",
+                        "type": "object"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "designer|userClassName": "Ajax Proxy25"
+                    },
+                    "cn": [
+                        {
+                            "id": "ExtBox1-ext-gen37111",
+                            "type": "jsonreader",
+                            "reference": {
+                                "name": "reader",
+                                "type": "object"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "designer|userClassName": "Json Reader23"
+                            }
+                        }
+                    ]
                 }
             ]
         }

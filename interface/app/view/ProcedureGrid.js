@@ -34,7 +34,7 @@ Ext.define('istsos.view.ProcedureGrid', {
             observedProperty: observedProperty
         });
         
-        // @todo think something better shirker
+        // @todo think something better and "shirker"
         this.procedures=procedures;
         var procedure = procedures[procedureName];
         this.procedure=procedure;
@@ -297,7 +297,6 @@ Ext.define('istsos.view.ProcedureGrid', {
     initReadOnlyGrid: function(procedures, observedProperty){
         // @todo: Check if procedures has loaded some data
         
-        
         this.resetConfig({
             readOnlyGrid: true,
             observedProperty: observedProperty
@@ -394,7 +393,6 @@ Ext.define('istsos.view.ProcedureGrid', {
         this.store.resumeEvents();
         
         
-        
         // Initialization of the two always present columns ********************
         var columns = [{
             xtype: 'numbercolumn',
@@ -438,7 +436,6 @@ Ext.define('istsos.view.ProcedureGrid', {
                 console.log("Procedure \""+key+"\" has not the desired observed property: " + observedProperty);
             }
         }
-        
         this.grid = Ext.create('Ext.grid.Panel', {
             xtype: 'grid',
             store: this.store,
@@ -460,7 +457,26 @@ Ext.define('istsos.view.ProcedureGrid', {
                     this.fireEvent("selectionchange", this, grid, selected, eOpts);
                 },
                 scope: this
-            }
+            },
+            dockedItems: [
+                {
+                    xtype: 'toolbar',
+                    //dock: 'bottom',
+                    layout: {
+                        align: 'middle',
+                        //pack: 'center',
+                        type: 'hbox'
+                    },
+                    items: [
+                        {
+                            xtype: 'button',
+                            text: 'Show CSV',
+                            handler: this.showCsv,
+                            scope: this
+                        }
+                    ]
+                }
+            ]
         });
         
         this.removeAll();
@@ -468,6 +484,55 @@ Ext.define('istsos.view.ProcedureGrid', {
         
         Ext.get('gridpanel').unmask();
         
+    },
+    showCsv: function(){
+        //chartdata
+        var ret = [this.observedProperty];
+        
+        var keys = Object.keys(this.procedures);
+        keys = keys.sort();
+        
+        var lineStr = ['DATETIME'];
+        for (var c = 0; c < keys.length; c++) {
+            var key = keys[c];
+            // check if procedures loaded have the requested observed property
+            if (Ext.Array.contains(this.procedures[key].getObservedProperties(),this.observedProperty)) {
+                lineStr.push(key);
+                lineStr.push(key+"_QI");
+            }
+        }
+        ret.push(lineStr.join(","));
+        
+        var records = this.store.getRange();
+        for (var cnta = 0; cnta < records.length; cnta++){
+            var rec = records[cnta];
+            lineStr = [rec.get('iso8601')];
+            for (var c = 0; c < keys.length; c++) {
+                var key = keys[c];
+                lineStr.push(rec.get(key));
+                lineStr.push(rec.get(key+"_qi"));
+            }
+            ret.push(lineStr.join(","));
+        }
+        Ext.create('Ext.window.Window', {
+            title: 'CSV data',
+            height: 400,
+            width: 300,
+            layout: 'fit',
+            modal: true,
+            items: {  // Let's put an empty grid in just to illustrate fit layout
+                xtype: 'form',
+                border: false,
+                layout: 'fit',
+                items: {
+                    xtype     : 'textareafield',
+                    //grow      : true,
+                    anchor    : '100%',
+                    value: ret.join("\n")
+                }
+            }
+        }).show();
+        console.log(ret.join("\n"));
     },
     /*
  * MicroArray can be of two type:

@@ -89,6 +89,7 @@ Ext.define('istsos.view.ProcedureChooser', {
         ssrv.getProxy().url = Ext.String.format('{0}/istsos/services',wa.url);
         
         this.procedures = {};
+        this.configsections = {};
         
         me.callParent(arguments);
         
@@ -119,16 +120,19 @@ Ext.define('istsos.view.ProcedureChooser', {
                 }
             });
             
-        /*o.disable();
-            o.getStore().load({
-                url: Ext.String.format('{0}/istsos/services/{1}/offerings/operations/getlist',
-                    wa.url,combo.getValue()),
-                callback: function(records, operation, success){
-                    this.enable();
-                },
-                scope: o
-            });*/
-        });
+            Ext.Ajax.request({
+                url: Ext.String.format('{0}/istsos/services/{1}/configsections',wa.url, combo.getValue()),
+                scope: this,
+                method: "GET",
+                success: function(response){
+                    var json = Ext.decode(response.responseText);
+                    if (json.success) {
+                        this.configsections = json.data;
+                    }
+                }
+            });
+            
+        },this);
         
         Ext.getCmp("oeCbOffering").on("select",function(combo, records, eOpts){
             var pr = Ext.getCmp('oeCbProcedure');
@@ -189,7 +193,11 @@ Ext.define('istsos.view.ProcedureChooser', {
             }
         }
         proc.color = this.color.get(true);
-        var idVisible = Ext.id(), idColor = Ext.id(), idRemove = Ext.id();
+        var idVisible = Ext.id(), idColor = Ext.id(), idRemove = Ext.id(), 
+                        idBtnAggregation = Ext.id(), idAggregation = Ext.id(), idToggleAggregation = Ext.id(),
+                        idDetailsAggregation = Ext.id(), idBtnAggregationReset = Ext.id(), idDownload = Ext.id(),
+                        idBtnAggregationAll = Ext.id();
+                        
         var cmp = Ext.getCmp('proceduresTree').add({
             xtype: 'panel',
             //id: 'fs-'+proc.getName(),
@@ -199,7 +207,15 @@ Ext.define('istsos.view.ProcedureChooser', {
                 idVisible: idVisible,
                 idColor: idColor,
                 idRemove: idRemove,
-                chooser: this
+                chooser: this,
+                idToggleAggregation: idToggleAggregation,
+                toggleAggregation: false,
+                idAggregation: idAggregation,
+                idBtnAggregation: idBtnAggregation,
+                idBtnAggregationAll: idBtnAggregationAll,
+                idBtnAggregationReset: idBtnAggregationReset,
+                idDetailsAggregation: idDetailsAggregation,
+                idDownload: idDownload
             },
             listeners: {
                 "added": {
@@ -214,7 +230,7 @@ Ext.define('istsos.view.ProcedureChooser', {
                 "afterrender": {
                     fn: function(procedureDetailsPanel, layout, eOpts ){
                         
-                        console.log("Afterrender: " + procedureDetailsPanel.istsos.procedure.getName());
+                        //console.log("Afterrender: " + procedureDetailsPanel.istsos.procedure.getName());
                         
                         var v = Ext.get(procedureDetailsPanel.istsos.idVisible);
                         v.on("click",function(){
@@ -225,8 +241,67 @@ Ext.define('istsos.view.ProcedureChooser', {
                             }
                             this.istsos.procedure.setVisibility(!this.istsos.procedure.getVisibility());
                         },procedureDetailsPanel);
-                    
-                        var c = Ext.get(procedureDetailsPanel.istsos.idColor);
+                        
+                        var c = Ext.get(procedureDetailsPanel.istsos.idDownload);
+                        c.on("click",function(){
+                            var from = Ext.getCmp('oeBegin').getValue();
+                            var bt = Ext.getCmp('oeBeginTime').getValue();
+                            from.setHours(bt.getHours());
+                            from.setMinutes(bt.getMinutes());
+                            
+                            var to = Ext.getCmp('oeEnd').getValue();
+                            var et = Ext.getCmp('oeEndTime').getValue();
+                            to.setHours(et.getHours());
+                            to.setMinutes(et.getMinutes());
+                            
+                            var attachment = this.istsos.procedure.getName()+ "_" + Ext.Date.format(to, 'YmdHi') + ".csv";
+                            
+                            var ob = this.istsos.procedure.getObservedProperties();
+                            
+                            var tz = Ext.getCmp('oeTZ').getValue();
+                            var format = Ext.isEmpty(tz) ? "c": "Y-m-d\\TH:i:s";
+                            
+                            from = Ext.Date.format(from,format);
+                            if(!Ext.isEmpty(tz)){
+                                from = from + (Ext.isString(tz) ? tz: istsos.utils.minutesToTz(tz));
+                            }
+                            
+                            to = Ext.Date.format(to,format);
+                            if(!Ext.isEmpty(tz)){
+                                to = to + (Ext.isString(tz) ? tz: istsos.utils.minutesToTz(tz));
+                            }
+                        
+                            var params = {
+                                "request": "GetObservation",
+                                "attachment": attachment,
+                                "offering": this.istsos.procedure.offering,
+                                "procedure": this.istsos.procedure.getName(),
+                                "eventTime": from+"/"+to,
+                                "observedProperty": ob.join(','),
+                                "qualityIndex": "True",
+                                "responseFormat": "text/plain",
+                                "service": "SOS",
+                                "version": "1.0.0"
+                            };
+                            
+                            if (Ext.isObject(this.istsos.procedure.aggregation)){
+                                params = Ext.apply(params, {
+                                    aggregatefunction: this.istsos.procedure.aggregation.f,
+                                    aggregateinterval: this.istsos.procedure.aggregation.i,
+                                    aggregatenodata: this.istsos.procedure.aggregation.nd,
+                                    aggregatenodataqi: this.istsos.procedure.aggregation.ndqi
+                                });
+                            }
+                            params = Ext.Object.toQueryString(params);
+                            
+                            window.open("../"+this.istsos.procedure.service+"?" + params);
+                            
+                            //console.log(params);
+                            
+                            
+                        },procedureDetailsPanel);
+                        
+                        c = Ext.get(procedureDetailsPanel.istsos.idColor);
                         c.on("click",function(){
                             Ext.create('Ext.window.Window', {
                                 title: this.istsos.procedure.getName() + ': color',
@@ -247,17 +322,61 @@ Ext.define('istsos.view.ProcedureChooser', {
                                 })
                             }).show();
                         },procedureDetailsPanel);
+                        
                     
-                    
-                        var d = Ext.get(procedureDetailsPanel.istsos.idRemove);
-                        d.on("click",function(){
+                        c = Ext.get(procedureDetailsPanel.istsos.idRemove);
+                        c.on("click",function(){
                             var pchoose = this.ownerCt.ownerCt;
                             this.ownerCt.remove(this);
                             pchoose.fireEvent("procedureRemoved", proc);
                         },procedureDetailsPanel,{
                             single: true
                         });
-                    
+                        
+                        
+                        // AGGREGATION FUNCTIONALITIES <<<<<<<<<<<<<<<<<<<<<<<<<
+                        
+                        procedureDetailsPanel.istsos.procedure.on('aggregationchanged',function(procedure, aggregation){
+                            var det = Ext.get(this.istsos.idDetailsAggregation);
+                            if (Ext.isObject(aggregation)){
+                                det.update(aggregation.f + ", " + aggregation.i + ", " + aggregation.nd + ", " + aggregation.ndqi );
+                            }else{
+                                det.update("no");
+                            }
+                            this.istsos.toggleAggregation = false;
+                            Ext.getCmp(this.istsos.idAggregation).setVisible( this.istsos.toggleAggregation);
+                            var form = Ext.getCmp(this.istsos.idAggregation);
+                            form.form.setValues(aggregation);
+                        },procedureDetailsPanel);
+                        
+                        c = Ext.get(procedureDetailsPanel.istsos.idToggleAggregation);
+                        c.on("click",function(){
+                            this.istsos.toggleAggregation = !this.istsos.toggleAggregation;
+                            Ext.getCmp(this.istsos.idAggregation).setVisible( this.istsos.toggleAggregation );
+                        },procedureDetailsPanel);
+                        
+                        c = Ext.getCmp(procedureDetailsPanel.istsos.idBtnAggregation);
+                        c.on('click',function(btn){
+                            var form = Ext.getCmp(this.istsos.idAggregation);
+                            var values = form.getValues();
+                            this.istsos.procedure.setAggregation(values);
+                        },procedureDetailsPanel);
+                        
+                        c = Ext.getCmp(procedureDetailsPanel.istsos.idBtnAggregationAll); // APPLY TO ALL
+                        c.on('click',function(btn){
+                            var form = Ext.getCmp(this.istsos.idAggregation);
+                            var values = form.getValues();
+                            for ( var k in this.istsos.chooser.procedures) {
+                              this.istsos.chooser.procedures[k].setAggregation(values);
+                            }
+                        },procedureDetailsPanel);
+                        
+                        c = Ext.getCmp(procedureDetailsPanel.istsos.idBtnAggregationReset);
+                        c.on('click',function(btn){
+                            var form = Ext.getCmp(this.istsos.idAggregation);
+                            form.getForm().reset();
+                            this.istsos.procedure.setAggregation(null);
+                        },procedureDetailsPanel);
                     },
                     scope: this,
                     options: {
@@ -265,21 +384,108 @@ Ext.define('istsos.view.ProcedureChooser', {
                     }
                 }
             },
-            html: 
-            "<div class='pchooser'>" +
-            "   <div style='border-bottom: thin solid white; padding: 2px; background-color: green; color: white; text-align: center;'>" +
-            "       <span style='font-weight: bold; font-size: 14px;'>" + proc.getName() + "</span>" +
-            "       <div id='"+idVisible+"' class='pchooserBtnVisible'></div>" +
-            "       <div id='"+idColor+"' class='pchooserBtnColor' style='background-color: "+proc.color+";'></div>" +
-            "       <div id='"+idRemove+"' class='pchooserBtnRemove'>x</div>" +
-            "   </div>" +
-            "   <div style='font-size: 12px; border-bottom: thin solid green; padding: 2px; background-color: white; color: black; text-align: center;'>" +
-            "       <span style='font-style: italic;'>" + proc.service + ":" + proc.offering + "</span><br/>" +
-            "       <span>Fr:" + proc.getBeginPosition() + "</span><br/>" +
-            "       <span>To:" + proc.getEndPosition() + "</span><br/>" +
-            "       <span style='font-weight: bold;'>" + obsprop.join("<br>") + "</span>" +
-            "   </div>" +
-            "</div>"
+            cls: 'pchooser',
+            items: [
+                {
+                    xtype: 'panel',
+                    border: false,
+                    html: 
+                        "<div>" +
+                        "   <div style='border-bottom: thin solid white; padding: 2px; background-color: green; color: white; text-align: center;'>" +
+                        "       <span style='font-weight: bold; font-size: 14px;'>" + proc.getName() + "</span>" +
+                        "       <div id='"+idVisible+"' class='pchooserBtnVisible' title='Hide this procedure'></div>" +
+                        "       <div id='"+idDownload+"' class='pchooserBtnDownload' title='Download CSV data of selected interval'>&nbsp;</div>" +
+                        "       <div id='"+idColor+"' class='pchooserBtnColor' style='background-color: "+proc.color+";' title='Choose color'></div>" +
+                        "       <div id='"+idRemove+"' class='pchooserBtnRemove' title='Remove this procedure'>&nbsp;</div>" +
+                        "   </div>" +
+                        "   <div style='font-size: 12px; border-bottom: thin solid green; padding: 2px; background-color: white; color: black; text-align: center;'>" +
+                        "       <span style='font-style: italic;'>" + proc.service + ":" + proc.offering + "</span><br/>" +
+                        "       <span>Fr:" + proc.getBeginPosition() + "</span><br/>" +
+                        "       <span>To:" + proc.getEndPosition() + "</span><br/>" +
+                        "       <span style='font-weight: bold;'>" + obsprop.join("<br>") + "</span>" +
+                        "   </div>" +
+                        "   <div style='font-size: 12px; border-bottom: thin solid green; padding: 2px; background-color: white; color: black; text-align: center;'>" +
+                        "       <span id='"+idToggleAggregation+"' style='color: green; cursor: pointer;'>Aggregation: </span>" +
+                        "       <span id='"+idDetailsAggregation+"'>no</span>" +
+                        "   </div>" +
+                        "</div>"
+                },
+                {
+                    xtype: 'form',
+                    border: false,
+                    hidden: true,
+                    id: idAggregation,
+                    /*collapsible: true,
+                    collapsed: true,
+                    hideCollapseTool: true,
+                    titleCollapse: true,*/
+                    padding: 8,
+                    items: [
+                        {
+                            xtype: 'combobox',
+                            //id: 'oeFunction',
+                            name: 'f',
+                            fieldLabel: 'Function',
+                            displayField: 'name',
+                            forceSelection: true,
+                            queryMode: 'local',
+                            store: 'aggregatefunctionstore',
+                            valueField: 'name',
+                            anchor: '100%'
+                        },
+                        {
+                            xtype: 'textfield',
+                            fieldLabel: 'Interval',
+                            name: 'i',
+                            emptyText: 'PT10M, P1DT',
+                            anchor: '100%'
+                        },
+                        {
+                            xtype: 'textfield',
+                            value: this.configsections.getobservation.aggregatenodata,
+                            name: 'nd',
+                            fieldLabel: 'No Data Value',
+                            anchor: '100%'
+                        },
+                        {
+                            xtype: 'textfield',
+                            value: this.configsections.getobservation.aggregatenodataqi,
+                            name: 'ndqi',
+                            fieldLabel: 'No Data QI',
+                            anchor: '100%'
+                        }
+                    ],
+                    dockedItems: [
+                        {
+                            xtype: 'toolbar',
+                            dock: 'bottom',
+                            layout: {
+                                align: 'middle',
+                                pack: 'center',
+                                type: 'hbox'
+                            },
+                            items: [
+                                {
+                                    id: idBtnAggregationAll,
+                                    xtype: 'button',
+                                    text: 'Apply to all'
+                                },
+                                {
+                                    id: idBtnAggregation,
+                                    xtype: 'button',
+                                    text: 'Apply'
+                                },
+                                {
+                                    id: idBtnAggregationReset,
+                                    xtype: 'button',
+                                    text: 'Reset'
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+            
         });
         
         
