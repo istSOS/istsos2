@@ -278,15 +278,17 @@ def execute (args):
                         #print definition
                         if definition.find('time:iso8601')<0:
                             observedProperties.append(definition)
-                #print {
-                #    'service': 'SOS', 
-                #    'version': '1.0.0',
-                #    'request': 'GetObservation',
-                #    'offering': offeringName,
-                #    'responseFormat': 'text/xml;subtype=\'sensorML/1.0.0\'',
-                #    'procedure': pname,
-                #    'observedProperty': ",".join(observedProperties)
-                #}
+                            
+                
+                print {
+                    'service': 'SOS', 
+                    'version': '1.0.0',
+                    'request': 'GetObservation',
+                    'offering': offeringName,
+                    'responseFormat': 'text/xml;subtype=\'sensorML/1.0.0\'',
+                    'procedure': pname,
+                    'observedProperty': ",".join(observedProperties)
+                }
                 
                 res = req.get("%s" % (src), params={
                     'service': 'SOS', 
@@ -379,7 +381,6 @@ def execute (args):
                 # ~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
                 
                 # Check if procedure already exist
-                #print ("%s/wa/istsos/services/%s/procedures/%s" % (dst,srv,pname))
                 res = req.get("%s/wa/istsos/services/%s/procedures/%s" % (dst,srv,pname), prefetch=True, verify=False)  
                 if not res.json["success"]:
                     # Registering procedure to istSOS   

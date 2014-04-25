@@ -1,4 +1,4 @@
-from apscheduler.util import convert_to_datetime
+from lib.apscheduler.util import convert_to_datetime
 
 
 class SimpleTrigger(object):

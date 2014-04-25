@@ -38,6 +38,8 @@ description:
 
 #---------------------------------
 import os
+import logging
+logging.basicConfig()
 def recursive_glob(rootdir='.', suffix=''):
     return [( os.path.splitext(filename)[0] ,os.path.join(rootdir, filename) )
             for rootdir, dirnames, filenames in os.walk(rootdir)
@@ -51,7 +53,7 @@ from lib.apscheduler.scheduler import Scheduler
 from lib.apscheduler import threadpool
 
 sched = Scheduler(daemonic=False)
-sched._threadpool = threadpool.ThreadPool(core_threads=2, max_threads=200, keepalive=1)
+sched._threadpool = threadpool.ThreadPool(core_threads=10, max_threads=200, keepalive=10)
 
 sched.start()
 
@@ -74,6 +76,7 @@ def istsos_job():
                 print "  > Change detectd: %s" % service
                 schedmd5[service] = md5_now
                 jobs = sched.get_jobs()
+                print jobs
                 for j in jobs[1:]:
                     print " job: %s" % j.name
                     if j.name.startswith(service):

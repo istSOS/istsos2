@@ -6,8 +6,8 @@ import logging
 
 import sqlalchemy
 
-from apscheduler.jobstores.base import JobStore
-from apscheduler.job import Job
+from lib.apscheduler.jobstores.base import JobStore
+from lib.apscheduler.job import Job
 
 try:
     from sqlalchemy import *
