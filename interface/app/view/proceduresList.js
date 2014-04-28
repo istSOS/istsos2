@@ -16,7 +16,49 @@ Ext.define('istsos.view.proceduresList', {
 
     initComponent: function() {
         var me = this;
-        Ext.create('istsos.store.gridProceduresList');
+        Ext.create('istsos.store.gridProceduresList',{
+            fields: [
+                {
+                    name: 'name',
+                    sortType: 'asText',
+                    type: 'string'
+                },
+                {
+                    name: 'description',
+                    sortType: 'asText',
+                    type: 'string'
+                },
+                {
+                    name: 'sensortype',
+                    sortType: 'asText',
+                    type: 'string'
+                },
+                {
+                    name: 'offerings'
+                },
+                {
+                    name: 'observedproperties'
+                },
+                {
+                    name: 'samplingTime',
+                    type: 'auto'
+                },
+                {
+                    name: 'begin',
+                    convert: function fullName(v, record){
+                        return record.data.samplingTime.beginposition;
+                    },
+                    type: 'string'
+                },
+                {
+                    name: 'end',
+                    convert: function fullName(v, record){
+                        return record.data.samplingTime.endposition;
+                    },
+                    type: 'string'
+                }
+            ]
+        });
         me.callParent(arguments);
         
         
@@ -116,12 +158,12 @@ Ext.define('istsos.view.proceduresList', {
             }  
             return ret.join(",&nbsp;")
         };
-        this.columns[5].renderer = function(value, p, record){
-            return value['beginposition']
+        /*this.columns[5].renderer = function(value, p, record){
+            return value['beginposition'];
         };
         this.columns[6].renderer = function(value, p, record){
-            return value['endposition']
-        };
+            return value['endposition'];
+        };*/
     },
     operationLoad: function(){
         if (Ext.isEmpty(this.mask)) {

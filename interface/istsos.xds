@@ -6746,7 +6746,7 @@
                     },
                     "codeClass": null,
                     "userConfig": {
-                        "dataIndex": "samplingTime",
+                        "dataIndex": "begin",
                         "text": "BeginPosition",
                         "designer|userClassName": "MyColumn53"
                     }
@@ -6760,7 +6760,7 @@
                     },
                     "codeClass": null,
                     "userConfig": {
-                        "dataIndex": "samplingTime",
+                        "dataIndex": "end",
                         "text": "EndPosition",
                         "designer|userClassName": "MyColumn53"
                     }
@@ -13581,6 +13581,7 @@
                     "codeClass": null,
                     "userConfig": {
                         "name": "offerings",
+                        "type": null,
                         "designer|userClassName": "MyField50"
                     }
                 },
@@ -13594,6 +13595,7 @@
                     "codeClass": null,
                     "userConfig": {
                         "name": "observedproperties",
+                        "type": null,
                         "designer|userClassName": "MyField51"
                     }
                 },
@@ -13607,6 +13609,7 @@
                     "codeClass": null,
                     "userConfig": {
                         "name": "samplingTime",
+                        "type": "auto",
                         "designer|userClassName": "MyField89"
                     }
                 }
