@@ -177,9 +177,9 @@ Ext.define('istsos.Sensor', {
         Ext.Ajax.request({
             url: Ext.String.format(
                 '{0}/istsos/services/{1}/operations/getobservation/' +
-                'offerings/temporary/procedures/{2}/observedproperties/{3}/' +
-                'eventtime/{4}/{5}', wa.url, this.service, this.sensor, 
-                this.getObservedProperties().join(','), from, to),
+                'offerings/{2}/procedures/{3}/observedproperties/{4}/' +
+                'eventtime/{5}/{6}', wa.url, this.service,  this.offering,
+                this.sensor, this.getObservedProperties().join(','), from, to),
             scope: this,
             method: "GET",
             params: params,
