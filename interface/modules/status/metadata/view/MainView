@@ -1,0 +1,297 @@
+{
+    "type": "Ext.container.Viewport",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|initialView": true,
+        "designer|userClassName": "MainView",
+        "itemId": "mainView",
+        "layout": "border"
+    },
+    "designerId": "51664173-3dd3-4c65-bc8c-fcec064068ab",
+    "cn": [
+        {
+            "type": "Ext.panel.Panel",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "height": 100,
+                "itemId": "headerPanel",
+                "layout|region": "north",
+                "title": "Header"
+            },
+            "designerId": "b2bfdcc4-67b8-4a2b-9bd0-eb9ff64cebb4",
+            "cn": [
+                {
+                    "type": "Ext.button.Button",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "itemId": "actionButton",
+                        "margin": 10,
+                        "text": "Run Controller Action"
+                    },
+                    "designerId": "040b85b8-4836-4e01-90a5-25fc43f12d8c"
+                }
+            ]
+        },
+        {
+            "type": "Ext.panel.Panel",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "bodyPadding": 10,
+                "id": "content",
+                "itemId": "contentPanel",
+                "layout|region": "center",
+                "title": "Content"
+            },
+            "designerId": "ad0d6ecc-a95a-4fa2-9119-59342137596a",
+            "cn": [
+                {
+                    "type": "Ext.container.Container",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "id": "grid"
+                    },
+                    "designerId": "4e5d7575-be08-4770-b0c8-55dfb15f999f"
+                },
+                {
+                    "type": "Ext.container.Container",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "id": "legend"
+                    },
+                    "designerId": "d90eb2c5-c2b6-4669-aed9-ed2f31b1880f",
+                    "cn": [
+                        {
+                            "type": "Ext.form.Label",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "fixed": null,
+                                "id": "legendTitle",
+                                "text": "Error code"
+                            },
+                            "designerId": "eb98c629-3f77-4f13-9124-5c64ffb9a92f"
+                        },
+                        {
+                            "type": "Ext.form.field.Text",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "blankText": "ParsiongError",
+                                "emptyText": "ParsingError",
+                                "fieldLabel": "1",
+                                "labelWidth": 20,
+                                "name": "",
+                                "readOnly": true
+                            },
+                            "designerId": "d424855e-ee7a-4742-aadf-3310f11132d5"
+                        },
+                        {
+                            "type": "Ext.form.field.Text",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "blankText": "ParsongError",
+                                "emptyText": "TypeError",
+                                "fieldLabel": "2",
+                                "labelWidth": 20,
+                                "name": "",
+                                "readOnly": true
+                            },
+                            "designerId": "bb97e297-58ae-46d9-b240-a7042236ca3a"
+                        },
+                        {
+                            "type": "Ext.form.field.Text",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "blankText": "",
+                                "emptyText": "EOFError",
+                                "fieldLabel": "13",
+                                "labelWidth": 20,
+                                "name": "",
+                                "readOnly": true
+                            },
+                            "designerId": "e0030a01-cbf4-44af-ae43-76f12a259fc3"
+                        },
+                        {
+                            "type": "Ext.form.field.Text",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "blankText": "ParsiongError",
+                                "emptyText": "IndexError",
+                                "fieldLabel": "42",
+                                "labelWidth": 20,
+                                "name": "",
+                                "readOnly": true
+                            },
+                            "designerId": "62447482-4fdc-4ca7-a1fd-9ca4cf4d879c"
+                        },
+                        {
+                            "type": "Ext.form.field.Text",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "blankText": "ParsiongError",
+                                "emptyText": "BufferError",
+                                "fieldLabel": "8",
+                                "labelWidth": 20,
+                                "name": "",
+                                "readOnly": true
+                            },
+                            "designerId": "bc1c41f5-018e-494b-bd55-5564bffa29a2"
+                        },
+                        {
+                            "type": "Ext.form.RadioGroup",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "fieldLabel": "Type",
+                                "labelWidth": 30,
+                                "width": 170
+                            },
+                            "designerId": "7b6d6065-ba60-48ca-9604-dc3d788953d6",
+                            "cn": [
+                                {
+                                    "type": "Ext.form.field.Radio",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "boxLabel": "Delay",
+                                        "fieldLabel": null,
+                                        "inputValue": "delay",
+                                        "labelWidth": 40,
+                                        "name": "rb"
+                                    },
+                                    "designerId": "c4b602d5-9912-4c24-89e1-dc4ddec37d98"
+                                },
+                                {
+                                    "type": "Ext.form.field.Radio",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "boxLabel": "Cycle",
+                                        "checked": true,
+                                        "fieldLabel": null,
+                                        "inputValue": "cycle",
+                                        "name": "rb"
+                                    },
+                                    "designerId": "4a57f072-4298-4e0b-8296-9dd6892ed5e2"
+                                },
+                                {
+                                    "type": "basiceventbinding",
+                                    "reference": {
+                                        "name": "listeners",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "fn": "onRadiogroupChange",
+                                        "implHandler": [
+                                            "type = newValue.rb;",
+                                            "updateColor();",
+                                            "",
+                                            "if(type === \"cycle\" ){",
+                                            "    ",
+                                            "    d3.select('#minValue-inputEl').property('value',minCycle);",
+                                            "    d3.select('#maxValue-inputEl').property('value',maxCycle);",
+                                            "}else{",
+                                            "    ",
+                                            "    d3.select('#minValue-inputEl').property('value',minNot);",
+                                            "    d3.select('#maxValue-inputEl').property('value',maxNot);",
+                                            "}"
+                                        ],
+                                        "name": "change",
+                                        "scope": "me"
+                                    },
+                                    "designerId": "86d62e30-64cd-48d0-a4b7-6eab9ecef576"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Ext.form.field.Text",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "fieldLabel": "Min value",
+                                "id": "minValue",
+                                "labelWidth": 65,
+                                "readOnly": true
+                            },
+                            "designerId": "00d91457-9f98-43cc-8d8a-aa72653a48ea"
+                        },
+                        {
+                            "type": "Ext.form.field.Text",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "fieldLabel": "Max value",
+                                "id": "maxValue",
+                                "labelWidth": 65,
+                                "readOnly": true
+                            },
+                            "designerId": "2ab0bd3f-6bc2-43a0-8303-96d197b51777"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
