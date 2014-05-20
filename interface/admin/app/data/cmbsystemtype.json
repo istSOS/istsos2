@@ -1,0 +1,13 @@
+{
+    "total": 2,
+    "success": true,
+    "message": "Data loaded correctly",
+    "data": [
+        {
+            "name": "insitu-fixed-point"
+        },
+        {
+            "name": "insitu-mobile-point"
+        }
+    ]
+}

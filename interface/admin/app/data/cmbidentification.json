@@ -1,0 +1,31 @@
+{
+    "total": 6,
+    "success": true,
+    "message": "Identification data loaded correctly",
+    "data": [
+        {
+            "name": "Short Name",
+            "definition": "urn:x-ogc:def:identifier:x-istsos:1.0:shortName"
+        },
+        {
+            "name": "Long Name",
+            "definition": "urn:x-ogc:def:identifier:x-istsos:1.0:longName"
+        },
+        {
+            "name": "Manufacturer Name",
+            "definition": "urn:x-ogc:def:identifier:x-istsos:1.0:manufacturerName"
+        },
+        {
+            "name": "Model Number",
+            "definition": "urn:x-ogc:def:identifier:x-istsos:1.0:modelNumber"
+        },
+        {
+            "name": "Serial Number",
+            "definition": "urn:x-ogc:def:identifier:x-istsos:1.0:serialNumber"
+        },
+        {
+            "name": "Device ID",
+            "definition": "urn:x-ogc:def:identifier:x-istsos:1.0:deviceID"
+        }
+    ]
+}

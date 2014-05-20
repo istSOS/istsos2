@@ -1,0 +1,12 @@
+{
+    "total": 2,
+    "success": true,
+    "message": "System permitted EPSG data loaded correctly",
+    "data": [
+    {
+        "name" : "EPSG:21781"      
+    },{
+        "name" : "EPSG:4326"
+    }
+    ]
+}

@@ -1,0 +1,12 @@
+{
+    "success": true,
+    "total": 2,
+    "data": [
+        {
+            "name": "temporary"
+        },
+        {
+            "name": "rain"
+        }
+    ]
+}
