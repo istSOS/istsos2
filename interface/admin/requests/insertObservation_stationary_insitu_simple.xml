@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sos:InsertObservation
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://schemas.opengis.net/sos/1.0.0/sosAll.xsd"
+   xmlns:sos="http://www.opengis.net/sos/1.0"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sa="http://www.opengis.net/sampling/1.0"
+   xmlns:swe="http://www.opengis.net/swe/1.0.1"
+   xmlns:gml="http://www.opengis.net/gml/3.2"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:om="http://www.opengis.net/om/1.0" service="SOS" version="1.0.0" >
+   <AssignedSensorId>urn:ogc:object:sensor:x-istsos:1.0:???</AssignedSensorId>
+   <om:Observation>
+    <om:procedure xlink:href="urn:ogc:object:procedure:x-istsos:1.0:thermo1"/>
+    <om:samplingTime>
+      <gml:TimePeriod>
+        <gml:beginPosition>2010-01-01T00:10:00+00:00</gml:beginPosition>
+        <gml:endPosition>2010-01-01T02:00:00+00:00</gml:endPosition>
+      </gml:TimePeriod>
+    </om:samplingTime>
+    <om:observedProperty>
+      <swe:CompositPhenomenon dimension="2">
+        <swe:component xlink:href="urn:ogc:def:parameter:x-istsos:1.0:time:iso8601"/>  
+        <swe:component xlink:href="urn:ogc:def:property:x-istsos:1.0:airtemperature" />      
+      </swe:CompositPhenomenon>
+    </om:observedProperty>
+    <om:featureOfInterest xlink:href="urn:ogc:object:feature:x-istsos:1.0:station:LUGANO"/>
+      <om:result>
+        <swe:DataArray>
+          <swe:elementCount>
+            <swe:Count>
+              <swe:value>2</swe:value>
+            </swe:Count>
+          </swe:elementCount>
+          <swe:elementType name="SimpleDataArray">
+              <swe:DataRecord definition="http://mmiws.org/ont/x/timeSeries">
+                <swe:field name="Time">
+                  <swe:Time definition="urn:ogc:def:parameter:x-istsos:1.0:time:iso8601"/>
+                </swe:field>
+                <swe:field name="airtemperature">
+                  <swe:Quantity definition="urn:ogc:def:property:x-istsos:1.0:airtemperature">
+                    <swe:uom code="deg"/>
+                  </swe:Quantity>
+                </swe:field>
+              </swe:DataRecord>
+          </swe:elementType>
+        <swe:encoding>
+          <swe:TextBlock tokenSeparator="," blockSeparator="@" decimalSeparator="."/>
+        </swe:encoding>
+        <swe:values>
+            2010-01-01T00:10:00+00:00,9.81@
+            2010-01-01T00:20:00+00:00,9.78@
+            2010-01-01T00:30:00+00:00,9.74@
+            2010-01-01T00:40:00+00:00,9.69@
+            2010-01-01T00:50:00+00:00,9.4@
+            2010-01-01T01:00:00+00:00,9.1@
+            2010-01-01T01:10:00+00:00,8.7@
+            2010-01-01T01:20:00+00:00,8.5@
+            2010-01-01T01:30:00+00:00,8.4@
+            2010-01-01T01:40:00+00:00,8.32@
+            2010-01-01T01:50:00+00:00,8.30@
+            2010-01-01T02:00:00+00:00,8.27
+        </swe:values>
+      </swe:DataArray>
+    </om:result>
+  </om:Observation>
+</sos:InsertObservation>
+

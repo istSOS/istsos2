@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sos:RegisterSensor 
+    service="SOS" 
+    version="1.0.0" 
+    xmlns:sos="http://www.opengis.net/sos/1.0" 
+    xmlns:gml="http://www.opengis.net/gml" 
+    xmlns:om="http://www.opengis.net/om" 
+    xmlns:sml="http://www.opengis.net/sensorML" 
+    xmlns:swe="http://www.opengis.net/swe" 
+    xmlns:xlink="http://www.w3.org/1999/xlink" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <sos:SensorDescription>
+    <sml:member>
+      <sml:System gml:id="LL_CERESIO">
+        <gml:name>LL_CERESIO</gml:name>
+        <sml:identification>
+          <sml:IdentifierList>
+            <sml:identifier name="Short Name">
+              <sml:Term definition="urn:x-ogc:def:identifier:x-istsos:1.0:shortName">
+                <sml:value>CHS001</sml:value>
+              </sml:Term>
+            </sml:identifier>
+            <sml:identifier name="Long Name">
+              <sml:Term definition="urn:x-ogc:def:identifier:x-istsos:1.0:longName">
+                <sml:value>Capacitive humidity sensors model 001</sml:value>
+              </sml:Term>
+            </sml:identifier>
+            <sml:identifier name="Manufacturer Name">
+              <sml:Term definition="urn:x-ogc:def:identifier:x-istsos:1.0:manufacturerName">
+                <sml:value>Technical Department - SUPSI</sml:value>
+              </sml:Term>
+            </sml:identifier>
+            <sml:identifier name="Model Number">
+              <sml:Term definition="urn:x-ogc:def:identifier:x-istsos:1.0:modelNumber">
+                <sml:value>TDS-001</sml:value>
+              </sml:Term>
+            </sml:identifier>
+            <sml:identifier name="Serial Number">
+              <sml:Term definition="urn:x-ogc:def:identifier:x-istsos:1.0:serialNumber">
+                <sml:value>EXZU70012987712ABC</sml:value>
+              </sml:Term>
+            </sml:identifier>
+            <sml:identifier name="Device ID">
+              <sml:Term definition="urn:x-ogc:def:identifier:x-istsos:1.0:deviceID">
+                <sml:value>TDSCHSMWLLUGANO</sml:value>
+              </sml:Term>
+            </sml:identifier>
+          </sml:IdentifierList>
+        </sml:identification>
+        <sml:classification>
+          <sml:ClassifierList>
+            <sml:classifier name="System Type">
+              <sml:Term definition="urn:ogc:def:classifier:x-istsos:1.0:systemType">
+                <sml:value>insitu-fixed-point</sml:value>
+              </sml:Term>
+            </sml:classifier>
+            <sml:classifier name="Sensor Type">
+              <sml:Term definition="urn:ogc:def:classifier:x-istsos:1.0:sensorType">
+                <sml:value>lake water level</sml:value>
+              </sml:Term>
+            </sml:classifier>
+          </sml:ClassifierList>
+        </sml:classification>
+        <sml:characteristics xlink:href="http://192.168.56.101/istsos/admin/"/>
+        <sml:capabilities>
+          <swe:DataRecord>
+            <swe:field name="Memory Capacity">
+              <swe:Quantity definition="urn:x-ogc:def:classifier:x-istsos:1.0:memoryCapacity">
+                <swe:uom code="Byte"/>
+                <swe:value>34359738368</swe:value>
+              </swe:Quantity>
+            </swe:field>
+            <swe:field name="Battery Current">
+              <swe:Quantity definition="urn:x-ogc:def:phenomenon:x-istsos:1.0:batteryCurrent">
+                <swe:uom code="A.h"/>
+                <swe:value>1420000</swe:value>
+              </swe:Quantity>
+            </swe:field>
+            <swe:field name="Sampling time resolution">
+              <swe:Quantity definition="urn:x-ogc:def:classifier:x-istsos:1.0:samplingTimeResolution">
+                <swe:uom code="iso8601"/>
+                <swe:value>PT20M</swe:value>
+              </swe:Quantity>
+            </swe:field>
+            <swe:field name="Acquisition time resolution">
+              <swe:Quantity definition="urn:x-ogc:def:classifier:x-istsos:1.0:acquisitionTimeResolution">
+                <swe:uom code="iso8601"/>
+                <swe:value>PT30M</swe:value>
+              </swe:Quantity>
+            </swe:field>
+          </swe:DataRecord>
+        </sml:capabilities>
+        <sml:contact role="urn:x-ogc:def:classifiers:x-istsos:1.0:contactType:owner">
+          <sml:ResponsibleParty>
+            <sml:individualName>Fausto Gervasoni</sml:individualName>
+            <sml:organizationName>Institute of Earth Science - SUPSI</sml:organizationName>
+            <sml:contactInfo>
+              <sml:phone>
+                <sml:voice>+41586666200</sml:voice>
+                <sml:facsimile>+41586666209</sml:facsimile>
+              </sml:phone>
+              <sml:address>
+                <sml:deliveryPoint>Campus Trevano</sml:deliveryPoint>
+                <sml:city>Canobbio</sml:city>
+                <sml:administrativeArea>Ticino</sml:administrativeArea>
+                <sml:postalCode>6952</sml:postalCode>
+                <sml:country>Switzerland</sml:country>
+                <sml:electronicMailAddress>ist@supsi.ch</sml:electronicMailAddress>
+              </sml:address>
+              <sml:onlineResource xlink:href="http://www.supsi.ch/ist"/>
+            </sml:contactInfo>
+          </sml:ResponsibleParty>
+        </sml:contact>
+        <sml:contact role="urn:x-ogc:def:classifiers:x-istsos:1.0:contactType:manufacturer">
+          <sml:ResponsibleParty>
+            <sml:individualName>Paolo Rezzonico</sml:individualName>
+            <sml:organizationName>Technical Department - SUPSI</sml:organizationName>
+            <sml:contactInfo>
+              <sml:phone>
+                <sml:voice>+41586666200</sml:voice>
+                <sml:facsimile>+41586666209</sml:facsimile>
+              </sml:phone>
+              <sml:address>
+                <sml:deliveryPoint>Residence Stella alpina</sml:deliveryPoint>
+                <sml:city>Viganello</sml:city>
+                <sml:administrativeArea>Ticino</sml:administrativeArea>
+                <sml:postalCode>6962</sml:postalCode>
+                <sml:country>Switzerland</sml:country>
+                <sml:electronicMailAddress>ist@supsi.ch</sml:electronicMailAddress>
+              </sml:address>
+              <sml:onlineResource xlink:href="http://www.supsi.ch/ist"/>
+            </sml:contactInfo>
+          </sml:ResponsibleParty>
+        </sml:contact>
+        <sml:contact role="urn:x-ogc:def:classifiers:x-istsos:1.0:contactType:operator">
+          <sml:ResponsibleParty>
+            <sml:individualName>Giacomino Bragaferro</sml:individualName>
+            <sml:organizationName>Ufficio Tecnico Augenthaler</sml:organizationName>
+            <sml:contactInfo>
+              <sml:phone>
+                <sml:voice>+41586666200</sml:voice>
+                <sml:facsimile>+41586666209</sml:facsimile>
+              </sml:phone>
+              <sml:address>
+                <sml:deliveryPoint>Via delle Vigne 6</sml:deliveryPoint>
+                <sml:city>Bironico</sml:city>
+                <sml:administrativeArea>Ticino</sml:administrativeArea>
+                <sml:postalCode>6804</sml:postalCode>
+                <sml:country>Switzerland</sml:country>
+                <sml:electronicMailAddress>ist@supsi.ch</sml:electronicMailAddress>
+              </sml:address>
+              <sml:onlineResource xlink:href="http://www.supsi.ch/ist"/>
+            </sml:contactInfo>
+          </sml:ResponsibleParty>
+        </sml:contact>
+        <sml:documentation>
+          <sml:Document>
+            <gml:description>User Manual</gml:description>
+            <sml:date>01/01/2013</sml:date>
+            <sml:format>text/html</sml:format>
+            <gml:onlineResource xlink:href="http://goo.gl/0fpAA"/>
+          </sml:Document>
+        </sml:documentation>
+        <gml:location>
+          <gml:Point gml:id="ceresio" srsName="EPSG:4326">
+            <gml:coordinates>8.962662,46.004809,270</gml:coordinates>
+          </gml:Point>
+        </gml:location>
+        <sml:interfaces>
+          <sml:InterfaceList>
+            <sml:interface name="Bluetooth4.0/SDP/RFCOMM/L2CAP"/>
+            <sml:interface name="USB2.0/Mass Storage"/>
+          </sml:InterfaceList>
+        </sml:interfaces>
+        <sml:outputs>
+          <sml:OutputList>
+            <sml:output name="output data">
+              <swe:DataRecord definition="urn:ogc:def:dataType:x-istsos:1.0:timeSeries">
+                <swe:field name="Time">
+                  <swe:Time definition="urn:ogc:def:parameter:x-istsos:1.0:time:iso8601" gml:id="1">
+                    <swe:uom code="iso8601"/>
+                  </swe:Time>
+                </swe:field>
+                <swe:field name="lake water level">
+                  <swe:Quantity definition="urn:ogc:def:parameter:x-istsos:1.0:lake:water:level" gml:id="2">
+                    <swe:uom code="m"/>
+                  </swe:Quantity>
+                </swe:field>
+                <swe:field name="lake water temperature">
+                  <swe:Quantity definition="urn:ogc:def:parameter:x-istsos:1.0:lake:water:temperature" gml:id="2">
+                    <swe:uom code="°C"/>
+                  </swe:Quantity>
+                </swe:field>
+              </swe:DataRecord>
+            </sml:output>
+          </sml:OutputList>
+        </sml:outputs>
+      </sml:System>
+    </sml:member>
+  </sos:SensorDescription>
+  <sos:ObservationTemplate>
+    <om:Observation>
+      <om:procedure xlink:href="urn:ogc:object:procedure:x-istsos:1.0:LL_CERESIO"/>
+      <om:samplingTime>
+        <gml:TimePeriod>
+          <gml:TimeLength/>
+        </gml:TimePeriod>
+      </om:samplingTime>
+      <om:observedProperty>
+        <swe:CompositPhenomenon dimension="2">
+          <swe:component xlink:href="urn:ogc:def:parameter:x-istsos:1.0:time:iso8601"/>
+          <swe:component xlink:href="urn:ogc:def:parameter:x-istsos:1.0:lake:water:level"/>
+          <swe:component xlink:href="urn:ogc:def:parameter:x-istsos:1.0:lake:water:temperature"/>
+        </swe:CompositPhenomenon>
+      </om:observedProperty>
+      <om:featureOfInterest xlink:href="ceresio">
+        <gml:Point gml:id="ceresio" srsName="EPSG:4326">
+          <gml:coordinates>8.962662,46.004809,270</gml:coordinates>
+        </gml:Point>
+      </om:featureOfInterest>
+      <om:result>
+        <swe:DataArray>
+          <swe:elementCount>
+            <swe:value>2</swe:value>
+          </swe:elementCount>
+          <swe:elementType name="SimpleDataArray" xlink:href="urn:ogc:def:dataType:x-istsos:1.0:timeSeriesDataRecord">
+            <swe:DataRecord definition="urn:ogc:def:dataType:x-istsos:1.0:timeSeries">
+              <swe:field name="Time">
+                <swe:Time definition="urn:ogc:def:parameter:x-istsos:1.0:time:iso8601" gml:id="1">
+                  <swe:uom code="iso8601"/>
+                </swe:Time>
+              </swe:field>
+              <swe:field name="lake water level">
+                <swe:Quantity definition="urn:ogc:def:parameter:x-istsos:1.0:lake:water:level" gml:id="2">
+                  <swe:uom code="m"/>
+                </swe:Quantity>
+              </swe:field>
+              <swe:field name="lake water temperature">
+                <swe:Quantity definition="urn:ogc:def:parameter:x-istsos:1.0:lake:water:temperature" gml:id="2">
+                  <swe:uom code="°C"/>
+                </swe:Quantity>
+              </swe:field>
+            </swe:DataRecord>
+          </swe:elementType>
+          <swe:encoding>
+            <swe:TextBlock blockSeparator="@" decimalSeparator="." tokenSeparator=","/>
+          </swe:encoding>
+          <swe:values/>
+        </swe:DataArray>
+      </om:result>
+    </om:Observation>
+  </sos:ObservationTemplate>
+</sos:RegisterSensor>

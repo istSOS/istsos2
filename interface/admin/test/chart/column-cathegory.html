@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+
+<!-- Auto Generated with Ext Designer -->
+<!-- Modifications to this file will be overwritten. -->
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>dev - charts</title>
+        <link rel="stylesheet" type="text/css" href="http://docs.sencha.com/ext-js/4-0/extjs-build/resources/css/ext-all.css"/>
+        <script type="text/javascript" src="http://docs.sencha.com/ext-js/4-0/extjs-build/ext-all-debug.js"></script>
+        <script type="text/javascript">
+            
+            function ISO8601FromDate(isodate) {
+                function pad(n){return n<10 ? '0'+n : n}
+                var offset = isodate.getTimezoneOffset()/-60;
+                var tz = ((offset > 0) ? "+"+pad(offset) : pad(offset))
+                return isodate.getFullYear()+'-'
+                    + pad(isodate.getMonth()+1)+'-'
+                    + pad(isodate.getDate())+'T'
+                    + pad(isodate.getHours())+':'
+                    + pad(isodate.getMinutes())+':'
+                    + pad(isodate.getSeconds())+'.'
+                    + isodate.getMilliseconds() + tz;
+            }
+
+                
+            Ext.Loader.setConfig({
+                enabled: true
+            });
+            
+            Ext.require('Ext.chart.*');
+            Ext.require(['Ext.Window', 'Ext.layout.container.Fit', 'Ext.fx.target.Sprite']);
+            
+            Ext.onReady(function () {
+                
+                Ext.define('sosstore', {
+                    extend: 'Ext.data.JsonStore',
+
+                    constructor: function(cfg) {
+                        var me = this;
+                        cfg = cfg || {};
+                        me.callParent([Ext.apply({
+                                storeId: 'testcolumnstore',
+                                proxy: {
+                                    type: 'ajax',
+                                    url: 'app/config/data.json',
+                                    reader: {
+                                        type: 'json'
+                                    }
+                                },
+                                fields: [
+                                    {
+                                        name: 'isodate',
+                                        dateFormat: 'c',
+                                        type: 'date'
+                                    },
+                                    {
+                                        name: 'value',
+                                        type: 'float'
+                                    }
+                                ]
+                            }, cfg)]);
+                    }
+                });
+                
+                var sosStore = Ext.create('sosstore',{
+                    "data": [
+                        {
+                            "isodate": "2012-01-01T00:00:00.000000+0100",
+                            "value": 2
+                        },
+                        {
+                            "isodate": "2012-01-01T01:00:00.000000+0100",
+                            "value": 1
+                        },
+                        {
+                            "isodate": "2012-01-01T02:00:00.000000+0100",
+                            "value": 3
+                        },
+                        {
+                            "isodate": "2012-01-01T03:00:00.000000+0100",
+                            "value": 4
+                        },
+                        {
+                            "isodate": "2012-01-01T04:00:00.000000+0100",
+                            "value": 5.2
+                        },
+                        {
+                            "isodate": "2012-01-01T05:00:00.000000+0100",
+                            "value": 3.5453
+                        },
+                        {
+                            "isodate": "2012-01-01T06:00:00.000000+0100",
+                            "value": 3.4
+                        },
+                        {
+                            "isodate": "2012-01-01T07:00:00.000000+0100",
+                            "value": 3.1243
+                        },
+                        {
+                            "isodate": "2012-01-01T08:00:00.000000+0100",
+                            "value": 6.4
+                        },
+                        {
+                            "isodate": "2012-01-01T09:00:00.000000+0100",
+                            "value": 3.4
+                        },
+                        {
+                            "isodate": "2012-01-01T10:00:00.000000+0100",
+                            "value": 5.4
+                        },
+                        {
+                            "isodate": "2012-01-01T11:00:00.000000+0100",
+                            "value": 2.6
+                        },
+                        {
+                            "isodate": "2012-01-01T12:00:00.000000+0100",
+                            "value": 5.2
+                        },
+                        {
+                            "isodate": "2012-01-01T13:00:00.000000+0100",
+                            "value": 0
+                        },
+                        {
+                            "isodate": "2012-01-01T14:00:00.000000+0100",
+                            "value": 0
+                        },
+                        {
+                            "isodate": "2012-01-01T15:00:00.000000+0100",
+                            "value": 0
+                        },
+                        {
+                            "isodate": "2012-01-01T16:00:00.000000+0100",
+                            "value": 0
+                        },
+                        {
+                            "isodate": "2012-01-01T17:00:00.000000+0100",
+                            "value": 5.2
+                        },
+                        {
+                            "isodate": "2012-01-01T18:00:00.000000+0100",
+                            "value": 3.5453
+                        },
+                        {
+                            "isodate": "2012-01-01T19:00:00.000000+0100",
+                            "value": 3.4
+                        },
+                        {
+                            "isodate": "2012-01-01T20:00:00.000000+0100",
+                            "value": 3.1243
+                        },
+                        {
+                            "isodate": "2012-01-01T21:00:00.000000+0100",
+                            "value": 6.4
+                        },
+                        {
+                            "isodate": "2012-01-01T22:00:00.000000+0100",
+                            "value": 1.4
+                        }
+                    ]
+                });
+                
+                
+                var winSos = Ext.create('Ext.Window', {
+                    width: 800,
+                    height: 600,
+                    minHeight: 400,
+                    minWidth: 550,
+                    hidden: false,
+                    maximizable: true,
+                    title: 'Column Chart',
+                    layout: 'fit',
+                    tbar: [{
+                            text: 'Reload Data',
+                            handler: function() {
+                                sosStore.reloadData();
+                            }
+                        }],
+                    items: {
+                        id: 'chartCmpSOS',
+                        xtype: 'chart',
+                        style: 'background: WHITE',
+                        animate: true,
+                        shadow: true,
+                        store: sosStore,
+                        axes: [{
+                                type: 'Numeric',
+                                position: 'left',
+                                fields: ['value'],
+                                label: {
+                                    renderer: Ext.util.Format.numberRenderer('0.0')
+                                },
+                                title: 'Value',
+                                grid: true,
+                                minimum: 0
+                            }, 
+                            {
+                                type: 'Category',
+                                position: 'bottom',
+                                fields: ['isodate'],
+                                title: 'Datetime',
+                                dateFormat: 'c',
+                                label: {
+                                    renderer: function(v) {
+                                        return ISO8601FromDate(v);
+                                        //return Ext.String.ellipsis(v, 15, false);
+                                    },
+                                    font: '12px Arial',
+                                    rotate: {
+                                        degrees: -90
+                                    }
+                                }
+                            }],
+                        series: [{
+                                type: 'column',
+                                axis: 'left',
+                                highlight: true,
+                                label: {
+                                    display: 'middle',
+                                    'text-anchor': 'middle',
+                                    field: 'value',
+                                    renderer: Ext.util.Format.numberRenderer('0.0'),
+                                    color: '#333'
+                                },
+                                xField: 'isodate',
+                                yField: ['value'],
+                                listeners: {
+                                    'itemmouseup': function(item) {
+                                        console.dir(item);
+                                        /*
+                                        var series = Ext.getCmp('chartCmpSOS').series.get(0),
+                                        index = Ext.Array.indexOf(series.items, item),
+                                        selectionModel = gridPanel.getSelectionModel();
+                     
+                                        selectedStoreItem = item.storeItem;
+                                        selectionModel.select(index);*/
+                                    }
+                                }
+                            }]
+                    }
+                });
+                winSos.show();
+                
+                
+                
+                
+                /*var store1 = Ext.create('Ext.data.JsonStore', {
+                    fields: ['name', 'data1', 'data2', 'data3', 'data4', 'data5', 'data6', 'data7', 'data9', 'data9'],
+                    data: generateData()
+                });
+                
+                var win = Ext.create('Ext.Window', {
+                    width: 800,
+                    height: 600,
+                    minHeight: 400,
+                    minWidth: 550,
+                    hidden: false,
+                    maximizable: true,
+                    title: 'DEV-TEST Column Chart',
+                    //renderTo: Ext.getBody(),
+                    layout: 'fit',
+                    tbar: [{
+                            text: 'Reload Data',
+                            handler: function() {
+                                store1.loadData(generateData());
+                            }
+                        }],
+                    items: {
+                        id: 'chartCmp',
+                        xtype: 'chart',
+                        style: 'background:#fff',
+                        animate: true,
+                        shadow: true,
+                        store: store1,
+                        axes: [{
+                                type: 'Numeric',
+                                position: 'left',
+                                fields: ['data1'],
+                                label: {
+                                    renderer: Ext.util.Format.numberRenderer('0,0')
+                                },
+                                title: 'Number of Hits',
+                                grid: true,
+                                minimum: 0
+                            }, 
+                            {
+                                type: 'Category',
+                                position: 'bottom',
+                                fields: ['name'],
+                                title: 'Month of the Year'
+                            }],
+                        series: [{
+                                type: 'column',
+                                axis: 'left',
+                                highlight: true,
+                                tips: {
+                                    trackMouse: true,
+                                    width: 140,
+                                    height: 28,
+                                    renderer: function(storeItem, item) {
+                                        this.setTitle(storeItem.get('name') + ': ' + storeItem.get('data1') + ' $');
+                                    }
+                                },
+                                label: {
+                                    display: 'insideEnd',
+                                    'text-anchor': 'middle',
+                                    field: 'data1',
+                                    renderer: Ext.util.Format.numberRenderer('0'),
+                                    orientation: 'vertical',
+                                    color: '#333'
+                                },
+                                xField: 'name',
+                                yField: 'data1'
+                            }]
+                    }
+                });
+                win.show();*/
+                
+                
+            });
+        </script>
+    </head>
+    <body id="docbody">
+        ciao
+    </body>
+</html>
