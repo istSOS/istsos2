@@ -1,0 +1,223 @@
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>istSOS webadmin developer page</title>
+        <link rel="stylesheet" type="text/css" href="ext-dev/resources/css/ext-all.css"/>
+        <link rel="stylesheet" type="text/css" href="css/main.css"/>
+
+        <link href='http://fonts.googleapis.com/css?family=Exo' rel='stylesheet' type='text/css'>
+        <!--
+        <link href='http://fonts.googleapis.com/css?family=Patrick+Hand' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Nova+Square' rel='stylesheet' type='text/css'>
+        -->
+        <script type="text/javascript" src="ext-dev/ext-all-debug.js"></script>
+
+        <script type="text/javascript" src="app/engine/wa.js"></script>
+        <script type="text/javascript" src="app/engine/pageConfig.js"></script>
+        <script type="text/javascript" src="app/engine/pageManager.js"></script>
+
+        <script type="text/javascript">
+            function ISO8601FromDate(isodate) {
+                function pad(n){return n<10 ? '0'+n : n}
+                var offset = isodate.getTimezoneOffset()/-60;
+                var tz = ((offset > 0) ? "+"+pad(offset) : pad(offset))
+                return isodate.getFullYear()+'-'
+                    + pad(isodate.getMonth()+1)+'-'
+                    + pad(isodate.getDate())+'T'
+                    + pad(isodate.getHours())+':'
+                    + pad(isodate.getMinutes())+':'
+                    + pad(isodate.getSeconds())+'.'
+                    + isodate.getMilliseconds() + tz;
+            }
+            String.prototype.capitalize = function(){
+                return this.toLowerCase().replace( /(^|\s)([a-z])/g , function(m,p1,p2){ return p1+p2.toUpperCase(); } );
+            };
+            Ext.override(Ext.layout.Layout, {
+                renderItem: function(item, target, position) {
+                    if (item && !item.rendered && item.isFieldLabelable && item.fieldLabel && item.allowBlank == false) {
+                        item.fieldLabel = '<span title="This is a mandatory parameter">' + item.fieldLabel + '<span style="color:red">*</span></span>';
+                    }
+                    this.callOverridden(arguments);
+                }
+            });
+            Ext.override(Ext.view.DropZone, {  
+                onNodeDrop: function (node, dragZone, e, data) {
+                    var me = this,
+                    dropHandled = false,
+                    dropHandlers = {
+                        wait : false,
+                        processDrop : function () {
+                            me.invalidateDrop();
+                            me.handleNodeDrop(data, me.overRecord, me.currentPosition);
+                            dropHandled = true;
+                            me.fireViewEvent('drop', node, data, me.overRecord, me.currentPosition);
+                        },
+                        cancelDrop : function () {
+                            me.invalidateDrop();
+                            dropHandled = true;
+                        }
+                    },
+                    performOperation = false;
+                    if (me.valid) {
+                        performOperation = me.fireViewEvent('beforedrop', node, data, me.overRecord, me.currentPosition, dropHandlers);
+                        if (dropHandlers.wait) {
+                            return;
+                        }
+                        if (performOperation !== false) {
+                            if (!dropHandled) {
+                                dropHandlers.processDrop();
+                            }
+                        }
+                    }
+                    return performOperation;
+                }
+            });
+        </script>
+
+        <!-- DEVELOPERS INCLUDE -->
+        <script type="text/javascript" src="app/view/ui/MainPanel.js"></script>
+        <script type="text/javascript" src="app/view/MainPanel.js"></script>
+
+        <script type="text/javascript" src="app/view/ui/BasePage.js"></script>
+        <script type="text/javascript" src="app/view/BasePage.js"></script>
+        <script type="text/javascript" src="app/view/ui/CenterPage.js"></script>
+        <script type="text/javascript" src="app/view/ui/WizardPage.js"></script>
+
+
+        <script type="text/javascript" src="app/view/ui/BasePage.js"></script>
+        <script type="text/javascript" src="app/view/BasePage.js"></script>
+        <script type="text/javascript" src="app/view/ui/contactinfo.js"></script>
+        <script type="text/javascript" src="app/view/contactinfo.js"></script>
+        <script type="text/javascript" src="app/view/ui/paths.js"></script>
+        <script type="text/javascript" src="app/view/paths.js"></script>
+        <script type="text/javascript" src="app/view/ui/about.js"></script>
+        <script type="text/javascript" src="app/view/about.js"></script>
+        <script type="text/javascript" src="app/view/ui/contacts.js"></script>
+        <script type="text/javascript" src="app/view/contacts.js"></script>
+        <script type="text/javascript" src="app/view/ui/config.js"></script>
+        <script type="text/javascript" src="app/view/config.js"></script>
+        <script type="text/javascript" src="app/view/ui/database.js"></script>
+        <script type="text/javascript" src="app/view/database.js"></script>
+        <script type="text/javascript" src="app/view/ui/newservice.js"></script>
+        <script type="text/javascript" src="app/view/newservice.js"></script>
+
+        <script type="text/javascript" src="app/view/ui/identification.js"></script>
+        <script type="text/javascript" src="app/view/identification.js"></script>
+        <script type="text/javascript" src="app/view/ui/provider.js"></script>
+        <script type="text/javascript" src="app/view/provider.js"></script>
+
+        <script type="text/javascript" src="app/view/ui/FormDataQuality.js"></script>
+        <script type="text/javascript" src="app/view/FormDataQuality.js"></script>
+        <script type="text/javascript" src="app/store/DataQualityStore.js"></script>
+
+
+        <script type="text/javascript" src="app/store/DataQualityStore.js"></script>
+        <script type="text/javascript" src="app/store/Offerings.js"></script>
+        <script type="text/javascript" src="app/store/Procedures.js"></script>
+        <script type="text/javascript" src="app/store/ObservedProperties.js"></script>
+        <script type="text/javascript" src="app/store/Observations.js"></script>
+
+        <script type="text/javascript" src="app/view/ui/ObservationEditorColumn.js"></script>
+        <script type="text/javascript" src="app/view/ObservationEditorColumn.js"></script>
+        <script type="text/javascript" src="app/view/ui/ObservationEditor.js"></script>
+        <script type="text/javascript" src="app/view/ObservationEditor.js"></script>
+
+        <script type="text/javascript" src="app/view/ui/serviceconfig.js"></script>
+        <script type="text/javascript" src="app/view/serviceconfig.js"></script>
+
+        <script type="text/javascript" src="app/view/ui/geo.js"></script>
+        <script type="text/javascript" src="app/view/geo.js"></script>
+
+        <script type="text/javascript" src="app/view/ui/getobservation.js"></script>
+        <script type="text/javascript" src="app/view/getobservation.js"></script>
+
+        <script type="text/javascript" src="app/store/serverstatus.js"></script>
+
+
+        <script type="text/javascript" src="app/view/ui/status.js"></script>
+        <script type="text/javascript" src="app/view/status.js"></script>
+
+        <script type="text/javascript" src="app/view/ui/serviceurl.js"></script>
+        <script type="text/javascript" src="app/view/serviceurl.js"></script>
+
+        <script type="text/javascript" src="app/store/cmbIdentification.js"></script>
+        <script type="text/javascript" src="app/store/cmbSystemType.js"></script>
+        <script type="text/javascript" src="app/store/cmbSml.js"></script>
+        <script type="text/javascript" src="app/store/cmbName.js"></script>
+        <script type="text/javascript" src="app/store/cmbDocumentFormat.js"></script>
+        <script type="text/javascript" src="app/store/gridDocumentation.js"></script>
+        <script type="text/javascript" src="app/store/gridOutputs.js"></script>
+
+        <script type="text/javascript" src="app/view/ui/procedure.js"></script>
+        <script type="text/javascript" src="app/view/procedure.js"></script>
+
+        <script type="text/javascript" src="app/store/gridProceduresList.js"></script>
+
+        <script type="text/javascript" src="app/view/ui/proceduresList.js"></script>
+        <script type="text/javascript" src="app/view/proceduresList.js"></script>
+
+        <script type="text/javascript" src="app/store/gridObservedProperties.js"></script>
+
+        <script type="text/javascript" src="app/view/ui/obsPropEditor.js"></script>
+        <script type="text/javascript" src="app/view/obsPropEditor.js"></script>
+        <script type="text/javascript" src="app/view/uomsEditor.js"></script>
+
+        <script type="text/javascript" src="app/store/gridOfferings.js"></script>
+        <script type="text/javascript" src="app/view/ui/offeringsEditor.js"></script>
+        <script type="text/javascript" src="app/view/offeringsEditor.js"></script>
+
+        <script type="text/javascript" src="app/store/cmbNameDescription.js"></script>
+        <script type="text/javascript" src="app/view/ui/qualityindexEditor.js"></script>
+        <script type="text/javascript" src="app/view/qualityindexEditor.js"></script>
+
+
+        <script type="text/javascript">
+            
+            Ext.Loader.setConfig({
+                enabled: false
+            });
+            
+            Ext.application({
+                name: 'istsos',
+
+                launch: function() {
+                    Ext.QuickTips.init();
+                    
+                    Ext.Ajax.on("requestexception",function(conn, response, options, eOpts ){
+                        try{
+                            var json = Ext.decode(response.responseText);
+                            if(!json.success && !Ext.isEmpty(json.message)){
+                                Ext.Msg.alert(response.statusText, json.message);
+                            }
+                        }catch(e){
+                            console.error(response);
+                        }
+                    });
+                    Ext.Ajax.on("requestcomplete",function(conn, response, options, eOpts ){
+                        try{
+                            var json = Ext.decode(response.responseText);
+                            if(!json.success && !Ext.isEmpty(json.message)){
+                                Ext.Msg.alert("Server message", "\"" + json.message + "\"<br/><br/>" + 
+                                    "<small>Status response: " + response.statusText + "</small>");
+                                console.error(json.message);
+                            }else if (json.success && !Ext.isEmpty(json.message)){
+                                console.log(json.message);
+                            }
+                        }catch(e){
+                            console.error(response);
+                        }
+                    });
+                    
+                    
+                    
+                    var cmp1 = Ext.create('istsos.view.MainPanel', {
+                        renderTo: Ext.getBody()
+                    });
+                    cmp1.show();
+                }
+            });
+        
+        </script>
+    </head>
+    <body></body>
+</html>
