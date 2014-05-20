@@ -73,21 +73,23 @@ class RegisterSensorResponse:
             except:
                 raise Exception("SQL: %s"%(pgdb.mogrify(sqlIns,params)))
         
-        #--get id_tru or create it if it does not exist yet
-        sqlId  = "SELECT id_tru FROM %s.time_res_unit" %(filter.sosConfig.schema)
-        sqlId += " WHERE name_tru=%s" 
-        params = (filter.time_res_unit,)
-        try:
-            id_tru = pgdb.select(sqlId,params)[0]["id_tru"]
-        except:
-            sqlIns  = "INSERT INTO %s.time_res_unit (name_tru)" %(filter.sosConfig.schema)
-            sqlIns += " VALUES (%s) RETURNING id_tru" 
-            params = (str(filter.time_res_unit),)
-            try:
-                id_tru = pgdb.executeInTransaction(sqlIns,params)[0]["id_tru"]
-                com=True
-            except:
-                raise Exception("SQL: %s"%(pgdb.mogrify(sqlIns,params)))
+#==============================================================================
+#         #--get id_tru or create it if it does not exist yet
+#         sqlId  = "SELECT id_tru FROM %s.time_res_unit" %(filter.sosConfig.schema)
+#         sqlId += " WHERE name_tru=%s" 
+#         params = (filter.time_res_unit,)
+#         try:
+#             id_tru = pgdb.select(sqlId,params)[0]["id_tru"]
+#         except:
+#             sqlIns  = "INSERT INTO %s.time_res_unit (name_tru)" %(filter.sosConfig.schema)
+#             sqlIns += " VALUES (%s) RETURNING id_tru" 
+#             params = (str(filter.time_res_unit),)
+#             try:
+#                 id_tru = pgdb.executeInTransaction(sqlIns,params)[0]["id_tru"]
+#                 com=True
+#             except:
+#                 raise Exception("SQL: %s"%(pgdb.mogrify(sqlIns,params)))
+#==============================================================================
         
         #--get a list of observed properties id (id_opr) and check if  
         # the fileds of the <Result> data record description
@@ -235,23 +237,24 @@ class RegisterSensorResponse:
                 raise Exception("SQL: %s"%(pgdb.mogrify(sqlIns)))
            
         #--insert procedure
-        sqlIns  = "INSERT INTO %s.procedures (id_foi_fk, id_oty_fk, id_tru_fk, " %(filter.sosConfig.schema)
+        sqlIns  = "INSERT INTO %s.procedures (id_foi_fk, id_oty_fk, " %(filter.sosConfig.schema)
         sqlIns  += "name_prc, desc_prc, "
         sqlIns  += "stime_prc, etime_prc, "
-        sqlIns  += "time_res_prc, assignedid_prc)" 
+        sqlIns  += "time_res_prc,time_acq_prc, assignedid_prc)" 
 
         #sqlIns += " VALUES (%s, %s, %s, '%s', NULL, now()::timestamptz, now()::timestamptz, %s,(select(md5(current_timestamp::text)))) RETURNING id_prc, assignedid_prc" %(id_foi,id_oty,id_tru,filter.procedure,filter.time_res_val)
         sqlIns += " VALUES (%s, %s, %s, "
-        sqlIns += "%s, %s, "
-        params = [id_foi,id_oty,id_tru,str(filter.procedure), str(filter.proc_desc)]
+        sqlIns += "%s, "
+        params = [id_foi,id_oty,str(filter.procedure), str(filter.proc_desc)]
         if not filter.beginPosition=='NULL':
             sqlIns += "%s::TIMESTAMPTZ , %s::TIMESTAMPTZ, "  
             params.extend([str(filter.beginPosition),str(filter.beginPosition)])
         else:
             sqlIns += "%s , %s, "
             params.extend([None,None])
-        sqlIns += " %s, (select(md5(current_timestamp::text))))" 
-        params.append(filter.time_res_val)
+        sqlIns += " %s, %s, (select(md5(current_timestamp::text))))" 
+        params.append(filter.time_sam_val)
+        params.append(filter.time_acq_val)
         sqlIns += " RETURNING id_prc, assignedid_prc" 
         params = tuple([None if x=='NULL' else x for x in params])
         try:

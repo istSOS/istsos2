@@ -193,8 +193,9 @@ CREATE TABLE procedures (
     stime_prc timestamp with time zone,
     etime_prc timestamp with time zone,
 
-    id_tru_fk integer NOT NULL,
+   -- id_tru_fk integer NOT NULL,
     time_res_prc integer,
+    time_acq_prc integer,
     id_oty_fk integer,
     id_foi_fk integer,
     assignedid_prc character varying(32) NOT NULL
@@ -219,18 +220,18 @@ COMMENT ON TABLE quality_index IS 'Stores the QualityIndexes.';
 
 --=====================================
 
-CREATE TABLE time_res_unit (
-    id_tru integer NOT NULL,
-    name_tru character varying(15)
-);
-COMMENT ON TABLE time_res_unit IS 'Stores the Procedure''s time resolution units.';
+--CREATE TABLE time_res_unit (
+--    id_tru integer NOT NULL,
+--    name_tru character varying(15)
+--);
+--COMMENT ON TABLE time_res_unit IS 'Stores the Procedure''s time resolution units.';
 
-CREATE SEQUENCE time_res_unit_id_tru_seq
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-ALTER SEQUENCE time_res_unit_id_tru_seq OWNED BY time_res_unit.id_tru;
+--CREATE SEQUENCE time_res_unit_id_tru_seq
+--    INCREMENT BY 1
+--    NO MAXVALUE
+--    NO MINVALUE
+--    CACHE 1;
+--ALTER SEQUENCE time_res_unit_id_tru_seq OWNED BY time_res_unit.id_tru;
 
 --=====================================
 
@@ -271,6 +272,20 @@ CREATE SEQUENCE tran_log_id_trl_seq
 ALTER SEQUENCE tran_log_id_trl_seq OWNED BY tran_log.id_trl;
 
 --=====================================
+CREATE TYPE status AS ENUM ('verified','pending');
+CREATE TABLE cron_log
+(
+   id_clo serial NOT NULL, 
+   id_prc_fk integer NOT NULL,              -- "5"
+   process_clo character varying NOT NULL, -- "acquisizione"
+   element_clo character varying NOT NULL, -- "T_TREVANO"
+   datetime_clo timestamp with time zone NOT NULL, -- "NOW"
+   message_clo character varying NOT NULL, -- "TIPO DI ECCEZIONE"
+   details_clo character varying, -- "MESSAGGIO LIBERO"
+   status_clo status,            -- "error"
+   PRIMARY KEY (id_clo)
+);
+--=====================================
 -- NEXTVALS
 --=====================================
 
@@ -285,7 +300,7 @@ ALTER TABLE offerings ALTER COLUMN id_off SET DEFAULT nextval('offerings_id_off_
 ALTER TABLE positions ALTER COLUMN id_pos SET DEFAULT nextval('measures_mobile_id_mmo_seq'::regclass);
 ALTER TABLE proc_obs ALTER COLUMN id_pro SET DEFAULT nextval('prc_obs_id_pro_seq'::regclass);
 ALTER TABLE procedures ALTER COLUMN id_prc SET DEFAULT nextval('procedures_id_prc_seq'::regclass);
-ALTER TABLE time_res_unit ALTER COLUMN id_tru SET DEFAULT nextval('time_res_unit_id_tru_seq'::regclass);
+--ALTER TABLE time_res_unit ALTER COLUMN id_tru SET DEFAULT nextval('time_res_unit_id_tru_seq'::regclass);
 ALTER TABLE uoms ALTER COLUMN id_uom SET DEFAULT nextval('uoms_id_uom_seq'::regclass);
 ALTER TABLE tran_log ALTER COLUMN id_trl SET DEFAULT nextval('tran_log_id_trl_seq'::regclass);
 
@@ -332,8 +347,8 @@ ALTER TABLE ONLY procedures
     ADD CONSTRAINT procedures_pkey PRIMARY KEY (id_prc);
 ALTER TABLE ONLY quality_index
     ADD CONSTRAINT quality_index_pkey PRIMARY KEY (id_qi);
-ALTER TABLE ONLY time_res_unit
-    ADD CONSTRAINT time_res_unit_pkey PRIMARY KEY (id_tru);
+--ALTER TABLE ONLY time_res_unit
+--    ADD CONSTRAINT time_res_unit_pkey PRIMARY KEY (id_tru);
 ALTER TABLE ONLY uoms
     ADD CONSTRAINT uoms_pkey PRIMARY KEY (id_uom);
 ALTER TABLE ONLY event_time
@@ -364,11 +379,13 @@ ALTER TABLE ONLY procedures
     ADD CONSTRAINT procedures_id_foi_fk_fkey FOREIGN KEY (id_foi_fk) REFERENCES foi(id_foi);
 ALTER TABLE ONLY procedures
     ADD CONSTRAINT procedures_id_oty_fk_fkey FOREIGN KEY (id_oty_fk) REFERENCES obs_type(id_oty);
-ALTER TABLE ONLY procedures
-    ADD CONSTRAINT procedures_id_tru_fk_fkey FOREIGN KEY (id_tru_fk) REFERENCES time_res_unit(id_tru);
+--ALTER TABLE ONLY procedures
+--    ADD CONSTRAINT procedures_id_tru_fk_fkey FOREIGN KEY (id_tru_fk) REFERENCES time_res_unit(id_tru);
 ALTER TABLE ONLY tran_log
     ADD CONSTRAINT tran_log_pkey PRIMARY KEY (id_trl);
-   
+ALTER TABLE ONLY cron_log
+    ADD CONSTRAINT cron_log_id_prc_fk_fkey FOREIGN KEY (id_prc_fk) REFERENCES procedures(id_prc) ON DELETE CASCADE;    
+    
 --=====================================
 -- INDEXES
 --=====================================

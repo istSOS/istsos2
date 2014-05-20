@@ -21,6 +21,21 @@ import lib.requests as requests
 import os
 import sys
 
+def convertToSec(uom, value):
+
+        if uom == 'min':
+            return (value * 60)
+        elif uom == 'h':
+            return (value * 3600)
+        elif uom == 'd':
+            return (value * 24 * 3600)
+        elif uom == 's':
+            return value
+        elif uom == 'ms':
+            return (value / 1000)
+        elif uom == 'us':
+            return (value / 1000000)
+
 class waProcedures(waResourceService):
     """class to handle SOS service objects, support GET and POST method"""
 
@@ -269,6 +284,8 @@ class waProcedures(waResourceService):
         msg1 = ""
         msg2 = ""
 
+             
+        
         if proc.data['system'] != self.procedurename:
             #rename procedure in transaction
             sql  = "UPDATE %s.procedures" % self.service
@@ -284,6 +301,27 @@ class waProcedures(waResourceService):
 
             msg1 = "Procedure '%s' successfully renamed to '%s'" %(self.procedurename,str(self.json["system"]))
 
+# Update for sapling time and acquisition time
+        time_acq_val = None
+        time_sam_val = None
+
+        for cap in proc.data['capabilities']:
+            if 'samplingTimeResolution' in cap['definition']:
+                
+                time_sam_val = convertToSec(cap['uom'],int(cap['value']))
+                #print >> sys.stderr, "Sampling value: ",time_sam_val, cap['value']
+                
+            elif 'acquisitionTimeResolution' in cap['definition']:
+                
+                time_acq_val = convertToSec(cap['uom'],int(cap['value']))
+                #print >> sys.stderr, "Acquisition value: ",time_acq_val, cap['value']
+                
+
+        sql = "UPDATE %s.procedures" % self.service
+        sql += " SET time_res_prc = %s, time_acq_prc = %s WHERE name_prc= %s"
+        params = (time_sam_val,time_acq_val,self.procedurename)                
+        servicedb.executeInTransaction(sql,params)
+                
         #allows to update observed property constraints
         for obsprop in proc.data['outputs']:
             if "constraint" in obsprop:
@@ -507,6 +545,7 @@ class waProcedures(waResourceService):
         else:
             self.setException("Unable to find the procedure's assignedSensorId")
 
+    
 
 
 class waGetlist(waResourceService):
@@ -548,6 +587,7 @@ class waGetlist(waResourceService):
             self.setData(data)
             self.setMessage("Procedures of service <%s> successfully retrived" % self.servicename)
 
+  
 
 class waGetGeoJson(waResourceService):
     """
@@ -616,4 +656,5 @@ class waGetGeoJson(waResourceService):
     def setData(self,data):
         """ Set data in response """
         self.response = data
-
+        
+     

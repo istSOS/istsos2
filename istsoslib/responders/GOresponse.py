@@ -279,7 +279,7 @@ class VirtualProcessHQ(VirtualProcess):
                         self.filter.sosConfig.virtual_processes_folder,
                         self.filter.procedure[0],
                         self.filter.procedure[0]+".rcv"
-				)
+                )
         tp=[]
         if self.filter.eventTime == None:
             tp = [None,None]
@@ -555,7 +555,7 @@ class Observation:
         #=============================================
         
         k = o.keys()
-        if not ("id_prc" in k and "name_prc" in k and  "name_oty" in k and "stime_prc" in k and "etime_prc" in k and "time_res_prc" in k and "name_tru" in k ):
+        if not ("id_prc" in k and "name_prc" in k and  "name_oty" in k and "stime_prc" in k and "etime_prc" in k and "time_res_prc" in k  ):
             raise Exception("Error, baseInfo argument: %s"%(o))
         
         #SET PROCEDURE NAME AND ID
@@ -576,7 +576,8 @@ class Observation:
         #SET TIME: RESOLUTION VALUE AND UNIT
         #===================================
         self.timeResVal = o["time_res_prc"]
-        self.timeResUnit = o["name_tru"]
+# Rimoved with tru table 
+        #self.timeResUnit = o["name_tru"]
         
         #SET SAMPLING TIME
         #===================================
@@ -593,7 +594,7 @@ class Observation:
     def setData(self,pgdb,o,filter):
         """get data according to request filters"""
         # @todo mettere da qualche altra parte
-	        
+            
         #SET FOI OF PROCEDURE
         #=========================================
         sqlFoi  = "SELECT name_fty, name_foi, ST_AsGml(ST_Transform(geom_foi,%s)) as gml" %(filter.srsName)
@@ -1004,14 +1005,17 @@ class observations:
         #=========================================
         #---select part of query
         sqlSel = "SELECT DISTINCT"
-        sqlSel += " id_prc, name_prc, name_oty, stime_prc, etime_prc, time_res_prc, name_tru"
+        sqlSel += " id_prc, name_prc, name_oty, stime_prc, etime_prc, time_res_prc"
         #---from part of query
-        sqlFrom = "FROM %s.procedures, %s.proc_obs p, %s.observed_properties, %s.uoms, %s.time_res_unit," %(filter.sosConfig.schema,filter.sosConfig.schema,filter.sosConfig.schema,filter.sosConfig.schema,filter.sosConfig.schema)
+#################################
+# Rimosso codice di time_res_unit
+#################################
+        sqlFrom = "FROM %s.procedures, %s.proc_obs p, %s.observed_properties, %s.uoms," %(filter.sosConfig.schema,filter.sosConfig.schema,filter.sosConfig.schema,filter.sosConfig.schema)
         sqlFrom += " %s.off_proc o, %s.offerings, %s.obs_type" %(filter.sosConfig.schema,filter.sosConfig.schema,filter.sosConfig.schema)
         if filter.featureOfInterest or filter.featureOfInterestSpatial:
             sqlFrom += " ,%s.foi, %s.feature_type" %(filter.sosConfig.schema,filter.sosConfig.schema)
         
-        sqlWhere = "WHERE id_prc=p.id_prc_fk AND id_opr_fk=id_opr AND o.id_prc_fk=id_prc AND id_off_fk=id_off AND id_uom=id_uom_fk AND id_tru=id_tru_fk AND id_oty=id_oty_fk"
+        sqlWhere = "WHERE id_prc=p.id_prc_fk AND id_opr_fk=id_opr AND o.id_prc_fk=id_prc AND id_off_fk=id_off AND id_uom=id_uom_fk AND id_oty=id_oty_fk"
         sqlWhere += " AND name_off='%s'" %(filter.offering) 
         
         #---where condition based on featureOfInterest

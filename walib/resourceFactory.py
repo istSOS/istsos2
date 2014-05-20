@@ -270,6 +270,19 @@ def initResource(waEnviron):
                         #print >> sys.stderr, resource     
                         from walib.istsos.services import services
                         return services.waInsertobservation(waEnviron)
+                        
+                # ---------------------------------------
+                # Entering istsos.services.logs
+                # ---------------------------------------        
+                elif resource == "logs":
+                    from walib.istsos.services.logs import logs
+                    return logs.waLogs(waEnviron)
+                
+                # ---------------------------------------
+                # Entering istsos.services.status
+                # ---------------------------------------
+                elif resource == "status":
+                    from walib.istsos.services.status import status
+                    return status.waStatus(waEnviron)
                                    
     raise Exception("Resource is not identified, check the URL")
-

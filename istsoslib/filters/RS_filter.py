@@ -21,6 +21,8 @@ from lib.isodate import parse_duration
 from lib.etree import et
 import json
 
+import sys
+
 def parse_and_get_ns(file):
     events = "start", "start-ns"
     root = None
@@ -38,6 +40,24 @@ def parse_and_get_ns(file):
             if root is None:
                 root = elem 
     return et.ElementTree(root), ns
+    
+    
+def convertToSec(uom, value):
+
+        if uom == 'min':
+            return (value * 60)
+        elif uom == 'h':
+            return (value * 3600)
+        elif uom == 'd':
+            return (value * 24 * 3600)
+        elif uom == 's':
+            return value
+        elif uom == 'ms':
+            return (value / 1000)
+        elif uom == 'us':
+            return (value / 1000000)
+        else:
+            raise sosException.SOSException("Unknown uom","sml:capabilities","Unknown unit of measure")      
     
 class sosRSfilter(f.sosFilter): 
     "filter object for a registerSensor request"
@@ -82,7 +102,41 @@ class sosRSfilter(f.sosFilter):
             else:
                 self.proc_desc = 'NULL'
             
-            #---System type
+# Add capabilities time to db
+# Convert all to seconds            
+            
+            #---Capabilities
+            capabilities = tree.findall("{%s}SensorDescription/{%s}member/{%s}System/{%s}capabilities/{%s}DataRecord/{%s}field"
+                                            % (ns['sos'],ns['sml'],ns['sml'],ns['sml'],ns['swe'],ns['swe']))
+            #print >> sys.stderr, "capabilities: ",capabilities
+            
+            self.time_sam_val = "0"
+            self.time_acq_val = "0"
+            
+            for cap in capabilities:
+                
+                if cap.attrib.has_key('name') and cap.attrib['name']=='Sampling time resolution':
+                    # parse Sampling time resolution
+                    tmpSam = int(cap.find("{%s}Quantity/{%s}value"% (ns['swe'],ns['swe'])).text)
+                    uom = cap.find("{%s}Quantity/{%s}uom"% (ns['swe'],ns['swe']))
+                    if uom.attrib.has_key('code'):
+                        uomSam = uom.attrib['code']
+                        self.time_sam_val = convertToSec(uomSam,tmpSam)
+                    else:
+                        raise sosException.SOSException("MissingParameterValue","SensorDescription","sml:capabilities, missing uom for Sampling time resolution")
+                elif cap.attrib.has_key('name') and cap.attrib['name']=='Acquisition time resolution':
+                    # parse Acquisition time resolution
+                    tmpAcq =  int(cap.find("{%s}Quantity/{%s}value"% (ns['swe'],ns['swe'])).text)
+                    uom = cap.find("{%s}Quantity/{%s}uom"% (ns['swe'],ns['swe']))
+                    if uom.attrib.has_key('code'):
+                        uomAcq = uom.attrib['code']
+                        self.time_acq_val = convertToSec(uomAcq,tmpAcq)
+                    else:
+                        raise sosException.SOSException("MissingParameterValue","SensorDescription","sml:capabilities, missing uom for Sampling time resolution")
+          
+            print >> sys.stderr, self.time_sam_val             
+           
+           #---System type
             # From istSOS 2.0 the system type became mandatory (insitu-fixed-point, insitu-mobile-point, ...)
             self.systemType = None
             classifiers = tree.findall("{%s}SensorDescription/{%s}member/{%s}System/{%s}classification/{%s}ClassifierList/{%s}classifier" 
@@ -182,26 +236,28 @@ class sosRSfilter(f.sosFilter):
             """
 
             #-------samplingTime
-            samplingTime = Observation.find("{%s}samplingTime" % ns['om'] )
-            if samplingTime == None:
-                raise sosException.SOSException("NoApplicableCode",None,"om:samplingTime tag is mandatory with multiplicity 1")
-            else:
-                duration = samplingTime.find("{%s}TimePeriod/{%s}TimeLength/{%s}duration" 
-                                            %(ns['gml'],ns['gml'],ns['gml'], ) ) 
-                                            
-                if not duration==None:
-                    
-                    strdur = str( parse_duration( duration.text.strip() ) ).split(",")
-                    if len(strdur)>1:
-                        self.time_res_val = strdur[0].split(" ")[0]
-                        self.time_res_unit = strdur[0].split(" ")[1]
-                    elif len(strdur)==1:
-                        time = strdur[0].split(":")
-                        self.time_res_val = parse_duration( duration.text.strip() ).seconds
-                        self.time_res_unit = "sec"
-                else:
-                    self.time_res_unit = "unknown"
-                    self.time_res_val = "NULL"
+#==============================================================================
+#             samplingTime = Observation.find("{%s}samplingTime" % ns['om'] )
+#             if samplingTime == None:
+#                 raise sosException.SOSException("NoApplicableCode",None,"om:samplingTime tag is mandatory with multiplicity 1")
+#             else:
+#                 duration = samplingTime.find("{%s}TimePeriod/{%s}TimeLength/{%s}duration" 
+#                                             %(ns['gml'],ns['gml'],ns['gml'], ) ) 
+#                                             
+#                 if not duration==None:
+#                     
+#                     strdur = str( parse_duration( duration.text.strip() ) ).split(",")
+#                     if len(strdur)>1:
+#                         self.time_res_val = strdur[0].split(" ")[0]
+#                         self.time_res_unit = strdur[0].split(" ")[1]
+#                     elif len(strdur)==1:
+#                         time = strdur[0].split(":")
+#                         self.time_res_val = parse_duration( duration.text.strip() ).seconds
+#                         self.time_res_unit = "sec"
+#                 else:
+#                     self.time_res_unit = "unknown"
+#                     self.time_res_val = "NULL"
+#==============================================================================
                 
             
             #------featureOfInterest
@@ -421,14 +477,13 @@ class sosRSfilter(f.sosFilter):
             raise sosException.SOSException(1,err_txt)
             #####################################################################
             """
-            
+             
             
             
             
            
             
         
-
 
 
 
