@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sos:InsertObservation
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://schemas.opengis.net/sos/1.0.0/sosAll.xsd"
+   xmlns:sos="http://www.opengis.net/sos/1.0"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sa="http://www.opengis.net/sampling/1.0"
+   xmlns:swe="http://www.opengis.net/swe/1.0.1"
+   xmlns:gml="http://www.opengis.net/gml/3.2"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:om="http://www.opengis.net/om/1.0" service="SOS" version="1.0.0" >
+   <AssignedSensorId>urn:ogc:object:sensor:x-istsos:1.0:???</AssignedSensorId>
+   <om:Observation>
+    <om:procedure xlink:href="urn:ogc:object:procedure:x-istsos:1.0:FOSS4G-IT:thermoGPS1"/>
+    <om:samplingTime>
+      <gml:TimePeriod>
+        <gml:beginPosition>2011-02-10T16:10:00+01:00</gml:beginPosition>
+        <gml:endPosition>2011-02-10T18:00:00+01:00</gml:endPosition>
+        <gml:TimeLength>
+          <gml:duration>PT1H50M</gml:duration>
+          <gml:timeInterval unit="Min">10</gml:timeInterval>
+        </gml:TimeLength>
+      </gml:TimePeriod>
+    </om:samplingTime>
+    <om:observedProperty>
+      <swe:CompositPhenomenon dimension="5">
+        <swe:component xlink:href="urn:ogc:def:parameter:x-istsos:1.0:time:iso8601"/>  
+        <swe:component xlink:href="urn:ogc:crs:EPSG:21781:x-position"/>  
+        <swe:component xlink:href="urn:ogc:crs:EPSG:21781:y-position"/>  
+        <swe:component xlink:href="urn:ogc:crs:EPSG:21781:z-position"/>  
+        <swe:component xlink:href="urn:ogc:def:property:x-istsos:1.0:water_surface_temperature" />      
+      </swe:CompositPhenomenon>
+    </om:observedProperty>
+    <om:featureOfInterest xlink:href="urn:ogc:object:feature:x-istsos:1.0:station:CERESIO_LANCHETTA"/>
+      <om:result>
+        <swe:DataArray>
+          <swe:elementCount>
+            <swe:Count>
+              <swe:value>5</swe:value>
+            </swe:Count>
+          </swe:elementCount>
+          <swe:elementType name="SimpleDataArray">
+            <swe:DataRecord definition="http://mmiws.org/ont/x/timeSeries">
+                <swe:field name="Time">
+                  <swe:Time definition="urn:ogc:def:parameter:x-istsos:1.0:time:iso8601"/>
+                </swe:field>
+                <swe:field name="x-position">
+                  <swe:Quantity definition="urn:ogc:crs:EPSG:21781:x-position"/>
+                </swe:field>
+                <swe:field name="y-position">
+                  <swe:Quantity definition="urn:ogc:crs:EPSG:21781:y-position"/>
+                </swe:field>
+                <swe:field name="z-position">
+                  <swe:Quantity definition="urn:ogc:crs:EPSG:21781:z-position">
+                    <swe:uom code="deg"/>
+                  </swe:Quantity>
+                </swe:field>
+                <swe:field name="water_surface_temperature">
+                  <swe:Quantity definition="urn:ogc:def:property:x-istsos:1.0:water_surface_temperature">
+                    <swe:uom code="deg"/>
+                  </swe:Quantity>
+                </swe:field>
+              </swe:DataRecord>
+          </swe:elementType>
+        <swe:encoding>
+          <swe:TextBlock tokenSeparator="," blockSeparator="@" decimalSeparator="."/>
+        </swe:encoding>
+        <swe:values>
+            2010-02-10T16:10:00+01:00,718309.05,95450.21,271,13.8@
+            2010-02-10T16:20:00+01:00,718299.97,95541.11,271,14@
+            2010-02-10T16:30:00+01:00,718436.30,95450.21,271,13.9@
+            2010-02-10T16:40:00+01:00,718518.11,95395.68,271,14@
+            2010-02-10T16:50:00+01:00,718436.30,95277.52,271,14.2@
+            2010-02-10T17:00:00+01:00,718490.84,95250.25,271,14.1@
+            2010-02-10T17:10:00+01:00,718481.75,95359.32,271,13.7@
+            2010-02-10T17:20:00+01:00,718690.80,95286.61,271,13.9@
+            2010-02-10T17:30:00+01:00,718536.29,95359.32,271,13.7@
+            2010-02-10T17:40:00+01:00,718499.93,95286.61,271,13.8@
+            2010-02-10T17:50:00+01:00,718481.75,95359.32,271,13.7@
+            2010-02-10T18:00:00+01:00,718554.46,95595.64,271,13.4
+        </swe:values>
+      </swe:DataArray>
+    </om:result>
+  </om:Observation>
+</sos:InsertObservation>
+

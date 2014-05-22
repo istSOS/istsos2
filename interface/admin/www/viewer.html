@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>istSOS - Data viewer</title>
+        <link rel="stylesheet" type="text/css" href="ext/resources/css/ext-all.css"/>
+        <!--[if gte IE 9]>
+            <style type="text/css">
+                .gradient {
+                filter: none;
+                }
+            </style>
+        <![endif]-->
+        <link rel="stylesheet" type="text/css" href="css/main.css"/>
+
+        <link href='http://fonts.googleapis.com/css?family=Electrolize' rel='stylesheet' type='text/css'>
+
+        <script type="text/javascript" src="ext/ext-all-debug.js"></script>
+
+        <script type="text/javascript" src="dygraphs/dygraph-combined.js"></script>
+
+        <script type="text/javascript" src="app/store/Offerings.js"></script>
+        <script type="text/javascript" src="app/store/gridProceduresList.js"></script>
+        <script type="text/javascript" src="app/store/Services.js"></script>
+        <script type="text/javascript" src="app/store/AggregateFunctionStore.js"></script>
+        
+        <script type="text/javascript" src="app/store/ObservedProperties.js"></script>
+        
+        <script type="text/javascript" src="app/view/ui/ProcedureChooser.js"></script>
+        <script type="text/javascript" src="app/view/ProcedureChooser.js"></script>
+        
+        <script type="text/javascript" src="app/view/ui/ProcedureChart.js"></script>
+        <script type="text/javascript" src="app/view/ProcedureChart.js"></script>
+        
+        <script type="text/javascript" src="app/view/ui/ProcedureGrid.js"></script>
+        <script type="text/javascript" src="app/view/ProcedureGrid.js"></script>
+        
+        
+        <script type="text/javascript" src="app/view/ui/Viewer.js"></script>
+        <script type="text/javascript" src="app/view/Viewer.js"></script>
+
+        <script type="text/javascript" src="app/Procedure.js"></script>
+
+
+
+        <style type="text/css">
+
+            .x-btn-default-toolbar-small .x-btn-inner {
+                color: white !important;
+            }
+            .x-btn-arrow {
+                background-image: url('ext/resources/themes/images/default/button/arrow.gif');
+                display: block;
+            }
+        </style> 
+
+        <script type="text/javascript">
+            
+            function pad(n){return n<10 ? '0'+n : n}
+            
+            Ext.ns("wa");
+            wa.url = "../wa";
+
+            Ext.Loader.setConfig({
+                enabled: false
+            });
+            
+            Ext.application({
+                
+                name: 'istsos',
+
+                launch: function() {
+                    
+                    Ext.QuickTips.init();
+                    
+                    Ext.Ajax.on("requestexception",function(conn, response, options, eOpts ){
+                        try{
+                            var json = Ext.decode(response.responseText);
+                            if(!json.success && !Ext.isEmpty(json.message)){
+                                Ext.Msg.alert(response.statusText, json.message);
+                            }
+                        }catch(e){
+                            console.error(response);
+                        }
+                    });
+                    
+                    Ext.Ajax.on("requestcomplete",function(conn, response, options, eOpts ){
+                        try{
+                            var json = Ext.decode(response.responseText);
+                            if(!json.success && !Ext.isEmpty(json.message)){
+                                Ext.Msg.alert("Server message",json.message + "<br/><br/>" + 
+                                    "<small>Status response: " + response.statusText + "</small><br/>" + 
+                                    "<small>Resource: " + json.resource + "</small><br/>" + 
+                                    "<small>Method: " + json.method + "</small><br/>" + 
+                                    "<small>Path " + json.path + "</small>");
+                                console.error(json.message);
+                            }else if (json.success && !Ext.isEmpty(json.message)){
+                                console.log(json.message);
+                            }
+                        }catch(e){
+                            console.error(response);
+                        }
+                    });
+                    
+                    Ext.create('istsos.view.Viewer', {
+                        renderTo: Ext.getBody()
+                    }).show();
+                    
+                }
+            });
+        </script>
+    </head>
+    <body></body>
+</html>

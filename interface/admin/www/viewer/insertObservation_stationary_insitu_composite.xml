@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sos:InsertObservation
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://schemas.opengis.net/sos/1.0.0/sosAll.xsd"
+   xmlns:sos="http://www.opengis.net/sos/1.0"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sa="http://www.opengis.net/sampling/1.0"
+   xmlns:swe="http://www.opengis.net/swe/1.0.1"
+   xmlns:gml="http://www.opengis.net/gml/3.2"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:om="http://www.opengis.net/om/1.0" service="SOS" version="1.0.0" >
+   <AssignedSensorId>urn:ogc:object:sensor:x-istsos:1.0:???</AssignedSensorId>
+   <om:Observation>
+    <om:procedure xlink:href="urn:ogc:object:procedure:x-istsos:1.0:meteo1"/>
+    <om:samplingTime>
+      <gml:TimePeriod>
+        <gml:beginPosition>2010-02-10T16:10:00+01:00</gml:beginPosition>
+        <gml:endPosition>2010-02-10T18:00:00+01:00</gml:endPosition>
+      </gml:TimePeriod>
+    </om:samplingTime>
+    <om:observedProperty>
+      <swe:CompositPhenomenon dimension="4">
+        <swe:component xlink:href="urn:ogc:def:parameter:x-istsos:1.0:time:iso8601"/>  
+        <swe:component xlink:href="urn:ogc:def:property:x-istsos:1.0:airtemperature"/> 
+        <swe:component xlink:href="urn:ogc:def:property:x-istsos:1.0:rainfall"/> 
+        <swe:component xlink:href="urn:ogc:def:property:x-istsos:1.0:pressure"/>
+      </swe:CompositPhenomenon>
+    </om:observedProperty>
+    <om:featureOfInterest xlink:href="urn:ogc:object:feature:x-istsos:1.0:station:LUGANO"/>
+      <om:result>
+        <swe:DataArray>
+          <swe:elementCount>
+            <swe:Count>
+              <swe:value>5</swe:value>
+            </swe:Count>
+          </swe:elementCount>
+          <swe:elementType name="SimpleDataArray">
+              <swe:DataRecord definition="http://mmiws.org/ont/x/timeSeries">
+                <swe:field name="Time">
+                  <swe:Time definition="urn:ogc:def:parameter:x-istsos:1.0:time:iso8601"/>
+                </swe:field>
+                <swe:field name="airtemperature">
+                  <swe:Quantity definition="urn:ogc:def:property:x-istsos:1.0:airtemperature">
+                    <swe:uom code="deg"/>
+                  </swe:Quantity>
+                </swe:field>
+                <swe:field name="rainfall">
+                  <swe:Quantity definition="urn:ogc:def:property:x-istsos:1.0:rainfall">
+                    <swe:uom code="mm"/>
+                  </swe:Quantity>
+                </swe:field>
+                <swe:field name="pressure">
+                  <swe:Quantity definition="urn:ogc:def:property:x-istsos:1.0:pressure">
+                    <swe:uom code="mbar"/>
+                  </swe:Quantity>
+                </swe:field>
+              </swe:DataRecord>
+          </swe:elementType>
+        <swe:encoding>
+          <swe:TextBlock tokenSeparator="," blockSeparator="@" decimalSeparator="."/>
+        </swe:encoding>
+        <swe:values>
+            2010-02-10T16:10:00+01:00,12.8,0.2,940@
+            2010-02-10T16:20:00+01:00,12.7,0.3,948@
+            2010-02-10T16:30:00+01:00,12.5,0.2,949@
+            2010-02-10T16:40:00+01:00,12.3,0.3,950@
+            2010-02-10T16:50:00+01:00,12.2,0.4,949@
+            2010-02-10T17:00:00+01:00,12.1,0.4,947@
+            2010-02-10T17:10:00+01:00,11.8,0.5,948@
+            2010-02-10T17:20:00+01:00,11.6,0.3,944@
+            2010-02-10T17:30:00+01:00,11.7,0.4,943@
+            2010-02-10T17:40:00+01:00,11.4,0.4,944@
+            2010-02-10T17:50:00+01:00,11.4,0.5,944@
+            2010-02-10T18:00:00+01:00,11.3,0.4,945
+        </swe:values>
+      </swe:DataArray>
+    </om:result>
+  </om:Observation>
+</sos:InsertObservation>
+

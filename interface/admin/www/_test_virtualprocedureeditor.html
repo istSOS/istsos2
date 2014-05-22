@@ -1,0 +1,53 @@
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>extDesigner</title>
+        <link rel="stylesheet" type="text/css" href="ext/resources/css/ext-all.css"/>
+        <link rel="stylesheet" type="text/css" href="css/main.css"/>
+        <link href='http://fonts.googleapis.com/css?family=Patrick+Hand' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Nova+Square' rel='stylesheet' type='text/css'>
+        <script type="text/javascript" src="ext/ext-all-debug.js"></script>
+        
+        
+        <script src="codemirror/lib/codemirror.js"></script>
+        <link rel="stylesheet" href="codemirror/lib/codemirror.css">
+        <script src="codemirror/mode/python/python.js"></script>
+        <script type="text/javascript" src="ext/codemirror.js"></script>
+        
+        
+        <script type="text/javascript" src="app/store/RatingCurve.js"></script>
+        <script type="text/javascript" src="app/store/vplist.js"></script>
+
+        <script type="text/javascript" src="app/view/ui/VirtualProcedureEditor.js"></script>
+        <script type="text/javascript" src="app/view/VirtualProcedureEditor.js"></script>
+
+        <script type="text/javascript">
+            
+            Ext.ns("wa");
+            wa.isodef = "urn:ogc:def:parameter:x-istsos:1.0:time:iso8601";
+            wa.url = "../wa";
+
+            Ext.Loader.setConfig({
+                enabled: false
+            });
+
+            Ext.application({
+                name: 'istsos',
+                launch: function() {
+                    Ext.QuickTips.init();
+                    
+                    Ext.create('Ext.container.Viewport', {
+                        layout: 'fit',
+                        items: Ext.create('istsos.view.VirtualProcedureEditor',{
+                            istService: 'demo'
+                        }),
+                        padding: 35
+                    });
+                    
+                }
+            });
+            
+        </script>
+    </head>
+    <body></body>
+</html>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sos:GetObservation
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://schemas.opengis.net/sos/1.0.0/sosAll.xsd"
+   xmlns:sos="http://www.opengis.net/sos/1.0"
+   xmlns:gml="http://www.opengis.net/gml/3.2"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:om="http://www.opengis.net/om/1.0" 
+   service="SOS" version='1.0.0'>
+    <offering>urn:ogc:def:offering:istsos:1.0:temporary</offering>
+    <responseFormat>text/xml;subtype='sensorML/1.0.0'</responseFormat>
+    <observedProperty>urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature</observedProperty>
+    <featureOfInterest>
+      <ogc:BBOX><ogc:PropertyName>the_geom</ogc:PropertyName><gml:Box srsName='epsg:21781'><gml:coordinates>717900 98520,717900 98520</gml:coordinates></gml:Box></ogc:BBOX>
+    </featureOfInterest>
+</sos:GetObservation>

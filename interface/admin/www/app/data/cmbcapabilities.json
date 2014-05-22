@@ -1,0 +1,21 @@
+{
+    "total": 5,
+    "success": true,
+    "message": "Capabilities data loaded correctly",
+    "data": [
+    /*{
+        "name" : "Storage Type",
+        "definition" : "urn:x-ogc:def:classifier:x-istsos:1.0:storageType",
+        "uom" : ""            
+    },*/
+    {
+        "name" : "Memory Capacity",
+        "definition" : "urn:x-ogc:def:classifier:x-istsos:1.0:memoryCapacity",
+        "uom" : "Byte"            
+    },{
+        "name" : "Battery Current",
+        "definition" : "urn:x-ogc:def:phenomenon:x-istsos:1.0:batteryCurrent",            
+        "uom" : "A.h"            
+    }
+    ]
+}
