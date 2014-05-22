@@ -183,7 +183,7 @@ Ext.define('istsos.view.MainMenu2', {
             if (this.status){
                 this.status.focus();
             }else{
-                this.status = window.open("../modules/status-pub", 'status', "location=no, menubar=no, status=no");
+                this.status = window.open("../modules/status", 'status', "location=no, menubar=no, status=no");
             }
         },this);
         
