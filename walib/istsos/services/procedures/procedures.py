@@ -598,7 +598,7 @@ class waGetGeoJson(waResourceService):
 
         import pprint
         pp = pprint.PrettyPrinter(indent=4)
-        print >> sys.stderr, "\n\nENVIRON: %s" % pp.pprint(self.serviceconf.get("geo")['istsosepsg'])
+        #print >> sys.stderr, "\n\nENVIRON: %s" % pp.pprint(self.serviceconf.get("geo")['istsosepsg'])
 
         if self.waEnviron['parameters'] and self.waEnviron['parameters']['epsg']:
             self.epsg = self.waEnviron['parameters']['epsg'][0]
@@ -627,7 +627,7 @@ class waGetGeoJson(waResourceService):
                     #elem["name"] = proc["name"]
                     ops = utils.getObservedPropertiesFromProcedure(servicedb,self.service,proc["name"])
                     if ops != None:
-                        elem["observedproperties"] = [ {"name" : op["name"], "uom" : op["uom"]  } for op in ops ]
+                        elem["observedproperties"] = [ {"name" : op["name"], "def" : op["def"], "uom" : op["uom"]  } for op in ops ]
                     else:
                         elem["observedproperties"] = []
                     offs = utils.getOfferingsFromProcedure(servicedb,self.service,proc["name"])

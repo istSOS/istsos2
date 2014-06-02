@@ -364,12 +364,12 @@ def getObservedPropertiesFromProcedure(pgdb,service,procedure):
     
     >>> Return example:
         [
-            { "id":1,"name":"urn:ogc:def:parameter:x-istsos:1.0:lake:water:height"},
-            { "id":2,"name":"urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall"}
+            { "id":1,"def":"urn:ogc:def:parameter:x-istsos:1.0:lake:water:height", "name":"lake-water-height"},
+            { "id":2,"def":"urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall", "name":"lake-air-rainfall"}
         ]
     
     """
-    sql  = "SELECT id_opr, name_opr, name_uom"
+    sql  = "SELECT id_opr, name_opr, def_opr, name_uom"
     sql += " FROM %s.proc_obs po, %s.procedures p, %s.observed_properties o, %s.uoms u" %((service,)*4) 
     sql += " WHERE po.id_prc_fk=p.id_prc AND po.id_opr_fk=o.id_opr AND po.id_uom_fk=u.id_uom"
     sql += " AND name_prc=%s"
@@ -377,7 +377,7 @@ def getObservedPropertiesFromProcedure(pgdb,service,procedure):
     # @todo check this double tuple ?
     rows = pgdb.select(sql,(params,))
     if rows:
-        return [ { "id":row["id_opr"] , "name":row["name_opr"], "uom":row["name_uom"]} for row in rows ]
+        return [ { "id":row["id_opr"] , "name":row["name_opr"], "def": row["def_opr"], "uom":row["name_uom"]} for row in rows ]
     else:
         return None
 
