@@ -342,12 +342,14 @@ class GetCapabilitiesResponse():
     def __init__(self,fil,pgdb):
         if "all" in fil.sections:
             self.ServiceIdentifier = ServiceIdentification(fil.sosConfig)
+            self.ServiceIdentifier.serviceTypeVersion = fil.version
             self.ServiceProvider = ServiceProvider(fil.sosConfig)
             self.OperationsMetadata = OperationsMetadata(pgdb,fil.sosConfig)
             self.ObservationOfferingList = ObservationOfferingList(pgdb,fil.sosConfig)
-        else:
+                    else:
             if "serviceidentification" in fil.sections:
                 self.ServiceIdentifier = ServiceIdentification(fil.sosConfig)
+                self.ServiceIdentifier.serviceTypeVersion = fil.version
             else:
                 self.ServiceIdentifier = []
             if "serviceprovider" in fil.sections:
