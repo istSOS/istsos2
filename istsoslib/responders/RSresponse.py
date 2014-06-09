@@ -240,7 +240,7 @@ class RegisterSensorResponse:
         sqlIns  = "INSERT INTO %s.procedures (id_foi_fk, id_oty_fk, " %(filter.sosConfig.schema)
         sqlIns  += "name_prc, desc_prc, "
         sqlIns  += "stime_prc, etime_prc, "
-        sqlIns  += "time_res_prc,time_acq_prc, assignedid_prc)" 
+        sqlIns  += "time_res_prc, time_acq_prc, assignedid_prc)" 
 
         #sqlIns += " VALUES (%s, %s, %s, '%s', NULL, now()::timestamptz, now()::timestamptz, %s,(select(md5(current_timestamp::text)))) RETURNING id_prc, assignedid_prc" %(id_foi,id_oty,id_tru,filter.procedure,filter.time_res_val)
         sqlIns += " VALUES (%s, %s, %s, "
@@ -270,11 +270,12 @@ class RegisterSensorResponse:
         
         params=[]
         
-        print >> sys.stderr, "opr_ids: %s" % opr_ids
-        print >> sys.stderr, "ret_prc: %s" % ret_prc
-        print >> sys.stderr, "uom_ids: %s" % uom_ids
-        print >> sys.stderr, "opr_ids: %s" % opr_ids
-        print >> sys.stderr, "filter.constr: %s" % filter.constr
+        #print >> sys.stderr, "opr_ids: %s" % opr_ids
+        #print >> sys.stderr, "ret_prc: %s" % ret_prc
+        #print >> sys.stderr, "uom_ids: %s" % uom_ids
+        #print >> sys.stderr, "opr_ids: %s" % opr_ids
+        #print >> sys.stderr, "filter.constr: %s" % filter.constr
+        
         for i in range(len(opr_ids)):
             params.append((
                 ret_prc["id_prc"],

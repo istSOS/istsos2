@@ -174,19 +174,17 @@ class VirtualProcess():
         
         sql = """
             SELECT DISTINCT id_prc, name_prc, name_oty, 
-                stime_prc, etime_prc, time_res_prc, name_tru 
+                stime_prc, etime_prc, time_res_prc
             FROM 
                 %s.procedures, 
                 %s.proc_obs p, 
                 %s.observed_properties, 
                 %s.uoms, 
-                %s.time_res_unit, 
-                %s.obs_type """ % ((self.filter.sosConfig.schema,)*6 )
+                %s.obs_type """ % ((self.filter.sosConfig.schema,)*5 )
         sql += """
                 WHERE id_prc = p.id_prc_fk 
                 AND id_opr_fk = id_opr 
                 AND id_uom = id_uom_fk 
-                AND id_tru = id_tru_fk 
                 AND id_oty = id_oty_fk
                 AND name_prc=%s"""
         
@@ -597,7 +595,7 @@ class Observation:
             
         #SET FOI OF PROCEDURE
         #=========================================
-        sqlFoi  = "SELECT name_fty, name_foi, ST_AsGml(ST_Transform(geom_foi,%s)) as gml" %(filter.srsName)
+        sqlFoi  = "SELECT name_fty, name_foi, ST_AsGml(ST_Transform(geom_foi,%s)) as gml, st_x(geom_foi) as x, st_y(geom_foi) as y " %(filter.srsName)
         sqlFoi += " FROM %s.procedures, %s.foi, %s.feature_type" %(filter.sosConfig.schema,filter.sosConfig.schema,filter.sosConfig.schema)
         sqlFoi += " WHERE id_foi_fk=id_foi AND id_fty_fk=id_fty AND id_prc=%s" %(o["id_prc"])
         try:
@@ -607,11 +605,15 @@ class Observation:
         
         self.featureOfInterest = resFoi[0]["name_foi"]
         self.foi_urn = filter.sosConfig.urn["feature"] + resFoi[0]["name_fty"] + ":" + resFoi[0]["name_foi"]
+        srs = filter.srsName or filter.sosConfig.istsosepsg
         if resFoi[0]["gml"].find("srsName")<0:
-            srs = filter.srsName or filter.sosConfig.istsosepsg
             self.foiGml = resFoi[0]["gml"][:resFoi[0]["gml"].find(">")] + " srsName=\"EPSG:%s\"" % srs + resFoi[0]["gml"][resFoi[0]["gml"].find(">"):]
         else:
             self.foiGml = resFoi[0]["gml"]
+        
+        self.srs = srs
+        self.x = resFoi[0]["x"]
+        self.y = resFoi[0]["y"]
         
         #SET INFORMATION ABOUT OBSERVED_PROPERTIES
         #=========================================       

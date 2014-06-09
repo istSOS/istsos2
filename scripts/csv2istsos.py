@@ -186,7 +186,7 @@ def execute (args, logger=None):
                         else:
                             raise Exception ("Mandatory observed property %s is not present in the CSV." % k)
                     
-                    # loop lines skipping the header
+                    # loop lines (skipping header)
                     for i in range(1, len(lines)):
                         try:
                             line = lines[i]
@@ -219,7 +219,7 @@ def execute (args, logger=None):
                 
                 ep = datetime.strptime(
                     os.path.split(f)[1].replace("%s_" % proc, "").replace(ext, ""),"%Y%m%d%H%M%S%f"
-                ).replace(tzinfo=timezone('UTC')) # .isoformat()
+                ).replace(tzinfo=timezone('UTC'))
                 
                 # Kick in the brain code snippet
                 

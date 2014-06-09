@@ -19,7 +19,7 @@ from lib import isodate as iso
 from istsoslib import sosException
 
 def render(GO,sosConfig):
-    if GO.filter.responseFormat in ['text/xml;subtype="om/1.0"',"text/xml"]:
+    if GO.filter.responseFormat in ['text/xml;subtype="om/1.0.0"',"text/xml"]:
         return XMLformat(GO)
     elif GO.filter.responseFormat=="text/plain":
         return CSVformat(GO)

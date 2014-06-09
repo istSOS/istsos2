@@ -62,8 +62,8 @@ class sosGFfilter(f.sosFilter):
             else:
                 self.featureOfInterest = get_name_from_urn(requestObject["featureofinterestid"],"feature",sosConfig) #one-many ID
             #---srsName
-            if requestObject.has_key("srsName"):
-                self.srsName = get_name_from_urn(requestObject["srsName"],"refsystem",sosConfig)
+            if requestObject.has_key("srsname"):
+                self.srsName = get_name_from_urn(requestObject["srsname"],"refsystem",sosConfig)
                 if not self.srsName in sosConfig.parameters["GO_srs"]:
                     raise sosException.SOSException("OptionNotSupported","srsName","Supported \"srsName\" valueas are: " + ",".join(sosConfig.parameters["GO_srs"]))
             else:

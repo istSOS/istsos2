@@ -220,7 +220,7 @@ def getProcedureNamesList(pgdb,service,offering=None, observationType=None):
         else:
             sql = """
                 SELECT id_prc, name_prc, desc_prc, assignedid_prc, name_oty, stime_prc, etime_prc
-                FROM %s.off_proc op, %s.procedures, %s.offerings, %s.obs_type """ % ((service,)*4)
+                FROM %s.off_proc op, %s.procedures p, %s.offerings o, %s.obs_type """ % ((service,)*4)
             sql += """
                 WHERE o.id_off=op.id_off_fk 
                 AND op.id_prc_fk=p.id_prc 

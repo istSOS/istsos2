@@ -165,7 +165,7 @@ def parse_and_get_ns(xml):
                 root = elem 
     return et.ElementTree(root), ns
    
-def execute (args):  
+def execute (args):
     pp = pprint.PrettyPrinter(indent=2)
     try:
     
@@ -262,19 +262,23 @@ def execute (args):
                 #print "Outputs found: %s" % len(elDescribe)
                 
                 observedProperties = []
-                #print "istsos_version: ", istsos_version
+                print "istsos_version: ", istsos_version
+                uniqidurn = 'urn:ogc:def:parameter:x-ist::'
                 if istsos_version != None and istsos_version == '2':
+                    uniqidurn = 'urn:ogc:def:parameter:x-ist:1.0:'
                     elFields = ds.findall("{%s}member/{%s}System/{%s}outputs/{%s}OutputList/{%s}output/{%s}DataRecord/{%s}field" % (
                                     dsNs['sml'],dsNs['sml'],dsNs['sml'],dsNs['sml'],dsNs['sml'],dsNs['swe'],dsNs['swe']) )
+                    print "Observed properties (v2): %s " % len(elFields)
                     for fs in elFields:
                         print fs.get('name')
                         if fs.get('name') != 'Time':
-                            observedProperties.append(fs.find("{%s}Quantity" % (dsNs['swe'])).get('definition').replace('urn:ogc:def:parameter:x-ist::',''))
+                            observedProperties.append(fs.find("{%s}Quantity" % (dsNs['swe'])).get('definition').replace(uniqidurn,''))
                         
                 else:
                     elDescribe = ds.findall("member/{%s}System/{%s}outputs/{%s}OutputList/{%s}output" % (dsNs['sml'],dsNs['sml'],dsNs['sml'],dsNs['sml']) )
+                    print "Observed properties: %s " % len(elDescribe)
                     for ds in elDescribe:
-                        definition = ds.find("{%s}ObservableProperty" % (dsNs['swe'])).get('definition').replace('urn:ogc:def:parameter:x-ist::','')
+                        definition = ds.find("{%s}ObservableProperty" % (dsNs['swe'])).get('definition').replace(uniqidurn,'')
                         #print definition
                         if definition.find('time:iso8601')<0:
                             observedProperties.append(definition)
@@ -332,6 +336,12 @@ def execute (args):
                 point = foi.find("{%s}Point" % (
                     goNs['gml'])
                 )
+                
+                if point == None:
+                    point = foi.find("{%s}FeatureCollection/{%s}location/{%s}Point" % (
+                        goNs['gml'],goNs['gml'],goNs['gml'])
+                    )
+                
                 coord = point.find("{%s}coordinates" % (
                     goNs['gml'])
                 ).text.split(",")
@@ -360,7 +370,7 @@ def execute (args):
                         )                        
                         procedures[pname].addObservedProperty(
                             field.get('name'),
-                            qty.get('definition').replace('urn:ogc:def:parameter:x-ist::',''), 
+                            qty.get('definition').replace(uniqidurn,''), 
                             uom.get('code')
                         )
                 
@@ -574,7 +584,7 @@ if __name__ == "__main__":
         action = 'store',
         dest   = 'istsos',
         metavar= 'istsos',
-        help   = 'Set source istSOS version (accepted verion is 2)')
+        help   = 'Set source istSOS version (accepted versions only 2)')
         
     parser.add_argument('-p', 
         action='store',
