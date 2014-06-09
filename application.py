@@ -68,7 +68,7 @@ def executeSos(environ, start_response):
         try:
             content_type = req_filter.responseFormat
         except:
-            content_type = 'application/xml; charset=utf-8'
+            content_type = 'text/xml; charset=utf-8'
 
         #===============================
         # SEND RESPONSE
@@ -102,7 +102,7 @@ def executeSos(environ, start_response):
         # HTTP response code and message
         status = '200 OK'
         # prepare response header
-        response_headers = [('Content-Type', 'application/xml; charset=utf-8'),
+        response_headers = [('Content-Type', 'text/xml; charset=utf-8'),
                             ('Content-Length', str(len(response_body.encode('utf-8'))))]
         # send response header
         start_response(status, response_headers)
@@ -119,7 +119,7 @@ def executeSos(environ, start_response):
         # HTTP response code and message
         status = '200 OK'
         # prepare response header
-        response_headers = [('Content-Type', 'application/xml; charset=utf-8'),
+        response_headers = [('Content-Type', 'text/xml; charset=utf-8'),
                             ('Content-Length', str(len(response_body.encode('utf-8'))))]
         # send response header
         start_response(status, response_headers)
