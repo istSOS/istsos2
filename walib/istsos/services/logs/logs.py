@@ -176,6 +176,11 @@ class waLogs(waResourceService):
             self.serviceconf.connection['dbname'],
             self.serviceconf.connection['host'],
             self.serviceconf.connection['port'])  
+            
+            
+        if(self.json['newstatus'] == None or self.json['id'] == None):
+            raise Exception("Not params.") 
+            
         
         sql = "UPDATE %s.cron_log SET" % self.service
         sql += " status_clo = %s WHERE id_clo = %s"
@@ -187,7 +192,7 @@ class waLogs(waResourceService):
     def executeDelete(self):
         """
              Method for executing a DELETE requests that remove a exception  
-            (...)/istsos/wa/istsos/<service name>/logs/?id=1
+            (...)/istsos/wa/istsos/<service name>/logs?id=1
         """        
         if self.service == "default":
             raise Exception("Logs operation can not be done for default service instance.")    

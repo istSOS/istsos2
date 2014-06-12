@@ -1,0 +1,6 @@
+{
+    "webBuild": {
+        "environment": "production",
+        "publishPath": "/home/ist/workspace/istsos/interface/modules/status/www"
+    }
+}
