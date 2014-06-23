@@ -7,9 +7,17 @@ from datetime import datetime,timedelta
 import time
 from pytz import timezone
 
-from lib import isodate as iso
 
-import sys
+
+getErrorCode = {
+'ParsingError': lambda: 1,
+'TypeError': lambda :2,
+'EOFError': lambda :13,
+'IndexError': lambda :42,
+'BufferError': lambda :8
+}
+
+
 
 class waStatus(waResourceService):
     
@@ -173,7 +181,7 @@ class waStatus(waResourceService):
             propNotOk = []
             propVerif = []
             for procedure in procedureData:
-                if self.__containsOp(servicedb,procedure,op['name']):
+                if self.__containsOp(procedure,op['name']):
                     lastValue = self.__getLastValue(procedure,op['name'])
                     jsonProc = {
                                     "name"            : procedure['procedure'],
@@ -189,19 +197,26 @@ class waStatus(waResourceService):
                         propOk.append(jsonProc)
                         
                     elif procedure['status']['status'] == "NOT OK":
-                        code = [1,2,3]
+                        code= [];
                         
                         if procedure['exception']:
-                            #for exc in procedure['exception']:
-                            #    code.append(exc['code'])
+                            for exc in procedure['exception']:
+                                code.append(getErrorCode[exc['message']]())
                             jsonProc['code'] = code
                             jsonProc['exceptions'] = procedure['exception']
                             
-                            if(procedure['exception'][0]['status'] == 'verified'):
+                            
+                            if(self.__checkError(procedure['exception'])):
+                                propNotOk.append(jsonProc)
+                            else:
                                 jsonProc['type'] = 'verified'
                                 propVerif.append(jsonProc)
-                            else:
-                                propNotOk.append(jsonProc)
+                            
+#                            if(procedure['exception'][0]['status'] == 'verified'):
+#                                jsonProc['type'] = 'verified'
+#                                propVerif.append(jsonProc)
+#                            else:
+#                                propNotOk.append(jsonProc)
                         else:
                             jsonProc['exceptions'] = [{"details" : "No exceptions found"}]
                             propNotOk.append(jsonProc)         
@@ -236,7 +251,7 @@ class waStatus(waResourceService):
                 return op
 
 
-    def __containsOp(self,servicedb, procedureJson,opName):      
+    def __containsOp(self,procedureJson,opName):      
         """
             check if the procedure contains the op
         """
@@ -244,7 +259,12 @@ class waStatus(waResourceService):
             if op['op'] == opName:
                 return True
         return False
-        
+    
+    def __checkError(self,excList):
+        for exc in excList:
+            if(exc['status'] == 'pending'):
+                return True
+        return False
             
     def __delay(self,procedureName,servicedb):
         """
@@ -303,7 +323,7 @@ class waStatus(waResourceService):
             statusDict['lastObservation'] = "No observation";
                        
         statusDict['delay'] = tmpDelay  
-        statusDict['cycle'] = tmpCycle            
+        statusDict['cycle'] = tmpCycle 
         
         return statusDict                
             

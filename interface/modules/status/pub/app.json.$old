@@ -1,8 +1,0 @@
-{
-   "name": "istsosStatus",
-   "requires": [],
-   "id": "f97c9a57-3417-42fa-ad6f-81f20acf2d4b",
-   "resources": [
-      "app/style.css"
-   ]
-}

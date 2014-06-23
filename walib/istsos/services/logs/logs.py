@@ -1,8 +1,6 @@
 from walib.resource import waResourceService
 from walib import databaseManager
 
-import sys
-
 class waLogs(waResourceService):
     
     def __init__(self,waEnviron):

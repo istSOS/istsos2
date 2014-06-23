@@ -21,20 +21,14 @@ import lib.requests as requests
 import os
 import sys
 
-def convertToSec(uom, value):
-
-        if uom == 'min':
-            return (value * 60)
-        elif uom == 'h':
-            return (value * 3600)
-        elif uom == 'd':
-            return (value * 24 * 3600)
-        elif uom == 's':
-            return value
-        elif uom == 'ms':
-            return (value / 1000)
-        elif uom == 'us':
-            return (value / 1000000)
+convertToSec = {
+'min': lambda x: x * 60,
+'h': lambda x: x * 3600,
+'d': lambda x: x * 24 * 3600,
+'s': lambda x: x,
+'ms': lambda x: x/1000,
+'us': lambda x: x/1000000,
+}
 
 class waProcedures(waResourceService):
     """class to handle SOS service objects, support GET and POST method"""
@@ -308,12 +302,12 @@ class waProcedures(waResourceService):
         for cap in proc.data['capabilities']:
             if 'samplingTimeResolution' in cap['definition']:
                 
-                time_sam_val = convertToSec(cap['uom'],int(cap['value']))
+                time_sam_val = convertToSec[cap['uom']](int(cap['value'])) # convertToSec(cap['uom'],int(cap['value']))
                 #print >> sys.stderr, "Sampling value: ",time_sam_val, cap['value']
                 
             elif 'acquisitionTimeResolution' in cap['definition']:
                 
-                time_acq_val = convertToSec(cap['uom'],int(cap['value']))
+                time_acq_val = convertToSec[cap['uom']](int(cap['value'])) # convertToSec(cap['uom'],int(cap['value']))
                 #print >> sys.stderr, "Acquisition value: ",time_acq_val, cap['value']
                 
 

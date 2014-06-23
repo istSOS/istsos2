@@ -41,23 +41,30 @@ def parse_and_get_ns(file):
                 root = elem 
     return et.ElementTree(root), ns
     
-    
-def convertToSec(uom, value):
-
-        if uom == 'min':
-            return (value * 60)
-        elif uom == 'h':
-            return (value * 3600)
-        elif uom == 'd':
-            return (value * 24 * 3600)
-        elif uom == 's':
-            return value
-        elif uom == 'ms':
-            return (value / 1000)
-        elif uom == 'us':
-            return (value / 1000000)
-        else:
-            raise sosException.SOSException("Unknown uom","sml:capabilities","Unknown unit of measure")      
+convertToSec = {
+    'min': lambda x: x * 60,
+    'h': lambda x: x * 3600,
+    'd': lambda x: x * 24 * 3600,
+    's': lambda x: x,
+    'ms': lambda x: x/1000,
+    'us': lambda x: x/1000000
+}    
+#def convertToSec(uom, value):
+#
+#        if uom == 'min':
+#            return (value * 60)
+#        elif uom == 'h':
+#            return (value * 3600)
+#        elif uom == 'd':
+#            return (value * 24 * 3600)
+#        elif uom == 's':
+#            return value
+#        elif uom == 'ms':
+#            return (value / 1000)
+#        elif uom == 'us':
+#            return (value / 1000000)
+#        else:
+#            raise sosException.SOSException("Unknown uom","sml:capabilities","Unknown unit of measure")      
     
 class sosRSfilter(f.sosFilter): 
     "filter object for a registerSensor request"
@@ -121,7 +128,7 @@ class sosRSfilter(f.sosFilter):
                     uom = cap.find("{%s}Quantity/{%s}uom"% (ns['swe'],ns['swe']))
                     if uom.attrib.has_key('code'):
                         uomSam = uom.attrib['code']
-                        self.time_sam_val = convertToSec(uomSam,tmpSam)
+                        self.time_sam_val = convertToSec[uomSam](tmpSam) #convertToSec(uomSam,tmpSam)
                     else:
                         raise sosException.SOSException("MissingParameterValue","SensorDescription","sml:capabilities, missing uom for Sampling time resolution")
                 elif cap.attrib.has_key('name') and cap.attrib['name']=='Acquisition time resolution':
@@ -130,7 +137,7 @@ class sosRSfilter(f.sosFilter):
                     uom = cap.find("{%s}Quantity/{%s}uom"% (ns['swe'],ns['swe']))
                     if uom.attrib.has_key('code'):
                         uomAcq = uom.attrib['code']
-                        self.time_acq_val = convertToSec(uomAcq,tmpAcq)
+                        self.time_acq_val = convertToSec[uomAcq](tmpAcq) #convertToSec(uomAcq,tmpAcq)
                     else:
                         raise sosException.SOSException("MissingParameterValue","SensorDescription","sml:capabilities, missing uom for Sampling time resolution")
           
