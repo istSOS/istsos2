@@ -608,14 +608,45 @@ class waGetGeoJson(waResourceService):
                     "type": "FeatureCollection",
                     "features": []
                 }
+                
                 servicedb = databaseManager.PgDB(self.serviceconf.connection['user'],
                                                 self.serviceconf.connection['password'],
                                                 self.serviceconf.connection['dbname'],
                                                 self.serviceconf.connection['host'],
                                                 self.serviceconf.connection['port']
                 )
+
                 proceduresList = utils.getProcedureNamesList(servicedb,self.service)
                 for proc in proceduresList:
+                    
+                    
+                    if proc['samplingTime']['beginposition'] == '':
+                        print >> sys.stderr, proc['name']
+                        import lib.requests as requests
+                        res = requests.get(
+                            self.serviceconf.serviceurl["url"],
+                            params={
+                                "request": "DescribeSensor",
+                                "procedure": proc['name'],
+                                "outputFormat": "text/xml;subtype=\"sensorML/1.0.1\"",
+                                "service": "SOS",
+                                "version": "1.0.0"
+                            }
+                        )
+
+                        smlobj = procedure.Procedure()
+                        try:
+                            smlobj.loadXML(res.content)
+                        except Exception as e:
+                            print >> sys.stderr, "\n\nSML: %s\n\n" % res.content
+                            raise Exception("Error loading DescribeSensor of '%s' [STATUS CODE: %s]: %s" % (proc['name'],res.status_code,e))
+                        ret = {}
+                        ret.update(smlobj.data)    
+
+                        proc['samplingTime']['beginposition'] = ret['outputs'][0]['constraint']['interval'][0]
+                        proc['samplingTime']['endposition'] = ret['outputs'][0]['constraint']['interval'][1]
+                        #print >> sys.stderr, ret['outputs'][0]['constraint']['interval']                    
+                    
                     elem = {}
                     elem.update(proc)
                     #elem["name"] = proc["name"]

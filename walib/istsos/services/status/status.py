@@ -1,4 +1,20 @@
 # -*- coding: utf-8 -*-
+# istSOS WebAdmin - Istituto Scienze della Terra
+# Copyright (C) 2012 Massimiliano Cannata, Milan Antonovic
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
 from walib.resource import waResourceService
 from walib import databaseManager
 from walib import utils
@@ -7,16 +23,13 @@ from datetime import datetime,timedelta
 import time
 from pytz import timezone
 
-
-
 getErrorCode = {
-'ParsingError': lambda: 1,
-'TypeError': lambda :2,
-'EOFError': lambda :13,
-'IndexError': lambda :42,
-'BufferError': lambda :8
+'ParsingError': 1,
+'TypeError': 2,
+'EOFError': 3,
+'IndexError': 4,
+'BufferError': 5
 }
-
 
 
 class waStatus(waResourceService):
@@ -48,9 +61,7 @@ class waStatus(waResourceService):
                                 "delay": 35243.204681,
                                 "lastObservation": "2014-05-12T07:00:00+0200",
                                 "code": [
-                                    1,
-                                    2,
-                                    3
+                                    2
                                 ],
                                 "name": "LOCARNO",
                                 "oum": "mm",
@@ -123,7 +134,6 @@ class waStatus(waResourceService):
             {
                 "name": "air-temperature",
                 "children":[...]
-                
             }
         ]            
         """    
@@ -191,32 +201,27 @@ class waStatus(waResourceService):
                                     "delay"           : procedure['status']['delay'],
                                     "cycle"           : procedure['status']['cycle']
                                 }    
-                    
                     if procedure['status']['status'] == "OK":
                         jsonProc['type'] = 'ok'
                         propOk.append(jsonProc)
                         
                     elif procedure['status']['status'] == "NOT OK":
                         code= [];
-                        
                         if procedure['exception']:
                             for exc in procedure['exception']:
-                                code.append(getErrorCode[exc['message']]())
+                                if exc['message'] in getErrorCode:                               
+                                    code.append(getErrorCode[exc['message']])
+                                else:
+                                    code.append(0)
+                                
                             jsonProc['code'] = code
                             jsonProc['exceptions'] = procedure['exception']
-                            
                             
                             if(self.__checkError(procedure['exception'])):
                                 propNotOk.append(jsonProc)
                             else:
                                 jsonProc['type'] = 'verified'
                                 propVerif.append(jsonProc)
-                            
-#                            if(procedure['exception'][0]['status'] == 'verified'):
-#                                jsonProc['type'] = 'verified'
-#                                propVerif.append(jsonProc)
-#                            else:
-#                                propNotOk.append(jsonProc)
                         else:
                             jsonProc['exceptions'] = [{"details" : "No exceptions found"}]
                             propNotOk.append(jsonProc)         
@@ -237,7 +242,6 @@ class waStatus(waResourceService):
                 ]              
                 }
             )                
-        
         self.setMessage("Status result")
         self.setData(jsonResult)
 
@@ -271,7 +275,6 @@ class waStatus(waResourceService):
             Get the delay status (check last observation and sampling time) 
             return a dict containing status, last observation, delay (s), and cycle delay
         """
-        
         sql ="""
         SELECT p.etime_prc as time, p.time_res_prc as delay
         FROM  %s.procedures p
@@ -300,7 +303,6 @@ class waStatus(waResourceService):
                 status = "No observation"
                 lastDate = "No observation"
             else: 
-                
                 tmpDelta = (nowDate-lastDate).total_seconds()
                 if(tmpDelta > limitDelay) and delay >0:
                     status = "NOT OK"
@@ -309,7 +311,6 @@ class waStatus(waResourceService):
                     status = "OK"
                     tmpDelay = limitDelay - tmpDelta
                 
-                #TODO: only for test?
                 if limitDelay > 0:
                     tmpCycle = tmpDelta / limitDelay
                 else:
@@ -327,13 +328,11 @@ class waStatus(waResourceService):
         
         return statusDict                
             
-            
     def __getLastObservation(self,servicedb,procedureName):
         """
             request the last observation
         """        
         opList = utils.getObservedPropertiesFromProcedure(servicedb,self.service,procedureName)
-                
         name=""         
         
         for op in opList:
@@ -353,18 +352,14 @@ class waStatus(waResourceService):
         }
         
         import lib.requests as requests
-        
         response = requests.get(
             self.serviceconf.serviceurl["url"], 
             params=rparams
-        )
-
-        # Bad        
-        dataArray = response.json['ObservationCollection']['member'][0]['result']['DataArray']
+        )  
         
+        dataArray = response.json['ObservationCollection']['member'][0]['result']['DataArray']        
         # Value field
-        data = []        
-                    
+        data = []                      
         if not len(dataArray['values']) == 0:
             # last vaue field
             lastValue = dataArray['values'][0];
