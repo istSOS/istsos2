@@ -26,15 +26,15 @@ class RegisterSensorResponse:
     #Register sensor object
     #self.assignedObservationId
     def __init__(self,filter,pgdb):
-        
+
         #-----------------------------
         # transaction: insert procedure in DB
         #-----------------------------
-        
+
         #--check if proc_name exist
         prc_name=None
         sqlId  = "SELECT name_prc FROM %s.procedures" %(filter.sosConfig.schema)
-        sqlId += " WHERE name_prc=%s" 
+        sqlId += " WHERE name_prc=%s"
         params = (str(filter.procedure),)
         try:
             prc_name = pgdb.select(sqlId,params)
@@ -42,47 +42,47 @@ class RegisterSensorResponse:
             raise Exception("SQL: %s"%(pgdb.mogrify(sqlId,params)))
         if prc_name:
             raise Exception("Procedure '%s' already exist, consider to change the name" %(prc_name))
-        
+
         #--get id_foi or create it if it does not exist yet
         sqlId  = "SELECT id_foi FROM %s.foi" %(filter.sosConfig.schema)
-        sqlId += " WHERE name_foi=%s" 
+        sqlId += " WHERE name_foi=%s"
         params=(str(filter.foiName),)
         try:
             id_foi= pgdb.select(sqlId,params)[0]["id_foi"]
         except:
             sqlId  = "SELECT id_fty FROM %s.feature_type" %(filter.sosConfig.schema)
-            sqlId += " WHERE name_fty=%s" 
+            sqlId += " WHERE name_fty=%s"
             params = (str(filter.foiType),)
             try:
                 id_fty= pgdb.select(sqlId,params)[0]["id_fty"]
             except:
                 sqlIns  = "INSERT INTO %s.feature_type (name_fty)" %(filter.sosConfig.schema)
-                sqlIns += " VALUES (%s) RETURNING id_fty" 
+                sqlIns += " VALUES (%s) RETURNING id_fty"
                 params = (str(filter.foiType),)
                 try:
                     id_fty= pgdb.executeInTransaction(sqlIns,params)[0]["id_fty"]
                 except:
                     raise Exception("SQL: %s"%(sqlIns))
-            
+
             sqlIns  = "INSERT INTO %s.foi (name_foi,desc_foi,geom_foi,id_fty_fk)" %(filter.sosConfig.schema)
-            sqlIns += " VALUES (%s,%s,st_transform(ST_GeomFromGML(%s),%s),%s) RETURNING id_foi"   
+            sqlIns += " VALUES (%s,%s,st_transform(ST_GeomFromGML(%s),%s),%s) RETURNING id_foi"
             params = (str(filter.foiName),str(filter.foiDesc),str(filter.foiGML.strip()),int(filter.sosConfig.istsosepsg),int(id_fty))
             try:
                 id_foi = pgdb.executeInTransaction(sqlIns,params)[0]["id_foi"]
                 com=True
             except:
                 raise Exception("SQL: %s"%(pgdb.mogrify(sqlIns,params)))
-        
+
 #==============================================================================
 #         #--get id_tru or create it if it does not exist yet
 #         sqlId  = "SELECT id_tru FROM %s.time_res_unit" %(filter.sosConfig.schema)
-#         sqlId += " WHERE name_tru=%s" 
+#         sqlId += " WHERE name_tru=%s"
 #         params = (filter.time_res_unit,)
 #         try:
 #             id_tru = pgdb.select(sqlId,params)[0]["id_tru"]
 #         except:
 #             sqlIns  = "INSERT INTO %s.time_res_unit (name_tru)" %(filter.sosConfig.schema)
-#             sqlIns += " VALUES (%s) RETURNING id_tru" 
+#             sqlIns += " VALUES (%s) RETURNING id_tru"
 #             params = (str(filter.time_res_unit),)
 #             try:
 #                 id_tru = pgdb.executeInTransaction(sqlIns,params)[0]["id_tru"]
@@ -90,8 +90,8 @@ class RegisterSensorResponse:
 #             except:
 #                 raise Exception("SQL: %s"%(pgdb.mogrify(sqlIns,params)))
 #==============================================================================
-        
-        #--get a list of observed properties id (id_opr) and check if  
+
+        #--get a list of observed properties id (id_opr) and check if
         # the fileds of the <Result> data record description
         # are found in the components listed in the <observedProperty>
         # or create them if they do not exist yet
@@ -119,7 +119,7 @@ class RegisterSensorResponse:
                         sqlIns += " VALUES (%s,%s) RETURNING id_opr"
                         params = (str(oprName),str(oprDef))
                         #sqlIns  = "INSERT INTO %s.observed_properties (name_opr,desc_opr,def_opr)" %(filter.sosConfig.schema)
-                        #sqlIns += " VALUES (%s,%s,%s) RETURNING id_opr" 
+                        #sqlIns += " VALUES (%s,%s,%s) RETURNING id_opr"
                         #params = (str(oprName),str(oprDesc),str(oprDef))
                         try:
                             id_opr = pgdb.executeInTransaction(sqlIns,params)[0]["id_opr"]
@@ -128,11 +128,11 @@ class RegisterSensorResponse:
                         except:
                             raise Exception("SQL: %s"%(pgdb.mogrify(sqlIns,params)))
             #--virtual
-            
+
             #--insitu-mobile-point
             elif filter.systemType=='insitu-mobile-point':
                 oty = 'insitu-mobile-point'
-                if not (par.split(":")[-1] in filter.sosConfig.parGeom["x"] or par.split(":")[-1] in filter.sosConfig.parGeom["y"] 
+                if not (par.split(":")[-1] in filter.sosConfig.parGeom["x"] or par.split(":")[-1] in filter.sosConfig.parGeom["y"]
                    or par.split(":")[-1] in filter.sosConfig.parGeom["z"] or par.split(":")[-1]=="iso8601"):
                     if par in filter.oprDef:
                         i = filter.oprDef.index(par)
@@ -158,11 +158,11 @@ class RegisterSensorResponse:
                         except:
                             raise Exception("SQL: %s"%(pgdb.mogrify(sqlIns,params)))
             else:
-                raise Exception("Error: observation type not supported")      
-             
+                raise Exception("Error: observation type not supported")
+
         #-- get id_oty or create it if it does not exist yet
         sqlId  = "SELECT id_oty FROM %s.obs_type" %(filter.sosConfig.schema)
-        sqlId += " WHERE name_oty=%s" 
+        sqlId += " WHERE name_oty=%s"
         params = (str(oty),)
         try:
             id_oty = pgdb.select(sqlId,params)[0]["id_oty"]
@@ -175,23 +175,23 @@ class RegisterSensorResponse:
                 com=True
             except:
                 raise Exception("SQL: %s"%(sqlIns))
-        
+
         #--get id_uom or create it if it does not exist yet
         uom_ids=[]
         #for uom in filter.uoms:
         for i, uom in enumerate(filter.uoms):
             par = filter.parameters[i]
             if oty=='insitu-fixed-point' or oty=='virtual':
-                if not par.split(":")[-1]=="iso8601": 
+                if not par.split(":")[-1]=="iso8601":
                     sqlId  = "SELECT id_uom FROM %s.uoms" %(filter.sosConfig.schema)
-                    sqlId += " WHERE name_uom=%s" 
+                    sqlId += " WHERE name_uom=%s"
                     params = (uom,)
                     try:
                         id_uom = pgdb.select(sqlId,params)[0]["id_uom"]
                         uom_ids.append(id_uom)
                     except:
                         sqlIns  = "INSERT INTO %s.uoms (name_uom,desc_uom)" %(filter.sosConfig.schema)
-                        sqlIns += " VALUES (%s,%s) RETURNING id_uom" 
+                        sqlIns += " VALUES (%s,%s) RETURNING id_uom"
                         params = (uom,None)
                         try:
                             id_uom = pgdb.executeInTransaction(sqlIns,params)[0]["id_uom"]
@@ -200,17 +200,17 @@ class RegisterSensorResponse:
                         except:
                             raise Exception("SQL: %s"%(pgdb.mogrify(sqlIns,params)))
             elif oty == 'insitu-mobile-point':
-                if not (par.split(":")[-1] in filter.sosConfig.parGeom["x"] or par.split(":")[-1] in filter.sosConfig.parGeom["y"] 
+                if not (par.split(":")[-1] in filter.sosConfig.parGeom["x"] or par.split(":")[-1] in filter.sosConfig.parGeom["y"]
                    or par.split(":")[-1] in filter.sosConfig.parGeom["z"] or par.split(":")[-1]=="iso8601") :
                     sqlId  = "SELECT id_uom FROM %s.uoms" %(filter.sosConfig.schema)
-                    sqlId += " WHERE name_uom=%s" 
+                    sqlId += " WHERE name_uom=%s"
                     params = (uom,)
                     try:
                         id_uom = pgdb.select(sqlId,params)[0]["id_uom"]
                         uom_ids.append(id_uom)
                     except:
                         sqlIns  = "INSERT INTO %s.uoms (name_uom,desc_uom)" %(filter.sosConfig.schema)
-                        sqlIns += " VALUES (%s,%s) RETURNING id_uom" 
+                        sqlIns += " VALUES (%s,%s) RETURNING id_uom"
                         params = (uom,None)
                         try:
                             id_uom = pgdb.executeInTransaction(sqlIns,params)[0]["id_uom"]
@@ -218,10 +218,10 @@ class RegisterSensorResponse:
                             uom_ids.append(id_uom)
                         except:
                             raise Exception("SQL: %s"%(pgdb.mogrify(sqlIns,params)))
-                
+
             else:
                 raise Exception("Error: observation type not supported")
-        
+
         #--get temporary id_off or create it if it does not exist yet
         sqlId  = "SELECT id_off FROM %s.offerings WHERE" %(filter.sosConfig.schema)
         sqlId += " name_off='temporary'"
@@ -235,47 +235,47 @@ class RegisterSensorResponse:
                 com=True
             except:
                 raise Exception("SQL: %s"%(pgdb.mogrify(sqlIns)))
-           
+
         #--insert procedure
         sqlIns  = "INSERT INTO %s.procedures (id_foi_fk, id_oty_fk, " %(filter.sosConfig.schema)
         sqlIns  += "name_prc, desc_prc, "
         sqlIns  += "stime_prc, etime_prc, "
-        sqlIns  += "time_res_prc, time_acq_prc, assignedid_prc)" 
+        sqlIns  += "time_res_prc, time_acq_prc, assignedid_prc)"
 
         #sqlIns += " VALUES (%s, %s, %s, '%s', NULL, now()::timestamptz, now()::timestamptz, %s,(select(md5(current_timestamp::text)))) RETURNING id_prc, assignedid_prc" %(id_foi,id_oty,id_tru,filter.procedure,filter.time_res_val)
         sqlIns += " VALUES (%s, %s, %s, "
         sqlIns += "%s, "
         params = [id_foi,id_oty,str(filter.procedure), str(filter.proc_desc)]
         if not filter.beginPosition=='NULL':
-            sqlIns += "%s::TIMESTAMPTZ , %s::TIMESTAMPTZ, "  
+            sqlIns += "%s::TIMESTAMPTZ , %s::TIMESTAMPTZ, "
             params.extend([str(filter.beginPosition),str(filter.beginPosition)])
         else:
             sqlIns += "%s , %s, "
             params.extend([None,None])
-        sqlIns += " %s, %s, (select(md5(current_timestamp::text))))" 
+        sqlIns += " %s, %s, (select(md5(current_timestamp::text))))"
         params.append(filter.time_sam_val)
         params.append(filter.time_acq_val)
-        sqlIns += " RETURNING id_prc, assignedid_prc" 
+        sqlIns += " RETURNING id_prc, assignedid_prc"
         params = tuple([None if x=='NULL' else x for x in params])
         try:
             ret_prc = pgdb.executeInTransaction(sqlIns,params)[0]
             com=True
         except:
             raise Exception("SQL: %s"%(pgdb.mogrify(sqlIns,params)))
-        
+
         #--link proc_obs
         sqlIns  = "INSERT INTO %s.proc_obs (id_prc_fk, id_uom_fk, id_opr_fk, constr_pro) VALUES " % (
             filter.sosConfig.schema
         )
-        
+
         params=[]
-        
+
         #print >> sys.stderr, "opr_ids: %s" % opr_ids
         #print >> sys.stderr, "ret_prc: %s" % ret_prc
         #print >> sys.stderr, "uom_ids: %s" % uom_ids
         #print >> sys.stderr, "opr_ids: %s" % opr_ids
         #print >> sys.stderr, "filter.constr: %s" % filter.constr
-        
+
         for i in range(len(opr_ids)):
             params.append((
                 ret_prc["id_prc"],
@@ -290,33 +290,33 @@ class RegisterSensorResponse:
             com=True
         except:
             raise Exception("SQL: %s" %(pgdb.mogrify(sqlIns,params)))
-        
+
         #--link off_prc
         sqlIns  = "INSERT INTO %s.off_proc (id_off_fk, id_prc_fk)" %(filter.sosConfig.schema)
-        sqlIns  += " VALUES (%s,%s) RETURNING id_off_prc" 
+        sqlIns  += " VALUES (%s,%s) RETURNING id_off_prc"
         params = (id_off, ret_prc["id_prc"])
         try:
             res = pgdb.executeInTransaction(sqlIns,params)
             com=True
         except:
             raise Exception("SQL: %s" %(pgdb.mogrify(sqlIns,params)))
-        
+
         self.assignedSensorId = filter.sosConfig.urn["sensor"]+ret_prc["assignedid_prc"]
-        
+
         #----------------------------------------
         # create SensorML for inserted procedure
         #----------------------------------------
-        
+
         f = open(os.path.join(filter.sosConfig.sensorMLpath,filter.procedure + ".xml"), 'w')
-        
+
         ns = {
             'xsi': "http://www.w3.org/2001/XMLSchema-instance" ,
-            'sml': "http://www.opengis.net/sensorML/1.0.1", 
-            'swe': "http://www.opengis.net/swe/1.0.1", 
-            'xlink': "http://www.w3.org/1999/xlink", 
-            'gml': 'http://www.opengis.net/gml'            
+            'sml': "http://www.opengis.net/sensorML/1.0.1",
+            'swe': "http://www.opengis.net/swe/1.0.1",
+            'xlink': "http://www.w3.org/1999/xlink",
+            'gml': 'http://www.opengis.net/gml'
         }
-        
+
         #---map namespaces---
         try:
             register_namespace = et.register_namespace
@@ -337,10 +337,10 @@ class RegisterSensorResponse:
                         print >> sys.stderr, ("Failed to import ElementTree from any known place")
                 for key in ns:
                     _namespace_map[ns[key]] = key
-        
+
         tree = et.ElementTree(filter.xmlSensorDescription)
         tree.write(f, encoding="UTF-8")
-        
+
         #-----------------------------------------------------------
         # create virtual procedure folder if system type is virtual
         #-----------------------------------------------------------
@@ -348,8 +348,8 @@ class RegisterSensorResponse:
             procedureFolder = os.path.join(filter.sosConfig.virtual_processes_folder, filter.procedure)
             if not os.path.exists(procedureFolder):
                 os.makedirs(procedureFolder)
-        
-        
+
+
         """
         xml_pre = ""<SensorML xmlns:sml="http://www.opengis.net/sensorML/1.0.1"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -360,31 +360,31 @@ class RegisterSensorResponse:
             xsi:schemaLocation="http://www.opengis.net/sensorML/1.0.1 http://schemas.opengis.net/sensorML/1.0.1/sensorML.xsd"
             version="1.0.1">
             <member xlink:arcrole="urn:ogc:def:process:OGC:detector">""
- 
+
         #xml_ascii = filter.xmlSensorDescription.toxml().encode('ascii','ignore')
-        
+
         xml_ascii = filter.xmlSensorDescription
-        
+
         xml_post = "  </member>\n</SensorML>"
         """
-        
-        #Register the transactional operation in Log table 
+
+        #Register the transactional operation in Log table
         if filter.sosConfig.transactional_log in ['True','true',1]:
             sqlLog  = "INSERT INTO %s.tran_log (operation_trl,procedure_trl)" %(filter.sosConfig.schema)
-            sqlLog  += " VALUES ('RegisterSensor',%s)" 
+            sqlLog  += " VALUES ('RegisterSensor',%s)"
             params = (str(filter.procedure),)
             try:
                 pgdb.executeInTransaction(sqlLog,params)
                 com=True
             except:
                 raise Exception("SQL: %s" %(pgdb.mogrify(sqlLog,params)))
-        
+
         if com==True:
             pgdb.commitTransaction()
-            
+
         #f.write(xml_pre + xml_ascii + xml_post)
         f.close()
-        
-        
-        
-        
+
+
+
+

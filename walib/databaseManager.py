@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-import psycopg2 # @TODO the right library
+import psycopg2 #TODO: the right library
 import psycopg2.extras
 import psycopg2.extensions
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
@@ -26,7 +26,7 @@ from walib import utils as wut
 
 #import pprint
 #pp = pprint.PrettyPrinter(indent=4)
-    
+
 
 class Database:
     """Connect to a database"""
@@ -45,7 +45,7 @@ class Database:
 class PgDB(Database):
     """Connect to a PostgreSQL database"""
     host=None
-    def __init__(self,user,password,dbName,host='localhost',port='5432'):
+    def __init__(self,user,password,dbName,host='localhost',port='5433'):
         "Initialize PostgreSQL connection parameters"
         self.__dns=""
         if host: self.__dns += "host='%s' " % host
@@ -54,7 +54,7 @@ class PgDB(Database):
         if user: self.__dns += "user='%s' " % user
         if password: self.__dns += "password='%s' " % password
         self.__connect()
-    
+
     def __connect(self):
         """Connect to a PostgreSQL database"""
         try:
@@ -71,8 +71,8 @@ class PgDB(Database):
             elif emes.find("connections on port")>-1 or emes.find("invalid literal for int()")>-1:
                 raise Exception("CONNECTION ERROR: wrong port")
             else:
-                raise Exception("CONNECTION ERROR: %s" % e)  
-        
+                raise Exception("CONNECTION ERROR: %s" % e)
+
     def select(self,sql,par=None):
         """ Execute a select statement"""
         if sql.lstrip()[0:6].lower() == "select":
@@ -100,14 +100,14 @@ class PgDB(Database):
             raise e
         except Exception as e:
             raise e
-            
+
     def rollbackTransaction(self):
         """Rollback current transaction"""
         try:
             self.__conn.rollback()
         except psycopg2.ProgrammingError as e:
             print >> sys.stderr,  e.message
-    
+
     def executeInTransaction(self,sql,par=None):
         """Execute an sql statement in an open session"""
         cur = self.__conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -126,14 +126,15 @@ class PgDB(Database):
         cur.close()
         #return rows
         return wut.encodeobject(rows)
-                
-    def execute(self,sql,par=None):
+
+    def execute(self, sql, par=None):
         """Execute an sql statement"""
         cur = self.__conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         try:
-            cur.execute(sql,par)
+            cur.execute(sql, par)
         except psycopg2.ProgrammingError as e:
             raise e
+
         try:
             rows = cur.fetchall()
         except:
@@ -151,7 +152,7 @@ class PgDB(Database):
             raise e
         self.__conn.commit()
         return
-    
+
     def mogrify(self,sql,par=None):
         """Mogrify an sql statement (print >> sys.stderr,  the actual sql query that will be executed)"""
         cur = self.__conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -164,4 +165,4 @@ class PgDB(Database):
             raise e
         cur.close()
         return a
-        
+

@@ -23,7 +23,7 @@ class waResource(object):
     """
     Base class for istSOS Web Admin REST operations
     """
-    
+
     def __init__(self, waEnviron,loadjson=True):
         """
         Initialize resource object
@@ -41,55 +41,55 @@ class waResource(object):
         self.postRequest = None
         if self.method in ["POST","PUT"] and loadjson==True:
             import json
-            
+
             self.json = ut.encodeobject(json.loads(waEnviron['wsgi_input']))
-    
+
     def validateGet(self):
         """ base method to validate GET request """
         raise Exception("%s.validateGet method is not implemented!" % self.__class__.__name__)
-        
+
     def validatePost(self):
         """ base method to validate POST request """
         raise Exception("%s.validatePost method is not implemented!" % self.__class__.__name__)
-        
+
     def validatePut(self):
         """ base method to validate PUT request """
         raise Exception("%s.validatePut method is not implemented!" % self.__class__.__name__)
-        
+
     def validateDelete(self):
         """ base method to validate DELETE request """
         raise Exception("%s.validateDelete method is not implemented!" % self.__class__.__name__)
-        
+
     def executeGet(self):
         """ base method to execute GET request """
         raise Exception("%s.executeGet method is not implemented!" % self.__class__.__name__)
-        
+
     def executePost(self):
         """ base method to execute POST request """
         raise Exception("%s.executePost method is not implemented!" % self.__class__.__name__)
-        
+
     def executePut(self):
         """ base method to execute PUT request """
         raise Exception("%s.executePut method is not implemented!" % self.__class__.__name__)
-        
+
     def executeDelete(self):
         """ base method to execute DELETE request """
         raise Exception("%s.executeDelete method is not implemented!" % self.__class__.__name__)
-        
+
     def getResponse(self):
         import json
         #return json.dumps(self.response, ensure_ascii=False)
         return json.dumps(self.response)
-    
+
     def setData(self,data):
         """ Set data in response """
         self.response['data'] = data
         self.response['total'] = len(data) if type(data)==type([]) else 0
-        
+
     def setMessage(self,msg):
         """ Set message in response """
         self.response['message'] = msg
-        
+
     def setException(self,msg):
         """ Set exception message in response """
         self.response['message']    = msg
@@ -111,13 +111,13 @@ class waResourceAdmin(waResource):
         class waconf():
             def __init__(self):
                 self.paths = {}
-            
+
         self.waconf = waconf()
         self.waconf.paths["services"] = waEnviron["services_path"]
         self.waconf.paths["istsos"] = waEnviron["istsos_path"]
-        
+
         #self.waconf = configManager.waConfig()
-        
+
 class waResourceService(waResourceAdmin):
     def __init__(self, waEnviron,service=None,loadjson=True):
         waResourceAdmin.__init__(self,waEnviron,loadjson)
@@ -128,34 +128,34 @@ class waResourceService(waResourceAdmin):
                 self.service = self.pathinfo[i+1]
             else:
                 self.service = None
-                
+
         else:
             self.service = service
-        
+
         #set default config path
         if not os.path.isdir(self.waconf.paths["services"]):
             raise Exception("servicespath is not configured in the wa.cfg file [%s]." % self.waconf.paths["services"])
-            
+
         defaultCFGpath = os.path.join(self.waconf.paths["services"], "default.cfg")
         if not os.path.isfile(defaultCFGpath):
             raise Exception("istsos [default] configuration file not found in %s." % (defaultCFGpath))
-        
+
         if not (self.service == None or self.service == 'default'):
             serviceCFGpath = os.path.join(self.waconf.paths["services"], "%s" % self.service, "%s.cfg" % self.service)
             if not os.path.isfile(serviceCFGpath):
                 raise Exception("istsos [%s] configuration file not found in %s." % (self.service,serviceCFGpath))
             self.servicepath = os.path.join(self.waconf.paths["services"], "%s" % self.service)
-            
+
             sensormlpath = os.path.join(self.waconf.paths["services"], "%s" % self.service, "sml")
             if not os.path.isdir(sensormlpath):
                 raise Exception("istsos [%s] sensorML folder not found in %s." % (self.service,sensormlpath))
             self.sensormlpath = sensormlpath
-            
-            virtualpath = os.path.join(self.waconf.paths["services"], "%s" % self.service, "virtual")          
+
+            virtualpath = os.path.join(self.waconf.paths["services"], "%s" % self.service, "virtual")
             if not os.path.isdir(virtualpath):
-                raise Exception("istsos [%s] virtual procedures folder not found in %s." % (self.service,virtualpath))  
+                raise Exception("istsos [%s] virtual procedures folder not found in %s." % (self.service,virtualpath))
             self.virtualpath = virtualpath
-        
+
         if self.service == None or self.service == 'default':
             self.serviceconf = configManager.waServiceConfig(defaultCFGpath)
         else:
@@ -169,15 +169,15 @@ class waResourceConfigurator(waResourceService):
         for key in self.template:
             tmp.append(self.template[key][0])
         self.sections = list(set(tmp))
-        
+
     def validate(self):
         pass
-    
+
     def executeGet(self):
         """
         Execute operation GET for on service configuration sections
         """
-        
+
         data = {
             'default': True
         }
@@ -191,14 +191,14 @@ class waResourceConfigurator(waResourceService):
         self.setData(data)
         self.setMessage("Information successfully retrived")
         return data
-    
+
     def executePut(self, json=None):
         """
         Execute operation PUT for on service configuration sections and return new values
         """
         if json is not None:
             self.json = json
-            
+
         self.validate()
         for key in self.template:
             if not self.json.has_key(key):
@@ -207,19 +207,19 @@ class waResourceConfigurator(waResourceService):
                 self.template[key][0],
                 self.template[key][1],
                 str(self.json[key]))
-                
+
         self.serviceconf.save()
         self.executeGet()
         self.setMessage("Information successfully updated")
-    
+
     def executeDelete(self):
         """
         Execute operation DELETE for on service configuration sections
-        
+
         @note: it does not work on default service
         """
         for s in self.sections:
             self.serviceconf.delete(s)
         self.serviceconf.save()
         self.setMessage("Information successfully reset to default values!")
-    
+

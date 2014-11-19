@@ -19,6 +19,7 @@
 from istsoslib.filters import filter as f
 from istsoslib import sosException
 
+
 class sosDSfilter(f.sosFilter):
     "filter object for a DescribeSensor request"
     def __init__(self,sosRequest,method,requestObject,sosConfig):
@@ -50,12 +51,12 @@ class sosDSfilter(f.sosFilter):
                         pass
                     else:
                         err_txt = "Supported \"procedure\" urn is: " + sosConfig.urn["procedure"]
-                        err_txt += "\n passed: " + ":".join(prc) 
+                        err_txt += "\n passed: " + ":".join(prc)
                         raise sosException.SOSException("InvalidParameterValue","procedure",err_txt)
             else:
                 raise sosException.SOSException("MissingParameterValue","procedure","Parameter \"procedure\" is mandatory with multiplicity 1")
-        #**************************            
-        if method == "POST":            
+        #**************************
+        if method == "POST":
             from xml.dom import minidom
             self.outputFormat = None
             self.procedure = None
@@ -85,7 +86,7 @@ class sosDSfilter(f.sosFilter):
                             else:
                                 err_txt = "Supported \"procedure\" urn is: " + sosConfig.urn["procedure"]
                                 raise sosException.SOSException("InvalidParameterValue","procedure",err_txt)
-                        self.procedure = prc[-1] 
+                        self.procedure = prc[-1]
                     else:
                         err_txt = "XML parsing error (get value: procedure)"
                         raise sosException.SOSException("MissingParameterValue","procedure","Parameter \"procedure\" is mandatory with multiplicity 1",err_txt)
@@ -95,4 +96,4 @@ class sosDSfilter(f.sosFilter):
             else:
                 err_txt = "Parameter \"procedure\" is mandatory"
                 raise sosException.SOSException("MissingParameterValue","procedure","Parameter \"procedure\" is mandatory with multiplicity 1")
-                
+

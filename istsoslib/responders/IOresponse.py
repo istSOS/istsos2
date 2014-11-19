@@ -36,7 +36,7 @@ now = datetime.now()
 class InsertObservationResponse:
     #self.assignedObservationId
     def __init__(self,filter,pgdb):
-                
+
         #--get procedure information
         #============================================
         sql  = "SELECT id_prc, name_prc, name_oty, name_foi, stime_prc, etime_prc from %s.procedures,%s.obs_type,%s.foi" %(filter.sosConfig.schema,filter.sosConfig.schema,filter.sosConfig.schema)
@@ -46,20 +46,20 @@ class InsertObservationResponse:
             prc = pgdb.select(sql,params)[0]
         except:
             raise sosException.SOSException("InvalidParameterValue","assignedSensorId","assignedSensorId '%s' is not valid!" %(filter.assignedSensorId))
-                
+
         #--check requested procedure name exists
         #=============================================
         if not prc["name_prc"]==filter.procedure:
             raise sosException.SOSException("NoApplicableCode",None,"procedure '%s' not associated with provided assignedSensorId!" %(filter.procedure))
-        
+
         #--check requested  foi name exists
         #=============================================
         if not filter.foiName == prc["name_foi"]:
             raise sosException.SOSException("NoApplicableCode",None,"featureOfInterest '%s' not associated with provided assignedSensorId" %(filter.foiName))
-        
-        #--check provided samplingTime and upadate 
-        #  begin/end time procedure if necessary  
-        # (samplingTime=period or istant of provided 
+
+        #--check provided samplingTime and upadate
+        #  begin/end time procedure if necessary
+        # (samplingTime=period or istant of provided
         #  observations defined by samplingTime filter)
         #=============================================
         if filter.samplingTime:
@@ -75,13 +75,13 @@ class InsertObservationResponse:
 
             if start>end:
                 raise Exception(" endPosition (%s) must be after beginPosition (%s)" %(end,start))
-            
+
             #-- check samplingTime
             #==========================================
             # verify procedure begin/end exist
             #-----------------------------------
             if not (prc["stime_prc"].__class__.__name__ == "NoneType" and prc["etime_prc"].__class__.__name__ == "NoneType"):
-                
+
                 # check eventTime interval and update begin/end position when force flas is active
                 #----------------------------------------------------------------------------------
                 if filter.forceInsert:
@@ -92,36 +92,36 @@ class InsertObservationResponse:
                     #-- update begin time of procedure
                     if start<prc["stime_prc"]:
                         sql  = "UPDATE %s.procedures" %(filter.sosConfig.schema)
-                        sql += " SET stime_prc=%s::TIMESTAMPTZ WHERE id_prc=%s" 
+                        sql += " SET stime_prc=%s::TIMESTAMPTZ WHERE id_prc=%s"
                         params = (stime[0],prc["id_prc"])
                         try:
                             a = pgdb.executeInTransaction(sql,params)
                             com=True
                         except:
                             raise Exception("SQL: %s" %(pgdb.mogrify(sql,params)))
-                    
+
                     #-- update end time of procedure
                     if end>prc["etime_prc"]:
                         sql  = "UPDATE %s.procedures" %(filter.sosConfig.schema)
-                        sql += " SET etime_prc=%s::TIMESTAMPTZ WHERE id_prc=%s" 
+                        sql += " SET etime_prc=%s::TIMESTAMPTZ WHERE id_prc=%s"
                         params = (stime[1],prc["id_prc"])
                         try:
                             b = pgdb.executeInTransaction(sql,params)
-                            com=True   
+                            com=True
                         except Exception as err:
                             raise Exception("SQL: %s - %s" %(pgdb.mogrify(sql,params), err.pgerror))
 
                 # check eventTime interval and update begin/end position when force flag is off
-                #----------------------------------------------------------------------------------                            
+                #----------------------------------------------------------------------------------
                 else:
                     sql  = "SELECT max(time_eti) as max_time_eti from %s.event_time" %(filter.sosConfig.schema)
-                    sql += " WHERE id_prc_fk = %s group by id_prc_fk" 
+                    sql += " WHERE id_prc_fk = %s group by id_prc_fk"
                     params = (prc["id_prc"],)
                     try:
                         lastMsr = pgdb.select(sql,params)[0]["max_time_eti"]
                     except:
                         lastMsr = None
-                    
+
                     if lastMsr!=None:
                         #-- verify begin observation is minor/equal then end time procedure and later then last observation
                         if not (end>=prc["etime_prc"] and start<=prc["etime_prc"] and start>=lastMsr):
@@ -130,40 +130,40 @@ class InsertObservationResponse:
                         #-- verify begin observation is minor/equal then end time procedure and later then first observation
                         if not (end>=prc["etime_prc"] and start<=prc["etime_prc"] and start>=prc["stime_prc"]) :
                             raise Exception("begin observation (%s) must be between start procedure (%s) and end procedure (%s); end observation (%s) must be after end procedure (%s)" %(start,prc["stime_prc"],prc["etime_prc"],end,prc["etime_prc"]))
-                        
+
                     #-- update end time of procedure
                     sql  = "UPDATE %s.procedures" %(filter.sosConfig.schema)
-                    sql += " SET etime_prc=%s::TIMESTAMPTZ WHERE id_prc=%s" 
+                    sql += " SET etime_prc=%s::TIMESTAMPTZ WHERE id_prc=%s"
                     params = (str(stime[1]),int(prc["id_prc"]))
                     try:
                         b = pgdb.executeInTransaction(sql,params)
                         com=True
                     except Exception as err:
                         raise Exception("SQL: %s - %s" %(pgdb.mogrify(sql,params), err.pgerror))
-            
+
             else:
                 sql  = "UPDATE %s.procedures" %(filter.sosConfig.schema)
-                sql += " SET stime_prc=%s::TIMESTAMPTZ, etime_prc=%s::TIMESTAMPTZ WHERE id_prc=%s" 
+                sql += " SET stime_prc=%s::TIMESTAMPTZ, etime_prc=%s::TIMESTAMPTZ WHERE id_prc=%s"
                 params = (str(stime[0]),str(stime[1]),int(prc["id_prc"]))
                 try:
                     b = pgdb.executeInTransaction(sql,params)
                     com=True
                 except:
                     raise Exception("SQL: %s" %(pgdb.mogrify(sql,params)))
-            
-        #  check data definition and uom (compare registered 
+
+        #  check data definition and uom (compare registered
         #  observed properties with provided observations)
         #==================================================
         # get values for provided data: UOM, NAME, URN, ID
         #--------------------------------------------------
         sql  = "SELECT id_pro, id_opr, def_opr, name_uom, constr_opr, constr_pro FROM %s.observed_properties, %s.proc_obs, %s.uoms" %(filter.sosConfig.schema,filter.sosConfig.schema,filter.sosConfig.schema)
-        sql += " WHERE id_uom_fk=id_uom AND id_opr_fk=id_opr AND id_prc_fk=%s" 
+        sql += " WHERE id_uom_fk=id_uom AND id_opr_fk=id_opr AND id_prc_fk=%s"
         params = (prc["id_prc"],)
         try:
             opr = pgdb.select(sql,params)
         except Exception as err:
             raise Exception("SQL2: %s -%s" %(pgdb.mogrify(sql,params), err.pgerror))
-            
+
         #---- get list of available ObservedProperty, unit of measure, property id for this procedure -----
         oprNames=[]
         oprUoms=[]
@@ -171,8 +171,8 @@ class InsertObservationResponse:
         proIds=[]
         obsPropConstr=[]
         procConstr=[]
-        
-        
+
+
         # Building a matrix
         '''
         oprNames=       ["urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature" , ...]
@@ -182,27 +182,27 @@ class InsertObservationResponse:
         obsPropConstr=  [{"interval": ["-40", "50"], "role": "urn:ogc:def:classifiers:x-istsos:1.0:qualityIndex:check:acceptable"} , ...]
         procConstr=     [{"max": "100", "role": "urn:ogc:def:classifiers:x-istsos:1.0:qualityIndex:check:reasonable"} , ...]
         '''
-        
+
         for row in opr:
-            
+
             oprNames.append(row["def_opr"])
             oprUoms.append(row["name_uom"])
             oprIds.append(row["id_opr"])
             proIds.append(row["id_pro"])
-            
+
             if not row["constr_opr"] in [None,'']:
                 obsPropConstr.append(json.loads(row["constr_opr"]))
             else:
                 obsPropConstr.append(None)
-                
+
             if not row["constr_pro"] in [None,'']:
                 procConstr.append(json.loads(row["constr_pro"]))
             else:
                 procConstr.append(None)
-                
+
         #---- get ordered list of observed properties in data----
-        dataKeys = [ key for key in filter.data.keys() ] 
-        
+        dataKeys = [ key for key in filter.data.keys() ]
+
         #----- get ordered list of unit of measures provided with data-------
         dataUoms = []
         for key in filter.data.keys():
@@ -210,24 +210,24 @@ class InsertObservationResponse:
                 dataUoms.append(filter.data[key]["uom"])
             else:
                 dataUoms.append('None')
-                
-        #------------------------------------------------------------------  
+
+        #------------------------------------------------------------------
         # verify that all the properties observed by this procedure
-        # are provided with the correct data definition and uom  
-        #------------------------------------------------------------------   
+        # are provided with the correct data definition and uom
+        #------------------------------------------------------------------
         for i,opr in enumerate(oprNames):
-            try: 
+            try:
                 k = dataKeys.index(opr)
             except:
                 raise sosException.SOSException("NoApplicableCode",None,"parameter '%s' not observed by RegisteredSensor %s - %s" %(opr,oprNames,dataKeys))
             #if not str(dataUoms[k])==str(oprUoms[i]):
             if not dataUoms[k]==oprUoms[i]:
                 raise sosException.SOSException("NoApplicableCode",None,"parameter '%s' not observed with provided unit of measure" %(opr))
-        
-        #---------------------------------------------------------------    
+
+        #---------------------------------------------------------------
         # verify if time and coordinates are passed as data parameters
         # and create the parameters list and parameters ID
-        #--------------------------------------------------------------  
+        #--------------------------------------------------------------
         xobs=None
         yobs=None
         zobs=None
@@ -236,7 +236,7 @@ class InsertObservationResponse:
         parsId=[]
         parsConsObs=[]
         parsConsPro=[]
-        
+
         # urn of different parameters
         for i, dn in enumerate(dataKeys):
             if dn.split(":")[-1] in filter.sosConfig.parGeom["x"]:
@@ -256,7 +256,7 @@ class InsertObservationResponse:
                         parsConsPro.append(procConstr[oprNames.index(dn)])
                     except:
                         raise Exception("parameter %s not observed by this sensor %s - %s" %(dn,pars,oprNames))
-                        
+
         #----------------------------------------------------------------------------------
         # set default quality index if not provided
         #----------------------------------------------------------------------------------
@@ -265,43 +265,43 @@ class InsertObservationResponse:
                 dataKeys.index(par+":qualityIndex")
             except:
                 filter.data[par+":qualityIndex"]={"vals":[filter.sosConfig.default_qi]*len(filter.data[par]["vals"])}
-                    
-        #---------------------------------------------------------------        
+
+        #---------------------------------------------------------------
         # verify that mobile sensors provide coordinates as X,Y,Z
         #---------------------------------------------------------------
         if (xobs==False and yobs==False and zobs==False) and prc["name_oty"] == "insitu-mobile-point":
             raise Exception("Mobile sensors require x,y,z parameters")
-        
+
         #---------------------------------------------------------------
         # verify that time parameter is provided
         #---------------------------------------------------------------
         if not tpar:
             raise Exception("parameter 'time:iso8601' is required for InsertObservation")
-        
+
         #---------------------------------------------------------------
         # verify that eventime are in provided samplingTime
         #---------------------------------------------------------------
-        
-        if (len(filter.data[tpar]["vals"])>0 and 
-                not iso.parse_datetime(max(filter.data[tpar]["vals"]))<= end and 
+
+        if (len(filter.data[tpar]["vals"])>0 and
+                not iso.parse_datetime(max(filter.data[tpar]["vals"]))<= end and
                 iso.parse_datetime(min(filter.data[tpar]["vals"]))>= start):
             raise Exception("provided data are not included in provided <samplingTime> period")
-        
-        #======================        
+
+        #======================
         #-- insert observation
         #======================
         # delete existing observations if force flag is active
         #------------------------------------------------------
         if filter.forceInsert:
             sql  = "DELETE FROM %s.event_time" %(filter.sosConfig.schema)
-            sql += " WHERE id_prc_fk=%s AND time_eti>=%s::TIMESTAMPTZ AND time_eti<=%s::TIMESTAMPTZ" 
+            sql += " WHERE id_prc_fk=%s AND time_eti>=%s::TIMESTAMPTZ AND time_eti<=%s::TIMESTAMPTZ"
             params = (prc["id_prc"],stime[0],stime[1])
             try:
                 b = pgdb.executeInTransaction(sql,params)
                 com=True
             except:
                 raise Exception("SQL: %s" %(pgdb.mogrify(sql,params)))
-        
+
         #----------------------------------------
         # CASE I: observations list is void
         #----------------------------------------
@@ -314,37 +314,40 @@ class InsertObservationResponse:
         elif len(filter.data[tpar]["vals"])>0:
             #--------------------
             # insert event times
-            #--------------------   
-            ids_eti = []         
+            #--------------------
+            ids_eti = []
             params = []
             sql  = "INSERT INTO %s.event_time (id_prc_fk,time_eti)" %(filter.sosConfig.schema)
-            sql += " VALUES (%s,%s::TIMESTAMPTZ) RETURNING id_eti" 
+            sql += " VALUES (%s,%s::TIMESTAMPTZ) RETURNING id_eti"
             for val in filter.data[tpar]["vals"]:
                 try:
                     ids_eti.append(pgdb.executeInTransaction(sql,(prc["id_prc"],val))[0]['id_eti'])
-                    com=True
+                    com = True
                 except Exception as e:
                     raise e
-            
+
             for i, par in enumerate(pars):
                 params = []
                 ids_msr = []
-                sql = "INSERT INTO %s.measures (id_pro_fk, id_eti_fk,id_qi_fk,val_msr) VALUES" %(filter.sosConfig.schema)
+                sql = "INSERT INTO %s.measures (id_pro_fk, id_eti_fk,id_qi_fk,val_msr) VALUES" % (filter.sosConfig.schema)
                 sql += " (%s,%s,%s,%s) RETURNING id_msr"
+
                 #hasvalues = False
                 for ii,id_et in enumerate(ids_eti):
-                    
+
+
                     if not filter.data[par]["vals"][ii] in ['NULL',u'NULL',None,-999,"-999",u"-999",filter.sosConfig.aggregate_nodata]:
-                        
+                    #TODO: add a else statement to add the aggregate_nodata value OR delete the event time
+                    #if not filter.data[par]["vals"][ii] in ['NULL',u'NULL',None]:
                         pqi = int(filter.data[par+":qualityIndex"]["vals"][ii])
-                        
+
                         # Constraint quality is done only if the quality index is equal to the default qi (RAW DATA)
                         if int(filter.sosConfig.default_qi) == pqi:
-                            
+
                             # quality check level I (gross error)
                             #------------------------------------
                             if filter.sosConfig.correct_qi != None and parsConsObs[i] != None:
-                                
+
                                 if 'max' in parsConsObs[i]:
                                     if float(filter.data[par]["vals"][ii]) <= float(parsConsObs[i]['max']):
                                         pqi = int(filter.sosConfig.correct_qi)
@@ -357,11 +360,11 @@ class InsertObservationResponse:
                                 elif 'valueList' in parsConsObs[i]:
                                     if float(filter.data[par]["vals"][ii]) in [float(p) for p in parsConsObs[i]['valueList']]:
                                         pqi = int(filter.sosConfig.correct_qi)
-                                    
+
                             # quality check level II (statistical range)
                             #-------------------------------------------
                             if filter.sosConfig.stat_qi != None and parsConsPro[i] != None:
-                                
+
                                 if 'max' in parsConsPro[i]:
                                     if float(filter.data[par]["vals"][ii]) <= float(parsConsPro[i]['max']):
                                         pqi = int(filter.sosConfig.stat_qi)
@@ -374,7 +377,7 @@ class InsertObservationResponse:
                                 elif 'valueList' in parsConsPro[i]:
                                     if float(filter.data[par]["vals"][ii]) in [float(p) for p in parsConsPro[i]['valueList']]:
                                         pqi = int(filter.sosConfig.stat_qi)
-                           
+
                         params = (int(parsId[i]),int(id_et),pqi,float(filter.data[par]["vals"][ii]))
                         try:
                             nid_msr = pgdb.executeInTransaction(sql,params)
@@ -383,9 +386,9 @@ class InsertObservationResponse:
                             com=False
                             raise e
                             raise Exception("L: %s - %s - %s - %s") %(int(parsId[i]),int(id_et),pqi,float(filter.data[par]["vals"][ii]))
-            
+
             #-------------------------------------
-            #--insert position values if required 
+            #--insert position values if required
             #-------------------------------------
             if prc["name_oty"] == "insitu-mobile-point":
                 xparspl = xobs.split(":")
@@ -393,7 +396,7 @@ class InsertObservationResponse:
                 params = []
                 sql = "INSERT INTO %s.positions (id_qi_fk, id_eti_fk,geom_pos) VALUES" %(filter.sosConfig.schema)
                 sql += "(%s,%s,ST_Transform(ST_SetSRID(ST_MakePoint(%s, %s, %s), %s), %s))"
-                
+
                 for i,id_et in enumerate(ids_eti):
                     params = (filter.sosConfig.default_qi,id_et,filter.data[xobs]["vals"][i],filter.data[yobs]["vals"][i],filter.data[zobs]["vals"][i],epsg,filter.sosConfig.istsosepsg)
                     try:
@@ -402,23 +405,23 @@ class InsertObservationResponse:
                     except Exception as a:
                         com=False
                         raise Exception("%s\nSQL: %s" %(a,pgdb.mogrify(sql,params)))
-            
+
             # register assigned IDs of measures
             self.assignedId = "@".join([str(p) for p in ids_eti])
-            # commit executed operations                
-        
-        #Register the transactional operation in Log table 
+            # commit executed operations
+
+        #Register the transactional operation in Log table
         if filter.sosConfig.transactional_log in ['True','true',1]:
             sqlLog  = "INSERT INTO %s.tran_log" %(filter.sosConfig.schema)
             sqlLog  += " (operation_trl,procedure_trl,begin_trl,end_trl,count,stime_prc,etime_prc)"
-            sqlLog  += " VALUES ('InsertObservation', %s, %s::TIMESTAMPTZ, %s::TIMESTAMPTZ, %s, %s::TIMESTAMPTZ , %s::TIMESTAMPTZ)" 
+            sqlLog  += " VALUES ('InsertObservation', %s, %s::TIMESTAMPTZ, %s::TIMESTAMPTZ, %s, %s::TIMESTAMPTZ , %s::TIMESTAMPTZ)"
             params = (str(filter.procedure),start,end,len(ids_eti),prc["stime_prc"],prc["etime_prc"])
             try:
                 pgdb.executeInTransaction(sqlLog,params)
                 com=True
             except:
                 raise Exception("SQL: %s" %(pgdb.mogrify(sqlLog,params)))
-        
+
         if com==True:
             pgdb.commitTransaction()
-            
+

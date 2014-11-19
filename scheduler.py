@@ -25,15 +25,15 @@ description:
     The scheduled job for a service are instantiated by a file named
     "serviceName.aps" that includes the jobs according the decoration methods
     of the python APScheduler library; for example:
-    
+
     @sched.interval_schedule(seconds=4)
     def demo_job4():
         print 'demo job4'
-    
+
     @sched.cron_schedule(second='*/30')
     def demo_decorated_task():
         print "I am printed at every minute at the 30th second!"
-    
+
 """
 
 #---------------------------------
@@ -44,7 +44,7 @@ def recursive_glob(rootdir='.', suffix=''):
     return [( os.path.splitext(filename)[0] ,os.path.join(rootdir, filename) )
             for rootdir, dirnames, filenames in os.walk(rootdir)
             for filename in filenames if filename.endswith(suffix)]
-            
+
 import hashlib
 schedmd5 = {}
 services_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "services")
@@ -58,7 +58,7 @@ sched._threadpool = threadpool.ThreadPool(core_threads=10, max_threads=200, keep
 sched.start()
 
 #===========================
-#START THE ISTSOS SCHEDULER 
+#START THE ISTSOS SCHEDULER
 #===========================
 @sched.interval_schedule(seconds=5)
 def istsos_job():
@@ -82,4 +82,4 @@ def istsos_job():
                     if j.name.startswith(service):
                         sched.unschedule_job(j)
                 execfile(scheduler)
-            
+

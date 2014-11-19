@@ -1,0 +1,69 @@
+# -*- coding: utf-8 -*-
+# istSOS WebAdmin - Istituto Scienze della Terra
+# Copyright (C) 2014 Massimiliano Cannata, Milan Antonovic
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+from os import path
+from walib import configManager
+
+defaultCFGpath = path.join(path.dirname(path.split(path.abspath(__file__))[0]),
+                                         "services/default.cfg")
+serviceconf = configManager.waServiceConfig(defaultCFGpath)
+
+
+def notify(name, message):
+    """
+        Attributes:
+            name        name of the notification
+            message     message to notify
+    """
+    from walib import databaseManager as dbm
+    from wnslib import notify
+
+    dbConnection = dbm.PgDB(
+            serviceconf.connectionWns['user'],
+            serviceconf.connectionWns['password'],
+            serviceconf.connectionWns['dbname'],
+            serviceconf.connectionWns['host'],
+            serviceconf.connectionWns['port'])
+
+    sql = """SELECT r.user_id_fk, r.not_list
+            FROM wns.registration r, wns.notification n
+            WHERE r.not_id_fk = n.id AND n.name=%s"""
+    params = (name,)
+
+    usersList = dbConnection.select(sql, params)
+
+    print usersList
+
+    notifier = notify.Notify(serviceconf)
+    notifier.post_twitter_status(message, name)
+
+    for user in usersList:
+        sql = "SELECT * FROM wns.user WHERE id = %s"
+        par = [user['user_id_fk']]
+        contact = dict(dbConnection.select(sql, par)[0])
+
+        print user['not_list']
+        print contact
+
+        for con in user['not_list']:
+            if con == 'mail':
+                notifier.email(message, contact['email'], name)
+            elif con == 'twitter':
+                notifier.twitter(message, contact['twitter'], name)
+            elif con == 'fax':
+                notifier.fax(message, contact['fax'], name)
+            elif con == 'sms':
+                notifier.sms(message, contact['tel'], name)
