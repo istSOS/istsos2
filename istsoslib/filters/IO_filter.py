@@ -57,6 +57,9 @@ class sosIOfilter(f.sosFilter):
             
             tree, ns = parse_and_get_ns(StringIO(requestObject))
             
+            if not 'swe' in ns:
+                ns['swe'] = 'http://www.opengis.net/swe/1.0.1'
+            
             #---assignedSensorId
             #----------------------
             AssignedSensorId = tree.find("{%s}AssignedSensorId" % ns['sos'] )
