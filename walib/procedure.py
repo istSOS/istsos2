@@ -83,6 +83,9 @@ class Procedure():
             raise TypeError("xml input must be a string representing the XML itself or the path to the file where the XML is stored")
             #tree, ns = parse_and_get_ns(xml)
         
+        if not 'swe' in ns:
+            ns['swe'] = 'http://www.opengis.net/swe/1.0.1'
+        
         #-----System name/identifier------
         system = tree.find("{%s}member/{%s}System" %(ns['sml'],ns['sml']) )
         try:
