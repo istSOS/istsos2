@@ -75,7 +75,7 @@ class StsImporter(raw2csv.Converter):
         
         for line in fileObj.readlines():
             
-            if line.find(skipline)==0:
+            if line.find(skipline)==0 or line.find('data')>-1:
                 continue
             
             pair = line.split(";")
@@ -84,10 +84,19 @@ class StsImporter(raw2csv.Converter):
                 op: pair[1]
             }
             
+            
             data = datetime.strptime(pair[0], dateformat)
             if "tz" in self.config:
                 data = self.getDateTimeWithTimeZone(data, self.config["tz"])
-            
+                
+            # Removing seconds from date
+            '''if "zerofill" in self.config:
+                if 's' in self.config['zerofill']:'''
+            data = datetime(
+                data.year, data.month, data.day, data.hour, 
+                data.minute, 0, tzinfo=data.tzinfo)
+                            
+                    
             self.setEndPosition(data)
             self.addObservation(
                 raw2csv.Observation(data, val)

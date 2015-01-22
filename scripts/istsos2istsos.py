@@ -151,8 +151,8 @@ def execute (args, logger=None):
         surl,
         ssrv,
         procedure
-        ), prefetch=True, auth=(suser, spwd), verify=False)
-    sdata = res.json
+        ), auth=(suser, spwd), verify=False)
+    sdata = res.json()
     if sdata['success']==False:
         raise Exception ("Description of procedure %s can not be loaded from source service: %s" % (procedure, sdata['message']))
     else:
@@ -161,8 +161,8 @@ def execute (args, logger=None):
     # Loading describe sensor from destination ================================
     res = req.get("%s/wa/istsos/services/%s/procedures/%s" % (
             durl, dsrv, procedure
-        ), prefetch=True, auth=(duser, dpwd), verify=False)
-    ddata = res.json
+        ), auth=(duser, dpwd), verify=False)
+    ddata = res.json()
     if ddata['success']==False:
         raise Exception ("Description of procedure %s can not be loaded from destination service: %s" % (procedure, ddata['message']))
     else:
@@ -173,8 +173,8 @@ def execute (args, logger=None):
             durl, dsrv, 'temporary', procedure
         ),  params={
             "qualityIndex": cpqi
-        }, prefetch=True, auth=(duser, dpwd), verify=False)
-    dtemplate = res.json
+        }, auth=(duser, dpwd), verify=False)
+    dtemplate = res.json()
     if dtemplate['success']==False:
         raise Exception ("Observation template of procedure %s can not be loaded: %s" % (procedure, dtemplate['message']))
     else:
@@ -187,8 +187,8 @@ def execute (args, logger=None):
     if aurl and asrv:
         res = req.get("%s/wa/istsos/services/%s/procedures/%s" % (
                 aurl, asrv, procedure
-            ), prefetch=True, auth=(auser, apwd), verify=False)
-        adata = res.json
+            ), auth=(auser, apwd), verify=False)
+        adata = res.json()
         if adata['success']==False:
             raise Exception ("Description of procedure %s can not be loaded from destination service: %s" % (procedure, adata['message']))
         else:
@@ -297,13 +297,13 @@ def execute (args, logger=None):
             if nodataQI != None:
                 params['aggregateNodataQi'] = nodataQI
         
-        res = req.get("%s/%s" % (surl,ssrv),  params=params, prefetch=True, auth=(suser, spwd), verify=False)
+        res = req.get("%s/%s" % (surl,ssrv),  params=params, auth=(suser, spwd), verify=False)
         
         # Check if an Exception occured
         if 'ExceptionReport' in res.content:
             raise Exception (res.content)
         
-        smeasures = res.json['ObservationCollection']['member'][0]
+        smeasures = res.json()['ObservationCollection']['member'][0]
         #pp.pprint(smeasures)
         
         log("   > %s measures from: %s to: %s" % (len(smeasures['result']['DataArray']['values']), start.isoformat(), nextStart.isoformat()))
@@ -323,7 +323,6 @@ def execute (args, logger=None):
         res = req.post("%s/wa/istsos/services/%s/operations/insertobservation" % (
             durl,
             dsrv), 
-            prefetch=True,
             auth=(duser, dpwd),
             verify=False,
             data=json.dumps({
@@ -334,10 +333,10 @@ def execute (args, logger=None):
         )
         
         # read response
-        log("     > Insert observation success: %s" % res.json['success'])
+        log("     > Insert observation success: %s" % res.json()['success'])
         
-        if not res.json['success']:
-            raise Exception ('Error inserting observation: %s' % res.json['message'])
+        if not res.json()['success']:
+            raise Exception ('Error inserting observation: %s' % res.json()['message'])
         
         start = nextStart
         if start<stop and start+interval>stop:

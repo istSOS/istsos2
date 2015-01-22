@@ -31,6 +31,7 @@ It also provides a wrapper to strftime. This wrapper makes it easier to
 format timedelta or Duration instances as ISO conforming strings.
 '''
 from datetime import timedelta
+from decimal import Decimal
 import re
 
 from lib.isodate.duration import Duration
@@ -38,14 +39,15 @@ from lib.isodate.isoerror import ISO8601Error
 from lib.isodate.isodatetime import parse_datetime
 from lib.isodate.isostrf import strftime, D_DEFAULT
 
-ISO8601_PERIOD_REGEX = re.compile(r"^(?P<sign>[+-])?"
-                r"P(?P<years>[0-9]+([,.][0-9]+)?Y)?"
-                r"(?P<months>[0-9]+([,.][0-9]+)?M)?"
-                r"(?P<weeks>[0-9]+([,.][0-9]+)?W)?"
-                r"(?P<days>[0-9]+([,.][0-9]+)?D)?"
-                r"((?P<separator>T)(?P<hours>[0-9]+([,.][0-9]+)?H)?"
-                r"(?P<minutes>[0-9]+([,.][0-9]+)?M)?"
-                r"(?P<seconds>[0-9]+([,.][0-9]+)?S)?)?$")
+ISO8601_PERIOD_REGEX = re.compile(
+    r"^(?P<sign>[+-])?"
+    r"P(?P<years>[0-9]+([,.][0-9]+)?Y)?"
+    r"(?P<months>[0-9]+([,.][0-9]+)?M)?"
+    r"(?P<weeks>[0-9]+([,.][0-9]+)?W)?"
+    r"(?P<days>[0-9]+([,.][0-9]+)?D)?"
+    r"((?P<separator>T)(?P<hours>[0-9]+([,.][0-9]+)?H)?"
+    r"(?P<minutes>[0-9]+([,.][0-9]+)?M)?"
+    r"(?P<seconds>[0-9]+([,.][0-9]+)?S)?)?$")
 # regular expression to parse ISO duartion strings.
 
 
@@ -102,8 +104,13 @@ def parse_duration(datestring):
         if key not in ('separator', 'sign'):
             if val is None:
                 groups[key] = "0n"
-            #print groups[key]
-            groups[key] = float(groups[key][:-1].replace(',', '.'))
+            # print groups[key]
+            if key in ('years', 'months'):
+                groups[key] = Decimal(groups[key][:-1].replace(',', '.'))
+            else:
+                # these values are passed into a timedelta object,
+                # which works with floats.
+                groups[key] = float(groups[key][:-1].replace(',', '.'))
     if groups["years"] == 0 and groups["months"] == 0:
         ret = timedelta(days=groups["days"], hours=groups["hours"],
                         minutes=groups["minutes"], seconds=groups["seconds"],
@@ -124,15 +131,16 @@ def duration_isoformat(tduration, format=D_DEFAULT):
     '''
     Format duration strings.
 
-    This method is just a wrapper around lib.isodate.isostrf.strftime and uses
+    This method is just a wrapper around isodate.isostrf.strftime and uses
     P%P (D_DEFAULT) as default format.
     '''
     # TODO: implement better decision for negative Durations.
     #       should be done in Duration class in consistent way with timedelta.
-    if ((isinstance(tduration, Duration) and (tduration.years < 0 or
-                                             tduration.months < 0 or
-                                             tduration.tdelta < timedelta(0)))
-        or (isinstance(tduration, timedelta) and (tduration < timedelta(0)))):
+    if (((isinstance(tduration, Duration)
+          and (tduration.years < 0 or tduration.months < 0
+               or tduration.tdelta < timedelta(0)))
+         or (isinstance(tduration, timedelta)
+             and (tduration < timedelta(0))))):
         ret = '-'
     else:
         ret = ''

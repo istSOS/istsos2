@@ -21,7 +21,7 @@ istsoslib_path = path.join(path.dirname(path.abspath(__file__)), "istsoslib")
 istsoswalib_path = path.join(path.dirname(path.abspath(__file__)), "walib")
 errorlog_path = path.join(path.dirname(path.abspath(__file__)), "logs")
 errorlog_level = "INFO"
-debug=False
+debug=True
 #==================================================================================
 # if you have to move some of "istsoslib" "walib" or "service" folder
 # in a different location you have to override the above paths

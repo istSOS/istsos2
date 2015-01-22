@@ -513,17 +513,10 @@ class waGetobservation(waResourceService):
             params=rparams
         )
         
-        obsjson = response.json
-        
-        '''try:
-            obsjson["ObservationCollection"]["member"][0]["observedProperty"]["components"] = obsjson["ObservationCollection"]["member"][0]["observedProperty"]["component"]
-        except:
-            print >> sys.stderr,  "ERROR"
-            pass'''
-            
         # build the response --------------------------------------------------- 
         try:
             response.raise_for_status()
+            obsjson = response.json()
             self.setData( obsjson["ObservationCollection"]["member"] )
             self.setMessage("GetObservation requested successfully executed")
         except Exception as e:

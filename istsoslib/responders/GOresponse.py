@@ -355,7 +355,7 @@ class VirtualProcessHQ(VirtualProcess):
         if self.filter.qualityIndex == True:
             data_out=[]
             for rec in data:
-                if (float(rec[1])) < -999.0:
+                if rec[1] is None or (float(rec[1])) < -999.0:
                     data_out.append([ rec[0], -999.9, 110 ])
                 else:
                     for o in range(len(self.hqCurves['from'])):

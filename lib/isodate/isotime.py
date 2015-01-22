@@ -123,18 +123,20 @@ def parse_time(timestring):
                                   int(groups['tzhour'] or 0),
                                   int(groups['tzmin'] or 0))
             if 'second' in groups:
-                second = Decimal(groups['second'])
+                # round to microseconds if fractional seconds are more precise
+                second = Decimal(groups['second']).quantize(Decimal('.000001'))
                 microsecond = (second - int(second)) * long(1e6)
                 # int(...) ... no rounding
                 # to_integral() ... rounding
                 return time(int(groups['hour']), int(groups['minute']),
-                            int(second), microsecond.to_integral(), tzinfo)
+                            int(second), int(microsecond.to_integral()),
+                            tzinfo)
             if 'minute' in groups:
                 minute = Decimal(groups['minute'])
                 second = (minute - int(minute)) * 60
                 microsecond = (second - int(second)) * long(1e6)
                 return time(int(groups['hour']), int(minute), int(second),
-                            microsecond.to_integral(), tzinfo)
+                            int(microsecond.to_integral()), tzinfo)
             else:
                 microsecond, second, minute = 0, 0, 0
             hour = Decimal(groups['hour'])
@@ -142,7 +144,7 @@ def parse_time(timestring):
             second = (minute - int(minute)) * 60
             microsecond = (second - int(second)) * long(1e6)
             return time(int(hour), int(minute), int(second),
-                        microsecond.to_integral(), tzinfo)
+                        int(microsecond.to_integral()), tzinfo)
     raise ISO8601Error('Unrecognised ISO 8601 time format: %r' % timestring)
 
 
@@ -150,7 +152,7 @@ def time_isoformat(ttime, format=TIME_EXT_COMPLETE + TZ_EXT):
     '''
     Format time strings.
 
-    This method is just a wrapper around lib.isodate.isostrf.strftime and uses
+    This method is just a wrapper around isodate.isostrf.strftime and uses
     Time-Extended-Complete with extended time zone as default format.
     '''
     return strftime(ttime, format)

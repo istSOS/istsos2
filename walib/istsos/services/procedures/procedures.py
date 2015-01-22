@@ -180,8 +180,7 @@ class waProcedures(waResourceService):
         response = requests.post(
             self.serviceconf.serviceurl["url"],
             data=smlstring,
-            headers={"Content-type": "text/xml"},
-            prefetch=True
+            headers={"Content-type": "text/xml"}
         )
 
         try:

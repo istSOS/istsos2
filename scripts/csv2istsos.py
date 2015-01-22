@@ -104,9 +104,9 @@ def execute (args, logger=None):
                 url,
                 service,
                 proc
-                ), prefetch=True, auth=(user, passw), verify=False)
+                ), auth=(user, passw), verify=False)
                 
-            data = res.json
+            data = res.json()
             #log(pp.pprint(data))
                 
             if data['success']==False:
@@ -133,9 +133,9 @@ def execute (args, logger=None):
                 'temporary',
                 proc,
                 ','.join(op)
-                ), prefetch=True, auth=(user, passw), verify=False)
+                ), auth=(user, passw), verify=False)
             
-            data = res.json
+            data = res.json()
             
             if data['success']==False:
                 raise Exception ("Last observation of procedure %s can not be loaded: %s" % (proc, data['message']))
@@ -254,7 +254,6 @@ def execute (args, logger=None):
                     res = req.post("%s/wa/istsos/services/%s/operations/insertobservation" % (
                         url,
                         service), 
-                        prefetch=True,
                         auth=(user, passw),
                         verify=False,
                         data=json.dumps({
@@ -264,9 +263,9 @@ def execute (args, logger=None):
                         })
                     )
                     # read response
-                    log (" > Insert observation success: %s" % res.json['success'])
-                    if not res.json['success']:
-                        log (res.json['message'])
+                    log (" > Insert observation success: %s" % res.json()['success'])
+                    if not res.json()['success']:
+                        log (res.json()['message'])
                         
                     
                     print "~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~"

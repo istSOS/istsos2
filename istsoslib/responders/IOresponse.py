@@ -324,7 +324,7 @@ class InsertObservationResponse:
                     ids_eti.append(pgdb.executeInTransaction(sql,(prc["id_prc"],val))[0]['id_eti'])
                     com = True
                 except Exception as e:
-                    raise e
+                    raise Exception("Error inserting event times for %s: %s" % (prc["name_prc"], str(e)) )
 
             for i, par in enumerate(pars):
                 params = []

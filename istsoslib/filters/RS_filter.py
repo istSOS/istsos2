@@ -109,9 +109,9 @@ class sosRSfilter(f.sosFilter):
             else:
                 self.proc_desc = 'NULL'
             
-# Add capabilities time to db
-# Convert all to seconds            
-            
+            # Add capabilities time to db
+            # Convert all to seconds            
+                        
             #---Capabilities
             capabilities = tree.findall("{%s}SensorDescription/{%s}member/{%s}System/{%s}capabilities/{%s}DataRecord/{%s}field"
                                             % (ns['sos'],ns['sml'],ns['sml'],ns['sml'],ns['swe'],ns['swe']))

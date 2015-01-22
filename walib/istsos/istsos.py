@@ -159,7 +159,7 @@ class waAbout(waIstsos):
             try:
                 response.raise_for_status()
                 
-                lastVersion = response.json
+                lastVersion = response.json()
                 data["istsos_version"] = str(sos_version.version)
                 data["latest_istsos_version"] = str(lastVersion["istsos_version"])
                 data["latest_istsos_changelog"] = str(lastVersion["istsos_changelog"])

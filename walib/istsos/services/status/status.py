@@ -357,7 +357,7 @@ class waStatus(waResourceService):
             params=rparams
         )  
         
-        dataArray = response.json['ObservationCollection']['member'][0]['result']['DataArray']        
+        dataArray = response.json()['ObservationCollection']['member'][0]['result']['DataArray']        
         # Value field
         data = []                      
         if not len(dataArray['values']) == 0:

@@ -121,6 +121,7 @@ class sosIOfilter(f.sosFilter):
                         name = co.find( "{%s}name" % ns['gml'] )
                         self.oprName.append(name.text)
                     except:
+                        print >> sys.stderr, "XML: %s" % StringIO(requestObject)
                         raise sosException.SOSException("NoApplicableCode",None,"om:observedProperty Name is missing: 'xlink:href' or 'gml:name' required")
                     
             #-----samplingTime

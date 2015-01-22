@@ -76,7 +76,6 @@ class Converter():
         """
         
         self.req = requests.session()
-        self.req.config['keep_alive'] = False
     
         self.name = name
         self.url = url
@@ -319,13 +318,13 @@ class Converter():
                 self.service,
                 self.name
             ), 
-            prefetch=True, 
             auth=self.auth, 
             verify=False
         )
-        if res.json['success']==False:
-            raise IstSOSError ("Description of procedure %s can not be loaded: %s" % (self.name, res.json['message']))
-        self.describe = res.json['data']
+        json = res.json()
+        if json['success']==False:
+            raise IstSOSError ("Description of procedure %s can not be loaded: %s" % (self.name, json['message']))
+        self.describe = json['data']
         
         self.obsindex = []
         for out in self.describe['outputs']:

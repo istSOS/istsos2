@@ -80,17 +80,25 @@ class Service(object):
             'responseFormat': 'application/json',
             'procedure': name,
             'observedProperty': ":"
-        }, prefetch=True, verify=False)
+        })
         
-        begin = res.json['ObservationCollection']['member'][0]["samplingTime"]["beginPosition"]
-        end = res.json['ObservationCollection']['member'][0]["samplingTime"]["endPosition"]
+        json = res.json()
         
-        print "%s - %s" % (begin, end)
+        if "beginPosition" in json['ObservationCollection']['member'][0]["samplingTime"]:
+            
+            begin = json['ObservationCollection']['member'][0]["samplingTime"]["beginPosition"]
+            end = json['ObservationCollection']['member'][0]["samplingTime"]["endPosition"]
+            print "%s: %s - %s" % (name, begin, end) 
         
-        return [
-            iso.parse_datetime(begin),
-            iso.parse_datetime(end)
-        ]
+            return [
+                iso.parse_datetime(begin),
+                iso.parse_datetime(end)
+            ]
+        
+        else:
+        
+            print "%s: %s - %s" % (name, None, None) 
+            return [None,None]
         
        
     def getSOSProceduresList(self): 
@@ -101,12 +109,18 @@ class Service(object):
         
         """
         # Executing request
-        res = req.get("%s/%s" % (self.host,self.service), params={
+        
+        params = {
             'service': 'SOS', 
             'version': '1.0.0',
             'request': 'GetCapabilities',
             'section': 'contents'
-        }, prefetch=True, verify=False)
+        }
+        
+        print "Requesting a getCapabilitie: %s/%s" % (self.host,self.service)
+        print params
+        
+        res = req.get("%s/%s" % (self.host,self.service), params=params)
         
         # Parsing response
         gc, gcNs = self.parse_and_get_ns(StringIO(res.content))
@@ -130,18 +144,18 @@ class Service(object):
         return procedures.keys()
         
         
-        
     def getProcedures(self):
         res = req.get(
             "%s/wa/istsos/services/%s/procedures/operations/getlist" % (
                 self.host,self.service
-            ), prefetch=True, verify=False
+            )
         )
-        if not res.json['success']:
-            raise Exception("Error loading procedures list: %s" % (res['message']))     
+        json = res.json()
+        if not json['success']:
+            raise Exception("Error loading procedures list: %s" % (json['message']))     
         
         procedures = []
-        for data in res.json['data']:
+        for data in json['data']:
             procedure = Procedure(data['name'])
             procedure.merge(data)
             procedures.append(procedure)
@@ -159,11 +173,12 @@ class Service(object):
         res = req.get(
             "%s/wa/istsos/services/%s/procedures/%s" % (
                 self.host,self.service,name
-            ), prefetch=True, verify=False
+            )
         )
-        if not res.json['success']:
-            raise Exception("Error loading %s description: %s" % (self.name, res['message']))        
-        ret.description = res.json['data']
+        json = res.json()
+        if not json['success']:
+            raise Exception("Error loading %s description: %s" % (self.name, json['message']))        
+        ret.description = json['data']
                 
         return ret
     
@@ -230,11 +245,12 @@ class Service(object):
         res = req.post("%s/wa/istsos/services/%s/procedures" % (self.host,self.service), 
                 data=json.dumps(request)
         ) 
-        if not res.json["success"]:
+        json = res.json()
+        if not json["success"]:
             #print json.dumps(procedures[pname].data)
-            raise Exception("Registering procedure %s failed: \n%s" % (pname, res.json["message"]))
+            raise Exception("Registering procedure %s failed: \n%s" % (pname, json["message"]))
         else:
-            print res.json["message"]
+            print json["message"]
         
 
 class Procedure(dict):
