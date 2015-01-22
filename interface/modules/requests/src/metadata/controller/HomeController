@@ -1,0 +1,46 @@
+{
+    "type": "Ext.app.Controller",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userClassName": "HomeController"
+    },
+    "designerId": "4de55aa0-a11d-447a-b035-4a2a807c17b9",
+    "cn": [
+        {
+            "type": "controlleraction",
+            "reference": {
+                "name": "listeners",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "designer|controlQuery": "#servicescmb",
+                "designer|targetType": "Ext.form.field.ComboBox",
+                "fn": "onServiceSelected",
+                "implHandler": [
+                    "this.getServiceUrl().setValue((window.location.origin + window.location.pathname).replace(\"requests/\",combo.getValue()));"
+                ],
+                "name": "select",
+                "scope": "me"
+            },
+            "designerId": "91dc61e6-274f-48d3-b1bb-c5e739629144"
+        },
+        {
+            "type": "controllerref",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "ref": "ServiceUrl",
+                "selector": "#serviceurl"
+            },
+            "designerId": "7310bae7-596d-4216-b621-1894b3f57e02"
+        }
+    ]
+}

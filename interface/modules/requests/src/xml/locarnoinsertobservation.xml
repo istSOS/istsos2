@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sos:InsertObservation xmlns:gml="http://www.opengis.net/gml" xmlns:om="http://www.opengis.net/om/1.0" xmlns:sos="http://www.opengis.net/sos/1.0" xmlns:swe="http://www.opengis.net/swe" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" service="SOS" version="1.0.0">
+<sos:AssignedSensorId>9c2e54345cbdc00e1c5c8d19ac812930</sos:AssignedSensorId>
+<sos:ForceInsert>true</sos:ForceInsert>
+<om:Observation>
+    <om:procedure xlink:href="urn:ogc:def:procedure:x-istsos:1.0:LOCARNO"/>
+    <om:samplingTime>
+        <gml:TimePeriod>
+            <gml:beginPosition>2014-06-03T13:10:00Z</gml:beginPosition>
+            <gml:endPosition>2014-06-03T13:50:00Z</gml:endPosition>
+        </gml:TimePeriod>
+    </om:samplingTime>
+    <om:observedProperty>
+        <swe:CompositePhenomenon dimension="5">
+            <swe:component xlink:href="urn:ogc:def:parameter:x-istsos:1.0:time:iso8601"/>
+            <swe:component xlink:href="urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall"/>
+            <swe:component xlink:href="urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall:qualityIndex"/>
+            <swe:component xlink:href="urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature"/>
+            <swe:component xlink:href="urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature:qualityIndex"/>
+        </swe:CompositePhenomenon>
+    </om:observedProperty>
+    <om:featureOfInterest xlink:href="urn:ogc:def:feature:x-istsos:1.0:Point:LOCARNO"/>
+    <om:result>
+        <swe:DataArray>
+            <swe:elementCount>
+                <swe:value>5</swe:value>
+            </swe:elementCount>
+            <swe:elementType name="SimpleDataArray">
+                <swe:DataRecord definition="urn:ogc:def:dataType:x-istsos:1.0:timeSeries">
+                    <swe:field name="Time">
+                        <swe:Time definition="urn:ogc:def:parameter:x-istsos:1.0:time:iso8601"/>
+                    </swe:field>
+                    <swe:field name="air-rainfall">
+                        <swe:Quantity definition="urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall">
+                            <swe:uom code="mm"/>
+                        </swe:Quantity>
+                    </swe:field>
+                    <swe:field name="air-rainfall:qualityIndex">
+                        <swe:Quantity definition="urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall:qualityIndex">
+                            <swe:uom code="-"/>
+                        </swe:Quantity>
+                    </swe:field>
+                    <swe:field name="air-temperature">
+                        <swe:Quantity definition="urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature">
+                            <swe:uom code="°C"/>
+                        </swe:Quantity>
+                    </swe:field>
+                    <swe:field name="air-temperature:qualityIndex">
+                        <swe:Quantity definition="urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature:qualityIndex">
+                            <swe:uom code="-"/>
+                        </swe:Quantity>
+                    </swe:field>
+                </swe:DataRecord>
+            </swe:elementType>
+            <swe:encoding>
+                <swe:TextBlock blockSeparator="@" decimalSeparator="." tokenSeparator=","/>
+            </swe:encoding>
+            <swe:values>2014-06-03T13:10:00Z,0,200,20.4,200@2014-06-03T13:20:00Z,0.1,200,19.5,200@2014-06-03T13:30:00Z,0.1,200,19.1,200@2014-06-03T13:40:00Z,0,200,19.5,200@2014-06-03T13:50:00Z,0,200,20.6,200</swe:values>
+        </swe:DataArray>
+    </om:result>
+</om:Observation>
+</sos:InsertObservation>

@@ -1,0 +1,62 @@
+.x-panel-header {
+    border: 0px !important;
+    border-color: black !important;
+    background-image: none !important;
+    /*background-color: green !important;*/
+    color: white !important;
+    background: #008000 !important;
+    background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjN2Q3ZTdkIiBzdG9wLW9wYWNpdHk9IjEiLz4KICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzBlMGUwZSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgPC9saW5lYXJHcmFkaWVudD4KICA8cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSJ1cmwoI2dyYWQtdWNnZy1nZW5lcmF0ZWQpIiAvPgo8L3N2Zz4=) !important;
+    background: -moz-linear-gradient(-45deg,  #008000 0%, #FFFFFF 100%) !important;
+    background: -webkit-gradient(linear, left top, right bottom, color-stop(0%,#008000), color-stop(100%,#FFFFFF)) !important;
+    background: -webkit-linear-gradient(-45deg,  #008000 0%,#FFFFFF 100%) !important;
+    background: -o-linear-gradient(-45deg,  #008000 0%,#FFFFFF 100%) !important;
+    background: -ms-linear-gradient(-45deg,  #008000 0%,#FFFFFF 100%) !important;
+    background: linear-gradient(135deg,  #008000 0%,#FFFFFF 100%) !important;
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#008000', endColorstr='#FFFFFF',GradientType=1 ) !important;
+
+}
+
+.x-header-text {
+    color: white !important;
+}
+
+
+.x-panel-default-framed {
+    border: 2px solid green !important;
+    padding: 0;
+}
+
+.x-btn-default-small {
+    background-color: #008000 !important;
+    background-image: none !important;
+}
+
+.x-btn-default-toolbar-small{
+    background-color: #b9d1b9 !important;
+    background-image: none !important;
+}
+
+.x-boundlist-item-over {
+    background: #b9d1b9 !important;
+    border-color: #92a592 !important;
+}
+
+.x-window-header-default-top {
+    background-color: #008000 !important;
+}
+.x-window-header-default {
+    border-color: #008000 !important;
+    background-color: #008000 !important;
+}
+
+.x-window-default {
+    border-color: #008000 !important;
+}
+
+.x-toolbar-footer {
+    background: #FFFFFF;
+}
+
+.x-btn-default-small {
+    border-color: #b9d1b9;
+}

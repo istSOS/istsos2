@@ -1,0 +1,62 @@
+{
+    "name": "Poster",
+    "settings": {
+        "cmd": {
+            "license": "gpl",
+            "cmdVersion": "4.0.4.84",
+            "frameworkVersion": "4.2.1.883"
+        },
+        "canvasControls": {
+            "viewportSize": {
+                "name": "Auto Expand",
+                "builtIn": true,
+                "height": null,
+                "width": null
+            }
+        },
+        "urlPrefix": "http://localhost/istsos/requests",
+        "exportPath": "/home/milan/workspace/istsos/trunk/interface/modules/requests/pub",
+        "spacesToIndent": 4,
+        "sdkPath": "",
+        "lineEnding": "LF",
+        "genTimestamps": false,
+        "cacheBust": false,
+        "buildShouldOverwriteIndex": true,
+        "generateArchitectVersion": false,
+        "displayfield-ExtBox1-1278-inputEl": "Not Installed",
+        "displayfield-ExtBox1-1384-inputEl": "Not Installed"
+    },
+    "xdsVersion": "3.0.4",
+    "xdsBuild": 1386,
+    "schemaVersion": 1,
+    "upgradeVersion": 300000000004,
+    "framework": "ext42",
+    "viewOrderMap": {
+        "view": [
+            "f36061c0-38da-4199-8e38-e5f0b3804774"
+        ],
+        "store": [
+            "4ea0e523-1e33-42e2-9ff1-824efb23f4f0",
+            "a15f72ef-2021-408d-8a99-0fa6fb43ee19",
+            "22c5a015-b107-40f5-9f20-70485c223bae"
+        ],
+        "controller": [
+            "4de55aa0-a11d-447a-b035-4a2a807c17b9",
+            "27364c95-729d-4386-a62e-1279cb2dec0a"
+        ],
+        "model": [
+            "f13303a5-0429-4011-ad71-76d8d2d07afb"
+        ],
+        "resource": [
+            "862aa9f8-9044-4752-9e08-7e0537d8a76a",
+            "620c1079-f183-4686-a0e6-7db556fc2587",
+            "caf28366-60a5-436d-839b-6c2d60d1835f",
+            "7b8b674c-2c8c-4492-8179-8de0b405d2d3",
+            "c86bb3b0-cd36-4cc8-b7e7-66e34f53a90d",
+            "77406adb-63a3-4799-932b-62dad119f0a0"
+        ],
+        "app": [
+            "application"
+        ]
+    }
+}

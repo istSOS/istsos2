@@ -1,0 +1,13 @@
+{
+    "type": "cssresource",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userClassName": "css1",
+        "url": "js/google-code-prettify/prettify.css"
+    },
+    "designerId": "620c1079-f183-4686-a0e6-7db556fc2587"
+}

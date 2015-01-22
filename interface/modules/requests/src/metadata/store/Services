@@ -1,0 +1,42 @@
+{
+    "type": "jsonstore",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userClassName": "Services",
+        "model": "ServiceModel",
+        "storeId": "Services"
+    },
+    "designerId": "4ea0e523-1e33-42e2-9ff1-824efb23f4f0",
+    "cn": [
+        {
+            "type": "Ext.data.proxy.Ajax",
+            "reference": {
+                "name": "proxy",
+                "type": "object"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "url": "../wa/istsos/services"
+            },
+            "designerId": "395faaad-3caa-4110-8f7d-7cec84eb233a",
+            "cn": [
+                {
+                    "type": "Ext.data.reader.Json",
+                    "reference": {
+                        "name": "reader",
+                        "type": "object"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "root": "data"
+                    },
+                    "designerId": "f8f907b9-4175-4cad-a9e5-dd3b076b58af"
+                }
+            ]
+        }
+    ]
+}

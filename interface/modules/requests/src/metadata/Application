@@ -1,0 +1,43 @@
+{
+    "type": "Ext.app.Application",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "controllers": [
+            "HomeController",
+            "sosController"
+        ],
+        "models": [
+            "ServiceModel"
+        ],
+        "name": "requests",
+        "stores": [
+            "ServicesStore",
+            "MethodsStore"
+        ],
+        "views": [
+            "HomePanel"
+        ]
+    },
+    "designerId": "application",
+    "cn": [
+        {
+            "type": "fixedfunction",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "fn": "launch",
+                "implHandler": [
+                    "prettyPrint();"
+                ]
+            },
+            "designerId": "25b017c0-9605-46a7-a887-d1cbc2ecdee5"
+        }
+    ]
+}

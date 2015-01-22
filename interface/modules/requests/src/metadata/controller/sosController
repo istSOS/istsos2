@@ -1,0 +1,406 @@
+{
+    "type": "Ext.app.Controller",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userClassName": "sosController",
+        "requires": [
+            "Ext.layout.container.Accordion",
+            "Ext.layout.container.Card"
+        ],
+        "stores": [
+            "Requests"
+        ]
+    },
+    "designerId": "27364c95-729d-4386-a62e-1279cb2dec0a",
+    "cn": [
+        {
+            "type": "basicfunction",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "fn": "autoAddParameter",
+                "implHandler": [
+                    ""
+                ]
+            },
+            "designerId": "a56719d2-0063-4569-b6ab-95ac71bacf88"
+        },
+        {
+            "type": "basicfunction",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "designer|params": [
+                    "key",
+                    "value"
+                ],
+                "fn": "addParameter",
+                "implHandler": [
+                    "var field = this.getGetForm().add({",
+                    "    xtype: 'fieldcontainer',",
+                    "    fieldLabel: '',",
+                    "    layout: {",
+                    "        type: 'hbox',",
+                    "        align: 'stretch',",
+                    "        padding: '2px 8px 2px 8px'",
+                    "    },",
+                    "    items: [",
+                    "        {",
+                    "            xtype: 'textfield',",
+                    "            flex: 1,",
+                    "            fieldLabel: '',",
+                    "            name: \"key\",",
+                    "            value: Ext.isEmpty(key)?'':key,",
+                    "            emptyText: 'Parameter key'",
+                    "        },",
+                    "        {",
+                    "            xtype: 'tbspacer',",
+                    "            width: 8",
+                    "        },",
+                    "        {",
+                    "            xtype: 'textfield',",
+                    "            flex: 1,",
+                    "            fieldLabel: '',",
+                    "            name: \"value\",",
+                    "            value: Ext.isEmpty(value)?'':value,",
+                    "            emptyText: 'Value'",
+                    "        },",
+                    "        {",
+                    "            xtype: 'tbspacer',",
+                    "            width: 8",
+                    "        },",
+                    "        {",
+                    "            xtype: 'button',",
+                    "            text: 'x',",
+                    "            handler: function(btn){",
+                    "                var fss = this.getGetForm().query('fieldcontainer(true)');",
+                    "                if (fss.length>1){",
+                    "                    var fs = btn.ownerCt;",
+                    "                    this.getGetForm().remove(fs);",
+                    "                    fss = this.getGetForm().query('fieldcontainer(true)');",
+                    "                    if (fss.length==1){",
+                    "                        var tfs = fss[0].query('textfield(true)');",
+                    "                        var tf = tfs[0];",
+                    "                        tf.on(\"focus\",function(field){",
+                    "                            this.addParameter(\"\",\"\");",
+                    "                        },this,{single: true});",
+                    "                    }",
+                    "                }",
+                    "            },",
+                    "            scope: this",
+                    "        }",
+                    "    ]",
+                    "});",
+                    "if(Ext.isEmpty(key) && Ext.isEmpty(value)){",
+                    "    var tfs = field.query('textfield(true)');",
+                    "    var tf = tfs[0];",
+                    "    tf.on(\"focus\",function(field){",
+                    "        this.addParameter(\"\",\"\");",
+                    "    },this,{single: true});",
+                    "    /*for (var cnt in tfs){",
+                    "        var tf = tfs[cnt];",
+                    "        tf.on(\"focus\",function(field){",
+                    "            this.addParameter(\"\",\"\");",
+                    "        },this,{single: true});",
+                    "    }*/",
+                    "}"
+                ]
+            },
+            "designerId": "4f36b5a1-1a9e-41f0-802b-7dc229123708"
+        },
+        {
+            "type": "basicfunction",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "designer|params": [
+                    "name"
+                ],
+                "fn": "loadXML",
+                "implHandler": [
+                    "Ext.Ajax.request({",
+                    "    url: 'xml/'+name,",
+                    "    method: 'GET',",
+                    "    scope: this,",
+                    "    success: function(response){",
+                    "        this.getPostBody().setValue(response.responseText);",
+                    "    }",
+                    "});"
+                ]
+            },
+            "designerId": "7f541aa5-05f3-44c2-9345-118108257f60"
+        },
+        {
+            "type": "controllerref",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "ref": "methodCmb",
+                "selector": "#sosmethod"
+            },
+            "designerId": "c043d3e4-9bcc-4a89-ac6e-33e574daefb4"
+        },
+        {
+            "type": "controlleraction",
+            "reference": {
+                "name": "listeners",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "designer|controlQuery": "#sosmethod",
+                "designer|targetType": "Ext.form.field.ComboBox",
+                "fn": "onMethodSelected",
+                "implHandler": [
+                    "if(combo.getValue()=='GET'){",
+                    "    this.getMethodPanel().getLayout().setActiveItem(0);",
+                    "}else{",
+                    "    this.getMethodPanel().getLayout().setActiveItem(1);",
+                    "    //this.getPostResult().collapse();",
+                    "}",
+                    "var store = this.getRequestsStore();",
+                    "store.clearFilter();",
+                    "store.filter(\"method\",combo.getValue());"
+                ],
+                "name": "select",
+                "scope": "me"
+            },
+            "designerId": "ee1720d5-49ab-4c66-9c07-6193dc8a915c"
+        },
+        {
+            "type": "controllerref",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "ref": "methodPanel",
+                "selector": "#sosmethodpanel"
+            },
+            "designerId": "a915644e-a168-41ab-8fc4-856a56fcab8f"
+        },
+        {
+            "type": "controllerref",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "ref": "GetForm",
+                "selector": "#sosGetForm"
+            },
+            "designerId": "9675161d-7876-4a45-a574-a94a4f87f0d7"
+        },
+        {
+            "type": "controlleraction",
+            "reference": {
+                "name": "listeners",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "designer|controlQuery": "#sosrequests",
+                "designer|targetType": "Ext.form.field.ComboBox",
+                "fn": "onRequestSelected",
+                "implHandler": [
+                    "var method = this.getMethodCmb().getValue();",
+                    "var rec = records[0];",
+                    "var conf = rec.get(\"conf\");",
+                    "if (method==\"GET\"){",
+                    "    this.getGetForm().removeAll();",
+                    "    for (var cnt in conf){",
+                    "        this.addParameter(conf[cnt][0],conf[cnt][1]);",
+                    "    }",
+                    "    this.addParameter(\"\",\"\");",
+                    "}else if (method==\"POST\"){",
+                    "    this.loadXML(conf);",
+                    "    this.getPostResult().collapse();",
+                    "}",
+                    "return;"
+                ],
+                "name": "select",
+                "scope": "me"
+            },
+            "designerId": "248818b3-f1bb-4212-b449-91d2c0c42231"
+        },
+        {
+            "type": "controlleraction",
+            "reference": {
+                "name": "listeners",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "designer|controlQuery": "#sendsosget",
+                "designer|targetType": "Ext.button.Button",
+                "fn": "onGetSendClick",
+                "implHandler": [
+                    "var params = {};",
+                    "var values = this.getGetForm().getValues();",
+                    "for (var cnt = 0; cnt < values.key.length; cnt++){",
+                    "    params[values.key[cnt]] = values.value[cnt];",
+                    "}",
+                    "var url = Ext.getCmp('serviceurl').getValue();",
+                    "if(Ext.isEmpty(url)){",
+                    "    Ext.Msg.alert('Hmmm Hmm', 'You have to choose an istSOS instance..');",
+                    "    return;",
+                    "}",
+                    "Ext.Ajax.request({",
+                    "    url: url,",
+                    "    method: 'GET',",
+                    "    params: params,",
+                    "    scope: this,",
+                    "    success: function(response){",
+                    "",
+                    "        var text = \"\";",
+                    "",
+                    "        var rh = response.getAllResponseHeaders();",
+                    "",
+                    "        if (rh['content-type']=='application/json'){",
+                    "            text = vkbeautify.json(response.responseText);",
+                    "        }else if (rh['content-type'].indexOf('text/xml')>=0){",
+                    "            text = vkbeautify.xml(response.responseText);",
+                    "        }else{",
+                    "            text = response.responseText;",
+                    "        }",
+                    "",
+                    "        var result = Ext.get('presosgetresult');",
+                    "        result.removeCls('prettyprinted');",
+                    "        result.dom.innerHTML = Ext.htmlEncode(text);",
+                    "        prettyPrint();",
+                    "    }",
+                    "});"
+                ],
+                "name": "click",
+                "scope": "me"
+            },
+            "designerId": "6aaaf725-ccd0-4134-a837-56f306dfdd6f"
+        },
+        {
+            "type": "controllerref",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "ref": "GetResult",
+                "selector": "#sosgetresult"
+            },
+            "designerId": "44d892dc-2e94-4264-82fe-9feb77df4cb7"
+        },
+        {
+            "type": "controllerref",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "ref": "PostBody",
+                "selector": "#sospostbody"
+            },
+            "designerId": "13c48fe0-f333-4933-b6e7-134d1335946a"
+        },
+        {
+            "type": "controlleraction",
+            "reference": {
+                "name": "listeners",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "designer|controlQuery": "#sendsospost",
+                "designer|targetType": "Ext.button.Button",
+                "fn": "onPostSendClick",
+                "implHandler": [
+                    "var url = Ext.getCmp('serviceurl').getValue();",
+                    "if(Ext.isEmpty(url)){",
+                    "    Ext.Msg.alert('Hmmm Hmm', 'You have to choose an istSOS instance..');",
+                    "    return;",
+                    "}",
+                    "Ext.Ajax.request({",
+                    "    url: url,",
+                    "    method: 'POST',",
+                    "    xmlData: this.getPostBody().getValue(),",
+                    "    scope: this,",
+                    "    success: function(response){",
+                    "",
+                    "        var text = \"\";",
+                    "",
+                    "        var rh = response.getAllResponseHeaders();",
+                    "",
+                    "        if (rh['content-type']=='application/json'){",
+                    "            text = vkbeautify.json(response.responseText);",
+                    "        }else if (rh['content-type'].indexOf('text/xml')>=0){",
+                    "            text = vkbeautify.xml(response.responseText);",
+                    "        }else{",
+                    "            text = response.responseText;",
+                    "        }",
+                    "",
+                    "        this.getPostResult().expand();",
+                    "",
+                    "        var result = Ext.get('presospostresult');",
+                    "        result.removeCls('prettyprinted');",
+                    "        result.dom.innerHTML = Ext.htmlEncode(text);",
+                    "        prettyPrint();",
+                    "    }",
+                    "});"
+                ],
+                "name": "click",
+                "scope": "me"
+            },
+            "designerId": "aecbb7bd-4908-4ab5-8fc5-311836b311a9"
+        },
+        {
+            "type": "controllerref",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "ref": "PostResult",
+                "selector": "#sosPostResult"
+            },
+            "designerId": "bb35e108-fc3a-49a4-9558-e66e89e54a62"
+        },
+        {
+            "type": "controlleraction",
+            "reference": {
+                "name": "listeners",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "designer|controlQuery": "#sosGetForm",
+                "designer|targetType": "Ext.form.Panel",
+                "fn": "onFormRender",
+                "implHandler": [
+                    "this.addParameter(\"\",\"\");"
+                ],
+                "name": "render",
+                "scope": "me"
+            },
+            "designerId": "6617f0a2-2365-4d94-97e9-4a0214b5ca95"
+        }
+    ]
+}

@@ -1,0 +1,9 @@
+{
+   "name": "requests",
+   "requires": [],
+   "id": "dd7c7952-8359-429e-b683-50778ee6ec46",
+   "resources": [
+      "js/google-code-prettify/prettify.css",
+      "css/main.css"
+   ]
+}

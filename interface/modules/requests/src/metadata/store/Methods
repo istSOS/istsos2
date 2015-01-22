@@ -1,0 +1,41 @@
+{
+    "type": "arraystore",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "data": [
+            "[",
+            "    {",
+            "        \"name\": \" - \"",
+            "    },",
+            "    {",
+            "        \"name\": \"GET\"",
+            "    },",
+            "    {",
+            "        \"name\": \"POST\"",
+            "    }",
+            "]"
+        ],
+        "designer|userClassName": "Methods",
+        "model": null,
+        "storeId": "Methods"
+    },
+    "designerId": "a15f72ef-2021-408d-8a99-0fa6fb43ee19",
+    "cn": [
+        {
+            "type": "Ext.data.Field",
+            "reference": {
+                "name": "fields",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "name": "name"
+            },
+            "designerId": "6f2739e6-a1d0-4e65-a206-c987e95a6104"
+        }
+    ]
+}

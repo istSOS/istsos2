@@ -1,0 +1,459 @@
+{
+    "type": "Ext.container.Viewport",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|initialView": true,
+        "designer|userClassName": "HomePanel",
+        "layout": "fit"
+    },
+    "designerId": "f36061c0-38da-4199-8e38-e5f0b3804774",
+    "cn": [
+        {
+            "type": "Ext.panel.Panel",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "container|align": "stretch",
+                "height": null,
+                "layout": "vbox",
+                "width": null
+            },
+            "designerId": "6c05d3b7-5f0d-4e46-908f-d37d1b68b349",
+            "cn": [
+                {
+                    "type": "Ext.panel.Panel",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "container|align": "stretch",
+                        "height": 80,
+                        "layout": "hbox",
+                        "layout|flex": null
+                    },
+                    "designerId": "1c010bdc-2729-47f0-b63e-d368388d82bc",
+                    "cn": [
+                        {
+                            "type": "Ext.form.Panel",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "bodyPadding": 10,
+                                "container|align": "stretch",
+                                "container|pack": "center",
+                                "layout": "vbox",
+                                "layout|flex": 1,
+                                "title": ""
+                            },
+                            "designerId": "35e37e49-345d-4d77-822a-7bf162961a18",
+                            "cn": [
+                                {
+                                    "type": "Ext.form.field.ComboBox",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "displayField": "service",
+                                        "emptyText": "Choose the istSOS instance",
+                                        "fieldLabel": "",
+                                        "itemId": "servicescmb",
+                                        "store": "Services",
+                                        "valueField": "service"
+                                    },
+                                    "designerId": "b90379a4-fd05-454c-9e5c-69e92c6918e9"
+                                },
+                                {
+                                    "type": "Ext.form.field.Text",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "emptyText": "Same origin url..",
+                                        "fieldLabel": "",
+                                        "id": "serviceurl",
+                                        "layout|flex": 1
+                                    },
+                                    "designerId": "d34b9673-a1e2-4ba8-8d1b-f07d3a998893"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Ext.panel.Panel",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "bodyStyle": [
+                                    "{",
+                                    "    \"background\": \"transparent url(images/istsos-logo.png) no-repeat scroll center center\",",
+                                    "    \"background-size\": \"contain\"",
+                                    "}"
+                                ],
+                                "container|align": "stretch",
+                                "container|pack": "center",
+                                "layout": "vbox",
+                                "title": "",
+                                "width": 180
+                            },
+                            "designerId": "34ec71a9-20bf-4960-8385-04cd2e8c9141"
+                        }
+                    ]
+                },
+                {
+                    "type": "Ext.container.Container",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "frame": false,
+                        "height": null,
+                        "layout": "accordion",
+                        "layout|flex": 1
+                    },
+                    "designerId": "a163eec8-2300-41a6-b65e-669aa989f495",
+                    "cn": [
+                        {
+                            "type": "Ext.panel.Panel",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "layout": "fit",
+                                "title": "OGC - SOS 1.0.0"
+                            },
+                            "designerId": "d5ee105c-a761-4ea1-b4b1-6bda7c64ab96",
+                            "cn": [
+                                {
+                                    "type": "Ext.container.Container",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "container|align": "stretch",
+                                        "layout": "vbox"
+                                    },
+                                    "designerId": "37e29251-8880-4d25-af36-8190aff03532",
+                                    "cn": [
+                                        {
+                                            "type": "Ext.form.Panel",
+                                            "reference": {
+                                                "name": "items",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "bodyPadding": 10,
+                                                "height": null,
+                                                "title": ""
+                                            },
+                                            "designerId": "694619df-0ba2-4c43-9755-019fa19eb4e1",
+                                            "cn": [
+                                                {
+                                                    "type": "Ext.form.FieldContainer",
+                                                    "reference": {
+                                                        "name": "items",
+                                                        "type": "array"
+                                                    },
+                                                    "codeClass": null,
+                                                    "userConfig": {
+                                                        "container|align": "stretch",
+                                                        "fieldLabel": "",
+                                                        "height": null,
+                                                        "layout": "hbox"
+                                                    },
+                                                    "designerId": "a663e680-b689-4c76-86b2-6278a40e5180",
+                                                    "cn": [
+                                                        {
+                                                            "type": "Ext.form.field.ComboBox",
+                                                            "reference": {
+                                                                "name": "items",
+                                                                "type": "array"
+                                                            },
+                                                            "codeClass": null,
+                                                            "userConfig": {
+                                                                "displayField": "name",
+                                                                "fieldLabel": "Method",
+                                                                "id": "sosmethod",
+                                                                "labelWidth": 50,
+                                                                "queryMode": "local",
+                                                                "store": "Methods",
+                                                                "value": null,
+                                                                "valueField": "name",
+                                                                "width": 156
+                                                            },
+                                                            "configAlternates": {
+                                                                "value": "string"
+                                                            },
+                                                            "designerId": "cbd6959f-0a6f-4d12-9dc3-8d9e02d932ac"
+                                                        },
+                                                        {
+                                                            "type": "Ext.form.field.ComboBox",
+                                                            "reference": {
+                                                                "name": "items",
+                                                                "type": "array"
+                                                            },
+                                                            "codeClass": null,
+                                                            "userConfig": {
+                                                                "displayField": "name",
+                                                                "fieldLabel": "Requests",
+                                                                "id": "sosrequests",
+                                                                "labelAlign": "right",
+                                                                "labelWidth": 70,
+                                                                "layout|flex": 1,
+                                                                "queryMode": "local",
+                                                                "store": "Requests",
+                                                                "valueField": "id",
+                                                                "width": null
+                                                            },
+                                                            "designerId": "87fce06b-99fc-4e8b-a503-798501ce5658"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "type": "Ext.container.Container",
+                                            "reference": {
+                                                "name": "items",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "id": "sosmethodpanel",
+                                                "layout": "card",
+                                                "layout|flex": 1
+                                            },
+                                            "designerId": "cd1970a1-85f2-43db-804e-177b0c453eaf",
+                                            "cn": [
+                                                {
+                                                    "type": "Ext.panel.Panel",
+                                                    "reference": {
+                                                        "name": "items",
+                                                        "type": "array"
+                                                    },
+                                                    "codeClass": null,
+                                                    "userConfig": {
+                                                        "container|align": "stretch",
+                                                        "id": "sosgetter",
+                                                        "layout": "hbox",
+                                                        "title": ""
+                                                    },
+                                                    "designerId": "01f92e69-daba-4ca3-8541-e37d8e1e6d01",
+                                                    "cn": [
+                                                        {
+                                                            "type": "Ext.form.Panel",
+                                                            "reference": {
+                                                                "name": "items",
+                                                                "type": "array"
+                                                            },
+                                                            "codeClass": null,
+                                                            "userConfig": {
+                                                                "frame": true,
+                                                                "id": "sosGetForm",
+                                                                "layout|margins": "8px",
+                                                                "minWidth": null,
+                                                                "title": "GET Parameters",
+                                                                "width": 450
+                                                            },
+                                                            "designerId": "1ffc259b-5ecd-4116-b487-67d364c9a948",
+                                                            "cn": [
+                                                                {
+                                                                    "type": "Ext.toolbar.Toolbar",
+                                                                    "reference": {
+                                                                        "name": "dockedItems",
+                                                                        "type": "array"
+                                                                    },
+                                                                    "codeClass": null,
+                                                                    "userConfig": {
+                                                                        "container|align": "stretchmax",
+                                                                        "container|pack": "center",
+                                                                        "dock": "top"
+                                                                    },
+                                                                    "designerId": "ab33ce4d-bbf1-424b-9821-e80532a8235a",
+                                                                    "cn": [
+                                                                        {
+                                                                            "type": "Ext.button.Button",
+                                                                            "reference": {
+                                                                                "name": "items",
+                                                                                "type": "array"
+                                                                            },
+                                                                            "codeClass": null,
+                                                                            "userConfig": {
+                                                                                "id": "sendsosget",
+                                                                                "layout|flex": 1,
+                                                                                "text": "SEND"
+                                                                            },
+                                                                            "designerId": "63976ce6-be1a-49cd-8945-38a272b3f651"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "Ext.panel.Panel",
+                                                            "reference": {
+                                                                "name": "items",
+                                                                "type": "array"
+                                                            },
+                                                            "codeClass": null,
+                                                            "userConfig": {
+                                                                "autoScroll": true,
+                                                                "bodyPadding": "16px",
+                                                                "frame": true,
+                                                                "html": "<pre id=\"presosgetresult\" class=\"prettyprint\" style=\"border: none;\"></pre>",
+                                                                "id": "sosgetresult",
+                                                                "layout|flex": 1,
+                                                                "layout|margins": "8px",
+                                                                "title": "Result"
+                                                            },
+                                                            "configAlternates": {
+                                                                "html": "string"
+                                                            },
+                                                            "designerId": "f66a45db-5cda-401c-a2fc-6e02e182152f"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Ext.panel.Panel",
+                                                    "reference": {
+                                                        "name": "items",
+                                                        "type": "array"
+                                                    },
+                                                    "codeClass": null,
+                                                    "userConfig": {
+                                                        "itemId": "sosposter",
+                                                        "layout": "accordion",
+                                                        "title": ""
+                                                    },
+                                                    "designerId": "61bbe0f4-4d3b-4619-bc61-112c8c4c14da",
+                                                    "cn": [
+                                                        {
+                                                            "type": "Ext.form.Panel",
+                                                            "reference": {
+                                                                "name": "items",
+                                                                "type": "array"
+                                                            },
+                                                            "codeClass": null,
+                                                            "userConfig": {
+                                                                "bodyPadding": 10,
+                                                                "layout": "fit",
+                                                                "title": "POST XML Body",
+                                                                "width": 450
+                                                            },
+                                                            "designerId": "f8348f02-12ff-4a0d-a9fe-ab9951ac35ea",
+                                                            "cn": [
+                                                                {
+                                                                    "type": "Ext.toolbar.Toolbar",
+                                                                    "reference": {
+                                                                        "name": "dockedItems",
+                                                                        "type": "array"
+                                                                    },
+                                                                    "codeClass": null,
+                                                                    "userConfig": {
+                                                                        "container|align": "stretchmax",
+                                                                        "container|pack": "center",
+                                                                        "dock": "top"
+                                                                    },
+                                                                    "designerId": "43e7784f-1a9a-4cf8-84c9-7b6785358481",
+                                                                    "cn": [
+                                                                        {
+                                                                            "type": "Ext.button.Button",
+                                                                            "reference": {
+                                                                                "name": "items",
+                                                                                "type": "array"
+                                                                            },
+                                                                            "codeClass": null,
+                                                                            "userConfig": {
+                                                                                "id": "sendsospost",
+                                                                                "layout|flex": 1,
+                                                                                "text": "SEND"
+                                                                            },
+                                                                            "designerId": "0566a64d-75a0-4d67-929c-5546e28ccc6a"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "type": "Ext.form.field.TextArea",
+                                                                    "reference": {
+                                                                        "name": "items",
+                                                                        "type": "array"
+                                                                    },
+                                                                    "codeClass": null,
+                                                                    "userConfig": {
+                                                                        "fieldLabel": "",
+                                                                        "id": "sospostbody"
+                                                                    },
+                                                                    "designerId": "5baf58de-c270-40e7-a71f-91ba63c1048e"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "Ext.panel.Panel",
+                                                            "reference": {
+                                                                "name": "items",
+                                                                "type": "array"
+                                                            },
+                                                            "codeClass": null,
+                                                            "userConfig": {
+                                                                "autoScroll": true,
+                                                                "bodyPadding": "16px",
+                                                                "html": "<pre id=\"presospostresult\" class=\"prettyprint\" style=\"border: none;\"></pre>",
+                                                                "id": "sosPostResult",
+                                                                "title": "Result"
+                                                            },
+                                                            "configAlternates": {
+                                                                "html": "string"
+                                                            },
+                                                            "designerId": "67118d87-ce5d-4e15-830a-4fe5775a864b"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Ext.panel.Panel",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "disabled": true,
+                                "title": "WA REST"
+                            },
+                            "designerId": "dd401d09-0b9b-48c2-8775-c86a152e27d8"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

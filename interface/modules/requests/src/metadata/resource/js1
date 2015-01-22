@@ -1,0 +1,13 @@
+{
+    "type": "jsresource",
+    "reference": {
+        "name": "items",
+        "type": "array"
+    },
+    "codeClass": null,
+    "userConfig": {
+        "designer|userClassName": "js1",
+        "url": "js/vkbeautify.js"
+    },
+    "designerId": "7b8b674c-2c8c-4492-8179-8de0b405d2d3"
+}
