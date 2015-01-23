@@ -76,7 +76,7 @@ def istsos_job():
                 print "  > Change detectd: %s" % service
                 schedmd5[service] = md5_now
                 jobs = sched.get_jobs()
-                print jobs
+                #print jobs
                 for j in jobs[1:]:
                     print " job: %s" % j.name
                     if j.name.startswith(service):
