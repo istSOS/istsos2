@@ -148,18 +148,18 @@ class waStatus(waResourceService):
             self.serviceconf.connection['host'],
             self.serviceconf.connection['port'])
 
-        param = self.waEnviron['parameters']['type'][0]
+        #param = self.waEnviron['parameters']['type'][0]
 
         procedureData = []
         lastValue = {'values': 'No observation', 'uom': 'No observation'}
         for procedure in utils.getProcedureNamesList(servicedb, self.service):
 
-            if param == 'delay':
-                status = self.__delay(procedure['name'], servicedb)
-                if status is None:
-                    continue
-            else:
-                raise Exception("Operation %s not permitted." % (param))
+            #if param == 'delay':
+            status = self.__delay(procedure['name'], servicedb)
+            if status is None:
+                continue
+            #else:
+                #raise Exception("Operation %s not permitted." % (param))
 
             if(status['status'] == 'NOT OK'):
                 # Require last exceptions

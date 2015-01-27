@@ -130,6 +130,17 @@
     height:100%;
     
 }
+#loadingicons{
+    position:absolute;
+    top:calc(50% - 125px);
+    left:calc(50% - 150px);
+    width:300px;
+    height:250px;
+    background-color:transparent;
+    background-image:url("../resources/images/loadingwheel.gif");
+    background-position: center center;
+	background-size: contain;
+}
 
 #legend{
     position:absolute;
@@ -137,7 +148,6 @@
     top:0;
     width:220px;
     height:100%;
-        
 }
 
 #popup{
@@ -236,6 +246,12 @@
     margin-bottom:10px;
 }
 
+.textField{
+    width:100%;
+    padding-left:15px;
+}
+
+
 
 /*******************************************/
 /* ExcView */
@@ -253,9 +269,7 @@
     top:39px;
 }
 
-.textField{
-    width:100%;
-}
+
 
 
 /*******************************************/

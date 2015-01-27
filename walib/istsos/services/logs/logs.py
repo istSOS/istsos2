@@ -26,7 +26,7 @@ class waLogs(waResourceService):
         self.setData("")
         pathinfo = waEnviron['pathinfo']
 
-        self.log_id = None
+        self.logs_id = None
         if pathinfo[-1] != 'logs':
             self.logs_id = pathinfo[-1]
 
@@ -153,6 +153,9 @@ class waLogs(waResourceService):
         if self.service == "default":
             raise Exception("Logs operation can not be done for default service instance.")
 
+        if self.logs_id == None:
+            raise Exception("Please select a valid logs id.")
+
         servicedb = databaseManager.PgDB(
             self.serviceconf.connection['user'],
             self.serviceconf.connection['password'],
@@ -160,19 +163,19 @@ class waLogs(waResourceService):
             self.serviceconf.connection['host'],
             self.serviceconf.connection['port'])
 
-        if (self.json['newstatus'] is None or self.json['id'] is None):
+        if (self.json['newstatus'] is None):
             raise Exception("Not params.")
 
         sql = "UPDATE %s.cron_log SET" % self.service
         sql += " status_clo = %s WHERE id_clo = %s"
-        par = (self.json['newstatus'], self.json['id'])
+        par = (self.json['newstatus'], self.logs_id)
         servicedb.execute(sql, par)
         self.setMessage("Status changed")
 
     def executeDelete(self):
         """
              Method for executing a DELETE requests that remove a exception
-            (...)/istsos/wa/istsos/<service name>/logs?id=1
+            (...)/istsos/wa/istsos/<service name>/logs_id
         """
         if self.service == "default":
             raise Exception("Logs operation can not be done for default service instance.")
@@ -184,14 +187,12 @@ class waLogs(waResourceService):
             self.serviceconf.connection['host'],
             self.serviceconf.connection['port'])
 
-        idexc = self.waEnviron['parameters']['id'][0]
-
-        if idexc is None:
+        if self.logs_id is None:
             raise Exception("No exception id specified")
 
         sql = "DELETE FROM %s.cron_log" % self.service
         sql += " WHERE id_clo = %s"
-        par = (idexc,)
+        par = (self.logs_id,)
         servicedb.execute(sql, par)
         self.setMessage("Exception removed")
 
