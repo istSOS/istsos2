@@ -18,11 +18,11 @@ CREATE TABLE cron_log
    PRIMARY KEY (id_clo)
 );
 
-ALTER TABLE procedures DROP CONSTRAINT procedures_id_tru_fk_fkey;
+ALTER TABLE procedures DROP CONSTRAINT procedures_id_tru_fk_fkey CASCADE;
 ALTER TABLE procedures ADD COLUMN time_acq_prc integer;
 ALTER TABLE procedures DROP COLUMN id_tru_fk;
 
 ALTER TABLE ONLY cron_log
     ADD CONSTRAINT cron_log_id_prc_fk_fkey FOREIGN KEY (id_prc_fk) REFERENCES procedures(id_prc) ON DELETE CASCADE;
 DROP SEQUENCE time_res_unit_id_tru_seq CASCADE;
-DROP TABLE time_res_unit;
+DROP TABLE time_res_unit CASCADE;
