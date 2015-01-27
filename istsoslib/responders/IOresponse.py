@@ -282,10 +282,14 @@ class InsertObservationResponse:
         # verify that eventime are in provided samplingTime
         #---------------------------------------------------------------
 
+        maxDate = iso.parse_datetime(max(filter.data[tpar]["vals"]))
+        minDate = iso.parse_datetime(min(filter.data[tpar]["vals"]))
+
         if (len(filter.data[tpar]["vals"])>0 and
-                not iso.parse_datetime(max(filter.data[tpar]["vals"]))<= end and
-                iso.parse_datetime(min(filter.data[tpar]["vals"]))>= start):
-            raise Exception("provided data are not included in provided <samplingTime> period")
+                not maxDate <= end and
+                minDate >= start):
+            raise Exception("provided data (min: %s, max:%s) are not included in provided <samplingTime> period (%s-%s)" % 
+                (minDate.isoformat(), maxDate.isoformat(), start.isoformat(), end.isoformat()))
 
         #======================
         #-- insert observation
