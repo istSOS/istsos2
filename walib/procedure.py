@@ -83,22 +83,20 @@ class Procedure():
             raise TypeError("xml input must be a string representing the XML itself or the path to the file where the XML is stored")
             #tree, ns = parse_and_get_ns(xml)
         
+        # Workaround for rare xml parsing bug in etree
         ns = {
             'swe': 'http://www.opengis.net/swe/1.0.1',
             'gml': 'http://www.opengis.net/gml',
             'sml': 'http://www.opengis.net/sensorML/1.0.1',
-            'xlink': 'http://www.w3.org',
+            'xlink': 'http://www.w3.org/1999/xlink',
             'xsi': 'http://www.w3.org/2001/XMLSchema-instance'
         }
-        
-        if not 'swe' in ns:
-            ns['swe'] = 'http://www.opengis.net/swe/1.0.1'
         
         #-----System name/identifier------
         system = tree.find("{%s}member/{%s}System" %(ns['sml'],ns['sml']) )
         try:
             self.data['system_id'] = system.attrib[ "{%s}id" % ns['gml'] ]
-        except:
+        except Exception as e:
             raise SyntaxError("Error in <sml:member>: <sml:System> element or mandatory attribute are missing")
         
         systemname = tree.find("{%s}member/{%s}System/{%s}name" %(ns['sml'],ns['sml'],ns['gml']) )
@@ -242,7 +240,9 @@ class Procedure():
                 except:
                     item["web"] = ""
                 self.data["contacts"].append(item)
-            except:
+            except Exception as e:
+                print "ECCEZIONE: "
+                print str(e)
                 raise SyntaxError("Error in <swe:contact>: some <swe:contact> mandatory sub elements or attributes are missing")
             
         
