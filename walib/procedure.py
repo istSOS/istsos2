@@ -83,6 +83,14 @@ class Procedure():
             raise TypeError("xml input must be a string representing the XML itself or the path to the file where the XML is stored")
             #tree, ns = parse_and_get_ns(xml)
         
+        ns = {
+            'swe': 'http://www.opengis.net/swe/1.0.1',
+            'gml': 'http://www.opengis.net/gml',
+            'sml': 'http://www.opengis.net/sensorML/1.0.1',
+            'xlink': 'http://www.w3.org',
+            'xsi': 'http://www.w3.org/2001/XMLSchema-instance'
+        }
+        
         if not 'swe' in ns:
             ns['swe'] = 'http://www.opengis.net/swe/1.0.1'
         
