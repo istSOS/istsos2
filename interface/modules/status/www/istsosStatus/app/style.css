@@ -111,6 +111,10 @@
     width: 100%;
 }
 
+.pressed-button{
+    background-color: gray !important;
+}
+
 
 
 .exc{
@@ -276,7 +280,7 @@
 /* ???? */
 /*******************************************/
 .x-panel-body-default {
-    background: whitesmoke;
+    background: whitesmoke;$
     border-color: green !important;
     color: black;
     border-width: 2px !important;
@@ -335,7 +339,6 @@
     background-image: none !important;
     border-radius: 5px 5px 5px 5px !important;
 }
-
 .x-btn-inner {
     font-family: 'Electrolize', sans-serif, tahoma, "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif !important;
     font-size: 16px !important;
@@ -386,7 +389,7 @@
     border-radius: 5px 5px 5px 5px !important;
 }
 .x-btn-default-small-menu-active, .x-btn-default-small-pressed {
-    background-color: black !important;
+    background-color: yellowgreen !important;
     background-image: none  !important;
     border-color: green !important;
     border-radius: 5px 5px 5px 5px !important;
