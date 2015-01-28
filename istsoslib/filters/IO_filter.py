@@ -57,6 +57,17 @@ class sosIOfilter(f.sosFilter):
             
             tree, ns = parse_and_get_ns(StringIO(requestObject))
             
+            # Workaround for rare xml parsing bug in etree
+            ns = {
+                'gml': 'http://www.opengis.net/gml',
+                'swe': 'http://www.opengis.net/swe',
+                'om': 'http://www.opengis.net/om/1.0',
+                'sos': 'http://www.opengis.net/sos/1.0',
+                'xlink': 'http://www.w3.org/1999/xlink',
+                'xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+                
+            }
+            
             if not 'swe' in ns:
                 ns['swe'] = 'http://www.opengis.net/swe/1.0.1'
             
