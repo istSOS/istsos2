@@ -57,7 +57,7 @@ class wnsUsers(wnsOperation):
             self.serviceconf.connectionWns['host'],
             self.serviceconf.connectionWns['port'])
 
-        json_data = self.json['data']
+        json_data = self.json
         username = json_data["username"]
         email = json_data["email"]
         # optional value
@@ -88,7 +88,7 @@ class wnsUsers(wnsOperation):
             self.serviceconf.connectionWns['host'],
             self.serviceconf.connectionWns['port'])
 
-        json_data = self.json['data']
+        json_data = self.json
         username = json_data["username"]
         email = json_data["email"]
         # optional value

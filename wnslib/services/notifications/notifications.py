@@ -60,7 +60,7 @@ class wnsNotifications(wnsOperation):
             self.serviceconf.connectionWns['host'],
             self.serviceconf.connectionWns['port'])
 
-        self.json = self.json['data']
+        #self.json = self.json['data']
 
         name = self.json["name"]
         description = self.json["description"]
@@ -105,7 +105,7 @@ class wnsNotifications(wnsOperation):
         self.setMessage(not_id)
 
     def executePut(self):
-        self.json = self.json['data']
+        #self.json = self.json['data']
         description = self.json.get("description", None)
 
         from wnslib import notificationManager as notManager

@@ -104,4 +104,4 @@ ALTER TABLE ONLY registration
     ADD CONSTRAINT not_id_fkey FOREIGN KEY (not_id_fk) REFERENCES notification(id);
 
 ALTER TABLE ONLY registration
-    ADD CONSTRAINT user_id_fkey FOREIGN KEY (user_id_fk) REFERENCES "user"(id);
+    ADD CONSTRAINT user_id_fkey FOREIGN KEY (user_id_fk) REFERENCES "user"(id) ON DELETE CASCADE;

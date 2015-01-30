@@ -45,7 +45,7 @@ def notify(name, message):
 
     usersList = dbConnection.select(sql, params)
 
-    print usersList
+    #print usersList
 
     notifier = notify.Notify(serviceconf)
     notifier.post_twitter_status(message, name)
@@ -55,11 +55,11 @@ def notify(name, message):
         par = [user['user_id_fk']]
         contact = dict(dbConnection.select(sql, par)[0])
 
-        print user['not_list']
-        print contact
+        #print user['not_list']
+        #print contact
 
         for con in user['not_list']:
-            if con == 'mail':
+            if con == 'mail' or con == 'email':
                 notifier.email(message, contact['email'], name)
             elif con == 'twitter':
                 notifier.twitter(message, contact['twitter'], name)
