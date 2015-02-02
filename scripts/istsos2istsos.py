@@ -253,7 +253,8 @@ def execute (args, logger=None):
                             start = start-timedelta(minutes=retro)
                         else:
                             start = iso.parse_datetime(ddata['data']['outputs'][0]['constraint']['interval'][0])
-                except Exception:
+                except Exception as ee:
+                    print "Error setting start date: %s" % ee
                     raise Exception ("The date in the destination procedure constraint interval (%s) is not valid." % 
                         ddata['data']['outputs'][0]['constraint']['interval'][0])
         else:
