@@ -498,20 +498,19 @@ class waProcedures(waResourceService):
         }
         """
 
-        import lib.requests as requests
-        res = requests.get(
-            self.serviceconf.serviceurl["url"],
-            params={
-                "request": "DescribeSensor",
-                "procedure": self.procedurename,
-                "outputFormat": "text/xml;subtype=\"sensorML/1.0.1\"",
-                "service": "SOS",
-                "version": "1.0.0"
-            }
-        )
-
-        smlobj = procedure.Procedure()
         try:
+            import lib.requests as requests
+            res = requests.get(
+                self.serviceconf.serviceurl["url"],
+                params={
+                    "request": "DescribeSensor",
+                    "procedure": self.procedurename,
+                    "outputFormat": "text/xml;subtype=\"sensorML/1.0.1\"",
+                    "service": "SOS",
+                    "version": "1.0.0"
+                }
+            )
+            smlobj = procedure.Procedure()
             smlobj.loadXML(res.content)
         except Exception as e:
             print >> sys.stderr, "\n\nSML: %s\n\n" % res.content

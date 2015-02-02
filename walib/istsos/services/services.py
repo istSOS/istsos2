@@ -704,8 +704,6 @@ class waInsertobservation(waResourceService):
                     uom = et.SubElement(Quantity, "{%s}uom" % ns['swe'] )
                     uom.attrib["code"] = item["uom"]
                 
-                
-                
         encoding = et.SubElement(DataArray, "{%s}encoding" % ns['swe'] )
         TextBlock = et.SubElement(encoding, "{%s}TextBlock" % ns['swe'] )
         TextBlock.attrib["tokenSeparator"] = ","
@@ -724,7 +722,7 @@ class waInsertobservation(waResourceService):
             data=iostring, 
             headers={
                 "Content-type": "text/xml",
-                "User-Agent": "Walib post"
+                "User-Agent": "WalibPost;InsertObservation"
             }
         )
         data = response.text
