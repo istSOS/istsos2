@@ -242,7 +242,7 @@ def execute (args, logger=None):
                         }
                         res = req.get("%s/%s" % (durl,dsrv), params=params, auth=(duser, dpwd), verify=False)
                         obs = res.json()
-                        if adata['success']==False:
+                        if obs['success']==False:
                             raise Exception ("Cannot load last observation from destination service for procedure %s." % procedure)
                         start = iso.parse_datetime(obs['ObservationCollection']['member'][0]['result']['DataArray']['values'][0][0])
                     else:
