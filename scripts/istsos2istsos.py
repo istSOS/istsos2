@@ -242,8 +242,6 @@ def execute (args, logger=None):
                         }
                         res = req.get("%s/%s" % (durl,dsrv), params=params, auth=(duser, dpwd), verify=False)
                         obs = res.json()
-                        if obs['success']==False:
-                            raise Exception ("Cannot load last observation from destination service for procedure %s." % procedure)
                         start = iso.parse_datetime(obs['ObservationCollection']['member'][0]['result']['DataArray']['values'][0][0])
                     else:
                         # The endPosition of the destination will be used as Start/IO BeginPosition
@@ -353,6 +351,8 @@ def execute (args, logger=None):
         
         # read response
         log("     > Insert observation success: %s" % res.json()['success'])
+        
+        print res.json()
         
         if not res.json()['success']:
             raise Exception ('Error inserting observation: %s' % res.json()['message'])
