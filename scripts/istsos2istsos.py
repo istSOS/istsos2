@@ -230,6 +230,7 @@ def execute (args, logger=None):
                 try:
                     if function and resolution:
                         # getting last inserted observations of "destination" service
+                        log("Aggregation requested: getting last inserted observations of \"destination\" service")
                         params = {
                             "request": "GetObservation",
                             "service": "SOS",
@@ -254,9 +255,9 @@ def execute (args, logger=None):
                         else:
                             start = iso.parse_datetime(ddata['data']['outputs'][0]['constraint']['interval'][0])
                 except Exception as ee:
-                    print "Error setting start date: %s" % ee
-                    raise Exception ("The date in the destination procedure constraint interval (%s) is not valid." % 
-                        ddata['data']['outputs'][0]['constraint']['interval'][0])
+                    print "Error setting start date for proc %s: %s" % (procedure,ee)
+                    raise Exception ("The date in the destination procedure %s constraint interval (%s) is not valid." % 
+                        (procedure,ddata['data']['outputs'][0]['constraint']['interval'][0]))
         else:
             # The beginPosition of the source will be used as Start/IO BeginPosition
             start = iso.parse_datetime(sdata['data']['outputs'][0]['constraint']['interval'][0])           
