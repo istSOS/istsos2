@@ -243,7 +243,7 @@ def execute (args, logger=None):
                         obs = res.json()
                         if adata['success']==False:
                             raise Exception ("Cannot load last observation from destination service for procedure %s." % procedure)
-                        start = iso.parse_datetime(obs['ObservationCollection']['member'][0]['result']['DataArray']['values'][0][0]
+                        start = iso.parse_datetime(obs['ObservationCollection']['member'][0]['result']['DataArray']['values'][0][0])
                     else:
                         # The endPosition of the destination will be used as Start/IO BeginPosition
                         start = iso.parse_datetime(ddata['data']['outputs'][0]['constraint']['interval'][1])
