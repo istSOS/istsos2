@@ -513,7 +513,7 @@ class waProcedures(waResourceService):
             smlobj = procedure.Procedure()
             smlobj.loadXML(res.content)
         except Exception as e:
-            print >> sys.stderr, "\n\nSML: %s\n\n" % res.content
+            print >> sys.stderr, "\n\nSML: %s\n%s\n" % (self.procedurename,res.content)
             raise Exception("Error loading DescribeSensor of '%s' [STATUS CODE: %s]: %s" % (self.procedurename,res.status_code,e))
 
         # Searching for the assignedSensorId from the database
