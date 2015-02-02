@@ -352,7 +352,7 @@ def execute (args, logger=None):
         # read response
         log("     > Insert observation success: %s" % res.json()['success'])
         
-        print res.json()
+        #print res.json()
         
         if not res.json()['success']:
             raise Exception ('Error inserting observation: %s' % res.json()['message'])

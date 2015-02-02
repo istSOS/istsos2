@@ -24,6 +24,7 @@ description:
 
 import sys
 from datetime import timedelta
+from datetime import datetime
 import pprint
 from StringIO import StringIO
 import json
@@ -72,7 +73,7 @@ class Service(object):
         
         """
         # Executing request
-        res = req.get("%s/%s" % (self.host,self.service), params={
+        """res = req.get("%s/%s" % (self.host,self.service), params={
             'service': 'SOS', 
             'version': '1.0.0',
             'request': 'GetObservation',
@@ -80,15 +81,22 @@ class Service(object):
             'responseFormat': 'application/json',
             'procedure': name,
             'observedProperty': ":"
-        })
+        })"""
         
-        json = res.json()
+        ret = self.extractSamplingFromGOJson(
+            self.getSOSProcedure(name)
+        )
+        print "%s: %s - %s" % (name, ret[0], ret[1]) 
+        return ret
         
-        if "beginPosition" in json['ObservationCollection']['member'][0]["samplingTime"]:
             
-            begin = json['ObservationCollection']['member'][0]["samplingTime"]["beginPosition"]
-            end = json['ObservationCollection']['member'][0]["samplingTime"]["endPosition"]
-            print "%s: %s - %s" % (name, begin, end) 
+    def extractSamplingFromGOJson(self, json):
+        
+        if "beginPosition" in json["samplingTime"]:
+            
+            begin = json["samplingTime"]["beginPosition"]
+            end = json["samplingTime"]["endPosition"]
+            
         
             return [
                 iso.parse_datetime(begin),
@@ -99,7 +107,6 @@ class Service(object):
         
             print "%s: %s - %s" % (name, None, None) 
             return [None,None]
-        
        
     def getSOSProceduresList(self): 
         """
@@ -181,6 +188,31 @@ class Service(object):
         ret.description = json['data']
                 
         return ret
+        
+    def getSOSProcedure(self,name):
+    
+        params = {
+            'service': 'SOS', 
+            'version': '1.0.0',
+            'request': 'GetObservation',
+            'observedProperty': ':',
+            'offering': 'temporary',
+            'responseFormat': 'application/json',
+            'procedure': name
+        }
+        
+        print "Requesting %s GetObservation: %s/%s" % (name,self.host,self.service)
+        #print params
+        
+        res = req.get("%s/%s" % (self.host,self.service), params=params)
+        
+        #print res.json()
+        
+        
+        
+        json = res.json()['ObservationCollection']['member'][0]
+        
+        return json
     
     def registerProcedure(self, procedure):
         request = {
@@ -251,7 +283,124 @@ class Service(object):
             raise Exception("Registering procedure %s failed: \n%s" % (pname, json["message"]))
         else:
             print json["message"]
+            
+    def getSOSProcedureObservations(self, name, begin, end):
+        """
+            Execute a getObservation
+            
+            > Return an array observations.  
         
+        """
+        begin1 = ""
+        end1 = ""
+        
+        
+        # Checking dates format
+        if isinstance(begin, datetime):
+            # Check tz
+            if begin.tzinfo is None:
+                raise Exception("Time Zone (tzinfo) is mandatory in datetime objects")
+            begin1 = begin.isoformat()
+        elif isinstance(begin, str):
+            tmp = iso.parse_datetime(begin)
+            if tmp.tzinfo is None:
+                raise Exception("Time Zone (tzinfo) is mandatory in datetime objects")
+            begin1 = tmp.isoformat()
+            
+            
+        if isinstance(end, datetime):
+            # Check tz
+            if end.tzinfo is None:
+                raise Exception("Time Zone (tzinfo) is mandatory in datetime objects")
+            end1 = end.isoformat()
+        elif isinstance(end, str):
+            tmp = iso.parse_datetime(end)
+            if tmp.tzinfo is None:
+                raise Exception("Time Zone (tzinfo) is mandatory in datetime objects")
+            end1 = tmp.isoformat()
+            
+        # Executing request
+        res = req.get("%s/%s" % (self.host, self.service), params={
+            'service': 'SOS', 
+            'version': '1.0.0',
+            'request': 'GetObservation',
+            'offering': 'temporary',
+            'responseFormat': 'application/json',
+            'procedure': name,
+            'eventTime': "%s/%s" % (begin1,end1),
+            'observedProperty': ":"
+        })
+        
+        json = res.json()
+        
+        return json['ObservationCollection']['member'][0]['result']['DataArray']['values']
+        
+    def getSharedProcedureListWith(self, service2):
+        
+        """
+        
+        Return a list of procedures equals in each istSOS service 
+        
+        """
+        
+        procedures1 = self.getSOSProceduresList()
+        procedures2 = service2.getSOSProceduresList()
+
+        procedures1 = [p.replace('urn:ogc:def:procedure:x-istsos:1.0:', '') for p in procedures1]
+        procedures2 = [p.replace('urn:ogc:def:procedure:x-istsos:1.0:', '') for p in procedures2]
+
+        procedures1.sort()
+        procedures2.sort()
+
+        procedures = [] # ListTable()
+
+        stop1 = len(procedures1)
+        stop2 = len(procedures2)
+        cnt1 = cnt2 = 0
+        stop = max(stop1,stop2)
+
+        for i in range(0,stop):
+
+            row = []
+            tmp1 = None
+            tmp2 = None
+            
+            if (cnt1)<stop1:
+                tmp1 = procedures1[cnt1]
+                
+            if (cnt2)<stop2:
+                tmp2 = procedures2[cnt2]
+            
+            if tmp1 == None:
+                row = [None,tmp2]
+                cnt1 += 1
+                
+            elif tmp2 == None:
+                row = [tmp1,None]
+                cnt2 += 1
+                
+            elif tmp1 == tmp2:
+                row = [tmp1,tmp2]
+                cnt1 += 1
+                cnt2 += 1
+                
+            elif tmp1 < tmp2:
+                row = [tmp1,None]
+
+                cnt1 += 1
+                
+            elif tmp1 > tmp2:
+                row = [None,tmp2]
+                cnt2 += 1
+                
+            procedures.append(row)
+            
+            print row
+            
+
+        procedures = list(set(procedures1) & set(procedures2))
+        procedures.sort()
+        return procedures
 
 class Procedure(dict):
 

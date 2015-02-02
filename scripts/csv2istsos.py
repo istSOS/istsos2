@@ -92,6 +92,10 @@ def execute (args, logger=None):
         if 'pwd' in args:
             passw = args['pwd']
             
+        maxobs = 5000
+        if 'm' in args:
+            maxobs = int(args['m'])
+            
         #req = requests.session()
         req = requests
         
@@ -240,7 +244,7 @@ def execute (args, logger=None):
                         
                 data["samplingTime"] = {
                     "beginPosition": bp.isoformat(),
-			       "endPosition":  ep.isoformat()
+		            "endPosition":  ep.isoformat()
                 }
                 
                 #data["result"]["DataArray"]["elementCount"] = str(len(data['result']['DataArray']['values']))
@@ -251,26 +255,81 @@ def execute (args, logger=None):
                 log (" > Values: %s" % len( data['result']['DataArray']['values']))
                     
                 if not test and len(files)>0: # send to wa
-                    res = req.post("%s/wa/istsos/services/%s/operations/insertobservation" % (
-                        url,
-                        service), 
-                        auth=(user, passw),
-                        verify=False,
-                        data=json.dumps({
-                        "ForceInsert": "true",
-                        "AssignedSensorId": aid,
-                        "Observation": data
-                        })
-                    )
-                    # read response
-                    log (" > Insert observation success: %s" % res.json()['success'])
-                    if not res.json()['success']:
-                        log (res.json()['message'])
+                
+                    if len(data['result']['DataArray']['values']) > maxobs:
+                    
+                        import copy
+                        
+                        total = len(data['result']['DataArray']['values'])
+                        inserted = last = maxobs
+                        
+                        while len(data['result']['DataArray']['values'])>0:
+                            
+                            tmpData = copy.deepcopy(data)                            
+                            tmpData['result']['DataArray']['values'] = data['result']['DataArray']['values'][:last]                            
+                            data['result']['DataArray']['values']    = data['result']['DataArray']['values'][last:]
+                            
+                            if len(data['result']['DataArray']['values'])>0:
+                                tmpData["samplingTime"] = {
+                                    "beginPosition": tmpData['result']['DataArray']['values'][0][jsonindex['urn:ogc:def:parameter:x-istsos:1.0:time:iso8601']],
+			                        "endPosition":      data['result']['DataArray']['values'][0][jsonindex['urn:ogc:def:parameter:x-istsos:1.0:time:iso8601']]
+                                }
+                            else:
+                                tmpData["samplingTime"] = {
+                                    "beginPosition": tmpData['result']['DataArray']['values'][0][jsonindex['urn:ogc:def:parameter:x-istsos:1.0:time:iso8601']],
+			                        "endPosition":   ep.isoformat()
+                                }
+                                
+                            res = req.post("%s/wa/istsos/services/%s/operations/insertobservation" % (
+                                url,
+                                service), 
+                                auth=(user, passw),
+                                verify=False,
+                                data=json.dumps({
+                                    "ForceInsert": "true",
+                                    "AssignedSensorId": aid,
+                                    "Observation": tmpData
+                                })
+                            )
+                            
+                            # read response
+                            res.raise_for_status()
+                            log (" > Insert observation success of %s/%s (%s / %s) observations: %s" % (inserted,total,tmpData["samplingTime"]["beginPosition"],tmpData["samplingTime"]["endPosition"],res.json()['success']))
+                            if not res.json()['success']:
+                                log (res.json()['message'])
+                                
+                            if len(data['result']['DataArray']['values'])<maxobs:
+                                last = len(data['result']['DataArray']['values'])
+                            inserted += last
+                            
+                    
+                    else:
+                
+                        res = req.post("%s/wa/istsos/services/%s/operations/insertobservation" % (
+                            url,
+                            service), 
+                            auth=(user, passw),
+                            verify=False,
+                            data=json.dumps({
+                                "ForceInsert": "true",
+                                "AssignedSensorId": aid,
+                                "Observation": data
+                            })
+                        )
+                        # read response
+                        res.raise_for_status()
+                        log (" > Insert observation success: %s" % res.json()['success'])
+                        if not res.json()['success']:
+                            log (res.json()['message'])
                         
                     
                     print "~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~"
         pass
-        
+    
+    except requests.exceptions.HTTPError as eh:
+        print "ERROR: %s\n\n" % eh
+        traceback.print_exc()
+        pass
     except Exception as e:    
         print "ERROR: %s\n\n" % e
         traceback.print_exc()
@@ -302,6 +361,13 @@ if __name__ == "__main__":
         dest='p',
         metavar='procedures',
         help='List of procedures to be aggregated.')
+        
+    parser.add_argument('-m', 
+        action='store',
+        dest='m',
+        metavar='max observations',
+        default= '5000',
+        help='Maximum number of observations inserted per InsertObservation request (default: %(default)s).')
     
     parser.add_argument('-q',
         action = 'store',

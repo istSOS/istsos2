@@ -144,11 +144,11 @@ class Procedure():
                 )
             )
             try:
-                self.template = res.json['data'][0]
+                self.template = res.json()['data'][0]
             except Exception as e:
                 print res.text
                 raise e
-        return self.template #res.json['data'][0]
+        return self.template #res.json()['data'][0]
 
     
 def parse_and_get_ns(xml):
@@ -210,13 +210,13 @@ def execute (args):
             'version': '1.0.0',
             'request': 'GetCapabilities',
             'section': 'contents'
-        }, prefetch=True, verify=False)
+        }, verify=False)
         
         # Parsing response
         gc, gcNs = parse_and_get_ns(StringIO(res.content))
         
         # Extract all offerings
-        elOfferings = gc.findall("{%s}Contents/{%s}ObservationOfferingList/{%s}ObservationOffering" % (gcNs['sos'],gcNs['sos'],gcNs['sos']) )
+        elOfferings = gc.findall("{%s}Contents/{%s}ObservationOfferingList/{%s}ObservationOffering" % (gcNs['sos'],gcNs['sos'],gcNs['sos']))
         
         for offering in elOfferings:
             offeringName = offering.find("{%s}name" % (gcNs['gml']) ).text.split(":")[-1]
@@ -245,7 +245,7 @@ def execute (args):
                     'request': 'DescribeSensor',
                     'outputFormat': 'text/xml;subtype=\'sensorML/1.0.0\'',
                     'procedure': pname
-                }, prefetch=True, verify=False)
+                }, verify=False)
                 
                 ds, dsNs = parse_and_get_ns(StringIO(res.content))
                 
@@ -302,7 +302,7 @@ def execute (args):
                     'responseFormat': 'text/xml;subtype=\'sensorML/1.0.0\'',
                     'procedure': pname,
                     'observedProperty': ",".join(observedProperties)
-                }, prefetch=True, verify=False)
+                }, verify=False)
                               
                 go, goNs = parse_and_get_ns(StringIO(res.content))
                 
@@ -391,15 +391,15 @@ def execute (args):
                 # ~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
                 
                 # Check if procedure already exist
-                res = req.get("%s/wa/istsos/services/%s/procedures/%s" % (dst,srv,pname), prefetch=True, verify=False)  
-                if not res.json["success"]:
+                res = req.get("%s/wa/istsos/services/%s/procedures/%s" % (dst,srv,pname), verify=False)  
+                if not res.json()["success"]:
                     # Registering procedure to istSOS   
                     res = req.post("%s/wa/istsos/services/%s/procedures" % (dst,srv), 
                             data=json.dumps(procedures[pname].data)
                     ) 
-                    if not res.json["success"]:
+                    if not res.json()["success"]:
                         #print json.dumps(procedures[pname].data)
-                        raise Exception("Registering procedure %s failed: \n%s" % (pname, res.json["message"]))
+                        raise Exception("Registering procedure %s failed: \n%s" % (pname, res.json()["message"]))
                     
                     # Getting details (describe sensor) to get the assignedSensorId
                     res = req.get("%s/wa/istsos/services/%s/procedures/%s" % (dst,srv,pname))  
@@ -418,7 +418,7 @@ def execute (args):
                         print res.text
                         raise exproc
                 
-                procedures[pname].oid = res.json["data"]["assignedSensorId"]
+                procedures[pname].oid = res.json()["data"]["assignedSensorId"]
                 days = int(args['i'])
                 interval = timedelta(days=int(days))
                 
@@ -482,9 +482,9 @@ def execute (args):
                                 'observedProperty': ",".join(observedProperties)
                             }
                             try:
-                                res = req.get("%s" % (src), params=params, prefetch=True, verify=False)
+                                res = req.get("%s" % (src), params=params, verify=False)
                             except Exception:
-                                res = req.get("%s" % (src), params=params, prefetch=True, verify=False)
+                                res = req.get("%s" % (src), params=params, verify=False)
                             
                             gotime = timedelta(seconds=int(time.time() - looptime))
                             
