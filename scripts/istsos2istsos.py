@@ -228,9 +228,26 @@ def execute (args, logger=None):
         if ('constraint' in ddata['data']['outputs'][0] 
             and 'interval' in ddata['data']['outputs'][0]['constraint']):
                 try:
-                    # The endPosition of the destination will be used as Start/IO BeginPosition
-                    start = iso.parse_datetime(ddata['data']['outputs'][0]['constraint']['interval'][1])
-                    # Retroactive aggregation
+                    if function and resolution:
+                        # getting last inserted observations of "destination" service
+                        params = {
+                            "request": "GetObservation",
+                            "service": "SOS",
+                            "version": "1.0.0",
+                            "observedProperty": ':',
+                            "procedure": procedure,
+                            "responseFormat": "application/json",
+                            "offering": 'temporary'
+                        }
+                        res = req.get("%s/%s" % (durl,dsrv), params=params, auth=(duser, dpwd), verify=False)
+                        obs = res.json()
+                        if adata['success']==False:
+                            raise Exception ("Cannot load last observation from destination service for procedure %s." % procedure)
+                        start = iso.parse_datetime(obs['ObservationCollection']['member'][0]['result']['DataArray']['values'][0][0]
+                    else:
+                        # The endPosition of the destination will be used as Start/IO BeginPosition
+                        start = iso.parse_datetime(ddata['data']['outputs'][0]['constraint']['interval'][1])
+                        # Retroactive aggregation
                     if retro > 0:
                         if start-timedelta(minutes=retro) > iso.parse_datetime(ddata['data']['outputs'][0]['constraint']['interval'][0]):
                             start = start-timedelta(minutes=retro)
