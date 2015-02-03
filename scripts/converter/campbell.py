@@ -143,10 +143,6 @@ class CampbellImporter(raw2csv.Converter):
                     
                     values = {}
                     
-                    print arr
-                    print "Index: %s" % self.config["column"]
-                    print "Len: %s" % len(arr)
-                    
                     if "column" in self.config:
                         # It happens that some lines are cutted so the line is skipped
                         try:
