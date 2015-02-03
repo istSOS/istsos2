@@ -43,6 +43,7 @@ try:
     import lib.isodate as iso
 except ImportError as e:
     print "\nError loading internal libs:\n >> please run the script from the istSOS root folder.\n\n"
+    print str(e)
     raise e
     
 class Converter():

@@ -120,7 +120,9 @@ class CampbellImporter(raw2csv.Converter):
     
     def parse(self, fileObj, name):
         lines = fileObj.readlines()
+        lineCounter = 0
         for line in lines:
+            lineCounter = lineCounter + 1
             s = line.strip(' \t\n\r')
             arr = s.split(",")
             if s != '' and len(arr)>0:
@@ -141,7 +143,17 @@ class CampbellImporter(raw2csv.Converter):
                     
                     values = {}
                     
+                    print arr
+                    print "Index: %s" % self.config["column"]
+                    print "Len: %s" % len(arr)
+                    
                     if "column" in self.config:
+                        # It happens that some lines are cutted so the line is skipped
+                        try:
+                            arr[self.config["column"]]
+                        except:
+                            print "Error in line %s: %s" % (lineCounter, arr)
+                            continue
                         values[self.config["observedProperty"]] = arr[self.config["column"]]
                     else:
                         values[self.config["observedProperty"]] = float(self.config["value"])

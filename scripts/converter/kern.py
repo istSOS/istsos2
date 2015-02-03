@@ -79,7 +79,12 @@ class KernImporter(raw2csv.Converter):
         raw2csv.Converter.__init__(self, procedureName, url, service,
             inputDir, fileNamePattern, outputDir,
             qualityIndex, exceptionBehaviour, user, password, debug, csvlength, filenamecheck, archivefolder)
-            
+        
+        '''d1 = self.getDSEndPosition() - timedelta(minutes=-10080)  # one week behind
+        d2 = datetime(year=dt.year,month=1,day=1)
+        
+        perfect_pattern = "%s_%s" % (str(d1.year)[-2:], ((d1-d2).total_seconds()/60))'''
+        
     def minutesdate(self, year, minutes):
         d1 = datetime(year=int(year),month=1,day=1)
         d1 = (d1 + timedelta(minutes=int(minutes)))
