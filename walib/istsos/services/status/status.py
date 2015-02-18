@@ -277,7 +277,7 @@ class waStatus(waResourceService):
             return a dict containing status, last observation, delay (s), and cycle delay
         """
         sql = """
-        SELECT p.etime_prc as time, p.time_res_prc as delay
+        SELECT p.etime_prc as time, p.time_acq_prc as delay
         FROM  %s.procedures p
         WHERE
         """ % (self.service,)
