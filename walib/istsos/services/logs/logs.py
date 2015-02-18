@@ -73,9 +73,9 @@ class waLogs(waResourceService):
             self.serviceconf.connection['port'])
 
         if self.logs_id:
-            sql = "SELECT * FROM %s.cron_log " % (self.service,)
+            sql = "SELECT * FROM %s.cron_log " % (self.service)
             sql += " WHERE id_clo= %s"
-            par = (self.logs_id)
+            par = (self.logs_id,)
             exceptions = servicedb.select(sql, par)
         else:
             exceptions = self.search_with_params(servicedb)
