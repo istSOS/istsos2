@@ -166,7 +166,7 @@ def createSimpleNotification(name, service, params, cql, interval, period=None):
 def %s():
     %s
     import lib.requests as requests
-    res = requests.get('%s', params=rparams, prefetch=True)
+    res = requests.get('%s', params=rparams)
 
     result = res.json['ObservationCollection']['member'][0]['result']['DataArray']['values']
 
