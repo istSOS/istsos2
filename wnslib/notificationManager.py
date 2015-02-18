@@ -183,7 +183,7 @@ def %s():
             message += str(el[0]) + '\\nCondition: ' + str(el[1]) + '%s'
             nS.notify('%s',message)
             break;
-### end %s ### """ % (name, interval, startDate, name, config, link, cql,
+### end %s ### """ % (name, interval, startDate, name, config, link, name,
          cql, name, name, name)
     )
     aps_file.close()
