@@ -31,7 +31,7 @@ import urllib
 import urllib2
 import urlparse
 import lib.requests as requests
-from requests_oauthlib import OAuth1
+from lib.requests_oauthlib import OAuth1
 import StringIO
 
 from lib.twitter import (__version__, _FileCache, simplejson, DirectMessage, List,

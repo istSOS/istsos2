@@ -665,7 +665,7 @@ class Status(object):
       A twitter.Status instance
     '''
     if 'user' in data:
-      from twitter import User
+      from lib.twitter import User
       # Have to do the import here to prevent cyclic imports in the __init__.py
       # file
       user = User.NewFromJsonDict(data['user'])
@@ -689,7 +689,7 @@ class Status(object):
       if 'urls' in data['entities']:
         urls = [Url.NewFromJsonDict(u) for u in data['entities']['urls']]
       if 'user_mentions' in data['entities']:
-        from twitter import User
+        from lib.twitter import User
         user_mentions = [User.NewFromJsonDict(u) for u in data['entities']['user_mentions']]
       if 'hashtags' in data['entities']:
         hashtags = [Hashtag.NewFromJsonDict(h) for h in data['entities']['hashtags']]
