@@ -47,10 +47,15 @@ class wnsRegistrations(wnsOperation):
             self.serviceconf.connectionWns['host'],
             self.serviceconf.connectionWns['port'])
 
-        sql = """SELECT * FROM wns.registration r, wns.notification n
-                WHERE r.user_id_fk = %s AND r.not_id_fk=n.id;"""
+        sql = "SELECT * FROM wns.registration r, wns.notification n "
+        sql += "WHERE r.user_id_fk = %s AND r.not_id_fk=n.id"
 
         params = (self.user_id, )
+
+        if self.notification:
+            sql += " AND r.not_id_fk= %s "
+            params += (self.notification, )
+
         NotificationList = servicedb.select(sql, params)
         RegistrationsList = {}
 
