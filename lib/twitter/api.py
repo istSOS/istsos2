@@ -30,7 +30,7 @@ import types
 import urllib
 import urllib2
 import urlparse
-import requests
+import lib.requests as requests
 from requests_oauthlib import OAuth1
 import StringIO
 

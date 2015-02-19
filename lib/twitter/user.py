@@ -823,7 +823,7 @@ class User(object):
       A twitter.User instance
     '''
     if 'status' in data:
-      from twitter import Status
+      from lib.twitter import Status
       # Have to do the import here to prevent cyclic imports in the __init__.py
       # file
       status = Status.NewFromJsonDict(data['status'])
