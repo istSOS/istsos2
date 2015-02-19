@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from twitter import TwitterError
+from lib.twitter import TwitterError
 
 class Url(object):
   '''A class representing an URL contained in a tweet'''

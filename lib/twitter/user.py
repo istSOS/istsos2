@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from twitter import simplejson, TwitterError
+from lib.twitter import simplejson, TwitterError
 
 class UserStatus(object):
   '''A class representing the UserStatus structure used by the twitter API.

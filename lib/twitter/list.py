@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from twitter import simplejson, TwitterError, User
+from lib.twitter import simplejson, TwitterError, User
 
 class List(object):
   '''A class representing the List structure used by the twitter API.

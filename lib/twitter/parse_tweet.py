@@ -2,7 +2,7 @@
 
 import re
 
-from twitter import TwitterError
+from lib.twitter import TwitterError
 
 class ParseTweet:
   # compile once on import

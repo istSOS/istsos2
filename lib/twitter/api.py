@@ -34,7 +34,7 @@ import requests
 from requests_oauthlib import OAuth1
 import StringIO
 
-from twitter import (__version__, _FileCache, simplejson, DirectMessage, List,
+from lib.twitter import (__version__, _FileCache, simplejson, DirectMessage, List,
                      Status, Trend, TwitterError, User, UserStatus)
 
 CHARACTER_LIMIT = 140
