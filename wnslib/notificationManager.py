@@ -168,7 +168,7 @@ def %s():
     import lib.requests as requests
     res = requests.get('%s', params=rparams)
 
-    result = res.json['ObservationCollection']['member'][0]['result']['DataArray']['values']
+    result = res.json()['ObservationCollection']['member'][0]['result']['DataArray']['values']
 
     import wnslib.notificationScheduler as nS
 
