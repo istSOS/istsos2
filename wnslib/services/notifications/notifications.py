@@ -78,7 +78,7 @@ class wnsNotifications(wnsOperation):
         try:
             from wnslib import notificationManager as notManager
             if "params" in self.json.keys():
-                print >> sys.stderr, "simpleNot"
+                print "simpleNot"
                 params = self.json["params"]
                 condition = self.json["condition"]
                 service = self.json["service"]
@@ -87,7 +87,7 @@ class wnsNotifications(wnsOperation):
                 notManager.createSimpleNotification(name, service, params,
                                             condition, interval, period)
             else:
-                print >> sys.stderr, "Notification"
+                print  "Notification"
                 funcFile = self.json["function"]
                 msg = notManager.addNotification(name, funcFile, interval)
                 if msg:

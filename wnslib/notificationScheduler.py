@@ -22,7 +22,7 @@ defaultCFGpath = path.join(path.dirname(path.split(path.abspath(__file__))[0]),
 serviceconf = configManager.waServiceConfig(defaultCFGpath)
 
 
-def notify(name, message):
+def notify(name, message, status=True):
     """
         Attributes:
             name        name of the notification
@@ -48,7 +48,8 @@ def notify(name, message):
     #print usersList
 
     notifier = notify.Notify(serviceconf)
-    notifier.post_twitter_status(message, name)
+    if status:
+        notifier.post_twitter_status(message, name)
 
     for user in usersList:
         sql = "SELECT * FROM wns.user WHERE id = %s"
