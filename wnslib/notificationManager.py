@@ -171,19 +171,37 @@ def %s():
     result = res.json()['ObservationCollection']['member'][0]['result']['DataArray']['values']
 
     import wnslib.notificationScheduler as nS
+    notify = {
+        "twitter": {
+            "public": "",
+            "private": ""
+        },
+        "mail": {
+            "subject": "",
+            "message": ""
+        }
+    }
 
     if len(result) ==0:
         message = "no data found, procedure: " + rparams['procedures']
-        nS.notify('%s',message)
+        notify['twitter']['public'] = message
+        notify['twitter']['private'] = message
+        notify['mail']['subject'] = "notification from %s"
+        notify['mail']['message'] = message
+        nS.notify('%s',notify)
 
     for el in result:
         if float(el[1]) %s:
 
             message = 'Condition met on the requested notification\\nDate: '
             message += str(el[0]) + '\\nCondition: ' + str(el[1]) + '%s'
-            nS.notify('%s',message)
+            notify['twitter']['public'] = message
+            notify['twitter']['private'] = message
+            notify['mail']['subject'] = "notification from %s"
+            notify['mail']['message'] = message
+            nS.notify('%s',notify)
             break;
-### end %s ### """ % (name, interval, startDate, name, config, link, name,
-         cql, name, name, name)
+### end %s ### """ % (name, interval, startDate, name, config, link, name, name,
+         cql, name, name, name, name)
     )
     aps_file.close()

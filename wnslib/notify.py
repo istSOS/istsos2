@@ -28,8 +28,16 @@ class Notify(object):
                             access_token_key=twitter_conf['oauth_token'],
                             access_token_secret=twitter_conf['oauth_secret'])
 
-    def email(self, message, to, name):
+    def email(self, message, to):
         print 'send mail'
+
+        if not 'subject' in message.keys():
+            print "please define a email subject"
+            return 
+        if not 'message' in message.keys():
+            print "please define a email text"
+            return 
+
         import smtplib
         from email.MIMEMultipart import MIMEMultipart
         from email.MIMEText import MIMEText
@@ -38,11 +46,11 @@ class Notify(object):
         mail_pwd = self.serviceconfig.mail['password']
 
         msg = MIMEMultipart('alternative')
-        msg['Subject'] = "[WNS] Notification from " + name
+        msg['Subject'] = message['subject']
         msg['From'] = mail_usr
         msg['To'] = to
 
-        part = MIMEText(message, 'plain')
+        part = MIMEText(message['message'], 'plain')
         msg.attach(part)
 
         mailServer = smtplib.SMTP("smtp.gmail.com", 587)
@@ -55,9 +63,13 @@ class Notify(object):
 
     def post_twitter_status(self, message, name):
         # Update Status
+        if not 'public' in message.keys():
+            print "please define a twitter public message"
+            return
+
         print 'update twitter status'
         tweet = '#' + name + ' '
-        tweet += message
+        tweet += message['public']
 
         if len(message) < 140:
             try:
@@ -71,10 +83,13 @@ class Notify(object):
             raise Exception("Message for twitter to long!!!, MAX 140 character")
 
     def twitter(self, message, to, name):
+        if not 'private' in message.keys():
+            print "please define a twitter public message"
+            return
         print 'Send via Twitter'
         # Send direct message
         tweet = '#' + name + ' '
-        tweet += message
+        tweet += message['private']
 
         if len(message) < 140:
             print 'send direct message'

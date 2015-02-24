@@ -49,7 +49,7 @@ def notify(name, message, status=True):
 
     notifier = notify.Notify(serviceconf)
     if status:
-        notifier.post_twitter_status(message, name)
+        notifier.post_twitter_status(message['twitter'], name)
 
     for user in usersList:
         sql = "SELECT * FROM wns.user WHERE id = %s"
@@ -61,9 +61,11 @@ def notify(name, message, status=True):
 
         for con in user['not_list']:
             if con == 'mail' or con == 'email':
-                notifier.email(message, contact['email'], name)
+                if 'mail' in message.keys():
+                    notifier.email(message['mail'], contact['email'])
             elif con == 'twitter':
-                notifier.twitter(message, contact['twitter'], name)
+                if 'twitter' in message.keys():
+                    notifier.twitter(message['twitter'], contact['twitter'], name)
             elif con == 'fax':
                 notifier.fax(message, contact['fax'], name)
             elif con == 'sms':
