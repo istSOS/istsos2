@@ -284,7 +284,7 @@ class Service(object):
         else:
             print json["message"]
             
-    def getSOSProcedureObservations(self, name, begin, end):
+    def getSOSProcedureObservations(self, name, begin, end, qi = False):
         """
             Execute a getObservation
             
@@ -327,6 +327,7 @@ class Service(object):
             'offering': 'temporary',
             'responseFormat': 'application/json',
             'procedure': name,
+            'qualityIndex': qi,
             'eventTime': "%s/%s" % (begin1,end1),
             'observedProperty': ":"
         })
