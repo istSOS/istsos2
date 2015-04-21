@@ -73,6 +73,8 @@ def execute (args, logger=None):
         print params
 
         while tmpEnd <= end:
+        
+            print ("%s - %s") % (tmpBegin,tmpEnd)
 
             if tmpBegin == tmpEnd:
                 params["eventTime"] = iso.datetime_isoformat(tmpBegin)
@@ -87,16 +89,13 @@ def execute (args, logger=None):
             
             print " %s ************************** " % iso.datetime_isoformat(tmpEnd)
             
-        if tmpBegin <= end:
+        if tmpBegin < end:
         
             tmpEnd = end
             if tmpBegin == tmpEnd:
                 params["eventTime"] = iso.datetime_isoformat(tmpBegin)
             else:
                 params["eventTime"] = "%s/%s" % (iso.datetime_isoformat(tmpBegin), iso.datetime_isoformat(tmpEnd))
-            
-            '''tmpEnd = end
-            params["eventTime"] = "%s/%s" % (iso.datetime_isoformat(tmpBegin), iso.datetime_isoformat(tmpEnd))'''
             
             res = req.get("%s?%s" % (url, urllib.urlencode(params)))
             makeFile(res, procedure, observedProperty, d)

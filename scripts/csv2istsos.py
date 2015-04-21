@@ -116,10 +116,7 @@ def execute (args, logger=None):
             if data['success']==False:
                 raise Exception ("Description of procedure %s can not be loaded: %s" % (proc, data['message']))
             else:
-                if debug:
-                    pp.pprint(data)
-                else:
-                    print " > %s" % data['message']
+                print " > %s" % data['message']
             
             data = data['data']
             
@@ -144,10 +141,7 @@ def execute (args, logger=None):
             if data['success']==False:
                 raise Exception ("Last observation of procedure %s can not be loaded: %s" % (proc, data['message']))
             else:
-                if debug:
-                    pp.pprint(data)
-                else:
-                    print " > %s" % data['message']
+                print " > %s" % data['message']
                     
             data = data['data'][0]
             data['AssignedSensorId'] = aid
