@@ -37,6 +37,8 @@ def executeSos(environ, start_response):
     import sys
     import traceback
     import waconf2sos as cfg
+    from urlparse import parse_qs
+    
     sosConfig = cfg.istsosConfig(environ)
 
     if not sosConfig.istsos_librarypath=="" or sosConfig.istsos_librarypath==None:
