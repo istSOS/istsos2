@@ -24,11 +24,7 @@ pp = pprint.PrettyPrinter(indent=4)
 
 
 def application(environ, start_response):
-
     path = environ['PATH_INFO'].strip()[1:].split("/")
-    #print >> sys.stderr, "pathInfo: %s" % path
-    #print >> sys.stderr, "\n\nENVIRON: %s" % pp.pprint(environ)
-
     if path[0] == 'wa':
         return executeWa(environ, start_response)
     elif path[0] == 'wns':
@@ -60,6 +56,7 @@ def executeSos(environ, start_response):
                            sosConfig.connection["host"],
                            sosConfig.connection["port"])
 
+
         from istsoslib.filters import factory_filters as FF
         from istsoslib.responders import factory_response as FR
         from istsoslib.renderers import factory_render as FRe
@@ -80,6 +77,16 @@ def executeSos(environ, start_response):
         # prepare response header
         response_headers = [('Content-Type', content_type),
                             ('Content-Length', str(len(render.encode('utf-8'))))]
+                            
+        #Content-Disposition: attachment; filename="'.basename($file).'"'                    
+        if str(environ['REQUEST_METHOD']).upper()=='GET':
+            rect = parse_qs(environ['QUERY_STRING'])
+            requestObject = {}
+            for key in rect.keys():
+                requestObject[key.lower()] = rect[key][0]
+            if requestObject.has_key("attachment"):
+                response_headers.append(("Content-Disposition", "attachment; filename=%s" % requestObject["attachment"]))
+                            
         # send response header
         start_response(status, response_headers)
         #send response body
