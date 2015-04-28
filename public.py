@@ -27,8 +27,10 @@ def application(environ, start_response):
     path = environ['PATH_INFO'].strip()[1:].split("/")
     if path[0]=='wa':
         return executeWa(environ, start_response)
+    elif path[0] == 'wns':
+        return executeWns(environ, start_response)
     else:
-        response_body = "istSOS requests not supported in this url"
+        response_body = "istSOS requests not supported for read only users"
         start_response('404 Not Found', 
             [
                 ('Content-Type', 'text/plain; charset=utf-8'),
@@ -52,3 +54,22 @@ def executeWa(environ, start_response):
         return [response_body.encode('utf-8')]
     else:
         return app.executeWa(environ, start_response)
+        
+
+def executeWns(environ, start_response):
+    
+    method = str(environ['REQUEST_METHOD']).upper()
+    # Data RETRIEVAL
+    if method != "GET":
+        response_body = '{"success": false, "message": "HTTP method %s not supported", "method": "%s"}' % (method,method)
+        start_response('200 OK', 
+            [
+                ('Content-Type', 'application/json; charset=utf-8'),
+                ('Content-Length', str(len(response_body)))
+            ]
+        )
+        return [response_body.encode('utf-8')]
+    else:
+        return app.executeWns(environ, start_response)
+        
+
