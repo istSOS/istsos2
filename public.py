@@ -30,6 +30,9 @@ def application(environ, start_response):
     elif path[0] == 'wns':
         return executeWns(environ, start_response)
     else:
+        return executeSos(environ, start_response)
+    '''
+    else:
         response_body = "istSOS requests not supported for read only users"
         start_response('404 Not Found', 
             [
@@ -37,7 +40,7 @@ def application(environ, start_response):
                 ('Content-Length', str(len(response_body)))
             ]
         )
-        return [response_body.encode('utf-8')]
+        return [response_body.encode('utf-8')]'''
 
 
 def executeSos(environ, start_response):
