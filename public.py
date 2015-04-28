@@ -39,6 +39,23 @@ def application(environ, start_response):
         )
         return [response_body.encode('utf-8')]
 
+
+def executeSos(environ, start_response):
+    
+    method = str(environ['REQUEST_METHOD']).upper()
+    # Data RETRIEVAL
+    if method != "GET":
+        response_body = '{"success": false, "message": "HTTP method %s not supported", "method": "%s"}' % (method,method)
+        start_response('200 OK', 
+            [
+                ('Content-Type', 'application/json; charset=utf-8'),
+                ('Content-Length', str(len(response_body)))
+            ]
+        )
+        return [response_body.encode('utf-8')]
+    else:
+        return app.executeSos(environ, start_response)
+
 def executeWa(environ, start_response):
     
     method = str(environ['REQUEST_METHOD']).upper()
