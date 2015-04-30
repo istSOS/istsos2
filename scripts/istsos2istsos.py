@@ -246,12 +246,15 @@ def execute (args, logger=None):
                     else:
                         # The endPosition of the destination will be used as Start/IO BeginPosition
                         start = iso.parse_datetime(ddata['data']['outputs'][0]['constraint']['interval'][1])
-                        # Retroactive aggregation
-                    if retro > 0:
+                    if retro > 0: # Retroactive aggregation
+                        log("Retroactive aggregation active.")
                         if start-timedelta(minutes=retro) > iso.parse_datetime(ddata['data']['outputs'][0]['constraint']['interval'][0]):
                             start = start-timedelta(minutes=retro)
                         else:
                             start = iso.parse_datetime(ddata['data']['outputs'][0]['constraint']['interval'][0])
+                            
+                    log("Start: %s" % start)
+                    
                 except Exception as ee:
                     print "Error setting start date for proc %s: %s" % (procedure,ee)
                     raise Exception ("The date in the destination procedure %s constraint interval (%s) is not valid." % 
@@ -285,7 +288,7 @@ def execute (args, logger=None):
         try:
             iso.duration_isoformat(resolution)
         except:
-            raise Exception ("The resolution (%s) to apply in the aggrating function is not valid." % resolution)
+            raise Exception ("The resolution (%s) to apply in the aggregating function is not valid." % resolution)
         log("   > Function(Resolution) : %s(%s)" % (function,resolution))
         
     while start+interval<=stop:        

@@ -11,6 +11,7 @@ sys.path.insert(0, path.abspath("."))
 try:
     import lib.argparse as argparse
     import lib.requests as req
+    from lib.requests.auth import HTTPBasicAuth
     from scripts import istsosutils
     import lib.isodate as iso
 
@@ -34,6 +35,7 @@ def makeFile(res, procedure, op, path):
         print "File: %s/%s_%s.dat" % (path, procedure, datetime.datetime.strftime(datenumber, "%Y%m%d%H%M%S%f"))
         out_file = open("%s/%s_%s.dat" % (path, procedure, datetime.datetime.strftime(datenumber, "%Y%m%d%H%M%S%f")),"w")
         out_file.write("\n".join(lines))
+        #print "\n".join(lines)
         out_file.close()
 
     
@@ -52,6 +54,21 @@ def execute (args, logger=None):
         end = iso.parse_datetime(args['end'])
         
         d = args['d']
+        
+        auth = None
+        if 'user' in args:
+            user = args['user']
+        password = None
+        if 'password' in args:
+            password = args['password']
+        if auth and password:
+            auth = HTTPBasicAuth(user, password)
+            
+        qi = 'True'
+        if 'noqi' in args:
+            if args['noqi'] == True: 
+                qi = 'False'
+                
             
         params = {
             "request": "GetObservation",
@@ -62,7 +79,7 @@ def execute (args, logger=None):
             "responseFormat": "text/plain",
             "service": "SOS", 
             "version":"1.0.0",
-            "qualityIndex":"True"
+            "qualityIndex": qi
         }
         
         tmpBegin = begin
@@ -81,7 +98,7 @@ def execute (args, logger=None):
             else:
                 params["eventTime"] = "%s/%s" % (iso.datetime_isoformat(tmpBegin), iso.datetime_isoformat(tmpEnd))
                 
-            res = req.get("%s?%s" % (url, urllib.urlencode(params)))
+            res = req.get("%s?%s" % (url, urllib.urlencode(params)), auth=auth)
             
             makeFile(res, procedure, observedProperty, d)
             tmpBegin = tmpEnd
@@ -97,7 +114,7 @@ def execute (args, logger=None):
             else:
                 params["eventTime"] = "%s/%s" % (iso.datetime_isoformat(tmpBegin), iso.datetime_isoformat(tmpEnd))
             
-            res = req.get("%s?%s" % (url, urllib.urlencode(params)))
+            res = req.get("%s?%s" % (url, urllib.urlencode(params)), auth=auth)
             makeFile(res, procedure, observedProperty, d)
             
             print " %s ************************** " % iso.datetime_isoformat(end)
@@ -128,6 +145,12 @@ if __name__ == "__main__":
         metavar= '2014-01-27T11:27:00+01:00',
         help   = 'End position date of the processing in ISO 8601. If the default value (%(default)s) is used, then the endPosition of the "source" service procedure will be used.')
         
+    
+    parser.add_argument('-noqi',
+        action = 'store_true',
+        dest   = 'noqi',
+        help   = 'Do not export quality index')
+        
     parser.add_argument('-p',
         action = 'store',
         dest   = 'procedure',
@@ -150,6 +173,16 @@ if __name__ == "__main__":
         dest   = 'd',
         default= './',
         help   = 'Csv output folder (default %(default)s).')
+        
+    parser.add_argument('-user',
+        action = 'store',
+        dest   = 'user',
+        help   = 'User')
+        
+    parser.add_argument('-password',
+        action = 'store',
+        dest   = 'password',
+        help   = 'password')
     
 
     args = parser.parse_args()

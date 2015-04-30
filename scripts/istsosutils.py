@@ -30,6 +30,7 @@ from StringIO import StringIO
 import json
 try:
     import lib.requests as req
+    from lib.requests.auth import HTTPBasicAuth
     import lib.argparse as argparse
     from lib.etree import et
     import lib.isodate as iso
@@ -43,12 +44,19 @@ class Service(object):
     Base class handling istSOS WA requests
     """
     
-    def __init__(self, host, service):
+    def __init__(self, host, service, basicAuth=None):
         """
         Initialize Service object
         """
         self.host = host
         self.service = service
+        self.auth = None
+        self.user = None
+        self.password = None
+        if basicAuth:
+            self.user = basicAuth[0]
+            self.password = basicAuth[1]
+            self.auth = HTTPBasicAuth(self.user, self.password)
         
        
     def parse_and_get_ns(self, xml):
@@ -71,22 +79,11 @@ class Service(object):
             
             > Return an array of two dates.  
         
-        """
-        # Executing request
-        """res = req.get("%s/%s" % (self.host,self.service), params={
-            'service': 'SOS', 
-            'version': '1.0.0',
-            'request': 'GetObservation',
-            'offering': 'temporary',
-            'responseFormat': 'application/json',
-            'procedure': name,
-            'observedProperty': ":"
-        })"""
-        
+        """        
         ret = self.extractSamplingFromGOJson(
             self.getSOSProcedure(name)
         )
-        print "%s: %s - %s" % (name, ret[0], ret[1]) 
+        print " > %s: %s - %s" % (name, ret[0], ret[1]) 
         return ret
         
             
@@ -127,7 +124,7 @@ class Service(object):
         print "Requesting a getCapabilitie: %s/%s" % (self.host,self.service)
         print params
         
-        res = req.get("%s/%s" % (self.host,self.service), params=params)
+        res = req.get("%s/%s" % (self.host,self.service), params=params, auth=self.auth)
         
         # Parsing response
         gc, gcNs = self.parse_and_get_ns(StringIO(res.content))
@@ -155,7 +152,7 @@ class Service(object):
         res = req.get(
             "%s/wa/istsos/services/%s/procedures/operations/getlist" % (
                 self.host,self.service
-            )
+            ), auth=self.auth
         )
         json = res.json()
         if not json['success']:
@@ -180,7 +177,7 @@ class Service(object):
         res = req.get(
             "%s/wa/istsos/services/%s/procedures/%s" % (
                 self.host,self.service,name
-            )
+            ), auth=self.auth
         )
         json = res.json()
         if not json['success']:
@@ -204,7 +201,7 @@ class Service(object):
         print "Requesting %s GetObservation: %s/%s" % (name,self.host,self.service)
         #print params
         
-        res = req.get("%s/%s" % (self.host,self.service), params=params)
+        res = req.get("%s/%s" % (self.host,self.service), params=params, auth=self.auth)
         
         #print res.json()
         
@@ -275,7 +272,7 @@ class Service(object):
                 "constraint":{}
             })
         res = req.post("%s/wa/istsos/services/%s/procedures" % (self.host,self.service), 
-                data=json.dumps(request)
+                data=json.dumps(request), auth=self.auth
         ) 
         json = res.json()
         if not json["success"]:
@@ -330,7 +327,7 @@ class Service(object):
             'qualityIndex': qi,
             'eventTime': "%s/%s" % (begin1,end1),
             'observedProperty': ":"
-        })
+        }, auth=self.auth)
         
         json = res.json()
         

@@ -35,6 +35,7 @@ sys.path.insert(0, path.abspath("."))
 try:
     import lib.argparse as argparse
     import lib.requests as requests
+    from lib.requests.auth import HTTPBasicAuth
     import lib.isodate as iso
     from lib.pytz import timezone
 except ImportError as e:
@@ -86,11 +87,22 @@ def execute (args, logger=None):
             test = args['t']
         
         user = None
-        if 'usr' in args:
-            user = args['usr']
+        if 'user' in args:
+            user = args['user']
         passw = None
-        if 'pwd' in args:
-            passw = args['pwd']
+        if 'password' in args:
+            password = args['password']
+            
+        auth = None
+        if user and password:
+            auth = HTTPBasicAuth(user, password)
+        
+        noqi = False # False meas that quality index is also migrated
+        if 'noqi' in args:
+            if args['noqi'] == True: 
+                noqi = True
+            
+        print "noqi: %s" % noqi
             
         maxobs = 5000
         if 'm' in args:
@@ -108,10 +120,9 @@ def execute (args, logger=None):
                 url,
                 service,
                 proc
-                ), auth=(user, passw), verify=False)
+                ), auth=auth, verify=False)
                 
             data = res.json()
-            #log(pp.pprint(data))
                 
             if data['success']==False:
                 raise Exception ("Description of procedure %s can not be loaded: %s" % (proc, data['message']))
@@ -125,7 +136,10 @@ def execute (args, logger=None):
             # Getting observed properties from describeSensor response
             op = []
             for out in data['outputs']:
-                op.append(out['definition'])
+                if not noqi or not ':qualityIndex' in out['definition']:
+                    op.append(out['definition'])
+                    
+            print op
             
             # Load of a getobservation request
             res = req.get("%s/wa/istsos/services/%s/operations/getobservation/offerings/%s/procedures/%s/observedproperties/%s/eventtime/last" % (
@@ -134,7 +148,7 @@ def execute (args, logger=None):
                 'temporary',
                 proc,
                 ','.join(op)
-                ), auth=(user, passw), verify=False)
+                ), auth=auth, verify=False)
             
             data = res.json()
             
@@ -152,9 +166,18 @@ def execute (args, logger=None):
             
             # discover json observed property disposition
             jsonindex = {}
+            print ""
+            print "fields: %s" % data['result']['DataArray']['field']
             for pos in range(0, len(data['result']['DataArray']['field'])):
                 field = data['result']['DataArray']['field'][pos]
-                jsonindex[field['definition']] = pos
+                if not noqi:
+                    jsonindex[field['definition']] = pos
+                elif not ':qualityIndex' in field['definition']:
+                    jsonindex[field['definition']] = pos
+                elif ':qualityIndex' in field['definition'] and noqi:
+                    data['result']['DataArray']['field'].pop(pos)
+            print ""
+            print "fields: %s" % data['result']['DataArray']['field']
             
             log ("Searching: %s" % os.path.join(wd, "%s_[0-9]*%s" % (proc,ext)))
                 
@@ -206,7 +229,8 @@ def execute (args, logger=None):
                             data['result']['DataArray']['values'].append(observation)
                             
                         except Exception as e:
-                            print "Errore alla riga: %s" % i
+                            print "Errore alla riga: %s - %s)" % (i, lines[i])
+                            traceback.print_exc()
                             raise e
                             
                 log ("Before insert ST:")
@@ -277,7 +301,7 @@ def execute (args, logger=None):
                             res = req.post("%s/wa/istsos/services/%s/operations/insertobservation" % (
                                 url,
                                 service), 
-                                auth=(user, passw),
+                                auth=auth,
                                 verify=False,
                                 data=json.dumps({
                                     "ForceInsert": "true",
@@ -302,7 +326,7 @@ def execute (args, logger=None):
                         res = req.post("%s/wa/istsos/services/%s/operations/insertobservation" % (
                             url,
                             service), 
-                            auth=(user, passw),
+                            auth=auth,
                             verify=False,
                             data=json.dumps({
                                 "ForceInsert": "true",
@@ -370,6 +394,11 @@ if __name__ == "__main__":
         default= '100',
         help   = 'The quality index to set for all the measures of the CSV file, if not set into the CSV. (default: %(default)s).')
         
+    parser.add_argument('-noqi',
+        action = 'store_true',
+        dest   = 'noqi',
+        help   = 'Do not export quality index')
+        
     parser.add_argument('-u',
         action = 'store',
         dest   = 'u',
@@ -399,14 +428,14 @@ if __name__ == "__main__":
         default= '.dat',
         help   = 'Extension of the CSV file. (default: %(default)s)')
         
-    parser.add_argument('-usr',
+    parser.add_argument('-user',
         action = 'store',
-        dest   = 'usr',
+        dest   = 'user',
         metavar= 'user name')
         
-    parser.add_argument('-pwd',
+    parser.add_argument('-password',
         action = 'store',
-        dest   = 'pwd',
+        dest   = 'password',
         metavar= 'password')
 
     args = parser.parse_args()

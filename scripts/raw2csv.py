@@ -244,7 +244,7 @@ class Converter():
             'dsrv': ssrv,
             'function': function if function is not None else None,
             'resolution': resolution if resolution is not None else None,
-            'nodataValue': nodataValue if nodataValue is not None else None,
+            'nodataValue': nodataValue if nodataValue is not None else None, 
             'nodataQI': nodataQI if nodataQI is not None else None
         },self)
     
