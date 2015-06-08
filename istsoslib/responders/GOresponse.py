@@ -664,7 +664,8 @@ class Observation:
             valeFieldName = []
             for idx, obspr_row in enumerate(obspr_res):
                 if self.qualityIndex==True:
-                    cols.append("C%s.val_msr as c%s_v, C%s.id_qi_fk as c%s_qi" %(idx,idx,idx,idx))
+                    #cols.append("C%s.val_msr as c%s_v, C%s.id_qi_fk as c%s_qi" %(idx,idx,idx,idx))
+                    cols.append("C%s.val_msr as c%s_v, COALESCE(C%s.id_qi_fk,%s) as c%s_qi" %(idx,idx,idx,filter.aggregate_nodata_qi,idx))
                     valeFieldName.append("c%s_v" %(idx))
                     valeFieldName.append("c%s_qi" %(idx))
                 else:
@@ -759,8 +760,8 @@ class Observation:
                 join_txt += " ) as Cx on Cx.id_eti_fk = et.id_eti\n"
                 sqlSel += " Cx.x as x, Cx.y as y, Cx.z as z, "
                 if self.qualityIndex==True:
-                    sqlSel += "COALESCE(Cx.posqi,%s) as posqi, " % filter.aggregate_nodata_qi
-                    #sqlSel += "Cx.posqi, "
+                    #sqlSel += "COALESCE(Cx.posqi,%s) as posqi, " % filter.aggregate_nodata_qi
+                    sqlSel += "Cx.posqi, "
                 joinar.append(join_txt)
             
             
@@ -878,10 +879,6 @@ class Observation:
             else:
                 self.aggregate_function = None
                 
-            #--------- debug execute query --------
-            #raise sosException.SOSException(3,sql)
-            #--------------------------------------
-            
             try:
                 data_res = pgdb.select(sql)
             except:
