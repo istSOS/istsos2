@@ -704,8 +704,8 @@ class Observation:
                 #    join_txt += " AND %s\n" %(filter.qualityIndex)
 
                 # ATTENTION: HERE -999 VALUES ARE EXCLUDED WHEN ASKING AN AGGREAGATE FUNCTION
-                '''if filter.aggregate_interval != None: # >> Now removed because measures data is not inserted if there is a nodata value
-                    join_txt += " AND A%s.val_msr > -900 " % idx'''
+                if filter.aggregate_interval != None: # >> Should be removed because measures data is not inserted if there is a nodata value
+                    join_txt += " AND A%s.val_msr > -900 " % idx
                 
                 # If eventTime is set add to JOIN part
                 #--------------------------------------
@@ -879,6 +879,8 @@ class Observation:
             else:
                 self.aggregate_function = None
                 
+            #print sql.replace('\n','')
+            
             try:
                 data_res = pgdb.select(sql)
             except:
