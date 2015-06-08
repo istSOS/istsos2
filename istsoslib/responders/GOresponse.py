@@ -702,9 +702,9 @@ class Observation:
                 #if filter.qualityIndex and filter.qualityIndex.__class__.__name__=='str':
                 #    join_txt += " AND %s\n" %(filter.qualityIndex)
 
-                # ATTETION: HERE -999 VALUES ARE EXCLUDED WHEN ASKING AN AGGREAGATE FUNCTION
-                if filter.aggregate_interval != None:
-                    join_txt += " AND A%s.val_msr > -900 " % idx
+                # ATTENTION: HERE -999 VALUES ARE EXCLUDED WHEN ASKING AN AGGREAGATE FUNCTION
+                '''if filter.aggregate_interval != None: # >> Now removed because measures data is not inserted if there is a nodata value
+                    join_txt += " AND A%s.val_msr > -900 " % idx'''
                 
                 # If eventTime is set add to JOIN part
                 #--------------------------------------
@@ -759,7 +759,8 @@ class Observation:
                 join_txt += " ) as Cx on Cx.id_eti_fk = et.id_eti\n"
                 sqlSel += " Cx.x as x, Cx.y as y, Cx.z as z, "
                 if self.qualityIndex==True:
-                    sqlSel += "Cx.posqi, "
+                    sqlSel += "COALESCE(Cx.posqi,%s) as posqi, " % filter.aggregate_nodata_qi
+                    #sqlSel += "Cx.posqi, "
                 joinar.append(join_txt)
             
             
