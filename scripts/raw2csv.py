@@ -160,8 +160,8 @@ class Converter():
             for name in dirs:
                 os.rmdir(os.path.join(root, name))
         os.rmdir(self.folderOut)
-        if self.folderFile not None:
-          os.close(self.folderFile)
+        if self.folderFile:
+            os.close(self.folderFile)
     
     def log(self, message):
         if self.debug:
