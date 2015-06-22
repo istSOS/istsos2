@@ -84,13 +84,7 @@ class Converter():
         self.folderIn = folderIn
         self.pattern = pattern
         
-        if folderOut is not None:
-          self.folderOut = folderOut
-          self.folderFile = None
-        else:
-          self.folderFile, self.folderOut = tempfile.mkdtemp()
-        
-        #self.folderOut = folderOut if folderOut is not None else tempfile.mkdtemp()
+        self.folderOut = folderOut if folderOut is not None else tempfile.mkdtemp()
         
         self.qualityIndex = qualityIndex
         self.user = user
@@ -100,7 +94,12 @@ class Converter():
         self.debugfile = False
         if debug == 'file':
             self.debug = False
-            self.debugfile = open(os.path.join(self.folderOut, "log.txt"), "w")
+            try:
+                self.debugfile = open(os.path.join(self.folderOut, "log.txt"), "w")
+            except Exception as e:
+              self.log(str(e))
+              self.debug = True
+              self.debugfile = False
         else:
             self.debug = debug
         
@@ -151,6 +150,7 @@ class Converter():
         if self.debugfile:
             self.debugfile.flush()
             self.debugfile.close()
+            self.log("  > Debug file closed.." % self.name)
         if self.archivefolder:
             self.archive() 
         # Deleting temporary working directory
@@ -160,8 +160,6 @@ class Converter():
             for name in dirs:
                 os.rmdir(os.path.join(root, name))
         os.rmdir(self.folderOut)
-        if self.folderFile:
-            os.close(self.folderFile)
     
     def log(self, message):
         if self.debug:
@@ -445,6 +443,7 @@ class Converter():
             if self.getIOEndPosition() == None:
                 f = open(os.path.join(self.folderOut,"%s_%s.dat" %(
                     self.name,
+
                     datetime.strftime(self.observations[-1].getEventime().astimezone(timezone('UTC')), "%Y%m%d%H%M%S%f"))), 'w')
             else:
                 if self.getIOEndPosition() < self.observations[-1].getEventime():
@@ -461,10 +460,11 @@ class Converter():
             # there is a "no data" observation (rain)
             if self.getIOEndPosition() == None:
                 raise IstSOSError("The file has no observations, if this happens, you shall use the setEndPosition function to set the endPosition manually")
-            f = open(os.path.join(self.folderOut,"%s_%s.dat" %(
+            f = open(os.path.join(self.folderOut,"%s_%s.dat" % (
                 self.name,
                 datetime.strftime(self.getIOEndPosition().astimezone(timezone('UTC')), "%Y%m%d%H%M%S%f"))), 'w')
             f.write("%s\n" % ",".join(self.obsindex))
+        f.flush()
         f.close()
         
 class InitializationError(Exception):
