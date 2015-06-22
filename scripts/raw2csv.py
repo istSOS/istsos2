@@ -150,7 +150,7 @@ class Converter():
         if self.debugfile:
             self.debugfile.flush()
             self.debugfile.close()
-            self.log("  > Debug file closed.." % self.name)
+            self.log("  > Debug file closed..")
         if self.archivefolder:
             self.archive() 
         # Deleting temporary working directory
