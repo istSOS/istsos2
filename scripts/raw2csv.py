@@ -83,7 +83,15 @@ class Converter():
         self.service = service
         self.folderIn = folderIn
         self.pattern = pattern
-        self.folderOut = folderOut if folderOut is not None else tempfile.mkdtemp()
+        
+        if folderOut is not None:
+          self.folderOut = folderOut
+          self.folderFile = None
+        else:
+          self.folderFile, self.folderOut = tempfile.mkdtemp()
+        
+        #self.folderOut = folderOut if folderOut is not None else tempfile.mkdtemp()
+        
         self.qualityIndex = qualityIndex
         self.user = user
         self.password = password
@@ -152,6 +160,8 @@ class Converter():
             for name in dirs:
                 os.rmdir(os.path.join(root, name))
         os.rmdir(self.folderOut)
+        if self.folderFile not None:
+          os.close(self.folderFile)
     
     def log(self, message):
         if self.debug:

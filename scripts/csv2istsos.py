@@ -102,7 +102,7 @@ def execute (args, logger=None):
             if args['noqi'] == True: 
                 noqi = True
             
-        print "noqi: %s" % noqi
+        #print "noqi: %s" % noqi
             
         maxobs = 5000
         if 'm' in args:
@@ -139,8 +139,6 @@ def execute (args, logger=None):
                 if not noqi or not ':qualityIndex' in out['definition']:
                     op.append(out['definition'])
                     
-            print op
-            
             # Load of a getobservation request
             res = req.get("%s/wa/istsos/services/%s/operations/getobservation/offerings/%s/procedures/%s/observedproperties/%s/eventtime/last" % (
                 url,
@@ -166,8 +164,6 @@ def execute (args, logger=None):
             
             # discover json observed property disposition
             jsonindex = {}
-            print ""
-            print "fields: %s" % data['result']['DataArray']['field']
             for pos in range(0, len(data['result']['DataArray']['field'])):
                 field = data['result']['DataArray']['field'][pos]
                 if not noqi:
@@ -176,8 +172,6 @@ def execute (args, logger=None):
                     jsonindex[field['definition']] = pos
                 elif ':qualityIndex' in field['definition'] and noqi:
                     data['result']['DataArray']['field'].pop(pos)
-            print ""
-            print "fields: %s" % data['result']['DataArray']['field']
             
             log ("Searching: %s" % os.path.join(wd, "%s_[0-9]*%s" % (proc,ext)))
                 
@@ -187,7 +181,7 @@ def execute (args, logger=None):
             if debug:
                 print " > %s %s found" % (len(files), "Files" if len(files)>1 else "File")
                 
-            if len(files)>0:    
+            if len(files)>0:
                 for f in files:
                 
                     # open file
