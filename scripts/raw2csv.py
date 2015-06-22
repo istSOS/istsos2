@@ -150,6 +150,8 @@ class Converter():
         if self.debugfile:
             self.debugfile.flush()
             self.debugfile.close()
+            self.debug = True
+            self.debugfile = False
             self.log("  > Debug file closed..")
         if self.archivefolder:
             self.archive() 
