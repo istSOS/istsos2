@@ -1,0 +1,206 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Sensor Observation Service &mdash; istSOS 2.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="istSOS 2.0 documentation" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">istSOS 2.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="sensor-observation-service">
+<h1>Sensor Observation Service<a class="headerlink" href="#sensor-observation-service" title="Permalink to this headline">¶</a></h1>
+<p>As part of the SWE, the Sensor Observation Service standard defines the interface to interact with sensor observations: from sensors exploration to measures retrieval and data management throughout transactional operations. It worth noting that this description refers to SOS in version 1; the version 2 of the standard was recently approved at the time of writing and introduces some minor changes.</p>
+<p>Like most of the OGC standards, the SOS service is based on the exchange of standard messages (requests and responses) between the service and the consumer by using the HTTP protocol. The requests are sent to the service through an HTTP POST (in this case an XML file formatted according to the specification is submitted) or an HTTP GET method (in this case a KVP, key-value-pairs, is submitted) specifying the request type and the relative permitted parameters. The service responses are always XML file compliant with the specifications.
+According to the OGC specification a SOS version 1.0 service must implement at minimum the three mandatory requests of the SOS core profile, while other operations of the transactional profile and of the enhanced profile are optional (see next <a class="reference internal" href="#table-1">Table-1</a>).</p>
+<table border="1" class="docutils" id="table-1">
+<colgroup>
+<col width="20%" />
+<col width="12%" />
+<col width="9%" />
+<col width="59%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">SOS request</th>
+<th class="head">Profile</th>
+<th class="head">Mandatory</th>
+<th class="head">Short description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>GetCapabilities</td>
+<td>Core</td>
+<td>Yes</td>
+<td>Allow to describe the service providing information on administrator,
+offered capabilities, observed property and features, etc..</td>
+</tr>
+<tr class="row-odd"><td>DescribeSensor</td>
+<td>Core</td>
+<td>Yes</td>
+<td>It provides a potentially detailed description of a given registered
+component, system or process in SensorML format</td>
+</tr>
+<tr class="row-even"><td>GetObservation</td>
+<td>Core</td>
+<td>Yes</td>
+<td>It provides observations based on the setting of filters that includes
+timing, processes, phenomena, feature of interest, and other parameters
+in O&amp;M model</td>
+</tr>
+<tr class="row-odd"><td>RegisterSensor</td>
+<td>Transactional</td>
+<td>No</td>
+<td>It provides capability to automatically register a new sensor to the
+existing service</td>
+</tr>
+<tr class="row-even"><td>InsertObservation</td>
+<td>Transactional</td>
+<td>No</td>
+<td>It provides capability to dynamically insert new observation(s) related
+to a registered sensor</td>
+</tr>
+<tr class="row-odd"><td>GetFeatureOfInterest</td>
+<td>Enhanced</td>
+<td>No</td>
+<td>It provides requested feature of interest in GML format</td>
+</tr>
+<tr class="row-even"><td>GetResult</td>
+<td>Enhanced</td>
+<td>No</td>
+<td>It provides a light way to request observation without provide full
+request every time</td>
+</tr>
+<tr class="row-odd"><td>GetObservationByID</td>
+<td>Enhanced</td>
+<td>No</td>
+<td>It provides a quick access to observation by identification number</td>
+</tr>
+<tr class="row-even"><td>GetFeatureOfInterestTime</td>
+<td>Enhanced</td>
+<td>No</td>
+<td>It provides the time interval when a given feature of interest has
+been observed</td>
+</tr>
+<tr class="row-odd"><td>DescribeFeatureType</td>
+<td>Enhanced</td>
+<td>No</td>
+<td>It provides the schema used to represent the features of interest</td>
+</tr>
+<tr class="row-even"><td>DescribeObservationType</td>
+<td>Enhanced</td>
+<td>No</td>
+<td>It provides the schema used to represent the Observations</td>
+</tr>
+<tr class="row-odd"><td>DescribeResultModel</td>
+<td>Enhanced</td>
+<td>No</td>
+<td>It provides the schema used to represent the result object within
+the sml:observation</td>
+</tr>
+</tbody>
+</table>
+<p><em>Table-1: SOS requests for a list of SOS request and relative short description</em></p>
+<p>Two typical SOS UML sequence diagrams respectively from a data consumer and data producer perspective are presented in <a class="reference internal" href="#figure-1">Figure-1</a>.</p>
+<div class="figure align-center" id="figure-1">
+<a class="reference internal image-reference" href="../_images/figure-1.png"><img alt="Typical SOS UML diagrams for data consumer and producers" src="../_images/figure-1.png" style="width: 869.4px; height: 348.0px;" /></a>
+<p class="caption"><em>Figure-1: Typical SOS UML diagrams for data consumer and producer.</em></p>
+</div>
+<dl class="docutils">
+<dt>The SOS is based on five key objects as represented in <a class="reference internal" href="#figure-2">Figure-2</a> :</dt>
+<dd><ol class="first last arabic simple">
+<li><strong>Observations</strong>: they are the center of the standard and represent the values mesured at given time instants (e.g.: <em>value</em>: 0.2, <em>time</em>: 08-11-2012 12:12) and represented according to the <em>O&amp;M</em> standard data model.</li>
+<li><strong>Procedure</strong>: indicates who provide the observations, this is generally the sensor but it may also be a generic process that leads to some observations (e.g.: <em>procedure</em>: TREVANO) and is represented as <em>SensorML</em> standard data model.</li>
+<li><strong>Observed Properties</strong>: they represent the phenomena that are observed (e.g.: <em>phenomenon</em>: air-temperature) and is represented with a URI (uniform resource identifier) composed by colon separated text according to the <em>om:observedProperty</em> of the <em>O&amp;M</em> standard.</li>
+<li><strong>Feature of interest</strong>: it is the fature that relates to the observations, so for an in-place instrument is the sensor location, while for remote device it the target location (e.g.: <em>location</em>: Trevano, <em>coordinates</em>: 718345,99224,389, <em>reference system</em>: CH1903/LV03) represented according to the <em>om:featureOfInterest</em> element of the <em>O&amp;M</em> standard.</li>
+<li><strong>Offering</strong>: it is a collection of sensor used to conveniently group them up (e.g.: <em>offering</em>: weather-sensor-SUPSI) and is represented as <em>sos:ObservationOffering</em> element of the SOS standard.</li>
+</ol>
+</dd>
+</dl>
+<div class="figure align-center" id="figure-2">
+<a class="reference internal image-reference" href="../_images/figure-2.png"><img alt="Key object of the SOS standard" src="../_images/figure-2.png" style="width: 483.0px; height: 315.6px;" /></a>
+<p class="caption"><em>Figure-1: Key objects of the SOS standard.</em></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<a href="../index.html"><img src="../_static/logo.png" border="0" alt="istSOS" align="centre" width="200"/></a>
+<hr>
+<a href="http://code.google.com/p/istsos/downloads" align="centre">Download istSOS v2.0</a>
+<hr>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/intro/sos.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="../index.html">istSOS 2.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Massimiliano Cannata, Milan Antonovic.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,369 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installation &mdash; istSOS 2.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="istSOS 2.0 documentation" href="index.html" />
+    <link rel="next" title="Creation of istSOS services" href="services.html" />
+    <link rel="prev" title="istSOS-project documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="services.html" title="Creation of istSOS services"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="istSOS-project documentation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">istSOS 2.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="installation">
+<span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="installation-of-the-software-on-ubuntu-14-04">
+<h2>Installation of the software on Ubuntu 14.04<a class="headerlink" href="#installation-of-the-software-on-ubuntu-14-04" title="Permalink to this headline">¶</a></h2>
+<p>This part of the tutorial provides instruction on installing istSOS on a Linux Operating System based on Debian distribution. Nevertheless, even though extensive testing has been conducted in this environment only, istSOS is developed in Python which is known for its cross platform support and existing installation are recorded in Windows ® systems and OS X Apple&#8217;s operating system should be supported too. Interested users may look at the istSOS Website or ask support on the mailing list.</p>
+<p><strong>1) Install PostgreSQL and PostGIS</strong></p>
+<div class="highlight-python"><div class="highlight"><pre>sudo apt-get install postgresql postgresql-9.3-postgis-2.1 pgadmin3
+</pre></div>
+</div>
+<p><strong>2) Configure postgreSQL password</strong></p>
+<div class="highlight-python"><div class="highlight"><pre>sudo -u postgres psql
+alter user postgres password &#39;*******&#39;;
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Ctrl-D to exit from psql console</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">the python code must be in the PYTHONPATH.</p>
+</div>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference external" href="http://sphinx.pocoo.org/markup/desc.html">http://sphinx.pocoo.org/markup/desc.html</a></p>
+</div>
+<p><strong>3) Install Apache2 and mod_wsgi</strong></p>
+<div class="highlight-python"><div class="highlight"><pre>sudo apt-get install apache2 libapache2-mod-wsgi
+</pre></div>
+</div>
+<p><strong>4) Install psycopg2</strong></p>
+<div class="highlight-python"><div class="highlight"><pre>sudo apt-get install python-psycopg2
+</pre></div>
+</div>
+<p><strong>5) Download istSOS and unpack it</strong></p>
+<p>Go to <a class="reference external" href="https://sourceforge.net/projects/istsos/files/latest/download?source=files">https://sourceforge.net/projects/istsos/files/latest/download?source=files</a> the download of the latest version of istSOS will start in 5 seconds, save the file in the Downloads folder in your home directory, then unpack executing these commands:</p>
+<div class="highlight-python"><div class="highlight"><pre>cd ~/Downloads
+sudo tar -zxvf istSOS-2.1.1.tar.gz -C /usr/local/
+</pre></div>
+</div>
+<p><strong>6) Set executing permission and owner for the services and logs folders</strong></p>
+<div class="highlight-python"><div class="highlight"><pre>sudo chmod 755 -R /usr/local/istsos
+sudo chown -R www-data:www-data /usr/local/istsos/services
+sudo chown -R www-data:www-data /usr/local/istsos/logs
+</pre></div>
+</div>
+<p><strong>7) Configure Apache and WSGI</strong></p>
+<p>Open /etc/apache2/sites-enabled/000-default:</p>
+<div class="highlight-python"><div class="highlight"><pre>sudo gedit /etc/apache2/sites-enabled/000-default.conf
+</pre></div>
+</div>
+<p>And add the following lines just before the last VirtualHost  tag:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;VirtualHost *:80&gt;
+        # The ServerName directive sets the request scheme, hostname and port that
+        # the server uses to identify itself. This is used when creating
+        # redirection URLs. In the context of virtual hosts, the ServerName
+        # specifies what hostname must appear in the request&#39;s Host: header to
+        # match this virtual host. For the default virtual host (this file) this
+        # value is not decisive as it is used as a last resort host regardless.
+        # However, you must set it for any further virtual host explicitly.
+        #ServerName www.example.com
+
+        ServerAdmin webmaster@localhost
+        DocumentRoot /var/www/html
+
+        # Available loglevels: trace8, ..., trace1, debug, info, notice, warn,
+        # error, crit, alert, emerg.
+        # It is also possible to configure the loglevel for particular
+        # modules, e.g.
+        #LogLevel info ssl:warn
+
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+        # For most configuration files from conf-available/, which are
+        # enabled or disabled at a global level, it is possible to
+        # include a line for only one particular virtual host. For example the
+        # following line enables the CGI configuration for this host only
+        # after it has been globally disabled with &quot;a2disconf&quot;.
+        #Include conf-available/serve-cgi-bin.conf
+
+       WSGIScriptAlias /istsos /usr/local/istsos/application.py
+       Alias /istsos/admin /usr/local/istsos/interface
+&lt;/VirtualHost&gt;
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>If you are using Apache/2.4.6 or above (like in Ubuntu 13.10 or above)
+you could meet the &#8220;403 Forbidden&#8221; message.</p>
+<div class="figure">
+<img alt="_images/forbidden.png" src="_images/forbidden.png" />
+</div>
+<p>In that case additional setup shall be made. In the “000-default.conf”</p>
+<div class="last highlight-python"><div class="highlight"><pre>[...]
+       WSGIScriptAlias /istsos /usr/local/istsos/application.py
+       Alias /istsos/admin /usr/local/istsos/interface
+       &lt;LocationMatch /istsos&gt;
+           Options +Indexes +FollowSymLinks +MultiViews
+           AllowOverride all
+           Require all granted
+       &lt;/LocationMatch&gt;
+&lt;/VirtualHost&gt;
+</pre></div>
+</div>
+</div>
+<p><strong>8) Restart the Apache web server</strong></p>
+<div class="highlight-python"><div class="highlight"><pre>sudo service apache2 restart
+</pre></div>
+</div>
+<p><strong>9) Create your PostGIS database</strong></p>
+<p>For Postgresql 9.1 and later versions:</p>
+<div class="highlight-python"><div class="highlight"><pre>sudo -u postgres createdb -E UTF8 istsos
+sudo -u postgres psql -d istsos -c &#39;CREATE EXTENSION postgis&#39;
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>For older versions of postgresql:</p>
+<div class="last highlight-python"><div class="highlight"><pre>sudo -u postgres createdb -E UTF8 istsos
+
+sudo -u postgres psql -d istsos \
+  -f /usr/share/postgresql/9.1/contrib/postgis-1.5/postgis.sql
+
+sudo -u postgres psql -d istsos \
+  -f /usr/share/postgresql/9.1/contrib/postgis-1.5/spatial_ref_sys.sql
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="installation-on-windows-7-and-8">
+<h2>Installation on windows 7 and 8<a class="headerlink" href="#installation-on-windows-7-and-8" title="Permalink to this headline">¶</a></h2>
+<p><strong>1) install python</strong></p>
+<p>Download python 2.7 from <a class="reference external" href="https://www.python.org/downloads/">https://www.python.org/downloads/</a> and install it. Check if the python path is in the Environment variables:</p>
+<div class="highlight-python"><div class="highlight"><pre>Computer &gt; properties &gt; advanced system settings &gt; Environment Variables.
+Check if the python27 exists in the variable PAth, if not add ‘;C:\Python27\’
+</pre></div>
+</div>
+<p><strong>2) install postgreSQL with PostGIS</strong></p>
+<p>Get PostgreSQL from <a class="reference external" href="http://www.enterprisedb.com/products-services-training/pgdownload#windows">http://www.enterprisedb.com/products-services-training/pgdownload#windows</a> and install it.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">During the installation configure the password to be ‘postgres’.
+Install postGIS 2.1 using the application Stack Builder at the end of the installation of
+postgreSQL. Check the option to create a new database and call it ‘istsos’</p>
+</div>
+<p><strong>3) install apache 2.2</strong></p>
+<p>download Apache 2.2  (<a class="reference external" href="http://mirror.switch.ch/mirror/apache/dist//httpd/binaries/win32/">http://mirror.switch.ch/mirror/apache/dist//httpd/binaries/win32/</a>) and install it using the .msi file.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">If an error signals a missing dll, download and install Microsoft Visual C++, then try again to install Apache. If the error persists, download the missing dll from <a class="reference external" href="http://www.dll-files.com/dllindex/index-m.shtml">http://www.dll-files.com/dllindex/index-m.shtml</a> and copy into the /windows/system32 folder and reboot the system.</p>
+</div>
+<p><strong>4) install mod_wsgi</strong></p>
+<p>get the apache module mod_wsgi (<a class="reference external" href="http://www.lfd.uci.edu/~gohlke/pythonlibs/#mod_wsgi">http://www.lfd.uci.edu/~gohlke/pythonlibs/#mod_wsgi</a>) for apache 2.2 and python 2.7 and copy it in the folder / modules of the Apache installation folder.</p>
+<p><strong>5) install extra modules</strong></p>
+<p>Download this extra modules and install them:</p>
+<ul class="simple">
+<li>psycopg2: <a class="reference external" href="http://www.stickpeople.com/projects/python/win-psycopg/">http://www.stickpeople.com/projects/python/win-psycopg/</a></li>
+<li>python-dateutil: <a class="reference external" href="http://www.lfd.uci.edu/~gohlke/pythonlibs/#python-dateutil">http://www.lfd.uci.edu/~gohlke/pythonlibs/#python-dateutil</a></li>
+<li>six: <a class="reference external" href="http://www.lfd.uci.edu/~gohlke/pythonlibs/#six">http://www.lfd.uci.edu/~gohlke/pythonlibs/#six</a></li>
+</ul>
+<p><strong>6) install istSOS</strong></p>
+<p>Download istSOS (<a class="reference external" href="http://sourceforge.net/projects/istsos/files/">http://sourceforge.net/projects/istsos/files/</a>) and unpack under the disk C: so that will be a folder C:istsos</p>
+<p><strong>7) Configure apache2</strong></p>
+<p>Go to the folder where Apache is installed, modify the permissions of conf/httpd.conf and conf/extra/httpd-vhosts.conf so that they are writable from Everyone.
+Open conf/httpd.conf with a text editor and add this line:</p>
+<div class="highlight-python"><div class="highlight"><pre>LoadModule wsgi_module modules/mod_wsgi.so #close to the others LoadModule lines
+
+Uncomment the line &#39;Include conf/extra/httpd-vhosts.conf&#39; (remove the #)
+</pre></div>
+</div>
+<p>Open conf/extra/httpd-vhosts.conf, delete the two examples of &lt;VirtualHost&gt; and paste the following code. Modify the paths so they correspond to the Apache and istSOS folders.</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;VirtualHost *:80&gt;
+        ServerAdmin webmaster@localhost
+        #DocumentRoot &quot;C:/istsos/interface&quot;
+        DocumentRoot &quot;C:/Apache2/htdocs&quot;
+        &lt;Directory /&gt;
+                Options FollowSymLinks
+                AllowOverride None
+        &lt;/Directory&gt;
+
+        #&lt;Directory C:/istsos/interface/&gt;
+        &lt;Directory C:/Apache2/htdocs/&gt;
+                Options Indexes FollowSymLinks MultiViews
+                AllowOverride None
+                Order allow,deny
+                allow from all
+        &lt;/Directory&gt;
+
+        ScriptAlias /cgi-bin/ &quot;c:/Apache2/cgi-bin/&quot;
+        &lt;Directory &quot;c:/Apache2/cgi-bin&quot;&gt;
+                AllowOverride None
+                Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+                Order allow,deny
+                Allow from all
+        &lt;/Directory&gt;
+
+        ErrorLog &quot;c:/Apache2/logs/error.log&quot;
+        LogLevel warn
+        CustomLog &quot;c:/Apache2/logs/access.log&quot; combined
+        Alias /doc/ &quot;c:/Apache2/manual/&quot;
+
+        &lt;Directory &quot;c:/Apache2/manual/&quot;&gt;
+                Options Indexes MultiViews FollowSymLinks
+                AllowOverride None
+                Order deny,allow
+                Deny from all
+                Allow from 127.0.0.1
+        &lt;/Directory&gt;
+
+        WSGIScriptAlias /istsos &quot;c:/istsos/application.py&quot;
+        &lt;Location &quot;/istsos&quot;&gt;
+                Options Indexes MultiViews FollowSymLinks
+                AllowOverride None
+                Order deny,allow
+                Deny from all
+                Allow from 127.0.0.1
+        &lt;/Location&gt;
+        Alias /istsos/admin &quot;c:/istsos/interface&quot;
+&lt;/VirtualHost&gt;
+</pre></div>
+</div>
+<p><strong>8) restart Apache 2.2</strong></p>
+<p>Restart apache 2.2 using the icon or:</p>
+<div class="highlight-python"><div class="highlight"><pre>control panel &gt; system and security &gt; administrative tools &gt; services
+click on Apache 2.2 and then on restart.
+</pre></div>
+</div>
+</div>
+<div class="section" id="check-the-installation">
+<h2>Check the installation<a class="headerlink" href="#check-the-installation" title="Permalink to this headline">¶</a></h2>
+<p>Now istSOS is up and running. Open a web browser and go to <a class="reference external" href="http://localhost/istsos/admin">http://localhost/istsos/admin</a>. You should see the istSOS Web Admin page.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>If an error occurs, take a look at the Apache error log with this command to understand what’s going wrong</p>
+<p>In <em>Ubuntu</em> try:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">tail</span> <span class="o">-</span><span class="n">f</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">apache2</span><span class="o">/</span><span class="n">error</span><span class="o">.</span><span class="n">log</span>
+</pre></div>
+</div>
+<p>In Windows open the file:</p>
+<div class="last highlight-python"><div class="highlight"><pre>&lt;Apache2.2 folder&gt;\logs\error.log
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<a href="index.html"><img src="_static/logo.png" border="0" alt="istSOS" align="centre" width="200"/></a>
+<hr>
+<a href="http://code.google.com/p/istsos/downloads" align="centre">Download istSOS v2.0</a>
+<hr>
+
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#installation-of-the-software-on-ubuntu-14-04">Installation of the software on Ubuntu 14.04</a></li>
+<li><a class="reference internal" href="#installation-on-windows-7-and-8">Installation on windows 7 and 8</a></li>
+<li><a class="reference internal" href="#check-the-installation">Check the installation</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">istSOS-project documentation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="services.html"
+                        title="next chapter">Creation of istSOS services</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/installation.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="services.html" title="Creation of istSOS services"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="istSOS-project documentation"
+             >previous</a> |</li>
+        <li><a href="index.html">istSOS 2.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Massimiliano Cannata, Milan Antonovic.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

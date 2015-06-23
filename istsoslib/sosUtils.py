@@ -1,4 +1,19 @@
 # -*- coding: utf-8 -*-
+# istSOS WebAdmin - Istituto Scienze della Terra
+# Copyright (C) 2012 Massimiliano Cannata, Milan Antonovic
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 from xml.dom import minidom
 from istsoslib import sosException
@@ -60,9 +75,9 @@ def ogcSpatCons2PostgisSql(ogcSpatialOperator,geomField,epsgField):
             raise sosException.SOSException("NoApplicableCode",None,"Error: srsName '%s' must be numeric!" %(epsg))
         GMLgeom = str(geometry.toxml()).replace("epsg:","EPSG:")
         if epsgField == epsg or epsg == None:
-            sql = "%s(%s,ST_GeomFromGML('%s'),%s))" %(ogcSupportedSpatialOperators[ogcOperator],geomField,GMLgeom,epsgField)
+            sql = "%s(%s,_ST_GeomFromGML('%s'),%s))" %(ogcSupportedSpatialOperators[ogcOperator],geomField,GMLgeom,epsgField)
         else:
-            sql = "%s(%s,ST_Transform(ST_Transform(ST_GeomFromGML('%s'),%s),%s))" %(ogcSupportedSpatialOperators[ogcOperator],geomField,GMLgeom,epsg,epsgField)
+            sql = "%s(%s,ST_Transform(ST_Transform(_ST_GeomFromGML('%s'),%s),%s))" %(ogcSupportedSpatialOperators[ogcOperator],geomField,GMLgeom,epsg,epsgField)
         return sql
     
     elif ogcOperator == 'ogc:BBOX':
@@ -98,9 +113,9 @@ def ogcSpatCons2PostgisSql(ogcSpatialOperator,geomField,epsgField):
             raise sosException.SOSException("NoApplicableCode",None,"Error: srsName '%s' must be numeric!" %(epsg))
         GMLgeom = str(geometry.toxml()).replace("epsg:","EPSG:")
         if epsgField == epsg or epsg == None:
-            sql = "ST_DWithin(%s,ST_GeomFromGML('%s'),%s)" %(geomField,GMLgeom,distance)
+            sql = "ST_DWithin(%s,_ST_GeomFromGML('%s'),%s)" %(geomField,GMLgeom,distance)
         else:
-            sql = "ST_DWithin(%s,ST_Transform(ST_GeomFromGML('%s'),%s),%s)" %(geomField,GMLgeom,epsgField,distance)
+            sql = "ST_DWithin(%s,ST_Transform(_ST_GeomFromGML('%s'),%s),%s)" %(geomField,GMLgeom,epsgField,distance)
         return sql
     
     elif ogcOperator in ogcUnsupportedSpatialOperators:

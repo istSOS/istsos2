@@ -1,0 +1,428 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>istSOS WAlib 2.0 &mdash; istSOS 2.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="istSOS 2.0 documentation" href="../index.html" />
+    <link rel="up" title="Example of SOS requests" href="../examples.html" />
+    <link rel="next" title="Tutorial: using istSOS" href="../tutorial.html" />
+    <link rel="prev" title="GetFeatureOfInterest" href="getfeatureofinterest.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../tutorial.html" title="Tutorial: using istSOS"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="getfeatureofinterest.html" title="GetFeatureOfInterest"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">istSOS 2.0 documentation</a> &raquo;</li>
+          <li><a href="../examples.html" accesskey="U">Example of SOS requests</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="istsos-walib-2-0">
+<h1>istSOS WAlib 2.0<a class="headerlink" href="#istsos-walib-2-0" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><table border="1" class="docutils">
+<caption><em>Table-1: istSOS WAlib Requests</em></caption>
+<colgroup>
+<col width="24%" />
+<col width="19%" />
+<col width="19%" />
+<col width="19%" />
+<col width="19%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">url</th>
+<th class="head">GET</th>
+<th class="head">POST</th>
+<th class="head">PUT</th>
+<th class="head">DELETE</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><strong>/istsos/operations/check</strong></td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+</tr>
+<tr class="row-odd"><td><strong>/istsos/operations/status</strong></td>
+<td>Return for each service numbers of foi, obsProp, Proc, available operations and its status (ON-OFF-unknown)</td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+</tr>
+<tr class="row-even"><td><strong>/istsos/operations/log</strong></td>
+<td>Return the last N lines of the server log</td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+<td>Clear the server log</td>
+</tr>
+<tr class="row-odd"><td><strong>/istsos/operations/about</strong></td>
+<td>Return: istsos version, wa version</td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+</tr>
+<tr class="row-even"><td><strong>/istsos/operations/validatedb</strong></td>
+<td><em>Unsupported</em></td>
+<td>Test the posted db parameters and reports if connection is active</td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+</tr>
+<tr class="row-odd"><td><strong>/istsos/operations/initialization</strong></td>
+<td>Get initialization level</td>
+<td><em>Unsupported</em></td>
+<td>Set initialization level (level &gt; 0 &#8211;&gt; initialized)</td>
+<td><em>Unsupported</em></td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>/istsos/services</strong></td>
+<td>Return a list of services name</td>
+<td>Create a new service according posted parameters</td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+</tr>
+<tr class="row-even"><td><strong>/istsos/services/{name}</strong></td>
+<td>Return the service name</td>
+<td><em>Unsupported</em></td>
+<td>Update the service name</td>
+<td>Delete the service</td>
+</tr>
+<tr class="row-odd"><td><strong>/istsos/services/{name/default}/configsections</strong></td>
+<td>Return the list of sections</td>
+<td><em>Unsupported</em></td>
+<td>Update some sections of the config file</td>
+<td><em>Unsupported</em></td>
+</tr>
+<tr class="row-even"><td><strong>/istsos/services/{name/default}/configsections/
+getobservation</strong></td>
+<td>Return the GetObservation settings that influence the behaviour of request vendor parameters</td>
+<td><em>Unsupported</em></td>
+<td>Update the GetObservation settings that influence the behaviour of request vendor parameters</td>
+<td>Not for default</td>
+</tr>
+<tr class="row-odd"><td><strong>/istsos/services/{name/default}/configsections/
+identification</strong></td>
+<td>Return the service identification</td>
+<td><em>Unsupported</em></td>
+<td>Update the service identification</td>
+<td>Not for default</td>
+</tr>
+<tr class="row-even"><td><strong>/istsos/services/{name/default}/configsections/
+geo</strong></td>
+<td>Return the coordinate system settings</td>
+<td><em>Unsupported</em></td>
+<td>Update the coordinate system settings</td>
+<td>Not for default</td>
+</tr>
+<tr class="row-odd"><td><strong>/istsos/services/{name/default}/
+configsections/connection</strong></td>
+<td>Retrun the connection parameters</td>
+<td><em>Unsupported</em></td>
+<td>Update the connection parameters</td>
+<td>Not for default</td>
+</tr>
+<tr class="row-even"><td><strong>/istsos/services/{name/default}/configsections/
+connection/operations/validatedb</strong></td>
+<td>Validateconnection parameters of the selected service</td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+</tr>
+<tr class="row-odd"><td><strong>/istsos/services/{name/default}/configsections/
+serviceurl</strong></td>
+<td>Return the server url accessible by user</td>
+<td><em>Unsupported</em></td>
+<td>Update the server url accessible by user</td>
+<td>Not for default</td>
+</tr>
+<tr class="row-even"><td><strong>/istsos/services/{name/default}/configsections/
+provider</strong></td>
+<td>Return the provider infos (street, phone, etc..)</td>
+<td><em>Unsupported</em></td>
+<td>Update the provider infos (street, phone, etc..)</td>
+<td>Not for default</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>/istsos/services/{name}/dataqualities</strong></td>
+<td>Return a list of (code,desc)</td>
+<td>Insert the new code and description in db</td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+</tr>
+<tr class="row-odd"><td><strong>/istsos/services/{name}/dataqualities/
+{code}</strong></td>
+<td>Return code and description</td>
+<td><em>Unsupported</em></td>
+<td>Update the code and description in db</td>
+<td>Delete the code and description in db</td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>/istsos/services/{name}/procedures</strong></td>
+<td><em>Unsupported</em></td>
+<td>Insert a new procedure</td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+</tr>
+<tr class="row-even"><td><strong>/istsos/services/{name}/procedures/
+{name}</strong></td>
+<td>Return details of a single procedure</td>
+<td><em>Unsupported</em></td>
+<td>Update a procedure sensorML (but not affect the database: eg. you cannot change observed properties or FOI) if sensor name is different from existing update the sensor name</td>
+<td>Delete a procedure</td>
+</tr>
+<tr class="row-odd"><td><strong>/istsos/services/{name}/procedures/
+operations/getlist</strong></td>
+<td>Return a list of procedures</td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>/istsos/services/{name}/offerings</strong></td>
+<td>Return a detailed list of offerings</td>
+<td>Insert a new offering</td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+</tr>
+<tr class="row-even"><td><strong>/istsos/services/{name}/offerings/
+{name}</strong></td>
+<td>Return details of a single offering</td>
+<td><em>Unsupported</em></td>
+<td>Update offering name</td>
+<td>Delete a offering</td>
+</tr>
+<tr class="row-odd"><td><strong>/istsos/services/{name}/offerings/
+{name}/procedures</strong></td>
+<td>Return list of procedures</td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+</tr>
+<tr class="row-even"><td><strong>/istsos/services/{name}/offerings/
+{name}/procedures/{name}</strong></td>
+<td><em>Unsupported</em></td>
+<td>insert the procedures associated with this offering, rewriting the existing associations</td>
+<td><em>Unsupported</em></td>
+<td>Delete the procedure from offering and check that it exist at least in the temporary offering</td>
+</tr>
+<tr class="row-odd"><td><strong>/istsos/services/{name}/offerings/
+{name}/procedures/operations/memberslist</strong></td>
+<td>Return list of procedures that are members of the given offering</td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+</tr>
+<tr class="row-even"><td><strong>/istsos/services/{name}/offerings/
+{name}/procedures/operations/nonmemberslist</strong></td>
+<td>Return list of procedures that are not members of the given offering</td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+</tr>
+<tr class="row-odd"><td><strong>/istsos/services/{name}/operations/
+getobservation/offerings/{name}/
+procedures/{*|name|name1&amp;name2&amp;...}/
+observedproperties/{name|name1&amp;name2}/
+eventtime/{begin}/{end}|{instant}|{last}</strong></td>
+<td>Return a list of getobservation results</td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+</tr>
+<tr class="row-even"><td><strong>/istsos/services/{name}/
+operations/insertobservation</strong></td>
+<td><em>Unsupported</em></td>
+<td>Insert a new observations overriding existing old observations (force insert)</td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+</tr>
+<tr class="row-odd"><td><strong>/istsos/services/{name}/offerings/
+operations/getlist</strong></td>
+<td>Return a simplified list of offerings</td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>/istsos/services/{name}/observedproperties</strong></td>
+<td>Return a list of observed properties</td>
+<td>Insert a new observed property</td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+</tr>
+<tr class="row-even"><td><strong>/istsos/services/{name}/observedproperties/
+{name}</strong></td>
+<td>Return details of a single observed property</td>
+<td><em>Unsupported</em></td>
+<td>Update an observed property</td>
+<td>Delete an observed property</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><strong>/istsos/services/{name}/uoms</strong></td>
+<td>Return a list of uom</td>
+<td>Insert a new uom</td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+</tr>
+<tr class="row-odd"><td><strong>/istsos/services/{name}/uoms/
+{name}</strong></td>
+<td>Return details of a single uom</td>
+<td><em>Unsupported</em></td>
+<td>Update an uom</td>
+<td>Delete an uom</td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>/istsos/services/{name}/epsgs</strong></td>
+<td>Return a list of epsg</td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><strong>/istsos/services/{name}/systemtypes</strong></td>
+<td>Return a list of system types (fixed, mobile..)</td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+<td><em>Unsupported</em></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<a href="../index.html"><img src="../_static/logo.png" border="0" alt="istSOS" align="centre" width="200"/></a>
+<hr>
+<a href="http://code.google.com/p/istsos/downloads" align="centre">Download istSOS v2.0</a>
+<hr>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="getfeatureofinterest.html"
+                        title="previous chapter">GetFeatureOfInterest</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../tutorial.html"
+                        title="next chapter">Tutorial: using istSOS</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/examples/istsos_wa.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../tutorial.html" title="Tutorial: using istSOS"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="getfeatureofinterest.html" title="GetFeatureOfInterest"
+             >previous</a> |</li>
+        <li><a href="../index.html">istSOS 2.0 documentation</a> &raquo;</li>
+          <li><a href="../examples.html" >Example of SOS requests</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Massimiliano Cannata, Milan Antonovic.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

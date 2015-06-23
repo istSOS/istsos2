@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Creation of istSOS services &mdash; istSOS 2.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="istSOS 2.0 documentation" href="index.html" />
+    <link rel="next" title="Registration of new sensors" href="register.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="register.html" title="Registration of new sensors"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">istSOS 2.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="creation-of-istsos-services">
+<span id="services"></span><h1>Creation of istSOS services<a class="headerlink" href="#creation-of-istsos-services" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="setting-up-an-istsos-service-instance">
+<h2>Setting up an istSOS service instance<a class="headerlink" href="#setting-up-an-istsos-service-instance" title="Permalink to this headline">¶</a></h2>
+<p>With istSOS you can organize your sensor data in different instances. Every instance has its own database schema independent from other instances. You can even deploy other databases over your network according to your needs.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/services.png"><img alt="_images/services.png" src="_images/services.png" style="width: 396.0px; height: 405.0px;" /></a>
+</div>
+<p>The first steps into istSOS setup is to configure the default configuration options. These options will then be automatically used for your convenience by every new istSOS instance created.</p>
+<p><strong>1) Open the Web Admin interface</strong></p>
+<p>Open a browser and go to <a class="reference external" href="http://localhost/istsos/admin">http://localhost/istsos/admin</a></p>
+<p>For each of the next steps the image represents the button to select for activating the panel to execute the operation.</p>
+<p><strong>2) Configure your database connection</strong></p>
+<img alt="_images/db.png" src="_images/db.png" />
+<p>From the toolbar buttons menu press the database button and fill in the database configuration options:</p>
+<div class="highlight-python"><div class="highlight"><pre>user: postgres
+password: postgres
+host: localhost
+port: 5432
+DB name: istsos
+</pre></div>
+</div>
+<p><strong>3) Configure the default Service provider information</strong></p>
+<img alt="_images/provider.png" src="_images/provider.png" />
+<p>Use your instiutional information.</p>
+<p><strong>4) Configure the default Service identification information</strong></p>
+<img alt="_images/identification.png" src="_images/identification.png" />
+<p>Fill up with custom metadata that describe the service usage.</p>
+<p><strong>5) Configure your service coordinates system</strong></p>
+<img alt="_images/coord-systems.png" src="_images/coord-systems.png" />
+<p><em>Default EPSG code</em>: this will be the native Coordinate Reference Systems of your geometries in the database.</p>
+<p><em>Permitted EPSG</em>: here you can configure which other Coordinate Reference Systems your system will support and reproject if requested.</p>
+<p><strong>6) Configure your getobservation request options</strong></p>
+<img alt="_images/getobs.png" src="_images/getobs.png" />
+<p>Set maximum time interval per getObservation requests (zero for no limits) and aggregation no-data value.</p>
+<p><strong>7) Configure your service proxy address</strong></p>
+<img alt="_images/proxy.png" src="_images/proxy.png" />
+<p>The Proxy URL field is the base URL seen beyond a reverse proxy.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<a href="index.html"><img src="_static/logo.png" border="0" alt="istSOS" align="centre" width="200"/></a>
+<hr>
+<a href="http://code.google.com/p/istsos/downloads" align="centre">Download istSOS v2.0</a>
+<hr>
+
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Creation of istSOS services</a><ul>
+<li><a class="reference internal" href="#setting-up-an-istsos-service-instance">Setting up an istSOS service instance</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="installation.html"
+                        title="previous chapter">Installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="register.html"
+                        title="next chapter">Registration of new sensors</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/services.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="register.html" title="Registration of new sensors"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             >previous</a> |</li>
+        <li><a href="index.html">istSOS 2.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Massimiliano Cannata, Milan Antonovic.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

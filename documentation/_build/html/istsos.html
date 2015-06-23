@@ -1,0 +1,200 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>istSOS &mdash; istSOS 2.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="istSOS 2.0 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="index.html">istSOS 2.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="istsos">
+<span id="id1"></span><h1>istSOS<a class="headerlink" href="#istsos" title="Permalink to this headline">¶</a></h1>
+<p>istSOS (Istituto Scienze della Terra Sensor Observation Service) is the implementation of the Sensor Observation Service standard from Open Geospatial Consortium by the Institute of Earth Sciences (IST, Istituto Scienze della Terra). istSOS is distributed with a GPLv2 licence.
+The development of istSOS started in 2009 in order to provide a simple implementation of the SOS standard for the management, provision and integration of hydro-meteorological data collected in Canton Ticino (Switzerland).</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/istsos_logo.png"><img alt="_images/istsos_logo.png" src="_images/istsos_logo.png" style="width: 600.0px; height: 140.0px;" /></a>
+</div>
+<p>The developement of istSOS started in 2009 in orther to provide a simple implementation of the SOS standard for the management, provision and integration of hydro-meteorological data collected in Canton Ticino (Switzerland).</p>
+<div class="section" id="project-links">
+<h2>Project links<a class="headerlink" href="#project-links" title="Permalink to this headline">¶</a></h2>
+<p><strong>Mailing list</strong>: <a class="reference external" href="https://groups.google.com/forum/#!forum/istsos">https://groups.google.com/forum/#!forum/istsos</a></p>
+<p><strong>Web</strong>: <a class="reference external" href="https://geoservice.ist.supsi.ch/projects/istsos">https://geoservice.ist.supsi.ch/projects/istsos</a></p>
+<p><strong>Source code</strong>: <a class="reference external" href="http://sourceforge.net/projects/istsos">http://sourceforge.net/projects/istsos</a></p>
+</div>
+<div class="section" id="technologies">
+<h2>Technologies<a class="headerlink" href="#technologies" title="Permalink to this headline">¶</a></h2>
+<p>istSOS is entirerly written in <a class="reference external" href="http://python.org/">Python</a> and is based on:</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="http://www.postgresql.org/">PostgreSQL</a> / <a class="reference external" href="http://postgis.refractions.net/">PostGIS</a></li>
+<li><a class="reference external" href="http://www.apache.org/">Apache</a> / <a class="reference external" href="http://code.google.com/p/modwsgi/">mod_wsgi</a> (<a class="reference external" href="http://www.modpython.org/">mod_python</a> for versions &lt;= 1.0)</li>
+<li><a class="reference external" href="http://www.gdal.org/">GDAL</a> (for versions &lt; 2.0)</li>
+</ul>
+</div></blockquote>
+<p>And it takes advantage of other python modules:</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="http://pypi.python.org/pypi/isodate/">isodate</a></li>
+<li><a class="reference external" href="http://pypi.python.org/pypi/GDAL/">python-gdal</a> (for versions &lt; 2.0)</li>
+<li><a class="reference external" href="http://pypi.python.org/pypi/psycopg2">psycopg2</a></li>
+<li><a class="reference external" href="http://pypi.python.org/pypi/pytz/">pytz</a></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="software-structure">
+<h2>Software structure<a class="headerlink" href="#software-structure" title="Permalink to this headline">¶</a></h2>
+<p>istSOS evolved in time from being a SOS service provider to complete data management system.
+Initially it was an implementation supporting the standard as defined by the OGC through the <strong>istsoslib</strong>, the core of the system. Thanks to the continue interaction with hydrologists and data users, We soon realized that the standard didn’t account for a number of requirements, like a missing supporting for irregular time series. So, We started developing extending features and enriched the istSOSlib. Afterward, We understood that without a comfortable Graphical User Interface (GUI) the time used to manage the system and the data (e.g.: update metadata, add new sensors, verify, correct and validate data) were too overwhelming. This lead to the idea of developing a Web Administration interface (<strong>wainterface</strong>) based on a RESTful service: <strong>walib</strong>.</p>
+<p>As a result today istSOS is like a peach, were the <strong>wainterface</strong> is the peel, <strong>walib</strong> is the pulp and <strong>istsoslib</strong> is the kernel. These three components interact each others and offer different interfaces for different users types: humans, processes or standard clients.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/software-architecture.png"><img alt="_images/software-architecture.png" src="_images/software-architecture.png" style="width: 800.0px; height: 385.0px;" /></a>
+</div>
+<p>A configuration file store important setting parameters like service metadata (e.g.: name, version, owner), database connection parameters, dictionaries definition, handled requests, etc.</p>
+</div>
+<div class="section" id="istsosllib-core-package-structure">
+<h2>istsosllib (core package) structure<a class="headerlink" href="#istsosllib-core-package-structure" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>istSOS has been developed with a <em>factory</em> approach using three modules:</dt>
+<dd><ul class="first last simple">
+<li><strong>filters</strong>: provide an interface for converting http requests (GET or POST) submitted according the SOS standard in python objects that contains the submitted parameters and values.</li>
+<li><strong>responders</strong>: resolve the specific request, interacting with the istSOSdatabase and gathering the required informations.</li>
+<li><strong>renderers</strong>: reponsible for converting the informations stored in the responders into SOS response format as defined by SOS standard.</li>
+</ul>
+</dd>
+</dl>
+<p>These istSOS service handle the different SOS requests by instantiating subsequntially a <strong>factory_filter</strong>, a <strong>factory_reponder</strong> and a <strong>factory_renderer</strong> wich are capable to call the specific classes for elaborating the correct response.</p>
+<p>As illustrated in Figure, at first the <em>factory_filter</em> istantiate the appropriate filter class (function of the request type), then the <em>factory_responder</em> authomatically instantiate the relative reponder class and finally the correct renderer is called by the <em>factory_renderer</em> to produce an SOS response.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/figure-3.png"><img alt="_images/figure-3.png" src="_images/figure-3.png" style="width: 726.0px; height: 415.5px;" /></a>
+<p class="caption"><em>Figure-3: istSOS working flow.</em></p>
+</div>
+<p>A configuration file store important setting parameters like service metadata (e.g.: name, version, owner), database connection parameters, dictionaries definition, handled requests, etc.</p>
+</div>
+<div class="section" id="istsos-extending-features">
+<h2>istSOS extending features<a class="headerlink" href="#istsos-extending-features" title="Permalink to this headline">¶</a></h2>
+<p>Apart from standard features like filter capabilities of the observations by means of time periods, observed properties, geospatial relationships and sensor names istSOS implements several extending features that, according to the developers and decades experienced collaborators in sensor network management and data management were found particularly helpful.</p>
+<dl class="docutils">
+<dt>Some of the extending capabilities are:</dt>
+<dd><ul class="first last simple">
+<li>Handle of irregular time series</li>
+<li>On-the-fly aggregation of observed measures with no-data management.</li>
+<li>Support for different output formats like application/json, text/csv, and textxml:subtype=sensorML.</li>
+<li>Possibility of inserting many observations with a single insertObservation requests.</li>
+<li>Supporting of a override parameter that allows to overwrite already registered observations with new ones.</li>
+<li>Capability to filter observations based on partial observed property names ( LIKE filtering support).</li>
+<li>Native support for data quality index associated with each observation.</li>
+<li>Setting of maximum period for data retrievement requests to avoid server overloads.</li>
+<li>Availability of a virtual procedure mechanism, that expose new sensors and observed properties as on-the-fly elaboration of regular observation.</li>
+<li>On the fly data aggregation.</li>
+<li>Real time data validation and quality index</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="istsos-2-0-database-schema">
+<h2>istSOS 2.0 database schema<a class="headerlink" href="#istsos-2-0-database-schema" title="Permalink to this headline">¶</a></h2>
+<p>Please look at the DB documentation generated using SchemaSpy <a class="reference external" href="_static/istsosDB/index.html">istSOS 2.0 Schema</a></p>
+</div>
+<div class="section" id="acknowledgements">
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Permalink to this headline">¶</a></h2>
+<p>The authors thank all the partners of the Verbano Lake working group for flood risk reduction, and specially the Canton Ticino, (Ufficio dei corsi d’acqua), for supporting this project. Special thanks to people contributing to the software development and Google Summer of Code and OSGeo for sponsoring students works on istSOS.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<a href="index.html"><img src="_static/logo.png" border="0" alt="istSOS" align="centre" width="200"/></a>
+<hr>
+<a href="http://code.google.com/p/istsos/downloads" align="centre">Download istSOS v2.0</a>
+<hr>
+
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">istSOS</a><ul>
+<li><a class="reference internal" href="#project-links">Project links</a></li>
+<li><a class="reference internal" href="#technologies">Technologies</a></li>
+<li><a class="reference internal" href="#software-structure">Software structure</a></li>
+<li><a class="reference internal" href="#istsosllib-core-package-structure">istsosllib (core package) structure</a></li>
+<li><a class="reference internal" href="#istsos-extending-features">istSOS extending features</a></li>
+<li><a class="reference internal" href="#istsos-2-0-database-schema">istSOS 2.0 database schema</a></li>
+<li><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/istsos.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="index.html">istSOS 2.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Massimiliano Cannata, Milan Antonovic.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

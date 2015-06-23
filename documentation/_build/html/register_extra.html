@@ -1,0 +1,293 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Registration of new sensors &mdash; istSOS 2.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="istSOS 2.0 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="index.html">istSOS 2.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="registration-of-new-sensors">
+<span id="register"></span><h1>Registration of new sensors<a class="headerlink" href="#registration-of-new-sensors" title="Permalink to this headline">¶</a></h1>
+<p>From the “services” drop down button of the admin interface (<a class="reference external" href="http://localhost/istsos/admin">http://localhost/istsos/admin</a> ) choose the demo instance.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Before registering new sensors it’s advised to initialize observed properties and unit of measures.</p>
+</div>
+<p><strong>1) Define an observed property</strong></p>
+<img alt="_images/obsprop.png" src="_images/obsprop.png" />
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>Name: air-temperature</td>
+</tr>
+<tr class="row-odd"><td>Definition URN: <a class="reference external" href="urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature">urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature</a></td>
+</tr>
+<tr class="row-even"><td>Description: air temperature at 2 meters above terrain</td>
+</tr>
+<tr class="row-odd"><td>Correct Quality Index: Between -60 and 100</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Similarly other observed properties could be:</p>
+<table border="1" class="last docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>Name: air-rainfall</td>
+</tr>
+<tr class="row-odd"><td>Definition URN: <a class="reference external" href="urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall">urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall</a></td>
+</tr>
+<tr class="row-even"><td>Description: liquid precipitation or snow water equivalent</td>
+</tr>
+<tr class="row-odd"><td>Correct Quality Index: Greater than 0</td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>Name: air-relative-humidity</td>
+</tr>
+<tr class="row-even"><td>Definition URN: <a class="reference external" href="urn:ogc:def:parameter:x-istsos:1.0:meteo:air:humidity:relative">urn:ogc:def:parameter:x-istsos:1.0:meteo:air:humidity:relative</a></td>
+</tr>
+<tr class="row-odd"><td>Description: absolute humidity relative to the maximum for that air pressure and temperature</td>
+</tr>
+<tr class="row-even"><td>Correct Quality Index: Between 0 and 100</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>Name: air-wind-velocity</td>
+</tr>
+<tr class="row-odd"><td>Definition URN: <a class="reference external" href="http://pint.readthedocs.org/en/latest/index.htmlurn:ogc:def:parameter:x-istsos:1.0:meteo:air:wind:velocity">http://pint.readthedocs.org/en/latest/index.htmlurn:ogc:def:parameter:x-istsos:1.0:meteo:air:wind:velocity</a></td>
+</tr>
+<tr class="row-even"><td>Description: wind speed at 1 meter above terrain</td>
+</tr>
+<tr class="row-odd"><td>Correct Quality Index: Greater than 0</td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>Name: solar-radiation</td>
+</tr>
+<tr class="row-even"><td>Definition URN: <a class="reference external" href="urn:ogc:def:parameter:x-istsos:1.0:meteo:solar:radiation">urn:ogc:def:parameter:x-istsos:1.0:meteo:solar:radiation</a></td>
+</tr>
+<tr class="row-odd"><td>Description: Direct radiation sum in spectrum rand</td>
+</tr>
+<tr class="row-even"><td>Correct Quality Index: Between 0 and 1600</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>Name: river-height</td>
+</tr>
+<tr class="row-odd"><td>Definition URN: <a class="reference external" href="urn:ogc:def:parameter:x-istsos:1.0:river:water:height">urn:ogc:def:parameter:x-istsos:1.0:river:water:height</a></td>
+</tr>
+<tr class="row-even"><td>Description: River water height</td>
+</tr>
+<tr class="row-odd"><td>Correct Quality Index: Between 0 and 2</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>2) Define a unit of measure</strong></p>
+<img alt="_images/obsprop.png" src="_images/obsprop.png" />
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>Code: mm</td>
+</tr>
+<tr class="row-odd"><td>Description: millimeter</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Similarly other unit of measures could be:</p>
+<table border="1" class="last docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>Code: °C</td>
+</tr>
+<tr class="row-odd"><td>Description: Celsius degree</td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>Code: %</td>
+</tr>
+<tr class="row-even"><td>Description: percentage</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>Code: m/s</td>
+</tr>
+<tr class="row-odd"><td>Description: metre per second</td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>Code: W/m2</td>
+</tr>
+<tr class="row-even"><td>Description: Watt per square metre</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>Code: m</td>
+</tr>
+<tr class="row-odd"><td>Description: meter</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>3) Add a new procedure (sensor)</strong></p>
+<img alt="_images/newproc.png" src="_images/newproc.png" />
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Once a procedure is created the outputs (observed properties) cannot be changed.</p>
+</div>
+<p>Fill the form for creating a new sensor with the following information:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>Name: T_LUGANO</td>
+</tr>
+<tr class="row-odd"><td>Description: temperature weather station in Lugano</td>
+</tr>
+<tr class="row-even"><td>Keywords: weather, meteorological, IST</td>
+</tr>
+<tr class="row-odd"><td>System type: insitu-fixed-point</td>
+</tr>
+<tr class="row-even"><td>Sensor type: PTC thermistors of the &#8220;switching&#8221; type</td>
+</tr>
+<tr class="row-odd"><td>FOI name: LUGANO</td>
+</tr>
+<tr class="row-even"><td>EPSG: 4326</td>
+</tr>
+<tr class="row-odd"><td>Coordinates: x: 8.96127 y: 46.02723 z: 344.1</td>
+</tr>
+</tbody>
+</table>
+<p><em>Outputs (confirm the outputs pressing the &#8220;add&#8221; button):</em></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>Observed property: <a class="reference external" href="urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature">urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature</a></td>
+</tr>
+<tr class="row-even"><td>Unit of measure: °C</td>
+</tr>
+<tr class="row-odd"><td>Description: conversion from resistance to temperature</td>
+</tr>
+<tr class="row-even"><td>quality index check: Between / from -40 to +60</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><em>Optional parameters:</em> Fill at your own need and willing</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Register the new sensor (procedure) pressing the &#8220;submit&#8221; button.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<a href="index.html"><img src="_static/logo.png" border="0" alt="istSOS" align="centre" width="200"/></a>
+<hr>
+<a href="http://code.google.com/p/istsos/downloads" align="centre">Download istSOS v2.0</a>
+<hr>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/register_extra.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="index.html">istSOS 2.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Massimiliano Cannata, Milan Antonovic.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

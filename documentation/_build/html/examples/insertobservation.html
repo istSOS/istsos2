@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>InsertObsertation &mdash; istSOS 2.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="istSOS 2.0 documentation" href="../index.html" />
+    <link rel="up" title="Example of SOS requests" href="../examples.html" />
+    <link rel="next" title="GetFeatureOfInterest" href="getfeatureofinterest.html" />
+    <link rel="prev" title="RegisterSensor" href="registersensor.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="getfeatureofinterest.html" title="GetFeatureOfInterest"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="registersensor.html" title="RegisterSensor"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">istSOS 2.0 documentation</a> &raquo;</li>
+          <li><a href="../examples.html" accesskey="U">Example of SOS requests</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="insertobsertation">
+<h1>InsertObsertation<a class="headerlink" href="#insertobsertation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>The InsertObservation operation allows the client to insert new observations for a sensor system. This is a request to an SOS to perform the Insert operation. The request includes the sensor ID that was obtained from the RegisterSensor operation. The observation must be encoded in XML following the O&amp;M specification. InsertObservation is mandatory for the transactional profile.</p>
+<ul>
+<li><p class="first"><strong>InsertObsertation parameters:</strong></p>
+<blockquote>
+<div><table border="1" class="docutils">
+<caption><em>Table-1: InsertObsertation operation request URL parameters [OGC 06-009r6]</em></caption>
+<colgroup>
+<col width="20%" />
+<col width="40%" />
+<col width="20%" />
+<col width="20%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Description</th>
+<th class="head">Definition</th>
+<th class="head">Multiplicity and Use</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>request</td>
+<td>InsertObsertation is designed to request detailed sensor metadata</td>
+<td>getObservation</td>
+<td>One (mandatory)</td>
+</tr>
+<tr class="row-odd"><td>service</td>
+<td>Service type identifier</td>
+<td>SOS</td>
+<td>One (mandatory)</td>
+</tr>
+<tr class="row-even"><td>version</td>
+<td>Specification version for operation</td>
+<td>1.0.0</td>
+<td>One (mandatory)</td>
+</tr>
+<tr class="row-odd"><td>Observation</td>
+<td>The new observation for insertion.</td>
+<td>[name of XML document]</td>
+<td>One (mandatory)</td>
+</tr>
+<tr class="row-even"><td>AssignedSensorId</td>
+<td>Specifies the identifier for the sensor that made this observation. This identifier is obtained by the RegisterSensor operation.</td>
+<td>[id of sensor, which has produced the observation]</td>
+<td>One (mandatory)</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</li>
+</ul>
+</div>
+<div class="section" id="request">
+<h2>Request<a class="headerlink" href="#request" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre>http://localhost/istsos/demo/
+</pre></div>
+</div>
+<p>InsertObsertation.xml</p>
+<ul class="simple">
+<li><a class="reference download internal" href="../_downloads/insertObservation_stationary_insitu_simple.xml"><tt class="xref download docutils literal"><span class="pre">insertObservation_stationary_insitu_simple.xml</span></tt></a></li>
+<li><a class="reference download internal" href="../_downloads/insertObservation_stationary_insitu_composite.xml"><tt class="xref download docutils literal"><span class="pre">insertObservation_stationary_insitu_composite.xml</span></tt></a></li>
+</ul>
+<p><cite>insertObservation_dynamic_insitu_simple.xml</cite></p>
+<p><cite>insertObservation_dynamic_insitu_composite.xml</cite></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<a href="../index.html"><img src="../_static/logo.png" border="0" alt="istSOS" align="centre" width="200"/></a>
+<hr>
+<a href="http://code.google.com/p/istsos/downloads" align="centre">Download istSOS v2.0</a>
+<hr>
+
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">InsertObsertation</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#request">Request</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="registersensor.html"
+                        title="previous chapter">RegisterSensor</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="getfeatureofinterest.html"
+                        title="next chapter">GetFeatureOfInterest</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/examples/insertobservation.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="getfeatureofinterest.html" title="GetFeatureOfInterest"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="registersensor.html" title="RegisterSensor"
+             >previous</a> |</li>
+        <li><a href="../index.html">istSOS 2.0 documentation</a> &raquo;</li>
+          <li><a href="../examples.html" >Example of SOS requests</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Massimiliano Cannata, Milan Antonovic.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

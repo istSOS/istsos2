@@ -21,10 +21,6 @@ import psycopg2.extensions
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
 
-#import pprint
-#pp = pprint.PrettyPrinter(indent=4)
-    
-
 class Database:
     """Connect to a database"""
     user = None

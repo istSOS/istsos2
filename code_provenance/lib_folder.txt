@@ -1,0 +1,23 @@
+ISODATE 
+License: BSD
+
+PYTZ
+License :: OSI Approved :: MIT License
+
+REQUESTS
+License :: OSI Approved :: Apache Software License
+
+requests-oauthlib
+License: ISC (~ BSD)
+
+twitter
+License :: OSI Approved :: MIT License
+
+APScheduler
+License :: OSI Approved :: MIT License
+
+argparse
+License :: OSI Approved :: Python Software Foundation License
+
+etree, preparelibs
+istsos file

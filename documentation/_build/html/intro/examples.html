@@ -1,0 +1,219 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Example of SOS requests &mdash; istSOS 2.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="istSOS 2.0 documentation" href="../index.html" />
+    <link rel="up" title="Introduction to the standard" href="../intro.html" />
+    <link rel="next" title="istSOS" href="../istsos.html" />
+    <link rel="prev" title="Sensor Observation Service" href="sos.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../istsos.html" title="istSOS"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="sos.html" title="Sensor Observation Service"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">istSOS 2.0 documentation</a> &raquo;</li>
+          <li><a href="../intro.html" accesskey="U">Introduction to the standard</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="example-of-sos-requests">
+<h1>Example of SOS requests<a class="headerlink" href="#example-of-sos-requests" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This page describes the <em>Common Practice</em> in using istSOS trough practical examples of GET and POST requests based on the <em>demo</em> service that cames with the software.</p>
+</div>
+<div class="section" id="getcapabilities">
+<h2>GetCapabilities<a class="headerlink" href="#getcapabilities" title="Permalink to this headline">¶</a></h2>
+<p>GET request:</p>
+<div class="highlight-python"><pre>http://localhost/sos/istsos.py?service=SOS&amp;request=GetCapabilities</pre>
+</div>
+<p>POST request:</p>
+<div class="highlight-python"><pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;sos:GetCapabilities
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://schemas.opengis.net/sos/1.0.0/sosAll.xsd"
+   xmlns:sos="http://www.opengis.net/sos/1.0"
+   xmlns:gml="http://www.opengis.net/gml/3.2"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:om="http://www.opengis.net/om/1.0"
+   service="SOS"&gt;
+    &lt;section&gt;serviceidentification&lt;/section&gt;
+    &lt;section&gt;serviceprovider&lt;/section&gt;
+&lt;/sos:GetCapabilities&gt;</pre>
+</div>
+</div>
+<div class="section" id="describesensor">
+<h2>DescribeSensor<a class="headerlink" href="#describesensor" title="Permalink to this headline">¶</a></h2>
+<p>GET request:</p>
+<div class="highlight-python"><pre>http://localhost/sos/istsos.py?service=SOS&amp;version=1.0.0\
+&amp;request=DescribeSensor&amp;procedure=B_TRE\
+&amp;outputFormat=text%2Fxml%3Bsubtype%3D%27sensorML%2F1.0.0%27</pre>
+</div>
+<p>POST request:</p>
+<div class="highlight-python"><pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;sos:describeSensor
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://schemas.opengis.net/sos/1.0.0/sosAll.xsd"
+   xmlns:sos="http://www.opengis.net/sos/1.0"
+   xmlns:gml="http://www.opengis.net/gml/3.2"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:om="http://www.opengis.net/om/1.0"
+   service="SOS"
+   outputFormat="text/xml;subtype='sensorML/1.0.0'"&gt;
+    &lt;procedure&gt;P_BED&lt;/procedure&gt;
+&lt;/sos:describeSensor&gt;</pre>
+</div>
+</div>
+<div class="section" id="getobservation">
+<h2>GetObservation<a class="headerlink" href="#getobservation" title="Permalink to this headline">¶</a></h2>
+<p>GET request:</p>
+<div class="highlight-python"><pre>http://localhost/sos/istsos.py?service=SOS&amp;version=1.0.0\
+&amp;request=GetObservation&amp;offering=meteoIST&amp;procedure=P_BED\
+&amp;eventTime=2009-07-31T11:50:00+02:00/2009-07-31T12:20:00+02:00\
+,2009-07-31T12:50:00+02:00&amp;observedProperty=rainfall\
+&amp;responseFormat=text%2Fxml%3Bsubtype%3D%27sensorML%2F1.0.0%27</pre>
+</div>
+<p>POST request:</p>
+<div class="highlight-python"><pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;sos:GetObservation
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://schemas.opengis.net/sos/1.0.0/sosAll.xsd"
+   xmlns:sos="http://www.opengis.net/sos/1.0"
+   xmlns:gml="http://www.opengis.net/gml/3.2"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:om="http://www.opengis.net/om/1.0"
+   service="SOS"&gt;
+    &lt;offering&gt;meteoIST&lt;/offering&gt;
+    &lt;procedure&gt;P_BED&lt;/procedure&gt;
+    &lt;eventTime&gt;
+        &lt;gml:TimePeriod&gt;
+           &lt;gml:beginPosition&gt;2009-07-31T11:50:00+02:00&lt;/gml:beginPosition&gt;
+           &lt;gml:endPosition&gt;2009-07-31T12:20:00+02:00&lt;/gml:endPosition&gt;
+        &lt;/gml:TimePeriod&gt;
+        &lt;gml:TimeInstant&gt;
+           &lt;gml:timePosition&gt;2009-07-31T11:50:00+02:00&lt;/gml:timePosition&gt;
+        &lt;/gml:TimeInstant&gt;
+    &lt;/eventTime&gt;
+    &lt;featureOfInterest&gt;BEDRETTO&lt;/featureOfInterest&gt;
+    &lt;responseFormat&gt;text/xml;subtype='sensorML/1.0.0'&lt;/responseFormat&gt;
+    &lt;observedProperty&gt;rainfall&lt;/observedProperty&gt;
+&lt;/sos:GetObservation&gt;</pre>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<a href="../index.html"><img src="../_static/logo.png" border="0" alt="istSOS" align="centre" width="200"/></a>
+<hr>
+<a href="http://code.google.com/p/istsos/downloads/detail?name=istSOS-1.1rc2.tar.gz" align="centre">Download istSOS v2.0</a>
+<hr>
+
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Example of SOS requests</a><ul>
+<li><a class="reference internal" href="#getcapabilities">GetCapabilities</a></li>
+<li><a class="reference internal" href="#describesensor">DescribeSensor</a></li>
+<li><a class="reference internal" href="#getobservation">GetObservation</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="sos.html"
+                        title="previous chapter">Sensor Observation Service</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../istsos.html"
+                        title="next chapter">istSOS</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/intro/examples.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../istsos.html" title="istSOS"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="sos.html" title="Sensor Observation Service"
+             >previous</a> |</li>
+        <li><a href="../index.html">istSOS 2.0 documentation</a> &raquo;</li>
+          <li><a href="../intro.html" >Introduction to the standard</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Massimiliano Cannata, Milan Antonovic.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

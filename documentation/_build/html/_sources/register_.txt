@@ -1,0 +1,106 @@
+.. _register:
+
+============================
+Registration of new sensors
+============================
+
+From the “services” drop down button of the admin interface (`<http://localhost/istsos/admin>`_ ) choose the demo instance.
+
+.. warning::
+
+    Before registering new sensors it’s advised to initialize observed properties and unit of measures.
+    
+**1) Define an observed property**
+
+.. image:: images/obsprop.png
+
+Fill in the form using appropriate information, as an example:
+
++---------------------------------------------------------------------------------------------------------------------------+
+|                                                                                                                           |
++---------------------------------------------------------------------------------------------------------------------------+
+|Name: air-temperature                                                                                                      |
++---------------------------------------------------------------------------------------------------------------------------+
+|Definition URN: urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature                                                   |
++---------------------------------------------------------------------------------------------------------------------------+
+|Description: air temperature at 2 meters above terrain                                                                     |
++---------------------------------------------------------------------------------------------------------------------------+
+|Correct Quality Index: Between -60 and 100                                                                                 |
++---------------------------------------------------------------------------------------------------------------------------+
+
+**2) Define a unit of measure**
+
+.. image:: images/obsprop.png
+
++------------------------------------------+
+|                                          |
++------------------------------------------+
+|Code: mm                                  |
++------------------------------------------+
+|Description: millimeter                   |
++------------------------------------------+
+
+**3) Add a new procedure (sensor)**
+
+.. image:: images/newproc.png
+
+.. warning::
+    Once a procedure is created the outputs (observed properties) cannot be changed.
+
+Fill the form for creating a new sensor with the following information:
+
++-----------------------------------------------------------------------------------+
+|                                                                                   |
++-----------------------------------------------------------------------------------+
+|Name: T_LUGANO                                                                     |
++-----------------------------------------------------------------------------------+
+|Description: temperature weather station in Lugano                                 |
++-----------------------------------------------------------------------------------+
+|Keywords: weather, meteorological, IST                                             |
++-----------------------------------------------------------------------------------+
+|System type: insitu-fixed-point                                                    |
++-----------------------------------------------------------------------------------+
+|Sensor type: PTC thermistors of the "switching" type                               |
++-----------------------------------------------------------------------------------+
+|FOI name: LUGANO                                                                   |
++-----------------------------------------------------------------------------------+
+|EPSG: 4326                                                                         |
++-----------------------------------------------------------------------------------+
+|Coordinates: x: 8.96127 y: 46.02723 z: 344.1                                       |
++-----------------------------------------------------------------------------------+
+
+*Outputs (confirm the outputs pressing the "add" button):*
+
+
++-----------------------------------------------------------------------------------+
+|   Observed property: urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature     |
++-----------------------------------------------------------------------------------+
+|   Unit of measure: °C                                                             |
++-----------------------------------------------------------------------------------+
+|   Description: conversion from resistance to temperature                          |
++-----------------------------------------------------------------------------------+
+|   quality index check: Between / from -40 to +60                                  |
++-----------------------------------------------------------------------------------+
+
+
+
+.. note::
+    *Optional parameters:* Fill at your own need and willing
+
+
+.. note::
+    Register the new sensor (procedure) pressing the "submit" button.
+
+
+
+
+
+
+
+
+
+
+
+
+
+

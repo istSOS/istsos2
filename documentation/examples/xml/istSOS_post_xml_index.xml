@@ -1,0 +1,28 @@
+Elenco degli XML da inserire nella cartella
+
+<option value="http://geoservice.ist.supsi.ch/test/requests/
+
+
+
+getCapabilities.xml
+describeSensor.xml
+getObservation.xml
+getObservation2.xml
+getObservation3.xml
+getObservation4.xml
+getObservationBBOX.xml
+getObservationDWithin.xml
+getObservationQualityIndex.xml
+getFeatureOfInterest.xml
+registerSensor_stationary_insitu_simple.xml
+registerSensor_stationary_insitu_composite.xml
+registerSensor_dynamic_insitu_simple.xml
+registerSensor_dynamic_insitu_composite.xml
+insertObservation_stationary_insitu_simple.xml
+insertObservation_stationary_insitu_composite.xml
+insertObservation_dynamic_insitu_simple.xml
+insertObservation_dynamic_insitu_composite.xml
+
+
+
+</option>

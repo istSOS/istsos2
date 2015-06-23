@@ -1,0 +1,593 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Mapping the stations &mdash; istSOS 2.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="istSOS 2.0 documentation" href="index.html" />
+    <link rel="prev" title="Virtual procedures" href="virtual.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="virtual.html" title="Virtual procedures"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">istSOS 2.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="mapping-the-stations">
+<span id="mapping"></span><h1>Mapping the stations<a class="headerlink" href="#mapping-the-stations" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="initializing-an-openlayers-3-map">
+<h2>Initializing an OpenLayers 3 map<a class="headerlink" href="#initializing-an-openlayers-3-map" title="Permalink to this headline">¶</a></h2>
+<p>On Ubuntu create a directory in the Apache “document root” directory (usually /var/www or
+/var/www/html) and give read write permissions:</p>
+<div class="highlight-rest"><div class="highlight"><pre>sudo mkdir /var/www/istsosws
+sudo chmod 777 -Rf /var/www/istsosws
+</pre></div>
+</div>
+<p>On Windows create a directory in the Apache “document root” directory (usually &lt;Apache
+folder&gt;\htdocs) and name it istsosws</p>
+<p>If you are using firefox check if the webGL are enabled. go to <a class="reference external" href="http://get.webgl.org/">http://get.webgl.org/</a>. If they are
+not enabled:</p>
+<div class="highlight-rest"><div class="highlight"><pre>open a new page and go to about:config
+search the option webgl.force-enabled and set to true
+</pre></div>
+</div>
+<p>Using your favorite text editor create an <strong>index.html</strong> file in the istsosws directory.
+Then copy&amp;paste the following code:</p>
+<div class="highlight-html"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22</pre></div></td><td class="code"><div class="highlight"><pre><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html&gt;</span>
+    <span class="nt">&lt;head&gt;</span>
+        <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">&quot;utf-8&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;title&gt;</span>istSOS - mapping sensor<span class="nt">&lt;/title&gt;</span>
+        <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span>
+            <span class="na">href=</span><span class="s">&quot;http://ol3js.org/en/master/css/ol.css&quot;</span> <span class="na">type=</span><span class="s">&quot;text/css&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;style&gt;</span>
+            <span class="nf">#map</span> <span class="p">{</span>
+                <span class="k">width</span><span class="o">:</span> <span class="m">600px</span><span class="p">;</span>
+                <span class="k">height</span><span class="o">:</span> <span class="m">400px</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="nt">&lt;/style&gt;</span>
+    <span class="nt">&lt;/head&gt;</span>
+    <span class="nt">&lt;body&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;map&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
+        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span>
+            <span class="na">src=</span><span class="s">&quot;http://ol3js.org/en/master/build/ol.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span>
+            <span class="na">src=</span><span class="s">&quot;app.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+    <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</pre></div>
+</td></tr></table></div>
+<p>Now create an <strong>app.js</strong> file in the same folder and copy&amp;paste this code:</p>
+<div class="highlight-javascript"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13</pre></div></td><td class="code"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">map</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">Map</span><span class="p">({</span>
+    <span class="nx">target</span><span class="o">:</span> <span class="s1">&#39;map&#39;</span><span class="p">,</span>
+    <span class="nx">renderer</span><span class="o">:</span> <span class="s1">&#39;canvas&#39;</span><span class="p">,</span>
+    <span class="nx">view</span><span class="o">:</span> <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">View</span><span class="p">({</span>
+        <span class="nx">zoom</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nx">center</span><span class="o">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="p">}),</span>
+    <span class="nx">layers</span><span class="o">:</span> <span class="p">[</span>
+        <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">layer</span><span class="p">.</span><span class="nx">Tile</span><span class="p">({</span>
+            <span class="nx">source</span><span class="o">:</span> <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">source</span><span class="p">.</span><span class="nx">OSM</span><span class="p">()</span>
+        <span class="p">})</span>
+    <span class="p">]</span>
+<span class="p">});</span>
+</pre></div>
+</td></tr></table></div>
+<p>Test you OL3 map opening this page <a class="reference external" href="http://localhost/istsosws">http://localhost/istsosws</a>. You should see an
+OpenStreetMap map.</p>
+</div>
+<div class="section" id="loading-istsos-sensors-on-the-map">
+<h2>Loading istSOS sensors on the map<a class="headerlink" href="#loading-istsos-sensors-on-the-map" title="Permalink to this headline">¶</a></h2>
+<p>The istSOS WA REST exposes a request to retrieve a GeoJSON file including all the
+sensors offered by a istSOS instance.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Try to load the GeoJSON:</p>
+<p><a class="reference external" href="http://localhost/istsos/wa/istsos/services/demo/procedures/operations/geojson">http://localhost/istsos/wa/istsos/services/demo/procedures/operations/geojson</a></p>
+<p>You can also execute a reprojection by adding the epsg parameter:</p>
+<p class="last"><a class="reference external" href="http://localhost/istsos/wa/istsos/services/demo/procedures/operations/geojson?epsg=3857">http://localhost/istsos/wa/istsos/services/demo/procedures/operations/geojson?epsg=3857</a></p>
+</div>
+<p>Now modify the <strong>app.js</strong> file by adding a Vector layer (ol.layer.Vector) configured to load a
+GeoJSON source (lines 12-17):</p>
+<div class="highlight-javascript"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19</pre></div></td><td class="code"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">map</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">Map</span><span class="p">({</span>
+    <span class="nx">target</span><span class="o">:</span> <span class="s1">&#39;map&#39;</span><span class="p">,</span>
+    <span class="nx">renderer</span><span class="o">:</span> <span class="s1">&#39;canvas&#39;</span><span class="p">,</span>
+    <span class="nx">view</span><span class="o">:</span> <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">View</span><span class="p">({</span>
+        <span class="nx">zoom</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nx">center</span><span class="o">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="p">}),</span>
+    <span class="nx">layers</span><span class="o">:</span> <span class="p">[</span>
+        <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">layer</span><span class="p">.</span><span class="nx">Tile</span><span class="p">({</span>
+            <span class="nx">source</span><span class="o">:</span> <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">source</span><span class="p">.</span><span class="nx">OSM</span><span class="p">()</span>
+        <span class="p">})</span>
+<span class="hll">        <span class="p">,</span><span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">layer</span><span class="p">.</span><span class="nx">Vector</span><span class="p">({</span>
+</span><span class="hll">            <span class="nx">source</span><span class="o">:</span> <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">source</span><span class="p">.</span><span class="nx">GeoJSON</span><span class="p">({</span>
+</span><span class="hll">                <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/istsos/wa/istsos/services/demo/&#39;</span> <span class="o">+</span>
+</span><span class="hll">                    <span class="s1">&#39;procedures/operations/geojson?epsg=3857&#39;</span>
+</span><span class="hll">            <span class="p">})</span>
+</span><span class="hll">        <span class="p">})</span>
+</span>    <span class="p">]</span>
+<span class="p">});</span>
+</pre></div>
+</td></tr></table></div>
+<p>Press <strong>F5</strong> to reload the map on the browser (now you should also see some circles
+representing the sensor position).</p>
+</div>
+<div class="section" id="changing-the-istsos-vector-layer-style">
+<h2>Changing the istSOS vector layer style<a class="headerlink" href="#changing-the-istsos-vector-layer-style" title="Permalink to this headline">¶</a></h2>
+<p>Modify the <strong>app.js</strong> file as shown in the next box:</p>
+<div class="highlight-javascript"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30</pre></div></td><td class="code"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">map</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">Map</span><span class="p">({</span>
+    <span class="nx">target</span><span class="o">:</span> <span class="s1">&#39;map&#39;</span><span class="p">,</span>
+    <span class="nx">renderer</span><span class="o">:</span> <span class="s1">&#39;canvas&#39;</span><span class="p">,</span>
+    <span class="nx">view</span><span class="o">:</span> <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">View</span><span class="p">({</span>
+        <span class="nx">zoom</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="nx">center</span><span class="o">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="p">}),</span>
+    <span class="nx">layers</span><span class="o">:</span> <span class="p">[</span>
+        <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">layer</span><span class="p">.</span><span class="nx">Tile</span><span class="p">({</span>
+            <span class="nx">source</span><span class="o">:</span> <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">source</span><span class="p">.</span><span class="nx">OSM</span><span class="p">()</span>
+        <span class="p">})</span>
+        <span class="p">,</span><span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">layer</span><span class="p">.</span><span class="nx">Vector</span><span class="p">({</span>
+            <span class="nx">source</span><span class="o">:</span> <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">source</span><span class="p">.</span><span class="nx">GeoJSON</span><span class="p">({</span>
+                <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/istsos/wa/istsos/services/demo/&#39;</span> <span class="o">+</span>
+                    <span class="s1">&#39;procedures/operations/geojson?epsg=3857&#39;</span>
+            <span class="p">})</span>
+<span class="hll">            <span class="p">,</span><span class="nx">style</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">feature</span><span class="p">,</span> <span class="nx">resolution</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="hll">                <span class="k">return</span> <span class="p">[</span>
+</span><span class="hll">                <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">Style</span><span class="p">({</span>
+</span><span class="hll">                    <span class="nx">image</span><span class="o">:</span> <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">Circle</span><span class="p">({</span>
+</span><span class="hll">                        <span class="nx">radius</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span>
+</span><span class="hll">                        <span class="nx">fill</span><span class="o">:</span> <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">Fill</span><span class="p">({</span><span class="nx">color</span><span class="o">:</span> <span class="s1">&#39;green&#39;</span><span class="p">}),</span>
+</span><span class="hll">                        <span class="nx">stroke</span><span class="o">:</span> <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">Stroke</span><span class="p">({</span><span class="nx">color</span><span class="o">:</span> <span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="nx">width</span><span class="o">:</span> <span class="mi">1</span><span class="p">})</span>
+</span><span class="hll">                    <span class="p">})</span>
+</span><span class="hll">                <span class="p">})</span>
+</span><span class="hll">                <span class="p">];</span>
+</span><span class="hll">            <span class="p">}</span>
+</span>        <span class="p">})</span>
+    <span class="p">]</span>
+<span class="p">});</span>
+</pre></div>
+</td></tr></table></div>
+<p>Reload (F5) the web page on the browser</p>
+</div>
+<div class="section" id="adding-interaction-to-the-map-to-display-sensor-metadata">
+<h2>Adding interaction to the map to display sensor metadata<a class="headerlink" href="#adding-interaction-to-the-map-to-display-sensor-metadata" title="Permalink to this headline">¶</a></h2>
+<p>In the <strong>index.html</strong> file add a div element just below the map div tag (line 17). This will be the place
+where sensor details will be displayed:</p>
+<div class="highlight-html"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23</pre></div></td><td class="code"><div class="highlight"><pre><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html&gt;</span>
+    <span class="nt">&lt;head&gt;</span>
+        <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">&quot;utf-8&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;title&gt;</span>istSOS - mapping sensor<span class="nt">&lt;/title&gt;</span>
+        <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span>
+            <span class="na">href=</span><span class="s">&quot;http://ol3js.org/en/master/css/ol.css&quot;</span> <span class="na">type=</span><span class="s">&quot;text/css&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;style&gt;</span>
+            <span class="nf">#map</span> <span class="p">{</span>
+                <span class="k">width</span><span class="o">:</span> <span class="m">600px</span><span class="p">;</span>
+                <span class="k">height</span><span class="o">:</span> <span class="m">400px</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="nt">&lt;/style&gt;</span>
+    <span class="nt">&lt;/head&gt;</span>
+    <span class="nt">&lt;body&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;map&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
+<span class="hll">        <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;details&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
+</span>        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span>
+            <span class="na">src=</span><span class="s">&quot;http://ol3js.org/en/master/build/ol.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span>
+            <span class="na">src=</span><span class="s">&quot;app.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+    <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</pre></div>
+</td></tr></table></div>
+<p>Append in the <strong>app.js</strong> file this code to enable the “ol.interaction.Select” feature <a class="reference external" href="http://ol3js.org/en/master/examples/select-features.html">[ol3 example]</a>:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">select</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">interaction</span><span class="p">.</span><span class="nx">Select</span><span class="p">({</span>
+    <span class="nx">layer</span><span class="o">:</span> <span class="nx">map</span><span class="p">.</span><span class="nx">getLayers</span><span class="p">().</span><span class="nx">getArray</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+<span class="p">});</span>
+<span class="nx">map</span><span class="p">.</span><span class="nx">addInteraction</span><span class="p">(</span><span class="nx">select</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>...and append in the <strong>app.js</strong> file this code that will register a function that will listen for the
+“add” event of the “ol.interaction.Select”:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="nx">select</span><span class="p">.</span><span class="nx">getFeatures</span><span class="p">().</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
+    <span class="kd">var</span> <span class="nx">feature</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">element</span><span class="p">;</span>
+
+    <span class="kd">var</span> <span class="nx">html</span> <span class="o">=</span> <span class="s2">&quot;&lt;span style=&#39;font-weight: bold;&#39;&gt;&quot;</span> <span class="o">+</span>
+        <span class="nx">feature</span><span class="p">.</span><span class="nx">getProperties</span><span class="p">().</span><span class="nx">name</span><span class="o">+</span><span class="s2">&quot;&lt;/span&gt;&lt;br/&gt;&lt;br/&gt;&quot;</span> <span class="o">+</span>
+        <span class="s2">&quot;Begin: &quot;</span> <span class="o">+</span> <span class="nx">feature</span><span class="p">.</span><span class="nx">getProperties</span><span class="p">().</span><span class="nx">samplingTime</span><span class="p">.</span><span class="nx">beginposition</span> <span class="o">+</span> <span class="s2">&quot;&lt;br/&gt;&quot;</span> <span class="o">+</span>
+        <span class="s2">&quot;End: &quot;</span> <span class="o">+</span> <span class="nx">feature</span><span class="p">.</span><span class="nx">getProperties</span><span class="p">().</span><span class="nx">samplingTime</span><span class="p">.</span><span class="nx">endposition</span> <span class="o">+</span> <span class="s2">&quot;&lt;br/&gt;&lt;br/&gt;&quot;</span> <span class="o">+</span>
+        <span class="s2">&quot;Observed properties:&lt;ol&gt;&quot;</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">cnt</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">cnt</span> <span class="o">&lt;</span> <span class="nx">feature</span><span class="p">.</span><span class="nx">getProperties</span><span class="p">().</span><span class="nx">observedproperties</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">cnt</span><span class="o">++</span><span class="p">){</span>
+        <span class="kd">var</span> <span class="nx">obs</span> <span class="o">=</span> <span class="nx">feature</span><span class="p">.</span><span class="nx">getProperties</span><span class="p">().</span><span class="nx">observedproperties</span><span class="p">[</span><span class="nx">cnt</span><span class="p">];</span>
+        <span class="nx">html</span> <span class="o">+=</span> <span class="s2">&quot;&lt;li&gt;&quot;</span> <span class="o">+</span> <span class="nx">obs</span><span class="p">.</span><span class="nx">name</span> <span class="o">+</span> <span class="s2">&quot;&lt;/li&gt;&quot;</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;details&#39;</span><span class="p">).</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">html</span><span class="p">;</span>
+<span class="p">});</span>
+</pre></div>
+</div>
+<p>Reload (<strong>F5</strong>) the web page on the browser and click on a sensor displayed on the map.
+Sensor details will be displayed in the details div.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>If you want to display other properties using the feature.getProperties() function,
+this are the attributes that can be accessed:</p>
+<div class="last highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;samplingTime&quot;</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;beginposition&quot;</span><span class="o">:</span> <span class="s2">&quot;2007-01-01T00:00:00+0100&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;endposition&quot;</span><span class="o">:</span> <span class="s2">&quot;2011-12-31T23:50:00+0100&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;sensortype&quot;</span><span class="o">:</span> <span class="s2">&quot;insitu-fixed-point&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;observedproperties&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;water-height&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;uom&quot;</span><span class="o">:</span> <span class="s2">&quot;m&quot;</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;description&quot;</span><span class="o">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;A_AETCAN_AIR&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;assignedid&quot;</span><span class="o">:</span> <span class="s2">&quot;8c4b9c18d464493568cfb18d015bbed5&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;offerings&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="s2">&quot;temporary&quot;</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">51</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="plotting-measures-in-a-chart">
+<h2>Plotting measures in a chart<a class="headerlink" href="#plotting-measures-in-a-chart" title="Permalink to this headline">¶</a></h2>
+<p>In this tutorial we will show you how to use the GetObservation request using the WA REST
+interface. To display the measures this libraries will be used:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>Dygraphs (MIT license)</strong>: a fast, flexible open source JavaScript charting library (<a class="reference external" href="http://dygraphs.com">http://dygraphs.com</a>)</li>
+</ul>
+</div></blockquote>
+<p>In addition to request and parse data we will use two other JavaScript libs:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>JQuery (MIT license)</strong>: a fast, small, and feature-rich JavaScript library (<a class="reference external" href="http://jquery.com">http://jquery.com</a>)</li>
+<li><strong>Moment.js (MIT license)</strong>: a javascript date library for parsing, validating, manipulating, and formatting dates (<a class="reference external" href="http://momentjs.com">http://momentjs.com</a>)</li>
+</ul>
+</div></blockquote>
+<p>Let‟s modify the <strong>index.html</strong> file (see line 18, 21-26):</p>
+<div class="highlight-html"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30</pre></div></td><td class="code"><div class="highlight"><pre><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html&gt;</span>
+    <span class="nt">&lt;head&gt;</span>
+        <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">&quot;utf-8&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;title&gt;</span>istSOS - mapping sensor<span class="nt">&lt;/title&gt;</span>
+        <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span>
+            <span class="na">href=</span><span class="s">&quot;http://ol3js.org/en/master/css/ol.css&quot;</span> <span class="na">type=</span><span class="s">&quot;text/css&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;style&gt;</span>
+            <span class="nf">#map</span> <span class="p">{</span>
+                <span class="k">width</span><span class="o">:</span> <span class="m">600px</span><span class="p">;</span>
+                <span class="k">height</span><span class="o">:</span> <span class="m">400px</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="nt">&lt;/style&gt;</span>
+    <span class="nt">&lt;/head&gt;</span>
+    <span class="nt">&lt;body&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;map&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;details&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
+<span class="hll">        <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;chart&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
+</span>        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span>
+            <span class="na">src=</span><span class="s">&quot;http://ol3js.org/en/master/build/ol.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="hll">        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span>
+</span><span class="hll">            <span class="na">src=</span><span class="s">&quot;http://dygraphs.com/dygraph-combined.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class="hll">        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span>
+</span><span class="hll">            <span class="na">src=</span><span class="s">&quot;https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class="hll">        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span>
+</span><span class="hll">            <span class="na">src=</span><span class="s">&quot;http://momentjs.com/downloads/moment.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span>        <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span>
+            <span class="na">src=</span><span class="s">&quot;app.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+    <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</pre></div>
+</td></tr></table></div>
+<p>Now you have access to the new API, let‟s add the code..
+When a sensor is selected we have access to a limited number of properties, but enough to
+make a GetObservation request. In the next code panel the added code will do the following
+job:</p>
+<blockquote>
+<div><ul>
+<li><p class="first">Extract the endPosition (last observation measured)</p>
+</li>
+<li><p class="first">Using the Moment.js API, parse the iso date string in a Moment object</p>
+</li>
+<li><p class="first">Subtract 7 Days from the endPosition creating the “from” date.</p>
+</li>
+<li><dl class="first docutils">
+<dt>Execute a getObservation request with JQuery, using the feature properties</dt>
+<dd><ul class="first last simple">
+<li>offering</li>
+<li>procedure name</li>
+<li>observed property</li>
+<li>the calculated “from” date and the endPosition (to request last week of data)</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p class="first">As the response arrive the data is prepared</p>
+</li>
+<li><p class="first">The Chart is created</p>
+</li>
+</ul>
+</div></blockquote>
+<p>Here the <em>select.getFeatures()</em> modified in the <strong>app.js</strong> file:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="nx">select</span><span class="p">.</span><span class="nx">getFeatures</span><span class="p">().</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
+    <span class="kd">var</span> <span class="nx">feature</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">element</span><span class="p">;</span>
+
+    <span class="kd">var</span> <span class="nx">html</span> <span class="o">=</span> <span class="s2">&quot;&lt;span style=&#39;font-weight: bold;&#39;&gt;&quot;</span> <span class="o">+</span>
+        <span class="nx">feature</span><span class="p">.</span><span class="nx">getProperties</span><span class="p">().</span><span class="nx">name</span><span class="o">+</span><span class="s2">&quot;&lt;/span&gt;&lt;br/&gt;&lt;br/&gt;&quot;</span> <span class="o">+</span>
+        <span class="s2">&quot;Begin: &quot;</span> <span class="o">+</span> <span class="nx">feature</span><span class="p">.</span><span class="nx">getProperties</span><span class="p">().</span><span class="nx">samplingTime</span><span class="p">.</span><span class="nx">beginposition</span> <span class="o">+</span> <span class="s2">&quot;&lt;br/&gt;&quot;</span> <span class="o">+</span>
+        <span class="s2">&quot;End: &quot;</span> <span class="o">+</span> <span class="nx">feature</span><span class="p">.</span><span class="nx">getProperties</span><span class="p">().</span><span class="nx">samplingTime</span><span class="p">.</span><span class="nx">endposition</span> <span class="o">+</span> <span class="s2">&quot;&lt;br/&gt;&lt;br/&gt;&quot;</span> <span class="o">+</span>
+        <span class="s2">&quot;Observed properties:&lt;ol&gt;&quot;</span><span class="p">;</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">cnt</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">cnt</span> <span class="o">&lt;</span> <span class="nx">feature</span><span class="p">.</span><span class="nx">getProperties</span><span class="p">().</span><span class="nx">observedproperties</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">cnt</span><span class="o">++</span><span class="p">){</span>
+        <span class="kd">var</span> <span class="nx">obs</span> <span class="o">=</span> <span class="nx">feature</span><span class="p">.</span><span class="nx">getProperties</span><span class="p">().</span><span class="nx">observedproperties</span><span class="p">[</span><span class="nx">cnt</span><span class="p">];</span>
+        <span class="nx">html</span> <span class="o">+=</span> <span class="s2">&quot;&lt;li&gt;&quot;</span> <span class="o">+</span> <span class="nx">obs</span><span class="p">.</span><span class="nx">name</span> <span class="o">+</span> <span class="s2">&quot;&lt;/li&gt;&quot;</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;details&#39;</span><span class="p">).</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">html</span><span class="p">;</span>
+
+    <span class="kd">var</span> <span class="nx">from</span> <span class="o">=</span> <span class="nx">moment</span><span class="p">(</span><span class="nx">feature</span><span class="p">.</span><span class="nx">getProperties</span><span class="p">().</span><span class="nx">samplingTime</span><span class="p">.</span><span class="nx">endposition</span><span class="p">);</span>
+    <span class="nx">from</span><span class="p">.</span><span class="nx">subtract</span><span class="p">(</span><span class="s1">&#39;days&#39;</span><span class="p">,</span> <span class="mi">7</span><span class="p">);</span>
+    <span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span>
+        <span class="nx">dataType</span><span class="o">:</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+        <span class="nx">url</span><span class="o">:</span> <span class="s2">&quot;/istsos/wa/istsos/services/sos/operations/getobservation&quot;</span> <span class="o">+</span>
+            <span class="s2">&quot;/offerings/&quot;</span> <span class="o">+</span> <span class="nx">feature</span><span class="p">.</span><span class="nx">getProperties</span><span class="p">().</span><span class="nx">offerings</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span>
+            <span class="s2">&quot;/procedures/&quot;</span><span class="o">+</span><span class="nx">feature</span><span class="p">.</span><span class="nx">getProperties</span><span class="p">().</span><span class="nx">name</span> <span class="o">+</span>
+            <span class="s2">&quot;/observedproperties/&quot;</span> <span class="o">+</span>
+                <span class="nx">feature</span><span class="p">.</span><span class="nx">getProperties</span><span class="p">().</span><span class="nx">observedproperties</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">def</span><span class="o">+</span><span class="s2">&quot;/eventtime&quot;</span><span class="o">+</span>
+            <span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="nx">from</span><span class="p">.</span><span class="nx">format</span><span class="p">()</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="nx">feature</span><span class="p">.</span><span class="nx">getProperties</span><span class="p">().</span><span class="nx">samplingTime</span><span class="p">.</span><span class="nx">endposition</span><span class="p">,</span>
+        <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">json</span><span class="p">){</span>
+            <span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">[];</span>
+            <span class="k">for</span> <span class="p">(</span><span class="nx">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">c</span> <span class="o">&lt;</span> <span class="nx">json</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">result</span><span class="p">.</span><span class="nx">DataArray</span><span class="p">.</span><span class="nx">values</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">c</span><span class="o">++</span><span class="p">){</span>
+                <span class="nx">data</span><span class="p">.</span><span class="nx">push</span><span class="p">([</span>
+                    <span class="nx">moment</span><span class="p">(</span><span class="nx">json</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">result</span><span class="p">.</span><span class="nx">DataArray</span><span class="p">.</span><span class="nx">values</span><span class="p">[</span><span class="nx">c</span><span class="p">][</span><span class="mi">0</span><span class="p">]).</span><span class="nx">toDate</span><span class="p">(),</span>
+                    <span class="nb">parseFloat</span><span class="p">(</span><span class="nx">json</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">result</span><span class="p">.</span><span class="nx">DataArray</span><span class="p">.</span><span class="nx">values</span><span class="p">[</span><span class="nx">c</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+                <span class="p">])</span>
+            <span class="p">}</span>
+            <span class="k">new</span> <span class="nx">Dygraph</span><span class="p">(</span>
+                <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;chart&quot;</span><span class="p">),</span>
+                <span class="nx">data</span><span class="p">,</span>
+                <span class="p">{}</span> <span class="c1">// options</span>
+            <span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">});</span>
+
+<span class="p">});</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<a href="index.html"><img src="_static/logo.png" border="0" alt="istSOS" align="centre" width="200"/></a>
+<hr>
+<a href="http://code.google.com/p/istsos/downloads" align="centre">Download istSOS v2.0</a>
+<hr>
+
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Mapping the stations</a><ul>
+<li><a class="reference internal" href="#initializing-an-openlayers-3-map">Initializing an OpenLayers 3 map</a></li>
+<li><a class="reference internal" href="#loading-istsos-sensors-on-the-map">Loading istSOS sensors on the map</a></li>
+<li><a class="reference internal" href="#changing-the-istsos-vector-layer-style">Changing the istSOS vector layer style</a></li>
+<li><a class="reference internal" href="#adding-interaction-to-the-map-to-display-sensor-metadata">Adding interaction to the map to display sensor metadata</a></li>
+<li><a class="reference internal" href="#plotting-measures-in-a-chart">Plotting measures in a chart</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="virtual.html"
+                        title="previous chapter">Virtual procedures</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/mapping.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="virtual.html" title="Virtual procedures"
+             >previous</a> |</li>
+        <li><a href="index.html">istSOS 2.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Massimiliano Cannata, Milan Antonovic.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

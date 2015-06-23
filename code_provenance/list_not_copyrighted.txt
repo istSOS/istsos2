@@ -1,0 +1,189 @@
+[ ] ./site/conf.py
+
+[x] ./scripts/converter/__init__.py
+[x] ./scripts/istsos2csv.py
+[x] ./scripts/__init__.py
+
+[x] ./makecheck.py
+[x] ./documentation/conf.py
+
+[x] ./istsoslib/renderers/__init__.py
+[x] ./istsoslib/responders/__init__.py
+[x] ./istsoslib/sos_version.py
+[x] ./istsoslib/filters/__init__.py
+[x] ./istsoslib/sosException.py
+[x] ./istsoslib/sosUtils.py
+[x] ./istsoslib/__init__.py
+
+[x] ./site_/conf.py
+
+[ ] ./lib/requests_oauthlib/oauth1_session.py
+[ ] ./lib/requests_oauthlib/oauth2_session.py
+[ ] ./lib/requests_oauthlib/oauth2_auth.py
+[ ] ./lib/requests_oauthlib/oauth1_auth.py
+[ ] ./lib/requests_oauthlib/compliance_fixes/facebook.py
+[ ] ./lib/requests_oauthlib/compliance_fixes/douban.py
+[ ] ./lib/requests_oauthlib/compliance_fixes/linkedin.py
+[ ] ./lib/requests_oauthlib/compliance_fixes/weibo.py
+[ ] ./lib/requests_oauthlib/compliance_fixes/__init__.py
+[ ] ./lib/requests_oauthlib/__init__.py
+
+[ ] ./lib/twitter/list.py
+[ ] ./lib/twitter/_file_cache.py
+[ ] ./lib/twitter/hashtag.py
+[ ] ./lib/twitter/direct_message.py
+[ ] ./lib/twitter/status.py
+[ ] ./lib/twitter/url.py
+[ ] ./lib/twitter/parse_tweet.py
+[ ] ./lib/twitter/error.py
+[ ] ./lib/twitter/trend.py
+[ ] ./lib/twitter/user.py
+[ ] ./lib/twitter/api.py
+[ ] ./lib/twitter/__init__.py
+
+[ ] ./lib/pytz/exceptions.py
+[ ] ./lib/pytz/reference.py
+[ ] ./lib/pytz/tzfile.py
+[ ] ./lib/pytz/lazy.py
+[ ] ./lib/pytz/tests/test_lazy.py
+[ ] ./lib/pytz/tests/test_tzinfo.py
+[ ] ./lib/pytz/tests/test_docs.py
+[ ] ./lib/pytz/__init__.py
+[ ] ./lib/pytz/tzinfo.py
+
+[ ] ./lib/requests/models.py
+[ ] ./lib/requests/compat.py
+[ ] ./lib/requests/adapters.py
+[ ] ./lib/requests/auth.py
+[ ] ./lib/requests/exceptions.py
+[ ] ./lib/requests/sessions.py
+[ ] ./lib/requests/certs.py
+[ ] ./lib/requests/status_codes.py
+[ ] ./lib/requests/packages/urllib3/util/ssl_.py
+[ ] ./lib/requests/packages/urllib3/util/request.py
+[ ] ./lib/requests/packages/urllib3/util/connection.py
+[ ] ./lib/requests/packages/urllib3/util/url.py
+[ ] ./lib/requests/packages/urllib3/util/timeout.py
+[ ] ./lib/requests/packages/urllib3/util/response.py
+[ ] ./lib/requests/packages/urllib3/util/retry.py
+[ ] ./lib/requests/packages/urllib3/util/__init__.py
+[ ] ./lib/requests/packages/urllib3/connectionpool.py
+[ ] ./lib/requests/packages/urllib3/exceptions.py
+[ ] ./lib/requests/packages/urllib3/fields.py
+[ ] ./lib/requests/packages/urllib3/request.py
+[ ] ./lib/requests/packages/urllib3/connection.py
+[ ] ./lib/requests/packages/urllib3/response.py
+[ ] ./lib/requests/packages/urllib3/packages/ordered_dict.py
+[ ] ./lib/requests/packages/urllib3/packages/ssl_match_hostname/_implementation.py
+[ ] ./lib/requests/packages/urllib3/packages/ssl_match_hostname/__init__.py
+[ ] ./lib/requests/packages/urllib3/packages/__init__.py
+[ ] ./lib/requests/packages/urllib3/filepost.py
+[ ] ./lib/requests/packages/urllib3/contrib/__init__.py
+[ ] ./lib/requests/packages/urllib3/contrib/ntlmpool.py
+[ ] ./lib/requests/packages/urllib3/contrib/pyopenssl.py
+[ ] ./lib/requests/packages/urllib3/_collections.py
+[ ] ./lib/requests/packages/urllib3/poolmanager.py
+[ ] ./lib/requests/packages/urllib3/__init__.py
+[ ] ./lib/requests/packages/chardet/compat.py
+[ ] ./lib/requests/packages/chardet/__init__.py
+[ ] ./lib/requests/packages/chardet/chardetect.py
+[ ] ./lib/requests/packages/__init__.py
+[ ] ./lib/requests/cookies.py
+[ ] ./lib/requests/api.py
+[ ] ./lib/requests/hooks.py
+[ ] ./lib/requests/__init__.py
+[ ] ./lib/requests/utils.py
+[ ] ./lib/requests/structures.py
+
+[ ] ./lib/apscheduler/scheduler.py
+[ ] ./lib/apscheduler/util.py
+[ ] ./lib/apscheduler/events.py
+[ ] ./lib/apscheduler/jobstores/ram_store.py
+[ ] ./lib/apscheduler/jobstores/mongodb_store.py
+[ ] ./lib/apscheduler/jobstores/base.py
+[ ] ./lib/apscheduler/jobstores/shelve_store.py
+[ ] ./lib/apscheduler/jobstores/__init__.py
+[ ] ./lib/apscheduler/jobstores/sqlalchemy_store.py
+[ ] ./lib/apscheduler/jobstores/redis_store.py
+[ ] ./lib/apscheduler/job.py
+[ ] ./lib/apscheduler/triggers/cron/fields.py
+[ ] ./lib/apscheduler/triggers/cron/__init__.py
+[ ] ./lib/apscheduler/triggers/cron/expressions.py
+[ ] ./lib/apscheduler/triggers/interval.py
+[ ] ./lib/apscheduler/triggers/simple.py
+[ ] ./lib/apscheduler/triggers/__init__.py
+[ ] ./lib/apscheduler/__init__.py
+[ ] ./lib/apscheduler/threadpool.py
+
+[ ] ./lib/argparse.py
+
+[ ] ./lib/isodate/isostrf.py
+[ ] ./lib/isodate/isodates.py
+[ ] ./lib/isodate/isoduration.py
+[ ] ./lib/isodate/isotzinfo.py
+[ ] ./lib/isodate/isodatetime.py
+[ ] ./lib/isodate/isoerror.py
+[ ] ./lib/isodate/duration.py
+[ ] ./lib/isodate/isotime.py
+[ ] ./lib/isodate/__init__.py
+[ ] ./lib/isodate/tzinfo.py
+
+[x] ./lib/etree.py
+[x] ./lib/__init__.py
+
+[x] ./runAllTests.py
+
+[x] ./walib/sqlschema.py
+[?] ./walib/wa_version.py
+[x] ./walib/__init__.py
+
+[x] ./walib/istsos/services/virtualprocedures/__init__.py
+[x] ./walib/istsos/services/virtualprocedures/virtualprocedures.py
+[x] ./walib/istsos/services/systemtypes/__init__.py
+[x] ./walib/istsos/services/uoms/__init__.py
+[x] ./walib/istsos/services/observedproperties/__init__.py
+[x] ./walib/istsos/services/configsections/__init__.py
+[x] ./walib/istsos/services/procedures/__init__.py
+[x] ./walib/istsos/services/dataqualities/__init__.py
+[x] ./walib/istsos/services/logs/__init__.py
+[x] ./walib/istsos/services/status/__init__.py
+[x] ./walib/istsos/services/offerings/procedures/__init__.py
+[x] ./walib/istsos/services/offerings/__init__.py
+[x] ./walib/istsos/services/epsgs/__init__.py
+[x] ./walib/istsos/services/__init__.py
+[x] ./walib/istsos/__init__.py
+
+[?] ./walib/admin/configsections/configsections.py
+[x] ./walib/admin/configsections/__init__.py
+[x] ./walib/admin/__init__.py
+
+[x] ./wnslib/services/users/__init__.py
+[x] ./wnslib/services/notifications/__init__.py
+[x] ./wnslib/services/__init__.py
+[x] ./wnslib/services/registrations/__init__.py
+[x] ./wnslib/__init__.py
+
+[x] ./test/delete.py
+[x] ./test/scripts/__init__.py
+[x] ./test/_test.py
+[x] ./test/istsoslib/__init__.py
+[x] ./test/istsoslib/sosRequests.py
+[x] ./test/post.py
+[x] ./test/put.py
+[x] ./test/walib/__init__.py
+[x] ./test/walib/istsos/services/procedures.py
+[x] ./test/walib/istsos/services/uoms.py
+[x] ./test/walib/istsos/services/systemtypes.py
+[x] ./test/walib/istsos/services/operations.py
+[x] ./test/walib/istsos/services/observedproperties.py
+[x] ./test/walib/istsos/services/offerings.py
+[x] ./test/walib/istsos/services/services.py
+[x] ./test/walib/istsos/services/configsections.py
+[x] ./test/walib/istsos/services/__init__.py
+[x] ./test/walib/istsos/services/dataqualities.py
+[x] ./test/walib/istsos/services/epsgs.py
+[x] ./test/walib/istsos/__init__.py
+[ ] ./test/get.py
+[x] ./test/__init__.py
+[x] ./test/admin/__init__.py
+[x] ./test/prove.py
