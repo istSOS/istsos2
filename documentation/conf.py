@@ -59,7 +59,7 @@ master_doc = 'index'
 # General information about the project.
 # General information about the project.
 project = u'istSOS'
-authors = u'Massimiliano Cannata, Milan Antonovix'
+authors = u'Massimiliano Cannata, Milan Antonovic'
 license = u'This work is licensed under a Creative Commons Attribution 4.0 International License'
 copyright = u'2010-2015, ' + authors + ' ' + license
 
