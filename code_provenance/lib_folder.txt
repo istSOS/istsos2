@@ -19,5 +19,4 @@ License :: OSI Approved :: MIT License
 argparse
 License :: OSI Approved :: Python Software Foundation License
 
-etree, preparelibs
-istsos file
+etree and preparelibs are istsos file with copyright indicated
