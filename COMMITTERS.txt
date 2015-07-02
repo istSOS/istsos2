@@ -1,0 +1,10 @@
+=============== ===================== ==================================== ==================================
+Login(s)        Name                  Email / Contact             Area(s)
+=============== ===================== ==================================== ==================================
+maxicannata     Massimiliano Cannata  massimiliano.cannata at gmail.com    Overall 
+mantonovic      Milan Antonovic       milan.antonovic at gmail.com         Overall 
+pietrap         Priska Pietra         
+fmassa          Francesco Massa
+doscio          Mirko Cardoso
+ambrosiniluca   Ambrosini Luca
+=============== ===================== ==================================== ==================================
