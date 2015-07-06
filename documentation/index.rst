@@ -26,7 +26,7 @@ istSOS is released under the GPL :ref:`license`, and runs on all major platforms
 (Windows, Linux, Mac OS X), even though it has been used in production in linux environment only.
 
 
-**Table of contents:**
+**Users docs:**
 ---------------------
 
 .. toctree::
@@ -43,3 +43,12 @@ istSOS is released under the GPL :ref:`license`, and runs on all major platforms
     virtual
     mapping
     license
+
+**Developers docs:**
+---------------------
+
+.. toctree::
+    :maxdepth: 1
+
+    gcclass
+    obclass
