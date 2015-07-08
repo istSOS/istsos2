@@ -19,3 +19,5 @@
 find lib/apscheduler/ -name '*.py' -print0 | xargs -0 -n 1 sed -i -e 's/from apscheduler/from lib.apscheduler/g'
 find lib/pytz/ -name '*.py' -print0 | xargs -0 -n 1 sed -i -e 's/from pytz/from lib.pytz/g'
 find lib/pytz/ -name '*.py' -print0 | xargs -0 -n 1 sed -i -e 's/import pytz/import lib.pytz/g'
+find lib/requests_oauthlib/ -name '*.py' -print0 | xargs -0 -n 1 sed -i -e 's/from oauthlib/from lib.oauthlib/g'
+find lib/oauthlib/ -name '*.py' -print0 | xargs -0 -n 1 sed -i -e 's/from oauthlib/from lib.oauthlib/g'

@@ -2,9 +2,9 @@ from __future__ import unicode_literals
 
 import logging
 
-from oauthlib.common import generate_token, urldecode
-from oauthlib.oauth2 import WebApplicationClient, InsecureTransportError
-from oauthlib.oauth2 import TokenExpiredError, is_secure_transport
+from lib.oauthlib.common import generate_token, urldecode
+from lib.oauthlib.oauth2 import WebApplicationClient, InsecureTransportError
+from lib.oauthlib.oauth2 import TokenExpiredError, is_secure_transport
 import requests
 
 log = logging.getLogger(__name__)

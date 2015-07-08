@@ -1,6 +1,6 @@
 from json import loads, dumps
 
-from oauthlib.common import add_params_to_uri, to_unicode
+from lib.oauthlib.common import add_params_to_uri, to_unicode
 
 
 def linkedin_compliance_fix(session):

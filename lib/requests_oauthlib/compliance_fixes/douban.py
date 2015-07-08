@@ -1,6 +1,6 @@
 import json
 
-from oauthlib.common import to_unicode
+from lib.oauthlib.common import to_unicode
 
 
 def douban_compliance_fix(session):

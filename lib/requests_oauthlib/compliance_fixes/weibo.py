@@ -1,6 +1,6 @@
 from json import loads, dumps
 
-from oauthlib.common import to_unicode
+from lib.oauthlib.common import to_unicode
 
 
 def weibo_compliance_fix(session):

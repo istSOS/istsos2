@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
-from oauthlib.oauth2 import WebApplicationClient, InsecureTransportError
-from oauthlib.oauth2 import is_secure_transport
+from lib.oauthlib.oauth2 import WebApplicationClient, InsecureTransportError
+from lib.oauthlib.oauth2 import is_secure_transport
 
 
 class OAuth2(object):

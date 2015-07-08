@@ -3,11 +3,11 @@ from __future__ import unicode_literals
 
 import logging
 
-from oauthlib.common import extract_params
-from oauthlib.oauth1 import Client, SIGNATURE_HMAC, SIGNATURE_TYPE_AUTH_HEADER
-from oauthlib.oauth1 import SIGNATURE_TYPE_BODY
-from requests.compat import is_py3
-from requests.utils import to_native_string
+from lib.oauthlib.common import extract_params
+from lib.oauthlib.oauth1 import Client, SIGNATURE_HMAC, SIGNATURE_TYPE_AUTH_HEADER
+from lib.oauthlib.oauth1 import SIGNATURE_TYPE_BODY
+from lib.requests.compat import is_py3
+from lib.requests.utils import to_native_string
 
 CONTENT_TYPE_FORM_URLENCODED = 'application/x-www-form-urlencoded'
 CONTENT_TYPE_MULTI_PART = 'multipart/form-data'
