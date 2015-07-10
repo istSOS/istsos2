@@ -1,2 +1,0 @@
-- **2013-02-05** - `istSOS 2.0RC1 released <http://code.google.com/p/istsos/downloads>`_
-- **2013-02-06** - `Workshop at GRASS & GRFOSS italian user meeting <http://geomorfolab.arch.unige.it/genova2013/index.php?option=com_content&view=article&id=60&Itemid=39&lang=it#IS1>`_
