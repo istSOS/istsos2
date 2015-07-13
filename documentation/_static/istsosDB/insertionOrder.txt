@@ -3,12 +3,12 @@ feature_type
 obs_type
 observed_properties
 offerings
-time_res_unit
 uoms
 foi
 procedures
 event_time
 proc_obs
+cron_log
 off_proc
 positions
 measures

@@ -2,12 +2,12 @@ tran_log
 measures
 positions
 off_proc
+cron_log
 proc_obs
 event_time
 procedures
 foi
 uoms
-time_res_unit
 offerings
 observed_properties
 obs_type

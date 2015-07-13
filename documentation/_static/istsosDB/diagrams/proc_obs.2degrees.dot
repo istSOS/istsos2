@@ -1,5 +1,5 @@
-// dot 2.26.3 on Linux 3.2.0-38-generic-pae
-// SchemaSpy rev 590
+// dot 2.36.0 on Linux 3.16.7-031607-generic
+// SchemaSpy rev Unknown
 digraph "twoDegreesRelationshipsDiagram" {
   graph [
     rankdir="RL"
@@ -19,6 +19,7 @@ digraph "twoDegreesRelationshipsDiagram" {
   edge [
     arrowsize="0.8"
   ];
+  "cron_log":"elipses":w -> "procedures":"id_prc":e [arrowhead=none dir=back arrowtail=crowodot];
   "event_time":"elipses":w -> "procedures":"id_prc":e [arrowhead=none dir=back arrowtail=crowodot];
   "measures":"id_eti_fk":w -> "event_time":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "measures":"id_pro_fk":w -> "proc_obs":"id_pro.type":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -29,13 +30,22 @@ digraph "twoDegreesRelationshipsDiagram" {
   "proc_obs":"id_uom_fk":w -> "uoms":"id_uom":e [arrowhead=none dir=back arrowtail=crowodot];
   "procedures":"id_foi_fk":w -> "foi":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "procedures":"id_oty_fk":w -> "obs_type":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "procedures":"id_tru_fk":w -> "time_res_unit":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "cron_log" [
+    label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">cron_log</TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+    </TABLE>>
+    URL="cron_log.html"
+    tooltip="cron_log"
+  ];
   "event_time" [
     label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">event_time</TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">9 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1,866 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 &gt;</TD></TR>
     </TABLE>>
     URL="event_time.html"
     tooltip="event_time"
@@ -45,7 +55,7 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">foi</TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 row</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
     </TABLE>>
     URL="foi.html"
     tooltip="foi"
@@ -58,8 +68,8 @@ digraph "twoDegreesRelationshipsDiagram" {
       <TR><TD PORT="id_eti_fk" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">id_eti_fk</TD></TR>
       <TR><TD PORT="id_qi_fk" COLSPAN="3" ALIGN="LEFT">id_qi_fk</TD></TR>
       <TR><TD PORT="id_pro_fk" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">id_pro_fk</TD></TR>
-      <TR><TD PORT="val_msr" COLSPAN="3" ALIGN="LEFT">val_msr</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">9 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1,866 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
     </TABLE>>
     URL="measures.html"
     tooltip="measures"
@@ -78,12 +88,10 @@ digraph "twoDegreesRelationshipsDiagram" {
     label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">observed_properties</TD></TR>
-      <TR><TD PORT="name_opr" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">name_opr</TD></TR>
-      <TR><TD PORT="def_opr" COLSPAN="3" ALIGN="LEFT">def_opr</TD></TR>
-      <TR><TD PORT="desc_opr" COLSPAN="3" ALIGN="LEFT">desc_opr</TD></TR>
-      <TR><TD PORT="constr_opr" COLSPAN="3" ALIGN="LEFT">constr_opr</TD></TR>
+      <TR><TD PORT="def_opr" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">def_opr</TD></TR>
       <TR><TD PORT="id_opr" COLSPAN="3" BGCOLOR="#bed1b8" ALIGN="LEFT">id_opr</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">  </TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 row</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">  </TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
     </TABLE>>
     URL="observed_properties.html"
     tooltip="observed_properties"
@@ -93,7 +101,7 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">off_proc</TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 row</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
     </TABLE>>
     URL="off_proc.html"
     tooltip="off_proc"
@@ -107,7 +115,7 @@ digraph "twoDegreesRelationshipsDiagram" {
       <TR><TD PORT="id_uom_fk" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">id_uom_fk</TD><TD PORT="id_uom_fk.type" ALIGN="LEFT">int4[10]</TD></TR>
       <TR><TD PORT="id_opr_fk" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">id_opr_fk</TD><TD PORT="id_opr_fk.type" ALIGN="LEFT">int4[10]</TD></TR>
       <TR><TD PORT="constr_pro" COLSPAN="2" ALIGN="LEFT">constr_pro</TD><TD PORT="constr_pro.type" ALIGN="LEFT">varchar[2147483647]</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 row</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
     </TABLE>>
     URL="proc_obs.html"
     tooltip="proc_obs"
@@ -116,17 +124,12 @@ digraph "twoDegreesRelationshipsDiagram" {
     label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">procedures</TD></TR>
-      <TR><TD PORT="name_prc" COLSPAN="3" ALIGN="LEFT">name_prc</TD></TR>
-      <TR><TD PORT="desc_prc" COLSPAN="3" ALIGN="LEFT">desc_prc</TD></TR>
-      <TR><TD PORT="stime_prc" COLSPAN="3" ALIGN="LEFT">stime_prc</TD></TR>
-      <TR><TD PORT="etime_prc" COLSPAN="3" ALIGN="LEFT">etime_prc</TD></TR>
       <TR><TD PORT="id_prc" COLSPAN="3" BGCOLOR="#bed1b8" ALIGN="LEFT">id_prc</TD></TR>
-      <TR><TD PORT="id_tru_fk" COLSPAN="3" ALIGN="LEFT">id_tru_fk</TD></TR>
-      <TR><TD PORT="time_res_prc" COLSPAN="3" ALIGN="LEFT">time_res_prc</TD></TR>
       <TR><TD PORT="id_oty_fk" COLSPAN="3" ALIGN="LEFT">id_oty_fk</TD></TR>
       <TR><TD PORT="id_foi_fk" COLSPAN="3" ALIGN="LEFT">id_foi_fk</TD></TR>
       <TR><TD PORT="assignedid_prc" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">assignedid_prc</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 row</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">3 &gt;</TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 &gt;</TD></TR>
     </TABLE>>
     URL="procedures.html"
     tooltip="procedures"
@@ -136,29 +139,18 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">quality_index</TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">  </TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">9 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">  </TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">10 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 &gt;</TD></TR>
     </TABLE>>
     URL="quality_index.html"
     tooltip="quality_index"
-  ];
-  "time_res_unit" [
-    label=<
-    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
-      <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">time_res_unit</TD></TR>
-      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">  </TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 row</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
-    </TABLE>>
-    URL="time_res_unit.html"
-    tooltip="time_res_unit"
   ];
   "uoms" [
     label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">uoms</TD></TR>
-      <TR><TD PORT="name_uom" COLSPAN="3" ALIGN="LEFT">name_uom</TD></TR>
-      <TR><TD PORT="desc_uom" COLSPAN="3" ALIGN="LEFT">desc_uom</TD></TR>
       <TR><TD PORT="id_uom" COLSPAN="3" BGCOLOR="#bed1b8" ALIGN="LEFT">id_uom</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">  </TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 row</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">  </TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
     </TABLE>>
     URL="uoms.html"
     tooltip="uoms"
