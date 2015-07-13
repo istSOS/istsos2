@@ -39,10 +39,10 @@ class Notify(object):
 
         if not 'subject' in message.keys():
             print "please define a email subject"
-            return 
+            return
         if not 'message' in message.keys():
             print "please define a email text"
-            return 
+            return
 
         import smtplib
         from email.MIMEMultipart import MIMEMultipart
@@ -88,7 +88,7 @@ class Notify(object):
         else:
             raise Exception("Message for twitter to long!!!, MAX 140 character")
 
-    def twitter(self, message, to, name):
+    def twitter(self, message, to, name=None):
         if not 'private' in message.keys():
             print "please define a twitter public message"
             return
@@ -99,13 +99,13 @@ class Notify(object):
 
         if len(message) < 140:
             print 'send direct message'
-            #try:
-                #self.twitter_api.PostDirectMessage(tweet, to)
-            #except twitter.TwitterError, e:
-                #if e[0][0]['code'] == 187:
-                    #print 'Duplicate tweet'
-                #else:
-                    #print e
+            try:
+                self.twitter_api.PostDirectMessage(tweet, to, name)
+            except twitter.TwitterError, e:
+                if e[0][0]['code'] == 187:
+                    print 'Duplicate tweet'
+                else:
+                    print e
         else:
             raise Exception("Message for twitter to long!!!, MAX 140 character")
 
