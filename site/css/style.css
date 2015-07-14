@@ -1157,7 +1157,7 @@ Media queries
 		border-bottom: 1px solid #666;
 	}
 	section.featured {
-		padding-top: 80px;
+		padding-top: 120px;
 	}
 	
 	.team-member,.col-lg-4 {
@@ -1167,4 +1167,12 @@ Media queries
 	.stats .col-md-3 {
 		margin-bottom: 30px;
 	}
+	.slogan{
+		font-size:40px !important;
+	}
+}
+
+.container-footer{
+	padding:0px;
+	background-color:#242424;
 }
