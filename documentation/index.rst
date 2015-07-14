@@ -17,7 +17,7 @@ istSOS-project documentation
    :scale:   100
 
 
-istSOS is an OGC SOS_ server implementation written in Python_. 
+istSOS is an OGC `SOS <http://www.opengeospatial.org/standards/sos>`_ server implementation written in `Python <https://www.python.org/>`_. 
 istSOS allows for managing and dispatch observations from monitoring sensors according to the Sensor Observation Service standard.
 
 The project provides also a Graphical user Interface that allows for easing the daily operations and a RESTFull Web api for automatizing administration procedures.
@@ -52,3 +52,6 @@ istSOS is released under the GPL :ref:`license`, and runs on all major platforms
 
     gcclass
     obclass
+    dbschema
+    
+    
