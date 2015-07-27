@@ -47,6 +47,9 @@ div.footer {
     padding: 9px 0 9px 0;
     text-align: center;
     font-size: 75%;
+    /*position: fixed;
+    bottom: 0px;
+    background-color: rgb(89, 107, 84);*/
 }
 
 div.footer a {
@@ -58,6 +61,8 @@ div.related {
     background-color: rgb(50, 162, 22);
     line-height: 30px;
     color: #ffffff;
+    /*position: fixed;
+    bottom: 32px;*/
 }
 
 div.related a {
