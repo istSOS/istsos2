@@ -1,13 +1,13 @@
-.. _wms:
+.. _wns:
 
 =================================
-WNS Web Notification Service
+istSOS-WNS: Notification Service
 =================================
 
-the WNS is a service gathering data from an istSOS database and sending a notification to the users after testing the retrieved data to meet some conditions. The systems is divided in three parts: a database for storing the information about the notifications, the users and the registrations of the users to the notifications; a database of the istSOS service storing the actual data received from external sensors; and a scheduler that periodically runs the functions to retrieve the data, test it and send the notifications to the registered users. The system also do a notification on a twitter account.
+the istSOS-WNS is a service gathering data from an istSOS database and sending a notification to the users after testing the retrieved data to meet some conditions. The systems is divided in three parts: a database for storing the information about the notifications, the users and the registrations of the users to the notifications; a database of the istSOS service storing the actual data received from external sensors; and a scheduler that periodically runs the functions to retrieve the data, test it and send the notifications to the registered users. The system also do a notification on a twitter account.
 
 
-WNS database schema
+istSOS-WNS database schema
 ===================
 
 The wns schema is represented below.
@@ -18,7 +18,7 @@ The wns schema is represented below.
 
 
 
-Activation of WNS
+Activation of istSOS-WNS
 =================
 
 Open the default.cfg file and add the parameter to connect to the wns database.
@@ -50,11 +50,11 @@ To setup the Web Service do this POST request:
 ::
 	http://localhost/istsos/wns/setup
 
-This will create a notification.asp file under the service/ folder, where the notification function are stored and create a schema in the WNS database.
+This will create a notification.asp file under the service/ folder, where the notification function are stored and create a schema in the istSOS-WNS database.
 
 
 Create a notification
-=================
+======================
 
 It’s possible to create two type of notification, a simple notification, that execute a getObservation, and a complex observation, where the user can write a specific request. 
 

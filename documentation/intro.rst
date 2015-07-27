@@ -1,8 +1,9 @@
 .. _intro:
 
 ==================================
-Introduction to the standard 
+Introduction to the SOS standard 
 ==================================
+
 Sensor Observation Servcie (SOS) is an Open Geospatial Consortium (`OGC <www.opengeospatial.org>`_) approved standard (in version 1 and 2) that is part of the Sensor Web Enablement (SWE) initiative.
 
 ---------------------------

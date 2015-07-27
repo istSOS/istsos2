@@ -1,8 +1,9 @@
 .. _istsos:
 
 ==================================
-istSOS
+istSOS software
 ==================================
+
 istSOS (Istituto Scienze della Terra Sensor Observation Service) is the implementation of the Sensor Observation Service standard from Open Geospatial Consortium by the Institute of Earth Sciences (IST, Istituto Scienze della Terra). istSOS is distributed with a GPLv2 licence.
 The development of istSOS started in 2009 in order to provide a simple implementation of the SOS standard for the management, provision and integration of hydro-meteorological data collected in Canton Ticino (Switzerland).
 
@@ -18,7 +19,7 @@ Project links
 ---------------
 **Mailing list**: `<https://groups.google.com/forum/#!forum/istsos>`_
 
-**Web**: `<https://geoservice.ist.supsi.ch/projects/istsos>`_
+**Web**: `<http://istsos.org>`_
 
 **Source code**: `<http://sourceforge.net/projects/istsos>`_
 

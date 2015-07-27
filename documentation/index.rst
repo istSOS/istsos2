@@ -44,7 +44,8 @@ istSOS is released under the GPL :ref:`license`, and runs on all major platforms
     editobs
     virtual
     mapping
-    license
+    wns
+    
 
 **Developers docs:**
 ---------------------
@@ -52,6 +53,9 @@ istSOS is released under the GPL :ref:`license`, and runs on all major platforms
 .. toctree::
     :maxdepth: 1
     
+    intro
+    istsos
+    license
     istsoslib
     walib
     dbschema
