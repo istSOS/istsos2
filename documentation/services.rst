@@ -69,10 +69,37 @@ Set maximum time interval per getObservation requests (zero for no limits) and a
 The Proxy URL field is the base URL seen beyond a reverse proxy.
 
 
+-------------------------------
+Creating a new service instance
+-------------------------------
+
+Now that you have configured istSOS, it‟s time to create a new service instance.
+
+**1) Create a new service**
+
+.. image::  images/new-service.png
+
+Choose the name of your instance. In this workshop use the name
+**demo**.
+
+.. image::  images/new-service-form.png
 
 
+In the EPSG field you can set the database native projection. Leaving it empty,
+the default one will be used.
+
+Clicking on the "Customize database" box, you are able 
+to change the default database configuration for 
+this new istSOS instance.
+
+**2) Press “next”**
+
+As you pressed the “next” button, the server status panel is displayed.
+If something's gone wrong during the creation you will see here an alert.
 
 
+.. note::
+    The istSOS “demo” instance has inherited all the configuration options from the default configuration. If, for any reason you decide to modify them, the changes will affect only this instance.
 
 
 
