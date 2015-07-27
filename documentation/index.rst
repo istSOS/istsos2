@@ -37,6 +37,8 @@ istSOS is released under the GPL :ref:`license`, and runs on all major platforms
     register
     offering
     insert
+    acquisition
+    notifications
     quality
     getobs
     editobs
@@ -49,9 +51,15 @@ istSOS is released under the GPL :ref:`license`, and runs on all major platforms
 
 .. toctree::
     :maxdepth: 1
-
-    gcclass
-    obclass
-    dbschema
     
+    istsoslib
+    walib
+    dbschema
+
+.. automodule:: istsoslib
+    :show-inheritance:
+
+.. automodule:: walib
+    :show-inheritance:
+        
     
