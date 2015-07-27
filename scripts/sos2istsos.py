@@ -42,6 +42,7 @@ from os import path
 sys.path.insert(0, path.abspath("."))
 try:
     import lib.requests as req
+    from lib.requests.auth import HTTPBasicAuth
     import lib.argparse as argparse
     from lib.etree import et
     import lib.isodate as iso
@@ -55,7 +56,7 @@ fmt = '%Y-%m-%dT%H:%M:%S.%f%z'
 fmtshort = '%Y-%m-%dT%H:%M%z'
 
 class Procedure():
-    def __init__(self,name,offering,url,service):
+    def __init__(self,name,offering,url,service,auth=None):
         self.offering = offering
         self.url = url
         self.service = service
@@ -63,6 +64,7 @@ class Procedure():
         self.begin = ""
         self.end = ""
         self.template = None
+        self.auth = auth
         self.data = {
             "system_id": "",
             "system": "",
@@ -116,6 +118,15 @@ class Procedure():
             raise Exception("System type supported virtual, insitu-fixed-point only.")
     
     def setFoi(self, name, epsg, point):
+        
+        not_allowed_NCName = [' ', '!','"', '#', '$', '%', '&', '\'', 
+                          '(', ')', '*', '+', ',', '/', ':', ';', 
+                          '<', '=', '>', '?', '@', '[', '\\', ']', 
+                          '^', '`', '{', '|', '}', '~']
+                          
+        for c in not_allowed_NCName:
+            name = name.replace(c,'_')
+                
         self.data['location'] = {
             "type": "Feature",
             "geometry": {
@@ -126,7 +137,7 @@ class Procedure():
                 "type": "name",
                 "properties": {"name": epsg}
             },
-            "properties": {"name": name}
+            "properties": {"name": name.replace(' ','_')}
         }
     
     def addObservedProperty(self, name, definition, uom):
@@ -146,7 +157,7 @@ class Procedure():
                     self.service,
                     self.offering,
                     self.data["system"]
-                )
+                ), auth=self.auth
             )
             try:
                 self.template = res.json()['data'][0]
@@ -186,6 +197,20 @@ def execute (args):
         src = args['s']
         dst = args['d']
         srv = args['n']
+        
+        duser = None
+        if 'du' in args:
+            duser = args['du']
+        dpassw = None
+        if 'dp' in args:
+            dpassw = args['dp']
+            
+        print "%s:%s" % (duser,dpassw)
+            
+        auth = None
+        if duser and dpassw:
+            print "User and password!"
+            auth = HTTPBasicAuth(duser, dpassw)
         
         appendData = False
         if 'a' in args:
@@ -238,8 +263,10 @@ def execute (args):
                     ):
                     continue
                     
-                #print pname
-                procedures[pname] = Procedure(pname, offeringName, dst, srv)
+                print "\n%s" % pname
+                print "================================"
+                
+                procedures[pname] = Procedure(pname, offeringName, dst, srv, auth)
                 
                 if virtual:
                     procedures[pname].setSystemType('virtual')
@@ -251,6 +278,8 @@ def execute (args):
                     'outputFormat': 'text/xml;subtype=\'sensorML/1.0.0\'',
                     'procedure': pname
                 }, verify=False)
+                
+                #print res.content
                 
                 ds, dsNs = parse_and_get_ns(StringIO(res.content))
                 
@@ -396,18 +425,19 @@ def execute (args):
                 # ~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
                 
                 # Check if procedure already exist
-                res = req.get("%s/wa/istsos/services/%s/procedures/%s" % (dst,srv,pname), verify=False)  
+                res = req.get("%s/wa/istsos/services/%s/procedures/%s" % (dst,srv,pname), auth=auth, verify=False)  
                 if not res.json()["success"]:
+                    #print procedures[pname].data
                     # Registering procedure to istSOS   
                     res = req.post("%s/wa/istsos/services/%s/procedures" % (dst,srv), 
-                            data=json.dumps(procedures[pname].data)
+                            data=json.dumps(procedures[pname].data), auth=auth
                     ) 
                     if not res.json()["success"]:
                         #print json.dumps(procedures[pname].data)
                         raise Exception("Registering procedure %s failed: \n%s" % (pname, res.json()["message"]))
                     
                     # Getting details (describe sensor) to get the assignedSensorId
-                    res = req.get("%s/wa/istsos/services/%s/procedures/%s" % (dst,srv,pname))  
+                    res = req.get("%s/wa/istsos/services/%s/procedures/%s" % (dst,srv,pname), auth=auth)  
                     
                     # Getting an InsertObservation template
                     template = procedures[pname].getIoTemplate()  
@@ -546,7 +576,7 @@ def execute (args):
                                 res = req.post("%s/wa/istsos/services/%s/operations/insertobservation" % (
                                     dst,
                                     srv
-                                ),data = json.dumps({
+                                ), auth=auth, data = json.dumps({
                                     u"AssignedSensorId": procedures[pname].oid,
                                     u"ForceInsert": u"true",
                                     u"Observation": template
@@ -666,6 +696,15 @@ if __name__ == "__main__":
         dest   = 't',
         help   = 'Use to test the command, deactivating the insert observation operations.')
         
+    parser.add_argument('-du',
+        action = 'store',
+        dest   = 'du',
+        metavar= 'destination user name')
+        
+    parser.add_argument('-dp',
+        action = 'store',
+        dest   = 'dp',
+        metavar= 'destination password')
 
     args = parser.parse_args()
     #print args.__dict__

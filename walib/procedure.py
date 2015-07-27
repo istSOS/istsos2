@@ -614,7 +614,7 @@ class Procedure():
         if ut.valid_NCName(self.data["location"]["properties"]["name"]):
             Point.attrib[ "{%s}id" % ns['gml'] ] = self.data["location"]["properties"]["name"]
         else:
-            raise Exception ("Invalid location name (gml:id only allows alphanumeric characters")
+            raise Exception ("Invalid location name '%s' (gml:id only allows alphanumeric characters)" % self.data["location"]["properties"]["name"])
         Point.attrib[ "srsName" ] = "EPSG:"+str(self.data["location"]["crs"]["properties"]["name"])
         coordinates = et.SubElement(Point, "{%s}coordinates" % ns['gml'])
         coordinates.text = ",".join([ str(a) for a in self.data["location"]["geometry"]["coordinates"] ])

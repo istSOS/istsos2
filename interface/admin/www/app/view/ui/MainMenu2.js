@@ -91,7 +91,7 @@ Ext.define('istsos.view.ui.MainMenu2', {
                                 },
                                 {
                                     xtype: 'container',
-                                    html: ' <div class=\'mainHeaderTitle\'><a href=\'http://istgeo.ist.supsi.ch/software/istsos/\' target=\'_BLANK\'><img height=28 src=\'images/istsos-logo.png\'/></a></div>',
+                                    html: ' <div class=\'mainHeaderTitle\'><a href=\'http://istsos.org\' target=\'_BLANK\'><img height=28 src=\'images/istsos-logo.png\'/></a></div>',
                                     flex: 1
                                 }
                             ]

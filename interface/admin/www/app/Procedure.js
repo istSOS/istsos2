@@ -227,37 +227,99 @@ Ext.define('istsos.Sensor', {
         this.fireEvent("observationLoaded", this);
     },
     insertObservation: function(){
-        var recs = this.store.getRange();
-        //var fields = this.storeFields;
+    
+        var recs = this.store.getUpdatedRecords(),
+          fields = this.data.result.DataArray.field,
+          values = [[]]
+          prev = null;
+          
+        for (var r = 0; r < recs.length; r++) {
+        
+          var rec = recs[r];
+          var idx = this.store.indexOf(rec);
+          var row = [];
+          
+          for (var i = 0; i < fields.length; i++) {
+            var def = fields[i].definition;
+            if (def == this.isodef) {
+              row.push(istsos.utils.micro2iso(rec.get('micro')));
+            }else{
+              row.push(""+(rec.get(this.storeConvertFieldToId[def])));
+            }
+          }
+          
+          if (prev == null || (prev+1)==idx){
+            values[values.length-1].push(row);
+          }else{
+            values.push([]);
+            values[values.length-1].push(row);
+          }
+          prev = idx;
+          
+        }
+        
+        var queue = {
+          procedure: this,
+          values: values,
+          insert: function(response){
+          
+            if(this.values.length>0){
+            
+              var value = this.values.shift();
+            
+              this.procedure.data.result.DataArray.values = value;
+              this.procedure.data.result.DataArray.elementCount = ""+value.length;
+              this.procedure.data.samplingTime.beginPosition = value[0][0];
+              this.procedure.data.samplingTime.endPosition = value[value.length-1][0];
+            
+              Ext.Ajax.request({
+                url: Ext.String.format('{0}/istsos/services/{1}/operations/insertobservation',wa.url,this.procedure.service),
+                scope: this,
+                method: "POST",
+                jsonData: {
+                  "AssignedSensorId" : this.procedure.getId(),
+                  "ForceInsert" : "true",
+                  "Observation" : this.procedure.data
+                },
+                success: function(response){
+                  this.insert(response);
+                }
+              });
+              
+            }else{
+              var json = Ext.decode(response.responseText);
+              this.procedure.commitModifications();
+              this.procedure.fireEvent("observationSaved", this.procedure, json);
+            }
+          }
+        }
+        
+        queue.insert(null);
+        
+        console.log(values);
+        
+        /*var recs = this.store.getRange();
+        
         var fields = this.data.result.DataArray.field;
         var values = [];
         for (var r = 0; r < recs.length; r++) {
             var row = [];
             for (var i = 0; i < fields.length; i++) {
-                
                 var def = fields[i].definition;
                 if (def == this.isodef) {
                     row.push(istsos.utils.micro2iso(recs[r].get('micro')));
                 }else{
                     row.push(""+(recs[r].get(this.storeConvertFieldToId[def])));
                 }
-                
-                /*
-                if (fields[i].name==this.iso8601Field) {
-                    continue;
-                }else if (fields[i].name=='micro') {
-                    row.push(istsos.utils.micro2iso(recs[r].get(fields[i].name)));
-                }else{
-                    row.push(""+(recs[r].get(fields[i].name)));
-                }*/
             }
             values.push(row);
         }
+        
         this.data.result.DataArray.values = values;
         this.data.result.DataArray.elementCount = ""+values.length;
         this.data.samplingTime.beginPosition = istsos.utils.micro2iso(recs[0].get('micro'));
         this.data.samplingTime.endPosition = istsos.utils.micro2iso(recs[recs.length-1].get('micro'));
-                
+        
         Ext.Ajax.request({
             url: Ext.String.format('{0}/istsos/services/{1}/operations/insertobservation',wa.url,this.service),
             scope: this,
@@ -275,7 +337,7 @@ Ext.define('istsos.Sensor', {
                 this.fireEvent("observationSaved", this, json);
             }
         });
-        
+        */
     },
     rejectModifications: function(){
         var recs = this.store.getUpdatedRecords();

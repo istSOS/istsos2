@@ -5,7 +5,7 @@
         "directAPI": "",
         "spacesToIndent": "4",
         "codeGenFormat": "Class",
-        "exportPath": "/home/milan/workspace/istsos/trunk/interface/admin/www",
+        "exportPath": "/media/milan/workspace/istsos/trunk/interface/admin/www/",
         "extPath": "ext/",
         "lineEnding": "LF",
         "instantiateStore": true,
@@ -8653,7 +8653,7 @@
                                     "codeClass": null,
                                     "userConfig": {
                                         "componentCls": null,
-                                        "html": " <div class='mainHeaderTitle'><a href='http://istgeo.ist.supsi.ch/software/istsos/' target='_BLANK'><img height=28 src='images/istsos-logo.png'/></a></div>",
+                                        "html": " <div class='mainHeaderTitle'><a href='http://istsos.org' target='_BLANK'><img height=28 src='images/istsos-logo.png'/></a></div>",
                                         "designer|userClassName": "MyContainer2",
                                         "layout|flex": 1
                                     }

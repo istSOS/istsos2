@@ -30,7 +30,7 @@ def valid_NCName(name):
     for c in not_allowed_NCName:
         if name.find(c)>0:
             return False
-    return True                
+    return True
 
 def validatedb(user,password,dbname,host,port=5432,service=None):
     """

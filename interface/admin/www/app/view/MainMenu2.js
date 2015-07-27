@@ -180,7 +180,7 @@ Ext.define('istsos.view.MainMenu2', {
         
         
         Ext.getCmp('btnStatus').on("click",function(){
-            if (this.status){
+            if (this.status && !this.status.closed){
                 this.status.focus();
             }else{
                 this.status = window.open("../modules/status", 'status', "location=no, menubar=no, status=no");

@@ -301,7 +301,12 @@ class Converter():
                 "file": fileObj
             }
             dat = open(fileObj,'rU')
-            self.parse(dat,os.path.split(fileObj)[1])
+            try:
+                self.parse(dat,os.path.split(fileObj)[1])
+            except Exception as e:
+                self.log(" !! Error while parsing file: %s" % os.path.split(fileObj)[1])
+                dat.close()
+                raise e
             dat.close()
         
         self.log(" > Parsed %s observations" % len(self.observations))
