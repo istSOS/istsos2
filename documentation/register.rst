@@ -10,7 +10,7 @@ From the “services” drop down button of the admin interface (`<http://localh
 
     Before registering new sensors it’s advised to initialize observed properties and unit of measures.
 
-Registering new observed properties with the GUI
+Define new observed properties with the GUI
 =================================================
     
 **Define an observed property**
@@ -31,7 +31,7 @@ Fill in the form using appropriate information.
 |Correct Quality Index: Between -60 and 100                                                                                 |
 +---------------------------------------------------------------------------------------------------------------------------+
 
-Registering new unit of measure with the GUI
+Define new unit of measure with the GUI
 =================================================
 
 
@@ -69,7 +69,7 @@ Fill in the form using appropriate information.
     Register the new sensor (procedure) pressing the "submit" button.
 
 
-.. rubric:: *Example*
+.. rubric:: *Example* (minimal configuration)
 
 +-----------------------------------------------------------------------------------+
 |Name: T_LUGANO                                                                     |
@@ -91,18 +91,18 @@ Fill in the form using appropriate information.
 
 *Outputs (confirm the outputs pressing the "add" button):*
 
-+-----------------------------------------------------------------------------------+
-|   Observed property: urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature     |
-+-----------------------------------------------------------------------------------+
-|   Unit of measure: °C                                                             |
-+-----------------------------------------------------------------------------------+
-|   Description: conversion from resistance to temperature                          |
-+-----------------------------------------------------------------------------------+
-|   quality index check: Between / from -40 to +60                                  |
-+-----------------------------------------------------------------------------------+
++----------------------------------------------------------------------------------------------+
+|   Observed property: urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature                |
++----------------------------------------------------------------------------------------------+
+|   Unit of measure: °C                                                                        |
++----------------------------------------------------------------------------------------------+
+|   Description (optional): conversion from resistance to temperature                          |
++----------------------------------------------------------------------------------------------+
+|   quality index check (optional): Between / from -40 to +60                                  |
++----------------------------------------------------------------------------------------------+
 
-Register a new sensor with the GUI using the "copy from"
-==========================================================
+Register a new sensor by copying metadata from an existing sensor using the "copy from"
+=======================================================================================
 
 Look at the tool for "copy configuration from existing procedure". 
 Choose the procedure T_LUGANO and press “Fill form”
@@ -137,8 +137,7 @@ Check your procedures by accessing the “Procedures” panel.
 You will see a table showing an abstract of all the inserted procedures. By clicking on the name you will be able to enter the details metadata that you configured during the procedure registration.
 
 .. note::
-    The “Procedures” panel not only allows for procedures and metadata exploration but also allows details modification. The only exception are the outputs parameters which ca
-nnot be modified.
+    The “Procedures” panel not only allows for procedures and metadata exploration but also allows details modification. The only exception are the outputs parameters which cannot be modified.
 
 Verify the inserted procedures using the Sensor Observation Service requests
 =============================================================================
