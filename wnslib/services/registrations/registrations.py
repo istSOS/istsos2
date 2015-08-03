@@ -25,6 +25,8 @@ from wnslib.operation import wnsOperation
 
 
 class wnsRegistrations(wnsOperation):
+    """ Class to manage user subscription to notification
+    """
 
     def __init__(self, wnsEnviron):
         wnsOperation.__init__(self, wnsEnviron)
@@ -46,6 +48,26 @@ class wnsRegistrations(wnsOperation):
         self.setData("")
 
     def executeGet(self):
+        """GET registration
+
+        get user subscription to notifications
+
+        Returns:
+            A dict containing all user subscription to notification.
+            Example:
+            {
+                user_id:[
+                    {
+                        "not_id": 1,
+                        "not_list": [
+                            "email", "twitter"
+                        ],
+                        "description": "notification description",
+                        "name": "notification name"
+                    }
+                ]
+            }
+        """
         servicedb = databaseManager.PgDB(
             self.serviceconf.connectionWns['user'],
             self.serviceconf.connectionWns['password'],
@@ -78,6 +100,13 @@ class wnsRegistrations(wnsOperation):
         self.setData(RegistrationsList)
 
     def executePost(self):
+        """ POST registrations
+
+        subscribe a user to a notification
+
+        Returns:
+            OK if no problem
+        """
         servicedb = databaseManager.PgDB(
             self.serviceconf.connectionWns['user'],
             self.serviceconf.connectionWns['password'],
@@ -103,6 +132,10 @@ class wnsRegistrations(wnsOperation):
             self.setException("Please defien user and notification")
 
     def executePut(self):
+        """ PUT registration
+
+        Update user subscription to notification
+        """
         servicedb = databaseManager.PgDB(
             self.serviceconf.connectionWns['user'],
             self.serviceconf.connectionWns['password'],
@@ -127,6 +160,11 @@ class wnsRegistrations(wnsOperation):
             self.setException("Please defien user and notification")
 
     def executeDelete(self):
+        """ DELETE subscription
+
+        delete user from notification alert
+
+        """
         servicedb = databaseManager.PgDB(
             self.serviceconf.connectionWns['user'],
             self.serviceconf.connectionWns['password'],

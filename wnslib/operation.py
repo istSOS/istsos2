@@ -26,10 +26,10 @@ import os
 
 
 class wnsOperation(object):
-
     """
     Base class for istSOS WNS
     """
+
     def __init__(self, wnsEnviron, loadjson=True):
         """
         Initialize resource object

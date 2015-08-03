@@ -26,6 +26,9 @@ import sys
 
 
 class wnsNotifications(wnsOperation):
+    """ Class to manage notification
+
+    """
 
     def __init__(self, wnsEnviron):
         wnsOperation.__init__(self, wnsEnviron)
@@ -36,6 +39,10 @@ class wnsNotifications(wnsOperation):
         self.setData("")
 
     def executeGet(self):
+        """ GET request
+
+        get notification
+        """
         servicedb = databaseManager.PgDB(
             self.serviceconf.connectionWns['user'],
             self.serviceconf.connectionWns['password'],
@@ -59,14 +66,16 @@ class wnsNotifications(wnsOperation):
         self.setData(Notification)
 
     def executePost(self):
+        """ POST notification
+
+        create new notifcation, simple or complex
+        """
         servicedb = databaseManager.PgDB(
             self.serviceconf.connectionWns['user'],
             self.serviceconf.connectionWns['password'],
             self.serviceconf.connectionWns['dbname'],
             self.serviceconf.connectionWns['host'],
             self.serviceconf.connectionWns['port'])
-
-        #self.json = self.json['data']
 
         name = self.json["name"]
         description = self.json["description"]
@@ -111,7 +120,10 @@ class wnsNotifications(wnsOperation):
         self.setMessage(not_id)
 
     def executePut(self):
-        #self.json = self.json['data']
+        """ PUT notification
+
+        Update a existing notification
+        """
         description = self.json.get("description", None)
 
         from wnslib import notificationManager as notManager
@@ -171,6 +183,10 @@ class wnsNotifications(wnsOperation):
         self.setMessage("Notification updated")
 
     def executeDelete(self):
+        """DELETE notification
+
+        delete selected notification
+        """
         servicedb = databaseManager.PgDB(
             self.serviceconf.connectionWns['user'],
             self.serviceconf.connectionWns['password'],

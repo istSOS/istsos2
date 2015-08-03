@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# ===============================================================================
+#===============================================================================
 #
 # Authors: Massimiliano Cannata, Milan Antonovic
 #
@@ -19,20 +19,30 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
-# ===============================================================================
+#===============================================================================
 from os import path
 from walib import configManager
-
+import os
 
 defaultCFGpath = path.join(path.dirname(path.split(path.abspath(__file__))[0]),
                                          "services/default.cfg")
 serviceconf = configManager.waServiceConfig(defaultCFGpath)
 services_path = path.join(path.dirname(path.split(path.abspath(__file__))[0]),
                                              "services/notifications.aps")
+wns_script_path = path.join(path.dirname(path.split(path.abspath(__file__))[0]),
+                                             "scripts/wns/")
 
 
 def delNotification(name):
+    """Delete selected notification
 
+    remove notification from notification.aps, data-base and
+    remove the function file
+
+    Args:
+        name (string): Name of the notification
+
+    """
     aps_file = open(services_path, 'r')
     data = aps_file.readlines()
     aps_file.close()
@@ -52,58 +62,94 @@ def delNotification(name):
     aps_file.writelines(data)
     aps_file.close()
 
+    delete_script_file(name)
 
-def addNotification(name, func_name, interval):
-    """
-    add the funtion to .aps
-    1) append on .aps the function "name"
 
-    !!! The function should terminate with a call
+def addNotification(name, func_path, interval):
+    """Add new function to notification.asp file.
+
+    The function should terminate with a call
     to notify() in case the condition is met
+
+    Args:
+        name (string): Name of the function
+        func_path (string): path to the function
+        interval (integer): number of minutes how ofter the function is executed
+
+    Returns:
+        return message error if problem with file
     """
     import datetime
     now = datetime.datetime.now()
     startDate = now.strftime('%Y-%m-%d %H:%M:%S')
 
-    f = open(func_name, 'r')
+    print func_path
+    f = open(func_path, 'r')
     code = f.read()
     f.close()
 
-    flag = __check_valid_python(code, func_name)
+    # check code vaidity
+    flag = __check_valid_python(code, func_path)
     if flag:
         return flag
 
-    flag = __check_valid_name(name, func_name)
+    # check correct name
+    flag = __check_valid_name(name, func_path)
     if flag:
         return flag
 
     if not "notify(" in code:
         return "The function MUST contain a notificationScheduler.notify() call"
 
+    # write code to file
+    write_script_file(code, name)
+
+    # add new function to scheduler .aps file
     aps_file = open(services_path, 'a')
     aps_file.writelines(
         """
 ### start %s ###
 @sched.interval_schedule(minutes=%s, start_date='%s')
-%s
-### end %s ###""" % (name, interval, startDate, code, name)
+def notifications_%s():
+    import scripts.wns.%s as %s
+    %s.%s()
+### end %s ###""" % (name, interval, startDate, name, name, name,
+                        name, name, name)
     )
     aps_file.close()
 
 
-def __check_valid_python(code, func_name):
+def __check_valid_python(code, func_path):
+    """Check if a script is correct
+
+    Args:
+        code: name of the function
+        func_path: path to the function file
+
+    Returns:
+        a string error if code not valid
+    """
     try:
         # check only the syntax
-        compile(code, func_name, 'exec')
+        compile(code, func_path, 'exec')
     except Exception, e:
         return "Error on function: " + str(e)
 
 
-def __check_valid_name(name, func_name):
+def __check_valid_name(name, func_path):
+    """Check valid function name
 
+    Args:
+        name: name of the function
+        func_path: path to the function file
+
+    Returns:
+        a string error if name not valid
+
+    """
     flag_name = False
     flag_not = False
-    for line in open(func_name, 'r'):
+    for line in open(func_path, 'r'):
         if 'def' in line:
             if name in line:
                 flag_name = True
@@ -116,6 +162,22 @@ def __check_valid_name(name, func_name):
 
 
 def createSimpleNotification(name, service, params, cql, interval, period=None):
+    """ Create simple notifcation
+
+    Create new python script for simplenotification and add to
+    notification.aps file
+
+    Args:
+        name: Name of the function
+        service: service
+        params: params to compose getObservation request
+        cql: condition to reach to send notification
+        interval: interval
+        period: isodate period over witch the getObservation is executed
+
+    Returns:
+
+    """
     """
     Inputs:
         params = dict of {key:val1, key:val1, ...} to compose
@@ -147,10 +209,12 @@ def createSimpleNotification(name, service, params, cql, interval, period=None):
         config = """
     import datetime
     import time
+    import lib.isodate as isodate
     from pytz import timezone
     now = datetime.datetime.now().replace(tzinfo=timezone(time.tzname[0]))
     endDate = now.strftime('%%Y-%%m-%%dT%%H:%%M:%%S%%z')
-    eventTime = now - datetime.timedelta(hours=%s)
+    period = isodate.parse_duration('%s')
+    eventTime = now - period #datetime.timedelta(hours=)
     startDate = eventTime.strftime('%%Y-%%m-%%dT%%H:%%M:%%S%%z')
 
     rparams = %s
@@ -165,10 +229,7 @@ def createSimpleNotification(name, service, params, cql, interval, period=None):
     link = serviceconf.serviceurl["url"].replace('test', '')
     link += service
 
-    # write to notification.aps
-    aps_file.writelines(
-"""### start %s ###
-@sched.interval_schedule(minutes=%s, start_date='%s')
+    code_string = """
 def %s():
     %s
     import lib.requests as requests
@@ -189,7 +250,7 @@ def %s():
     }
 
     if len(result) ==0:
-        message = "no data found, procedure: " + rparams['procedures']
+        message = "no data found, procedure: " + rparams['procedure']
         notify['twitter']['public'] = message
         notify['twitter']['private'] = message
         notify['mail']['subject'] = "notification from %s"
@@ -206,8 +267,53 @@ def %s():
             notify['mail']['subject'] = "notification from %s"
             notify['mail']['message'] = message
             nS.notify('%s',notify)
-            break;
-### end %s ### """ % (name, interval, startDate, name, config, link, name, name,
-         cql, name, name, name, name)
+            break;""" % (name, config, link, name, name,
+         cql, name, name, name)
+
+    # create script file
+    write_script_file(code_string, name)
+
+    # write to notification.aps
+    aps_file.writelines(
+        """
+### start %s ###
+@sched.interval_schedule(minutes=%s, start_date='%s')
+def notifications_%s():
+    import scripts.wns.%s as %s
+    %s.%s()
+### end %s ###""" % (name, interval, startDate, name, name, name,
+                                                name, name, name)
     )
     aps_file.close()
+
+
+def write_script_file(code, name):
+    """Create function python file
+
+    create a function_name.py in the scripts/wns folder
+
+    Args:
+        code (String): python code
+        name (String): name of the function
+
+    """
+    script = open(wns_script_path + name + ".py", 'w')
+    script.write(code)
+    script.close()
+
+
+def delete_script_file(name):
+    """remove function python file
+    remove function_name.py and function_name.pyc files
+
+    Args:
+        name (String): function name
+    """
+    if os.path.exists(wns_script_path + name + '.py'):
+        os.remove(wns_script_path + name + '.py')
+        print "file removed"
+        if os.path.exists(wns_script_path + name + '.pyc'):
+            os.remove(wns_script_path + name + '.pyc')
+    else:
+        print "file not found"
+

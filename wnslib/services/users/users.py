@@ -25,6 +25,8 @@ from walib import databaseManager
 
 
 class wnsUsers(wnsOperation):
+    """ Class to manage user
+    """
 
     def __init__(self, wnsEnviron):
         wnsOperation.__init__(self, wnsEnviron)
@@ -34,6 +36,12 @@ class wnsUsers(wnsOperation):
         self.setData("")
 
     def executeGet(self):
+        """ GET users
+
+        require user information
+
+        return a list with all user
+        """
         servicedb = databaseManager.PgDB(
             self.serviceconf.connectionWns['user'],
             self.serviceconf.connectionWns['password'],
@@ -56,6 +64,10 @@ class wnsUsers(wnsOperation):
         self.setData(users)
 
     def executePost(self):
+        """ POST users
+
+        create a new user
+        """
         servicedb = databaseManager.PgDB(
             self.serviceconf.connectionWns['user'],
             self.serviceconf.connectionWns['password'],
@@ -86,7 +98,10 @@ class wnsUsers(wnsOperation):
         self.setMessage(user_id)
 
     def executePut(self):
+        """ PUT user
 
+        Update a existing user
+        """
         servicedb = databaseManager.PgDB(
             self.serviceconf.connectionWns['user'],
             self.serviceconf.connectionWns['password'],
@@ -117,6 +132,10 @@ class wnsUsers(wnsOperation):
         self.setMessage("Updated user info")
 
     def executeDelete(self):
+        """DELETE user
+
+        delete a users, it automatically unsubscribe from notification
+        """
         servicedb = databaseManager.PgDB(
             self.serviceconf.connectionWns['user'],
             self.serviceconf.connectionWns['password'],

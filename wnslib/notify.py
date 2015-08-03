@@ -24,6 +24,10 @@ from lib import twitter
 
 
 class Notify(object):
+    """Notify class
+
+    send notifcation via email or twitter
+    """
 
     def __init__(self, serviceconfig):
         self.serviceconfig = serviceconfig
@@ -35,6 +39,15 @@ class Notify(object):
                             access_token_secret=twitter_conf['oauth_secret'])
 
     def email(self, message, to):
+        """Send notification via mail
+        Args:
+            message: dict with object a mail message
+            {
+                "subject": "subject",
+                "message": "message to send"
+            }
+            to: mail where to send notification
+        """
         print 'send mail'
 
         if not 'subject' in message.keys():
@@ -68,6 +81,12 @@ class Notify(object):
         mailServer.quit()
 
     def post_twitter_status(self, message, name):
+        """Update status twitter
+
+        Args:
+            message: tweet to send (remember max 140 char)
+            name: name of the notification (to create hashtag)
+        """
         # Update Status
         if not 'public' in message.keys():
             print "please define a twitter public message"
@@ -88,7 +107,15 @@ class Notify(object):
         else:
             raise Exception("Message for twitter to long!!!, MAX 140 character")
 
-    def twitter(self, message, to, name=None):
+    def twitter(self, message, to, name):
+        """Twitter private message
+        Send a Twitter private message
+
+        Args:
+            message: private message to send
+            to: userid
+            name: name of the notification (to create hashtag)
+        """
         if not 'private' in message.keys():
             print "please define a twitter public message"
             return

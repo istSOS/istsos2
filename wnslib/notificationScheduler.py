@@ -29,10 +29,13 @@ serviceconf = configManager.waServiceConfig(defaultCFGpath)
 
 
 def notify(name, message, status=True):
-    """
-        Attributes:
-            name        name of the notification
-            message     message to notify
+    """Notify manager
+
+    check users subscription and raise notification
+    Args:
+        name:        name of the notification
+        message:     message to notify
+        status:      if True update status on twitter
     """
     from walib import databaseManager as dbm
     from wnslib import notify

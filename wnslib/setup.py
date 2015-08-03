@@ -26,12 +26,18 @@ from walib import databaseManager
 
 
 class wnsSetup(wnsOperation):
+    """ Class to setup the notification system
 
+
+    """
     def __init__(self, wnsEnviron):
         wnsOperation.__init__(self, wnsEnviron)
 
     def executePost(self):
-
+        """ execute POST request
+        create notification.aps file
+        create database schema
+        """
         directory = path.dirname(path.split(path.abspath(__file__))[0])
         services_dir = path.join(directory, "services")
         wns_dir = path.join(directory, "wnslib")
