@@ -5,7 +5,7 @@
 .. meta::
    :description: istSOS is an OGC SOS server implementation written in Python
    :keywords: istsos, sos, sensor, data, observation, procedure, search, ogc, inspire
-
+    
 =============================
 istSOS-project documentation
 =============================
@@ -38,14 +38,13 @@ istSOS is released under the GPL :ref:`license`, and runs on all major platforms
     offering
     insert
     acquisition
-    notifications
     quality
     getobs
     editobs
     virtual
     mapping
     wns
-    
+ 
 
 **Developers docs:**
 ---------------------
@@ -56,14 +55,21 @@ istSOS is released under the GPL :ref:`license`, and runs on all major platforms
     intro
     istsos
     license
-    istsoslib
-    walib
     dbschema
+    istsoslib/istsoslib
+    walib/walib
+    wnslib/wnslib
 
 .. automodule:: istsoslib
     :show-inheritance:
 
 .. automodule:: walib
     :show-inheritance:
-        
+
+.. automodule:: wnslib
+    :show-inheritance:
     
+
+
+
+

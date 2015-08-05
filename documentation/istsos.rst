@@ -54,9 +54,9 @@ As a result today istSOS is like a peach, were the **wainterface** is the peel, 
 
 A configuration file store important setting parameters like service metadata (e.g.: name, version, owner), database connection parameters, dictionaries definition, handled requests, etc.
 
-----------------------------------
+-------------------------------------
 istsosllib (core package) structure
-----------------------------------
+-------------------------------------
 istSOS has been developed with a *factory* approach using three modules:
   * **filters**: provide an interface for converting http requests (GET or POST) submitted according the SOS standard in python objects that contains the submitted parameters and values.
   * **responders**: resolve the specific request, interacting with the istSOSdatabase and gathering the required informations.

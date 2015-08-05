@@ -1,4 +1,4 @@
-.. _wns:
+.. _notification:
 
 =================================
 istSOS-WNS: Notification Service
@@ -8,7 +8,7 @@ the istSOS-WNS is a service gathering data from an istSOS database and sending a
 
 
 istSOS-WNS database schema
-===================
+============================
 
 The wns schema is represented below.
 
@@ -19,10 +19,12 @@ The wns schema is represented below.
 
 
 Activation of istSOS-WNS
-=================
+=========================
 
 Open the default.cfg file and add the parameter to connect to the wns database.
+
 ::
+
 	[connectionWns]
 	dbname = istsos
 	host = 127.0.0.1
@@ -31,7 +33,9 @@ Open the default.cfg file and add the parameter to connect to the wns database.
 	port = 5432
 
 The other parameter reported below are used to send notification via email or twitter
+
 ::
+
 	[mail]
 	usermail = mail@notifier.com
 	password = 
@@ -47,7 +51,9 @@ The other parameter reported below are used to send notification via email or tw
 	Actually the system update the status on twitter and can send notification via email.
 
 To setup the Web Service do this POST request:
+
 ::
+
 	http://localhost/istsos/wns/setup
 
 This will create a notification.asp file under the service/ folder, where the notification function are stored and create a schema in the istSOS-WNS database.
@@ -62,7 +68,9 @@ Method 1: simple notification
 -----------------------------
 
 Do a POST request to:
+
 ::
+
 	http://localhost/istsos/wns/notification
 
 
@@ -77,7 +85,9 @@ with the following parameter
 	g. params: this is used to build a getObservation request. The offering, observedPropertiy and procedure are mandatory.
 
 Example:
+
 ::
+
     {
         "name": "functionName",
         "description": "do getObservation and check condition",
@@ -161,7 +171,9 @@ Example:
 
 
 do this post request:
-:: 
+
+::
+ 
 	http://localhost/istsos/wns/notification
 	
 with the following params:
@@ -171,7 +183,9 @@ with the following params:
 	* function: path to function file [mandatory]
 
 Example:
+
 ::
+
 	{
 		"name": "meanTemp",
 		"description": "last hour temp in Bellinzona",
@@ -184,7 +198,9 @@ Delete notification
 ===================
 
 It's possible delete a notification with this DELETE request:
+
 ::
+
 	http://localhost/istsos/wns/notification/<notification_id> 
 
 .. warning ::
@@ -195,7 +211,9 @@ Register a user
 ===============
 to subscribe to a notification and receive update you must create a user and provide some information to contact you.
 do this POST request:
+
 ::
+
 	http://localhost/istsos/wns/user
 
 with the following params:
@@ -207,7 +225,9 @@ with the following params:
 	e. fax, address, zip, city, state, country: additional info about the user
 
 Example:
+
 ::
+
 	{
 		"username": "userName",
 		"email": "user.name@provider.com",
@@ -226,7 +246,9 @@ Delete a user
 ===============
 
 It's possible to remove user with this DELETE request:
+
 ::
+
 	http://localhost/istsos/wns/user/<user_id> 
 
 .. warning ::
@@ -237,13 +259,17 @@ Subscribe to a notification
 ===========================
 
 To receive notification you must subscribe to an existing notification, do this POST request
+
 ::
+
 	http://localhost/istsos/wns/user/<user_id>/notification/<notification_id>
 
 with the following params
 	1. data: array of how would you like to receive the notification [mandatory]
 	
+
 ::
+
 	{
 	    "data": ["mail", "twitter"]
 	}
@@ -253,13 +279,17 @@ Unsubscribe to a notification
 =============================
 
 Unsubscribe a user from notification with this DELETE request
+
 ::
+
 	http://localhost/istsos/wns/user/<user_id>/notification/<notification_id>
 
 Activate the scheduler
 ======================
 
 To activate the scheduler move to istsos root filder and run the scheduler script
+
 ::
+
 	cd path_to_istsos
 	python scheduler.py
