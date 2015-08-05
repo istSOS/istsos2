@@ -23,11 +23,20 @@
 from istsoslib import sosException
 
 class sosFilter():
-    "SOS request filters, set request, service and version"
+    """SOS request base filters
+
+    Intercept the request and extract user inputs preferences
+
+    Attributes:
+        request (str): the request submitted
+        service (str): the name of the service requested
+        version (str): the version of the service
+    """
     #self.request = None
     #self.service = None
     #self.version = None
     def __init__(self,sosRequest,method,requestObject,sosConfig):
+        """Init sosFilter class"""
         #--------REQUEST-----------
         self.request = sosRequest
         self.sosConfig = sosConfig

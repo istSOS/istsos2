@@ -22,44 +22,17 @@
 # ===============================================================================
 from istsoslib.filters import filter as f
 from istsoslib import sosException
-
-def getElemTxt(node):
-    if node.hasChildNodes():
-        val = node.firstChild
-        if val.nodeType == val.TEXT_NODE:
-            return str(val.data)
-        else:
-            err_txt = "get node text value: \"%s\" is not of type TEXT" %(node.nodeName)
-            raise Exception(,err_txt)
-    else:
-            err_txt = "get node text value: \"%s\" has no child node" %(node.nodeName)
-            raise Exception(err_txt)
-        
-def getElemAtt(node,att):
-    if att in node.attributes.keys():
-        return str(node.getAttribute(att))
-    else:
-        None
-        #err_txt = "get node attribute value: \"%s\"has no \"%s\" attribute" %(node.nodeName,att)
-        #raise sosException.SOSException(1,err_txt)
-
-def get_name_from_urn(stringa,urnName,sosConfig):
-    a = stringa.split(":")
-    name = a[-1]
-    urn = sosConfig.urn[urnName].split(":")
-    if len(a)>1:
-        for index in range(len(urn)-1):
-            if urn[index]==a[index]:
-                pass
-            else:
-                raise Exception("Urn \"%s\" is not valid: %s."%(a,urn))
-    return name 
+from filter_utils import get_name_from_urn, getElemTxt, getElemAtt
 
 class sosUSDfilter(f.sosFilter): 
-    "filter object for an updateSensorDescription request"
-    """
-    self.assignedSensorId = None
-    self.xmlSensorDescription = None
+    """filter object for an updateSensorDescription request
+
+    Attributes:
+        request (str): the request submitted
+        service (str): the name of the service requested
+        version (str): the version of the service
+        assignedSensorId (str): the assigned sensor ID
+        xmlSensorDescription (str): the XML representation of the senor description
     """
 
     def __init__(self,sosRequest,method,requestObject,sosConfig):

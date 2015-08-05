@@ -20,31 +20,40 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # ===============================================================================
-import os, sys
-
-#import sosConfig
-#from istsoslib import sosDatabase
-from istsoslib import sosException
-#import mx.DateTime.ISO
-from datetime import timedelta
+import os 
+import sys
 import copy
-#from datetime import datetime
+from datetime import timedelta
 from lib import isodate as iso
 from lib import pytz
 
+from istsoslib import sosException
+
 class VirtualProcess():
+    """Virtual procedure object
+
+    Attributes:
+        filter (obj): the filter object
+        pgdb (obj): the database connection object
+        procedure (dict): representation of the procedure
+        observation (obj): observation object
+        samplingTime (tuple): sampling time bounds
+
+    """
     
     procedures = {}
     samplingTime = (None,None)
     
     def _configure(self, filterRequest, pgdb):
+        """Configure base object"""
         self.filter = copy.deepcopy(filterRequest)
         self.pgdb = pgdb
         
     def addProcedure(self, name, observedProperty):
-        """
-        name: String
-        observedProperty: String or Array of String
+        """Add a procedure to the self.procedures[name]
+        Args:
+            name (str): name of procedure
+            observedProperty (str/list): uri or uris of observed properties
         """
         self.procedures[name] = observedProperty
         
@@ -53,6 +62,7 @@ class VirtualProcess():
         raise Exception("function execute must be overridden")
     
     def calculateObservations(self, observation):
+        """Calculate the observations of the virtual procedure"""
         self.observation = observation
         self.observation.samplingTime = self.getSampligTime()
         self.observation.data = self.execute()
@@ -60,6 +70,7 @@ class VirtualProcess():
             self.applyFunction()
     
     def getSampligTime(self):
+        """Extract sampling time of Vrtual procedure"""
         self.setSampligTime()
         return self.samplingTime
         
@@ -156,8 +167,11 @@ class VirtualProcess():
             self.samplingTime = (result[0],result[1])
         
     def getData(self, procedure=None, disableAggregation=False):
-        """
-        procedure: String
+        """Return the observations of associated procedure
+
+		Args:
+        	procedure (str): the procedure name
+			disableAggregation (bbol): apply aggregation (True) or not (False)
         """
         
         # Validating:
@@ -206,6 +220,7 @@ class VirtualProcess():
         return obs.data
     
     def applyFunction(self):
+        """apply virtual procedure function"""
         try:
             # Create array container
             begin = iso.parse_datetime(self.filter.eventTime[0][0])
@@ -350,7 +365,7 @@ class VirtualProcessHQ(VirtualProcess):
         self.hqCurves = hqs
         
     def execute(self):
-        
+        """execute method"""
         self.setDischargeCurves()
         data = self.getData()
         
@@ -435,22 +450,9 @@ def BuildOfferingList(pgdb,sosConfig):
         list.append(row["name_off"])
     return list
 
-'''
-def buildQuery(parameters):
-    """Documentation"""
-
-'''
-
-                
-'''
-filter.eventTime
-filter.aggregate_function
-filter.aggregate_interval
-filter.aggregate_nodata
-filter.aggregate_nodata_qi
-'''
 
 def applyFunction(ob, filter):
+    """apply H-Q function"""
     import copy
     try:
         # Create array container
@@ -528,6 +530,30 @@ class offInfo:
 
 # @todo instantation with Builder pattern will be less confusing, observation class must be just a data container
 class Observation:
+    """The obsevation related to a single procedure
+    
+    Attributes:
+        id_prc (str): the internal id of the selected procedure
+        name (str): the name of the procedure
+        procedure (str): the URI name of the procedure
+        procedureType (str): the type of procedure (one of "insitu-fixed-point","insitu-mobile-point","virtual")
+        samplingTime (list): the time interval for which this procedure has data [*from*, *to*] 
+        timeResVal (str): the time resolution setted for this procedure when registered in ISO 8601 duration
+        observedPropertyName (list): list of observed properties names as string
+        observedProperty (list): list of observed properties URI as string
+        uom (list): list of unit of measure associated with the observed properties according to list index
+        featureOfInterest (str): the feature of interest name
+        foi_urn (str): the feature of interest URI
+        foiGml (str): the GML representation of the feature of interest (in istSOS is only of type POINT)
+        srs (str): the epsg code
+        refsys (str): the URI of the reference system (srs)
+        x (float): the X coordinate
+        y (float): the Y coordinate
+        dataType (str): the URN used for timeSeries data type
+        timedef (str): URI of the time observed propertiy
+        data (list): the list of observations as list of values (it is basically a matrix with fields as columns and measurements as rows) 
+    """
+
 
     def __init__(self):
         self.procedure=None
@@ -551,8 +577,7 @@ class Observation:
         self.data=[]
         
     def baseInfo(self, pgdb, o, sosConfig):
-        #set base information of registered procedure
-        #=============================================
+        """set base information of registered procedure"""
         
         k = o.keys()
         if not ("id_prc" in k and "name_prc" in k and  "name_oty" in k and "stime_prc" in k and "etime_prc" in k and "time_res_prc" in k  ):
@@ -576,7 +601,7 @@ class Observation:
         #SET TIME: RESOLUTION VALUE AND UNIT
         #===================================
         self.timeResVal = o["time_res_prc"]
-# Rimoved with tru table 
+        # Removed with tru table 
         #self.timeResUnit = o["name_tru"]
         
         #SET SAMPLING TIME
@@ -936,6 +961,17 @@ class Observation:
                 
                 
 class observations:
+    """The class that contain all the observations related to all the procedures
+
+    Attributes:
+        offInfo (obj): the general information about offering name, connection object, and configuration options
+        refsys (str): the uri that refers to the EPSG refrence system
+        filter (obj): the filter object that contains all the parameters setting of the GetObservation request
+        period (list): a list of two values in *datetime*: the minimum and maximum instants of the requested time filters
+        reqTZ (obj): the timezone in *pytz.tzinfo*
+        obs (list): list of *Observation* objects
+    """
+
     def __init__(self,filter,pgdb):
         self.offInfo = offInfo(filter.offering,pgdb,filter.sosConfig)
         self.refsys = filter.sosConfig.urn["refsystem"] + filter.srsName
@@ -1011,9 +1047,9 @@ class observations:
         sqlSel = "SELECT DISTINCT"
         sqlSel += " id_prc, name_prc, name_oty, stime_prc, etime_prc, time_res_prc"
         #---from part of query
-#################################
-# Rimosso codice di time_res_unit
-#################################
+        #################################
+        # Rimosso codice di time_res_unit
+        #################################
         sqlFrom = "FROM %s.procedures, %s.proc_obs p, %s.observed_properties, %s.uoms," %(filter.sosConfig.schema,filter.sosConfig.schema,filter.sosConfig.schema,filter.sosConfig.schema)
         sqlFrom += " %s.off_proc o, %s.offerings, %s.obs_type" %(filter.sosConfig.schema,filter.sosConfig.schema,filter.sosConfig.schema)
         if filter.featureOfInterest or filter.featureOfInterestSpatial:

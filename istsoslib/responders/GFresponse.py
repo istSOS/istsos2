@@ -33,6 +33,19 @@ from istsoslib import sosException
 import mx.DateTime.ISO
            
 class foi:
+    """The Feature of interest object
+
+    Attributes:
+        name (str): feature of interest name
+        type (str): feature of interest type
+        desc (str): description of the feature of interest
+        procedures (list): ordered list of procedures
+        idPrc (list): ordered list of procdures id
+        obsType (list): list of observation types
+        samplingTime (list): list of eventime elements, one (instant) or two (period) 
+        properties (list): list of preperties
+        geom (str): the feature of interest geometry as GML
+    """
     def __init__(self,filter,pgdb):
         #sys.stderr.write("*****************************************************************")
         self.name=filter.featureOfInterest

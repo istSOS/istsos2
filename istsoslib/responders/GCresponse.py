@@ -28,6 +28,18 @@ from istsoslib import sosDatabase
 from istsoslib import sosException
 
 class ServiceIdentification:
+    """Service identification of the GetCapabilities responseFormat
+
+    Attributes:
+        title (str): service name
+        abstract (str): service abstract
+        keywords (str): service keywords
+        serviceTypeCode (str): service type code
+        serviceTypeValue (str): service type value
+        serviceTypeVersion (str): service type version
+        fees (str): service fees
+        accessconstrains (str): service access constrains
+    """
     def __init__(self,sosConfig):
         self.title=sosConfig.serviceIdentification["title"]
         self.abstract=sosConfig.serviceIdentification["abstract"]
@@ -37,8 +49,26 @@ class ServiceIdentification:
         self.serviceTypeVersion=sosConfig.serviceType["version"]
         self.fees=sosConfig.serviceIdentification["fees"]
         self.accessconstrains=sosConfig.serviceIdentification["accessConstrains"]
-    
+
 class ServiceProvider:
+    """Service provider of the GetCapabilities responseFormat
+
+    Attributes:
+        providerName (str): provider name
+        providerSite (str): provider site
+        individualName (str): individual name
+        positionName (str): position name
+        contactVoice (str): contact voice number
+        contactFax (str): contact fax number
+        contactDelivery (str): contact delivery address
+        contactCity (str): contact city
+        contactArea (str): contact area
+        contactPostCode (str): contact post code
+        contactCountry (str): contact country
+        contactMail (str): contact email
+
+    """
+
     def __init__(self,sosConfig):
         self.providerName=sosConfig.serviceProvider["providerName"]
         self.providerSite=sosConfig.serviceProvider["providerSite"]
@@ -54,6 +84,14 @@ class ServiceProvider:
         self.contactMail=sosConfig.serviceProvider["serviceContact"]["contactInfo"]["email"]
 
 class Parameter:
+    """Parameter object
+
+    Attributes:
+        name (str): attribute name
+        use (str): attribute use
+        allowedValues (list): allowed values
+        range (list): ranges
+    """
     def __init__(self,name,use="optional",allowedValues=[],range=[]):
         self.name=name
         self.use=use
@@ -61,6 +99,15 @@ class Parameter:
         self.range=range
 
 class Operation:
+    """Operation object
+
+    Attributes:
+        name (str): operation name
+        get (str): address for get request
+        post (str): address for post request
+        parameters (list): list of parameter objects *istsoslib.responders.GCresponse.Parameter*
+
+    """
     def __init__(self,name,get="",post=""):
         self.name=name
         self.get=get
@@ -68,8 +115,17 @@ class Operation:
         self.parameters=[]
     def addParameter(self,name,use="optional",allowedValues=[],range=[]):
         self.parameters.append(Parameter(name,use,allowedValues,range))
-    
+
 def BuildSensorIdList(pgdb,sosConfig):
+    """Generate the sensor list
+
+    Args:
+        pgdb (obj): the database object *istsoslib.sosDatabase.PgDB*
+        sosCOnfig (obj): the istsos configuration object
+
+    Returns:
+        sensorList (list): the list of sensor names
+    """
     list=[]
     sql = "SELECT name_prc FROM %s.procedures ORDER BY name_prc" %(sosConfig.schema)
     try:
@@ -77,10 +133,19 @@ def BuildSensorIdList(pgdb,sosConfig):
     except:
         raise Exception("sql: %s" %(pgdb.mogrify(sql)))
     for row in rows:
-        list.append(sosConfig.urn["procedure"] + row["name_prc"])    
+        list.append(sosConfig.urn["procedure"] + row["name_prc"])
     return list
-    
+
 def BuildOfferingList(pgdb,sosConfig):
+    """Generate the offering list
+
+    Args:
+        pgdb (obj): the database object *istsoslib.sosDatabase.PgDB*
+        sosCOnfig (obj): the istsos configuration object
+
+    Returns:
+        offeringList (list): the list of offering names
+    """
     list=[]
     sql = "SELECT distinct(name_off) FROM %s.procedures, %s.off_proc, %s.offerings" %(sosConfig.schema,sosConfig.schema,sosConfig.schema)
     sql += " WHERE id_prc=id_prc_fk AND id_off_fk=id_off ORDER BY name_off"
@@ -94,6 +159,15 @@ def BuildOfferingList(pgdb,sosConfig):
     return list
 
 def BuildEventTimeRange(pgdb,sosConfig):
+    """Generate observation time interval
+
+    Args:
+        pgdb (obj): the database object *istsoslib.sosDatabase.PgDB*
+        sosCOnfig (obj): the istsos configuration object
+
+    Returns:
+        eventime (list): a two element list with begin and end position of sensor observations
+    """
     sql = "SELECT min(stime_prc) as b, max(etime_prc) as e FROM %s.procedures" %(sosConfig.schema)
     #sql = "SELECT min(time_eti) as b, max(time_eti) as e FROM %s.event_time" %(sosConfig.schema)
     try:
@@ -104,6 +178,15 @@ def BuildEventTimeRange(pgdb,sosConfig):
     return [rows[0]["b"],rows[0]["e"]]
 
 def BuildobservedPropertyList(pgdb,sosConfig):
+    """Generate observed properties
+
+    Args:
+        pgdb (obj): the database object *istsoslib.sosDatabase.PgDB*
+        sosCOnfig (obj): the istsos configuration object
+
+    Returns:
+        obsprop (list): a list of unique observed properties definitions
+    """
     list=[]
     sql = "SELECT distinct(def_opr) as nopr FROM %s.procedures,%s.proc_obs,%s.observed_properties" %(sosConfig.schema,sosConfig.schema,sosConfig.schema)
     sql += " WHERE id_prc_fk=id_prc AND id_opr_fk=id_opr ORDER BY nopr"
@@ -114,8 +197,17 @@ def BuildobservedPropertyList(pgdb,sosConfig):
     return list
 
 def BuildfeatureOfInterestList(pgdb,sosConfig):
+    """Generate feature of interests
+
+    Args:
+        pgdb (obj): the database object *istsoslib.sosDatabase.PgDB*
+        sosCOnfig (obj): the istsos configuration object
+
+    Returns:
+        fois (list): a list of unique feature of interests
+    """
     list=[]
-    sql = "SELECT distinct(name_fty||':'||name_foi) as nfoi FROM %s.foi, %s.feature_type" %(sosConfig.schema,sosConfig.schema) 
+    sql = "SELECT distinct(name_fty||':'||name_foi) as nfoi FROM %s.foi, %s.feature_type" %(sosConfig.schema,sosConfig.schema)
     sql += " WHERE id_fty=id_fty_fk ORDER BY nfoi"
     try:
         rows=pgdb.select(sql)
@@ -126,6 +218,15 @@ def BuildfeatureOfInterestList(pgdb,sosConfig):
     return list
 
 def BuildOffEnvelope(pgdb,id,sosConfig):
+    """Generate offering envelope
+
+    Args:
+        pgdb (obj): the database object *istsoslib.sosDatabase.PgDB*
+        sosCOnfig (obj): the istsos configuration object
+
+    Returns:
+        envel (str): gml representation of offering bounding box as gml:envelope
+    """
     sql = "SELECT ST_asgml(Box2D(u.geom)) as ext FROM"
     sql += " ("
     #----case obs_type = fix
@@ -145,7 +246,7 @@ def BuildOffEnvelope(pgdb,id,sosConfig):
         rows=pgdb.select(sql,params)
     except:
         raise Exception("sql: %s" %(pgdb.mogrify(sql,params)))
-        
+
     # Retrieve any of the gml:* elements below to go inside the gml:Envelope tag.
     # Unfortunately, xml.etree.ElementTree.fromstring cannot parse xml elements with
     # an unknown prefix, so I have to revert to string manipulation.
@@ -166,18 +267,38 @@ def BuildOffEnvelope(pgdb,id,sosConfig):
 
 
 def BuildOffTimePeriod(pgdb,id,sosConfig):
+    """Generate offering time interval
+
+    Args:
+        pgdb (obj): the database object *istsoslib.sosDatabase.PgDB*
+        id (int): the offering id
+        sosCOnfig (obj): the istsos configuration object
+
+    Returns:
+        eventime (list): a two element list with begin and end position of the given offering id
+    """
     sql = "SELECT max(etime_prc) as e, min(stime_prc) as b"
     sql += " from %s.procedures, %s.off_proc o" %(sosConfig.schema,sosConfig.schema)
-    sql += " WHERE o.id_prc_fk=id_prc and id_off_fk=%s" 
+    sql += " WHERE o.id_prc_fk=id_prc and id_off_fk=%s"
     params = (id,)
     try:
         rows=pgdb.select(sql,params)
     except Exception as err:
         raise Exception("SQL2: %s - %s" %(pgdb.mogrify(sql,params), err))
-    
+
     return [rows[0]["b"],rows[0]["e"]]
 
 def BuildOffProcList(pgdb,id,sosConfig):
+    """Generate the list of procedures for a given offering
+
+    Args:
+        pgdb (obj): the database object *istsoslib.sosDatabase.PgDB*
+        id (int): the offering id
+        sosCOnfig (obj): the istsos configuration object
+
+    Returns:
+        procedures (list): the list of procedured belonging to the given offering id
+    """
     list=[]
     sql = "SELECT distinct(name_prc)"
     sql += " FROM %s.off_proc, %s.procedures,%s.offerings" %(sosConfig.schema,sosConfig.schema,sosConfig.schema)
@@ -194,6 +315,16 @@ def BuildOffProcList(pgdb,id,sosConfig):
     return list
 
 def BuildOffObsPrList(pgdb,id,sosConfig):
+    """Generate the list of properties for a given offering
+
+    Args:
+        pgdb (obj): the database object *istsoslib.sosDatabase.PgDB*
+        id (int): the offering id
+        sosCOnfig (obj): the istsos configuration object
+
+    Returns:
+        properties (list): the list of properties associated to the given offering id
+    """
     list=[]
     sql = "SELECT distinct(def_opr)"
     sql += " FROM %s.offerings, %s.off_proc o, %s.procedures," %(sosConfig.schema,sosConfig.schema,sosConfig.schema)
@@ -211,9 +342,19 @@ def BuildOffObsPrList(pgdb,id,sosConfig):
     return list
 
 def BuildOffFoiList(pgdb,id,sosConfig):
+    """Generate the list of feture of interest for a given offering
+
+    Args:
+        pgdb (obj): the database object *istsoslib.sosDatabase.PgDB*
+        id (int): the offering id
+        sosCOnfig (obj): the istsos configuration object
+
+    Returns:
+        fois (list): the list of feture of interest associated to the given offering id
+    """
     list=[]
 
-    sql = "SELECT distinct(name_fty || ':' || name_foi) as fois" 
+    sql = "SELECT distinct(name_fty || ':' || name_foi) as fois"
 
     sql += " FROM %s.off_proc, %s.procedures,%s.foi,%s.feature_type"  %(sosConfig.schema,sosConfig.schema,sosConfig.schema,sosConfig.schema)
     sql += " WHERE id_prc_fk=id_prc AND id_off_fk=%s"
@@ -229,6 +370,15 @@ def BuildOffFoiList(pgdb,id,sosConfig):
     return list
 
 def BuildSensorList(pgdb,sosConfig):
+    """Generate the list of sensors
+
+    Args:
+        pgdb (obj): the database object *istsoslib.sosDatabase.PgDB*
+        sosCOnfig (obj): the istsos configuration object
+
+    Returns:
+        sensors (list): the list of sensors
+    """
     sql = "SELECT assignedid_prc as id from %s.procedures" %(sosConfig.schema)
     try:
         rows=pgdb.select(sql)
@@ -237,6 +387,14 @@ def BuildSensorList(pgdb,sosConfig):
     return [ sosConfig.urn["sensor"]+str(sid["id"]) for sid in rows ]
 
 class OperationsMetadata:
+    """The GetCapabilities Metadata section object
+
+    Attributes:
+        OP (list): list of offered requests
+
+            .. note::
+                Each request is a list of operation objects (*istsoslib.responders.GCresponse.Operation*) with specific parameters
+    """
     def __init__(self,pgdb,sosConfig):
         self.OP=[]
         srslist=[sosConfig.urn["refsystem"]+i for i in sosConfig.parameters["GO_srs"]]
@@ -247,56 +405,56 @@ class OperationsMetadata:
         GetCapabilities.addParameter(name="version",use="required",allowedValues=sosConfig.parameters["version"])
         GetCapabilities.addParameter(name="section",use="optional",allowedValues=sosConfig.parameters["GC_Section"])
         self.OP.append(GetCapabilities)
-        
-        #DescribeSensor 
+
+        #DescribeSensor
         DescribeSensor=Operation(name="DescribeSensor",get=sosConfig.serviceUrl["get"],post=sosConfig.serviceUrl["post"])
         DescribeSensor.addParameter(name="service",use="required",allowedValues=sosConfig.parameters["service"])
         DescribeSensor.addParameter(name="version",use="required",allowedValues=sosConfig.parameters["version"])
         DescribeSensor.addParameter(name="procedure",use="required",allowedValues=BuildSensorIdList(pgdb,sosConfig))
         DescribeSensor.addParameter(name="outputFormat",use="required",allowedValues=sosConfig.parameters["DS_outputFormats"])
         self.OP.append(DescribeSensor)
-         
-        #GetObservation 
+
+        #GetObservation
         GetObservation=Operation(name="GetObservation",get=sosConfig.serviceUrl["get"],post=sosConfig.serviceUrl["post"])
         GetObservation.addParameter(name="service",use="required",allowedValues=sosConfig.parameters["service"])
         GetObservation.addParameter(name="version",use="required",allowedValues=sosConfig.parameters["version"])
-        GetObservation.addParameter(name="srsName",use="optional",allowedValues=srslist) 
+        GetObservation.addParameter(name="srsName",use="optional",allowedValues=srslist)
         GetObservation.addParameter(name="offering",use="required",allowedValues=BuildOfferingList(pgdb,sosConfig))
         GetObservation.addParameter(name="eventTime",use="optional",allowedValues=[],range=BuildEventTimeRange(pgdb,sosConfig))
         GetObservation.addParameter(name="procedure",use="optional",allowedValues=BuildSensorIdList(pgdb,sosConfig))
         GetObservation.addParameter(name="observedProperty",use="optional",allowedValues=BuildobservedPropertyList(pgdb,sosConfig))
         GetObservation.addParameter(name="featureOfInterest",use="optional",allowedValues=BuildfeatureOfInterestList(pgdb,sosConfig))
-        
+
         #GetObservation.addParameter(name="result",use="optional",allowedValues=[sosConfig.parameters["result"]])
         GetObservation.addParameter(name="responseFormat",use="required",allowedValues=sosConfig.parameters["GO_responseFormat"])
         GetObservation.addParameter(name="resultModel",use="optional",allowedValues=sosConfig.parameters["GO_resultModel"])
         GetObservation.addParameter(name="responseMode",use="optional",allowedValues=sosConfig.parameters["GO_responseMode"])
         self.OP.append(GetObservation)
-         
-        #GetFeatureOfInterest 
+
+        #GetFeatureOfInterest
         GetFeatureOfInterest=Operation(name="GetFeatureOfInterest",get=sosConfig.serviceUrl["get"],post=sosConfig.serviceUrl["post"])
         GetFeatureOfInterest.addParameter(name="service",use="required",allowedValues=sosConfig.parameters["service"])
         GetFeatureOfInterest.addParameter(name="version",use="required",allowedValues=sosConfig.parameters["version"])
         GetFeatureOfInterest.addParameter(name="featureOfInterest",use="required",allowedValues=BuildfeatureOfInterestList(pgdb,sosConfig))
         GetFeatureOfInterest.addParameter(name="srsName",use="optional",allowedValues=srslist)
         self.OP.append(GetFeatureOfInterest)
-         
-        #RegisterSensor 
+
+        #RegisterSensor
         RegisterSensor=Operation(name="RegisterSensor",get=None,post=sosConfig.serviceUrl["post"])
         RegisterSensor.addParameter(name="service",use="required",allowedValues=sosConfig.parameters["service"])
         RegisterSensor.addParameter(name="version",use="required",allowedValues=sosConfig.parameters["version"])
         RegisterSensor.addParameter(name="SensorDescription",use="required",allowedValues=["Any SensorML"])
         RegisterSensor.addParameter(name="ObservationTemplate",use="required",allowedValues=["Any om:Observation"])
         self.OP.append(RegisterSensor)
-        
-        #--InsertObservation 
+
+        #--InsertObservation
         InsertObservation=Operation(name="InsertObservation",get=None,post=sosConfig.serviceUrl["post"])
         InsertObservation.addParameter(name="service",use="required",allowedValues=sosConfig.parameters["service"])
         InsertObservation.addParameter(name="version",use="required",allowedValues=sosConfig.parameters["version"])
         InsertObservation.addParameter(name="AssignedSensorId",use="required",allowedValues=["Any registered sensorID"])
         InsertObservation.addParameter(name="Observation",use="optional",allowedValues=["Any om:Observation"])
         self.OP.append(InsertObservation)
-        
+
         """ optional parameters are:
         result ogc:comparisonOps Zero or one (Optional)
         responseFormat (e.g.: text/xml;schema="ioos/0.6.1" TML, O&M, native format, or MPEG stream out-of-band). (MIME content type) One (mandatory)
@@ -305,6 +463,19 @@ class OperationsMetadata:
         """
 
 class Offering:
+    """The Offering object
+
+    Attributes:
+        id (str): offering id
+        name (str): offering name
+        desc (str): offering description
+        boundedBy (str): offering bounding box
+        beginPosition (str): offering starting time of observation
+        endPosition (str): offering end time of observation
+        procedures (list): procedures list
+        obsProp (list): observed properties list
+        fois (list): feature of interest list
+    """
     def __init__(self):
         self.id = None
         self.name = None
@@ -315,10 +486,19 @@ class Offering:
         self.procedures=[]
         self.obsProp=[]
         self.fois=[]
-         
+
 class ObservationOfferingList:
+    """Observation offering list object
+
+    Attributes:
+        offerings (list): list of offerings objects (*istsoslib.responders.GCresponse.Offering*)
+        responseFormat (str): response format
+        resultModel (str): result model
+        responseMode (str): response mode
+
+    """
     #def __init__(self,filter, pgdb):
-    def __init__(self, pgdb,sosConfig):        
+    def __init__(self, pgdb,sosConfig):
         self.offerings=[]
         self.responseFormat = sosConfig.parameters["GO_responseFormat"]
         self.resultModel = sosConfig.parameters["GO_resultModel"]
@@ -340,9 +520,20 @@ class ObservationOfferingList:
             off.obsProp = BuildOffObsPrList(pgdb,row["id_off"],sosConfig)
             off.fois = BuildOffFoiList(pgdb,row["id_off"],sosConfig)
             self.offerings.append(off)
-        
+
 
 class GetCapabilitiesResponse():
+    """The GetCapabilitiesResponse object
+
+    Attributes:
+        ServiceIdentifier (list): list of ServiceIdentifier objects (*istsoslib.responders.GCresponse.ServiceIdentifier*)
+        ServiceProvider (list): list of ServiceProvider objects (*istsoslib.responders.GCresponse.ServiceProvider*)
+        OperationsMetadata (list): list of OperationsMetadata objects (*istsoslib.responders.GCresponse.OperationsMetadata*)
+        ObservationOfferingList (list): list of ObservationOfferingList objects (*istsoslib.responders.GCresponse.ObservationOfferingList*)
+
+        .. note::
+            Attributes may vary depending of sections argument values
+    """
     def __init__(self,fil,pgdb):
         if "all" in fil.sections:
             self.ServiceIdentifier = ServiceIdentification(fil.sosConfig)
@@ -369,6 +560,6 @@ class GetCapabilitiesResponse():
             else:
                 self.ObservationOfferingList = []
 
-    
-    
-    
+
+
+

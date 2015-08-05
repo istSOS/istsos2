@@ -25,7 +25,18 @@ from istsoslib import sosException
 
 
 class sosDSfilter(f.sosFilter):
-    "filter object for a DescribeSensor request"
+    """filter object for a DescribeSensor request
+
+    This is an extension of the base filter class (sosFilter) to accept
+    DescribeSensor request and add specific parameters
+
+    Attributes:
+        request (str): the request submitted
+        service (str): the name of the service requested
+        version (str): the version of the service
+        outputFormat (str): the outputFormat
+        procedure (str): the name of the procedure to be described
+    """
     def __init__(self,sosRequest,method,requestObject,sosConfig):
         f.sosFilter.__init__(self,sosRequest,method,requestObject,sosConfig)
         #**************************

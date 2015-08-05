@@ -24,12 +24,22 @@ from istsoslib.filters import filter as f
 from istsoslib import sosException
 
 class sosGCfilter(f.sosFilter):
-    "filter object for a GetCapabalities request"
+    """filter object for a GetCapabalities request
+
+    This is an extension of the base filter class (sosFilter) to accept
+    GetCapabilities request and add specific parameters
+
+    Attributes:
+        request (str): the request submitted
+        service (str): the name of the service requested
+        version (str): the version of the service
+        sections (list): the requested sections names, if not provided the default value is *["all"]*
+    """
     def __init__(self,sosRequest,method,requestObject,sosConfig):
         f.sosFilter.__init__(self,sosRequest,method,requestObject,sosConfig)
         #**************************
         if method == "GET":
-            #-------SECTIONS-------------           
+            #-------SECTIONS-------------
             if requestObject.has_key("section"):
                 self.sections = requestObject["section"].lower().split( "," )
                 for s in self.sections:
@@ -39,7 +49,7 @@ class sosGCfilter(f.sosFilter):
             else:
                 self.sections=["all"]
         #**************************
-        if method == "POST":           
+        if method == "POST":
             if requestObject.nodeType == requestObject.ELEMENT_NODE:
                 #-------SECTIONS-------------
                 self.sections=[]
@@ -56,6 +66,7 @@ class sosGCfilter(f.sosFilter):
                     self.sections = ["all"]
             
 
-    
+
+
 
 

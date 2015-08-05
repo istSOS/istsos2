@@ -24,26 +24,40 @@ from istsoslib.filters import filter as f
 from istsoslib import sosException
 from lib.etree import et
 
-def parse_and_get_ns(file):
-    events = "start", "start-ns"
-    root = None
-    ns = {}
-    for event, elem in et.iterparse(file, events):
-        if event == "start-ns":
-            if elem[0] in ns and ns[elem[0]] != elem[1]:
-                # NOTE: It is perfectly valid to have the same prefix refer
-                #   to different URI namespaces in different parts of the
-                #   document. This exception serves as a reminder that this
-                #   solution is not robust.  Use at your own peril.
-                raise KeyError("Duplicate prefix with different URI found.")
-            ns[elem[0]] = "%s" % elem[1]
-        elif event == "start":
-            if root is None:
-                root = elem 
-    return et.ElementTree(root), ns
+from filter_utils import parse_and_get_ns
 
 class sosIOfilter(f.sosFilter):
-    "filter object for a InsertObservation request"
+    """filter object for a InsertObservation request
+
+    Attributes:
+        request (str): the request submitted
+        service (str): the name of the service requested
+        version (str): the version of the service
+        assignedSensorId (str): the requested sensor id
+        forceInsert (bool): if True overrides existing observations falling in the interval
+        procedure (str): the name of the procedure 
+        oprName (list): the names of thr observed properties 
+        samplingTime (str): the time period of the observations to be inserted
+        foiName (str): the name of the feature of featureOfInterest
+        parameters (list): the ordered list of unit of the parameters
+        uom (list): the ordered list of unit of minutes associated with the parameters
+        data (dict): a dictionary of parameter's dictionaries with unit of minutes and values, e.g.:
+
+            .. code::
+
+                data = {   
+                            "urn:ist:parameter:time:iso8601": 
+                                {
+                                    "uom":"sec", 
+                                    "vals":["2009-07-31T12:00:00+02:00","2009-07-31T12:10:00+02:00","2009-07-31T12:20:00+02:00"]
+                                },
+                            "urn:ist:def:phenomenon:rainfall": 
+                                {
+                                    "uom":"mm", 
+                                    "vals":[0.1,0.2,0.3,0.4]
+                                }
+                        }
+    """
     #self.sensorId
     #self.samplingTime
     #self.procedure
@@ -186,20 +200,20 @@ class sosIOfilter(f.sosFilter):
             ##########################################################################################################
             #-----result---
             #return self.data where self.data is a dictionary of "definition" containing dictionary of "uom" and "vals"
-            """ e.g.:
-            self.data = {   
-                        "urn:ist:parameter:time:iso8601": 
-                            {
-                            "uom":"sec", 
-                            "vals":["2009-07-31T12:00:00+02:00","2009-07-31T12:10:00+02:00","2009-07-31T12:20:00+02:00"]
-                            },
-                        "urn:ist:def:phenomenon:rainfall": 
-                            {
-                            "uom":"mm", 
-                            "vals":[0.1,0.2,0.3,0.4]
-                            }
-                        }
-            """
+            #""" e.g.:
+            #self.data = {   
+            #            "urn:ist:parameter:time:iso8601": 
+            #                {
+            #                "uom":"sec", 
+            #                "vals":["2009-07-31T12:00:00+02:00","2009-07-31T12:10:00+02:00","2009-07-31T12:20:00+02:00"]
+            #                },
+            #            "urn:ist:def:phenomenon:rainfall": 
+            #                {
+            #                "uom":"mm", 
+            #                "vals":[0.1,0.2,0.3,0.4]
+            #                }
+            #            }
+            #"""
             ##########################################################################################################
             
             self.parameters = []

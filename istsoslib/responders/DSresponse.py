@@ -29,6 +29,20 @@ from istsoslib import sosException
 
 
 class DescribeSensorResponse:
+    """Responer for the DescribeSensor request
+
+    Attributes:
+        smlFile: sensorML of this sensor
+        procedureType: type of sensor
+        stime (str): start time of this sensor
+        etime (str): end time of this sensor
+        observedProperties (list): the list of observed properties of this sensor
+
+            .. note::
+                observedProperties is a list of rows as:
+                ["def_opr", "name_opr", "desc_opr", "constr_pro", "name_uom"]
+
+    """
     def __init__(self, filter, pgdb):
         
         pgdb.setTimeTZ("UTC")

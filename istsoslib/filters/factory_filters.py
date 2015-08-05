@@ -26,6 +26,19 @@ from urlparse import parse_qs
 import sys
 
 def sosFactoryFilter(environ,sosConfig):
+    """Instantiate the correct filter type depending on requests
+
+    Args:
+        environ (obj): the mod_wsgi environment object
+        sosCOnfig (obj): the service configuration
+
+    Returns:
+        filter (obj): the filter subclass which meet the request
+
+    Raises:
+        Exception if missing or invalid parameters are used in the request
+
+    """
     content_type = environ.get('CONTENT_TYPE', '')
     
     #---- set method, requestObject and sosRequest ----

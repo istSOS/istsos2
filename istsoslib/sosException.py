@@ -23,6 +23,16 @@
 import xml.sax.saxutils as sax
 
 class SOSException(ValueError):
+  """SOS Exception class
+
+  Attributes:
+    code (int): the error code
+    locator (str): the locator identifing where error occurred
+    msg (str): the error message
+    children (list): the children errors
+
+  """
+
   exceptionreport = '''<?xml version="1.0" encoding="UTF-8" standalone="no"?><ExceptionReport xmlns="http://www.opengis.net/ows/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/ows/1.1 ../owsExceptionReport.xsd" version="1.0.0" xml:lang="en">
 %s  
 </ExceptionReport>'''
@@ -42,19 +52,22 @@ class SOSException(ValueError):
     self.msg = sax.escape(str(msg))
     self.children = []
     for msg in othermsgs:
-#        self.children.append(sax.escape(msg))
         self.children.append(msg)
   
   def __str__(self):
+    """convert to XML string"""
     return self.ToXML()
 
   def __repr__(self):
+    """convert to XML string"""
     return self.ToXML()
   
   def AddText(self, text):
+    """append child error text"""
     self.children.append(text)
 
   def ToXML(self):
+    """render as XML"""
     exchildren = [self.exceptiontext % (c,) for c in self.children]
     extextlist = [self.exceptiontext % (self.msg,)] + exchildren
     extext = "\n".join(extextlist)

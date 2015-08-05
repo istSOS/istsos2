@@ -22,29 +22,14 @@
 # ===============================================================================
 from istsoslib.filters import filter as f
 from istsoslib import sosException
+from filter_utils import parse_and_get_ns
+
 from lib.isodate import parse_duration
 from lib.etree import et
 import json
 
 import sys
 
-def parse_and_get_ns(file):
-    events = "start", "start-ns"
-    root = None
-    ns = {}
-    for event, elem in et.iterparse(file, events):
-        if event == "start-ns":
-            if elem[0] in ns and ns[elem[0]] != elem[1]:
-                # NOTE: It is perfectly valid to have the same prefix refer
-                #   to different URI namespaces in different parts of the
-                #   document. This exception serves as a reminder that this
-                #   solution is not robust.  Use at your own peril.
-                raise KeyError("Duplicate prefix with different URI found.")
-            ns[elem[0]] = "%s" % elem[1]
-        elif event == "start":
-            if root is None:
-                root = elem 
-    return et.ElementTree(root), ns
     
 convertToSec = {
     'min': lambda x: x * 60,
@@ -72,18 +57,35 @@ convertToSec = {
 #            raise sosException.SOSException("Unknown uom","sml:capabilities","Unknown unit of measure")      
     
 class sosRSfilter(f.sosFilter): 
-    "filter object for a registerSensor request"
-    """
-    self.xmlSensorDescription = None
-    self.procedure = None
-    self.observedProperties = []
+    """filter object for a registerSensor request
 
-    self.uom = []
-    self.featureOfInterestUrn = None
-    self.featureOfInterestSRS = None
-    self.featureOfInterestWKT = None
+
+    Attributes:
+        request (str): the request submitted
+        service (str): the name of the service requested
+        version (str): the version of the service
+        procedure (str): the procedure name
+        time_sam_val (int): the sampling time resolution 
+        time_acq_val (int): the acquisition taime resolution
+        systemType (str): the system type
+        xmlSensorDescription (obj): the sensor description etree's element
+        oprDef (list): ordered list of observed properties definition
+        oprDesc (list): ordered list of observed properties description
+        oprName (list): ordered list of observed properties name
+        foiName (str): feature of interest name
+        foiType (str): feature of interest geometry type
+        foiSRS (str): feature of interest EPSG code
+        foiGML (str): feature of interest GML representation
+        parameters (list): ordered list of parameters observed by the sensor
+        uoms (list): ordered list of unit of measures (indexed as parameters)
+        names (list): ordered list of parameters's names (indexed as parameters)
+        descs (list): ordered list of parameters's description (indexed as parameters)
+        constr (list): ordered list of parameters's constraints (indexed as parameters)
+        partime (list): ordered list 0-1 values identifing the time parameter (1) or not (0) (indexed as parameters)
+        beginPosition (str): set to NULL (TODO: CHECK IF REQUIRED!)
 
     """
+    
     def __init__(self,sosRequest,method,requestObject,sosConfig):
         f.sosFilter.__init__(self,sosRequest,method,requestObject,sosConfig)
         #**************************
