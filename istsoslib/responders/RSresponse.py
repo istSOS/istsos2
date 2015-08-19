@@ -24,6 +24,7 @@ import sys, os
 
 from istsoslib import sosException
 from lib.etree import et
+import uuid
 
 class RegisterSensorResponse:
     #Register sensor object
@@ -245,7 +246,6 @@ class RegisterSensorResponse:
         sqlIns  += "stime_prc, etime_prc, "
         sqlIns  += "time_res_prc, time_acq_prc, assignedid_prc)"
 
-        #sqlIns += " VALUES (%s, %s, %s, '%s', NULL, now()::timestamptz, now()::timestamptz, %s,(select(md5(current_timestamp::text)))) RETURNING id_prc, assignedid_prc" %(id_foi,id_oty,id_tru,filter.procedure,filter.time_res_val)
         sqlIns += " VALUES (%s, %s, %s, "
         sqlIns += "%s, "
         params = [id_foi,id_oty,str(filter.procedure), str(filter.proc_desc)]
@@ -255,9 +255,11 @@ class RegisterSensorResponse:
         else:
             sqlIns += "%s , %s, "
             params.extend([None,None])
-        sqlIns += " %s, %s, (select(md5(current_timestamp::text))))"
+        sqlIns += " %s, %s, %s" #(select(md5(current_timestamp::text))))" >> removed because of conflicts with pgpool replication
         params.append(filter.time_sam_val)
         params.append(filter.time_acq_val)
+        # Creating unique id python side avoiding pgpool replication conflict (GSOC 2015)
+        params.append(str(uuid.uuid1()).replace("-",""))
         sqlIns += " RETURNING id_prc, assignedid_prc"
         params = tuple([None if x=='NULL' else x for x in params])
         try:
