@@ -25,6 +25,9 @@ from walib.resource import waResourceService
 import lib.requests as requests
 import os
 import sys
+from copy import deepcopy
+import json as libjson
+
 
 convertToSec = {
 'min': lambda x: x * 60,
@@ -178,10 +181,10 @@ class waProcedures(waResourceService):
 
         #import pprint
         #pp = pprint.PrettyPrinter(indent=4)
-        
+
         #print >> sys.stderr, "\n\nSML: %s" % smlstring
         #print >> sys.stderr, "\n\nSML: %s" % pp.pprint(self.json)
-        
+
         response = requests.post(
             self.serviceconf.serviceurl["url"],
             data=smlstring,
@@ -282,8 +285,26 @@ class waProcedures(waResourceService):
         msg1 = ""
         msg2 = ""
 
-             
-        
+        epsg = self.serviceconf.geo['istsosepsg']
+
+        # update foi geometry inside db
+        if proc.data['location']:
+
+            foi = deepcopy(proc.data['location'])
+            foi_geometry = foi['geometry']
+            foi_geometry['crs'] = foi['crs']
+            # set correct crs
+            foi_geometry['crs']['properties']['name'] = "EPSG:" + str(foi_geometry['crs']['properties']['name'])
+
+
+            sql = "UPDATE %s.foi " % self.service
+            sql += " SET geom_foi = ST_Transform(ST_GeomFromGeoJSON(%s), %s)"
+            sql += " WHERE name_foi=%s"
+
+            params = (libjson.dumps(foi_geometry), epsg, foi['properties']['name'])
+
+            servicedb.executeInTransaction(sql, params)
+
         if proc.data['system'] != self.procedurename:
             #rename procedure in transaction
             sql  = "UPDATE %s.procedures" % self.service
@@ -296,7 +317,6 @@ class waProcedures(waResourceService):
                       os.path.join(self.sensormlpath,self.json["system"]+".xml"))
 
             #commit transaction
-
             msg1 = "Procedure '%s' successfully renamed to '%s'" %(self.procedurename,str(self.json["system"]))
 
 # Update for sapling time and acquisition time
@@ -305,21 +325,21 @@ class waProcedures(waResourceService):
 
         for cap in proc.data['capabilities']:
             if 'samplingTimeResolution' in cap['definition']:
-                
+
                 time_sam_val = convertToSec[cap['uom']](int(cap['value'])) # convertToSec(cap['uom'],int(cap['value']))
                 #print >> sys.stderr, "Sampling value: ",time_sam_val, cap['value']
-                
+
             elif 'acquisitionTimeResolution' in cap['definition']:
-                
+
                 time_acq_val = convertToSec[cap['uom']](int(cap['value'])) # convertToSec(cap['uom'],int(cap['value']))
                 #print >> sys.stderr, "Acquisition value: ",time_acq_val, cap['value']
-                
+
 
         sql = "UPDATE %s.procedures" % self.service
         sql += " SET time_res_prc = %s, time_acq_prc = %s WHERE name_prc= %s"
-        params = (time_sam_val,time_acq_val,self.procedurename)                
+        params = (time_sam_val,time_acq_val,self.procedurename)
         servicedb.executeInTransaction(sql,params)
-                
+
         #allows to update observed property constraints
         for obsprop in proc.data['outputs']:
             if "constraint" in obsprop:
@@ -334,7 +354,7 @@ class waProcedures(waResourceService):
                             ids = servicedb.select(sql,params)
                         except Exception:
                             raise Exception("Procedure-observedProperty-UnitOfMeasure triplet not found in system, SQL: %s" % servicedb.mogrify(sql,params) )
-        
+
                         if len(ids)==1:
                             #update database values for the constraints
                             sql = "UPDATE %s.proc_obs" % self.service
@@ -371,16 +391,16 @@ class waProcedures(waResourceService):
                                     upd["valueList"] = [float(a) for a in obsprop["constraint"]["valueList"]]
                                 except:
                                     raise Exception("'interval' constraint requires an array of two float value")
-                                
+
                             import json
                             params = (json.dumps(upd), ids[0]['id_prc'], ids[0]['id_opr'], ids[0]['id_uom'])
                             try:
-                                #print >> sys.stderr, servicedb.mogrify(sql,params)                                
+                                #print >> sys.stderr, servicedb.mogrify(sql,params)
                                 ids = servicedb.executeInTransaction(sql,params)
                                 msg2 = "observed properties constraints have been updated"
                             except:
                                 raise Exception("Procedure-observedProperty-UnitOfMeasure triplet not found in system")
-                
+
                 else:
                     #get obsprop_id, uom_id and proc_id
                     sql = "SELECT id_prc, id_opr, id_uom"
@@ -391,23 +411,23 @@ class waProcedures(waResourceService):
                         ids = servicedb.select(sql,params)
                     except Exception:
                         raise Exception("Procedure-observedProperty-UnitOfMeasure triplet not found in system, SQL: %s" % servicedb.mogrify(sql,params) )
-    
+
                     if len(ids)==1:
                         #update database values for the constraints
                         sql = "UPDATE %s.proc_obs" % self.service
                         sql += " SET constr_pro = NULL"
                         sql += " WHERE id_prc_fk=%s AND id_opr_fk=%s AND id_uom_fk=%s"
-                        
+
                         params = (ids[0]['id_prc'], ids[0]['id_opr'], ids[0]['id_uom'])
                         try:
-                            #print >> sys.stderr, servicedb.mogrify(sql,params)                                
+                            #print >> sys.stderr, servicedb.mogrify(sql,params)
                             ids = servicedb.executeInTransaction(sql,params)
                             msg2 = "observed properties constraints have been updated"
                         except:
                             raise Exception("Procedure-observedProperty-UnitOfMeasure triplet not found in system")
-                
+
         servicedb.commitTransaction()
-        
+
         if msg1 and msg2:
             self.setMessage(" and ".join([msg1,msg2]) )
         elif msg1:
@@ -542,7 +562,7 @@ class waProcedures(waResourceService):
         else:
             self.setException("Unable to find the procedure's assignedSensorId")
 
-    
+
 
 
 class waGetlist(waResourceService):
@@ -584,7 +604,7 @@ class waGetlist(waResourceService):
             self.setData(data)
             self.setMessage("Procedures of service <%s> successfully retrived" % self.servicename)
 
-  
+
 
 class waGetGeoJson(waResourceService):
     """
@@ -611,7 +631,7 @@ class waGetGeoJson(waResourceService):
                     "type": "FeatureCollection",
                     "features": []
                 }
-                
+
                 servicedb = databaseManager.PgDB(self.serviceconf.connection['user'],
                                                 self.serviceconf.connection['password'],
                                                 self.serviceconf.connection['dbname'],
@@ -621,8 +641,8 @@ class waGetGeoJson(waResourceService):
 
                 proceduresList = utils.getProcedureNamesList(servicedb,self.service)
                 for proc in proceduresList:
-                    
-                    
+
+
                     if proc['samplingTime']['beginposition'] == '':
                         print >> sys.stderr, proc['name']
                         import lib.requests as requests
@@ -644,12 +664,12 @@ class waGetGeoJson(waResourceService):
                             print >> sys.stderr, "\n\nSML: %s\n\n" % res.content
                             raise Exception("Error loading DescribeSensor of '%s' [STATUS CODE: %s]: %s" % (proc['name'],res.status_code,e))
                         ret = {}
-                        ret.update(smlobj.data)    
+                        ret.update(smlobj.data)
 
                         proc['samplingTime']['beginposition'] = ret['outputs'][0]['constraint']['interval'][0]
                         proc['samplingTime']['endposition'] = ret['outputs'][0]['constraint']['interval'][1]
-                        #print >> sys.stderr, ret['outputs'][0]['constraint']['interval']                    
-                    
+                        #print >> sys.stderr, ret['outputs'][0]['constraint']['interval']
+
                     elem = {}
                     elem.update(proc)
                     #elem["name"] = proc["name"]
@@ -684,5 +704,5 @@ class waGetGeoJson(waResourceService):
     def setData(self,data):
         """ Set data in response """
         self.response = data
-        
-     
+
+
