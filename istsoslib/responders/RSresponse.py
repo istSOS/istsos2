@@ -255,7 +255,7 @@ class RegisterSensorResponse:
         else:
             sqlIns += "%s , %s, "
             params.extend([None,None])
-        sqlIns += " %s, %s, %s" #(select(md5(current_timestamp::text))))" >> removed because of conflicts with pgpool replication
+        sqlIns += " %s, %s, %s )" #(select(md5(current_timestamp::text))))" >> removed because of conflicts with pgpool replication
         params.append(filter.time_sam_val)
         params.append(filter.time_acq_val)
         # Creating unique id python side avoiding pgpool replication conflict (GSOC 2015)
