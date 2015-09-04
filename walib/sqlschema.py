@@ -281,7 +281,8 @@ CREATE TABLE tran_log (
     end_trl timestamp with time zone,
     count integer,
     stime_prc timestamp with time zone,
-    etime_prc timestamp with time zone
+    etime_prc timestamp with time zone,
+    data json
 );
 COMMENT ON TABLE tran_log IS 'Log table for transactional operations.';
 
@@ -296,7 +297,7 @@ ALTER SEQUENCE tran_log_id_trl_seq OWNED BY tran_log.id_trl;
 CREATE TYPE status AS ENUM ('verified','pending');
 CREATE TABLE cron_log
 (
-   id_clo serial NOT NULL, 
+   id_clo serial NOT NULL,
    id_prc_fk integer NOT NULL,              -- "5"
    process_clo character varying NOT NULL, -- "acquisizione"
    element_clo character varying NOT NULL, -- "T_TREVANO"
@@ -405,8 +406,8 @@ ALTER TABLE ONLY procedures
 ALTER TABLE ONLY tran_log
     ADD CONSTRAINT tran_log_pkey PRIMARY KEY (id_trl);
 ALTER TABLE ONLY cron_log
-    ADD CONSTRAINT cron_log_id_prc_fk_fkey FOREIGN KEY (id_prc_fk) REFERENCES procedures(id_prc) ON DELETE CASCADE;    
-    
+    ADD CONSTRAINT cron_log_id_prc_fk_fkey FOREIGN KEY (id_prc_fk) REFERENCES procedures(id_prc) ON DELETE CASCADE;
+
 --=====================================
 -- INDEXES
 --=====================================

@@ -201,7 +201,6 @@ class waLogs(waResourceService):
         servicedb.execute(sql, par)
         self.setMessage("Exception removed")
 
-
     def search_with_params(self, servicedb):
         params = self.waEnviron['parameters']
         par = ()

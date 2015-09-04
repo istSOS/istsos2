@@ -155,17 +155,20 @@ class waStatus(waResourceService):
 
         #param = self.waEnviron['parameters']['type'][0]
 
+        print "asdasdasd"
+
         procedureData = []
         lastValue = {'values': 'No observation', 'uom': 'No observation'}
         for procedure in utils.getProcedureNamesList(servicedb, self.service):
-
+            log_res = []
             #if param == 'delay':
             status = self.__delay(procedure['name'], servicedb)
             if status is None:
                 continue
             #else:
                 #raise Exception("Operation %s not permitted." % (param))
-
+            print procedure['name']
+            print status['status']
             if(status['status'] == 'NOT OK'):
                 # Require last exceptions
                 logEnviron = self.waEnviron.copy()
@@ -178,17 +181,22 @@ class waStatus(waResourceService):
 
                 log.executeGet()
 
+                print log.response['data']
+
+                log_res = log.response['data']
+
             if(status['lastObservation'] != 'No observation'):
                 # Convert last Observation to string
                 status['lastObservation'] = status['lastObservation'].strftime("%Y-%m-%dT%H:%M:%S%z")
                 lastValue = self.__getLastObservation(servicedb,procedure['name'])
+
 
             procedureData.append(
                 {
                     "procedure": procedure['name'],
                     "status": status,
                     "lastMeasure": lastValue,
-                    "exception": log.response['data']
+                    "exception": log_res #log.response['data']
                 }
             )
 
