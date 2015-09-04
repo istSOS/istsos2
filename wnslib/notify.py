@@ -42,10 +42,10 @@ class Notify(object):
         """Send notification via mail
         Args:
             message: dict with object a mail message
-            {
-                "subject": "subject",
-                "message": "message to send"
-            }
+                {
+                    "subject": "subject",
+                    "message": "message to send"
+                }
             to: mail where to send notification
         """
         print 'send mail'
@@ -104,6 +104,8 @@ class Notify(object):
                     print 'Duplicate tweet'
                 else:
                     print e
+            except AttributeError as e:
+                print e
         else:
             raise Exception("Message for twitter to long!!!, MAX 140 character")
 
@@ -113,7 +115,7 @@ class Notify(object):
 
         Args:
             message: private message to send
-            to: userid
+            to: user twitter_id
             name: name of the notification (to create hashtag)
         """
         if not 'private' in message.keys():
@@ -133,6 +135,8 @@ class Notify(object):
                     print 'Duplicate tweet'
                 else:
                     print e
+            except AttributeError as e:
+                print e
         else:
             raise Exception("Message for twitter to long!!!, MAX 140 character")
 

@@ -65,7 +65,7 @@ def delNotification(name):
     delete_script_file(name)
 
 
-def addNotification(name, func_path, interval):
+def addNotification(name, func_path, interval, store=False):
     """Add new function to notification.asp file.
 
     The function should terminate with a call
@@ -75,13 +75,11 @@ def addNotification(name, func_path, interval):
         name (string): Name of the function
         func_path (string): path to the function
         interval (integer): number of minutes how ofter the function is executed
+        store (boolean): flag, if true the system store the notification result
 
     Returns:
         return message error if problem with file
     """
-    import datetime
-    now = datetime.datetime.now()
-    startDate = now.strftime('%Y-%m-%d %H:%M:%S')
 
     print func_path
     f = open(func_path, 'r')
@@ -104,19 +102,7 @@ def addNotification(name, func_path, interval):
     # write code to file
     write_script_file(code, name)
 
-    # add new function to scheduler .aps file
-    aps_file = open(services_path, 'a')
-    aps_file.writelines(
-        """
-### start %s ###
-@sched.interval_schedule(minutes=%s, start_date='%s')
-def notifications_%s():
-    import scripts.wns.%s as %s
-    %s.%s()
-### end %s ###""" % (name, interval, startDate, name, name, name,
-                        name, name, name)
-    )
-    aps_file.close()
+    write_to_aps(name, interval, store)
 
 
 def __check_valid_python(code, func_path):
@@ -158,10 +144,11 @@ def __check_valid_name(name, func_path):
                 flag_not = True
 
     if not flag_name and not flag_not:
-        return '\nThe function name nust be equal to notification name!!!'
+        return '\nThe function name must be equal to notification name!!!'
 
 
-def createSimpleNotification(name, service, params, cql, interval, period=None):
+def createSimpleNotification(name, service, params, cql, interval,
+                                                period=None, store=False):
     """ Create simple notifcation
 
     Create new python script for simplenotification and add to
@@ -174,6 +161,7 @@ def createSimpleNotification(name, service, params, cql, interval, period=None):
         cql: condition to reach to send notification
         interval: interval
         period: isodate period over witch the getObservation is executed
+        store: flag, if true the system store the notification result
 
     Returns:
 
@@ -185,13 +173,7 @@ def createSimpleNotification(name, service, params, cql, interval, period=None):
                 value (latest, max of aggregation, etc..)
         cql = cql condition to be verified (e.g.: >40)
 """
-
-    import datetime
     import json
-    now = datetime.datetime.now()
-    startDate = now.strftime('%Y-%m-%d %H:%M:%S')
-
-    aps_file = open(services_path, 'a')
 
     rparams = {
         "request": "GetObservation",
@@ -210,7 +192,7 @@ def createSimpleNotification(name, service, params, cql, interval, period=None):
     import datetime
     import time
     import lib.isodate as isodate
-    from pytz import timezone
+    from lib.pytz import timezone
     now = datetime.datetime.now().replace(tzinfo=timezone(time.tzname[0]))
     endDate = now.strftime('%%Y-%%m-%%dT%%H:%%M:%%S%%z')
     period = isodate.parse_duration('%s')
@@ -267,23 +249,69 @@ def %s():
             notify['mail']['subject'] = "notification from %s"
             notify['mail']['message'] = message
             nS.notify('%s',notify)
-            break;""" % (name, config, link, name, name,
+            return {'message' : message}
+            """ % (name, config, link, name, name,
          cql, name, name, name)
 
     # create script file
     write_script_file(code_string, name)
 
+    write_to_aps(name, interval, store)
+
+
+def write_to_aps(name, interval, store):
+    """Add function call to notification.aps
+
+    Args:
+        name (String): name of the function
+        interval (Integer): interval, how often is performed the notification
+        store (boolean): True if the system must store the notification result
+
+    """
+
+    import datetime
+
+    now = datetime.datetime.now()
+    startDate = now.strftime('%Y-%m-%d %H:%M:%S')
+    aps_file = open(services_path, 'a')
     # write to notification.aps
     aps_file.writelines(
         """
 ### start %s ###
 @sched.interval_schedule(minutes=%s, start_date='%s')
 def notifications_%s():
+
+    from wnslib import wnslogger
+    logger = wnslogger.wnsLogger()
     import scripts.wns.%s as %s
-    %s.%s()
-### end %s ###""" % (name, interval, startDate, name, name, name,
-                                                name, name, name)
+    try:
+        logger.logInfo("execute %s")
+        res = %s.%s()
+    except:
+        import sys
+        import traceback
+        logger.logError(sys.exc_info()[1])
+        logger.logError(''.join(traceback.format_tb(sys.exc_info()[2])))
+        return
+
+""" % (name, interval, startDate, name, name, name, name,
+                                                name, name)
     )
+
+    if store:
+        aps_file.writelines(
+"""
+    from wnslib import response
+    r = response.Response()
+    r.setNotification('%s')
+    r.setResponse(res)
+    r.writeToDB()
+""" % (name,)
+        )
+
+    aps_file.writelines(
+"""### end %s ###""" % (name,)
+        )
     aps_file.close()
 
 

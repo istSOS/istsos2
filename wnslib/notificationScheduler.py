@@ -56,7 +56,11 @@ def notify(name, message, status=True):
 
     notifier = notify.Notify(serviceconf)
     if status:
-        notifier.post_twitter_status(message['twitter'], name)
+        try:
+            notifier.post_twitter_status(message['twitter'], name)
+        except AttributeError as e:
+            # missing or wrong autentiation data
+            print e
 
     for user in usersList:
         sql = "SELECT * FROM wns.user WHERE id = %s"
@@ -69,7 +73,8 @@ def notify(name, message, status=True):
                     notifier.email(message['mail'], contact['email'])
             elif con == 'twitter':
                 if 'twitter' in message.keys() and 'twitter' in contact.keys():
-                    notifier.twitter(message['twitter'], contact['twitter'], name)
+                    notifier.twitter(message['twitter'],
+                                                contact['twitter'], name)
             elif con == 'fax':
                 notifier.fax(message, contact['fax'], name)
             elif con == 'sms':

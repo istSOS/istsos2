@@ -64,6 +64,7 @@ class wnsNotifications(wnsOperation):
             Notification.append(dict(notif))
 
         self.setData(Notification)
+        self.setMessage("fount [" + str(len(Notification)) + "] notifications")
 
     def executePost(self):
         """ POST notification
@@ -82,9 +83,9 @@ class wnsNotifications(wnsOperation):
         interval = self.json["interval"]
         not_id = None
 
-        sql = """INSERT INTO wns.notification (name, description)
-                        VALUES (%s,%s) RETURNING id;"""
-        par = [name, description]
+        sql = """INSERT INTO wns.notification (name, description, interval)
+                        VALUES (%s,%s, %s) RETURNING id;"""
+        par = [name, description, interval]
         not_id = servicedb.executeInTransaction(sql, par)[0][0]
 
         if not not_id:
@@ -92,19 +93,20 @@ class wnsNotifications(wnsOperation):
             return
         try:
             from wnslib import notificationManager as notManager
+            store = self.json.get("store", False)
             if "params" in self.json.keys():
-                print "simpleNot"
                 params = self.json["params"]
                 condition = self.json["condition"]
                 service = self.json["service"]
                 period = self.json.get("period", None)
 
                 notManager.createSimpleNotification(name, service, params,
-                                            condition, interval, period)
+                                            condition, interval, period, store)
             else:
                 print  "Notification"
                 funcFile = self.json["function"]
-                msg = notManager.addNotification(name, funcFile, interval)
+                msg = notManager.addNotification(name, funcFile,
+                                                        interval, store)
                 if msg:
                     self.setException(msg)
                     servicedb.rollbackTransaction()
@@ -125,6 +127,7 @@ class wnsNotifications(wnsOperation):
         Update a existing notification
         """
         description = self.json.get("description", None)
+        interval = self.json.get("interval", None)
 
         from wnslib import notificationManager as notManager
 
@@ -136,8 +139,19 @@ class wnsNotifications(wnsOperation):
                 self.serviceconf.connectionWns['host'],
                 self.serviceconf.connectionWns['port'])
 
-            sql = "UPDATE wns.notification SET description = %s WHERE id=%s;"
-            params = (description, self.not_id,)
+            sql = "UPDATE wns.notification SET description = %s "
+            params = (description,)
+
+            if interval:
+                if not self.json.get("function"):
+                    self.setException("Please define a function path")
+                    return
+                sql += ", interval = %s "
+                params += (interval, )
+
+            sql += " WHERE id=%s;"
+
+            params += (self.not_id,)
             servicedb.executeInTransaction(sql, params)
 
         if not self.json.get("params") or not self.json.get("function"):

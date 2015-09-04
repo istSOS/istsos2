@@ -28,13 +28,12 @@ def initResource(wnsEnviron):
     path = wnsEnviron['path']
     print >> sys.stderr, path
 
-    print >> sys.stderr, wnsEnviron['pathinfo']
     pathinfo = copy.deepcopy(wnsEnviron['pathinfo'])
     pathinfo.pop(0)
     resource = pathinfo.pop(0)
 
-    print >> sys.stderr, pathinfo
-    print >> sys.stderr, resource
+    #print >> sys.stderr, pathinfo
+    #print >> sys.stderr, resource
 
     if resource == 'user':
         if len(pathinfo) <= 1:
@@ -57,7 +56,10 @@ def initResource(wnsEnviron):
         else:
             raise Exception("Resource is not identified, check the URL")
     elif resource == 'setup':
-        from wnslib import setup
+        from wnslib.services.setup import setup
         return setup.wnsSetup(wnsEnviron)
+    elif resource == 'response':
+        from wnslib.services.responses import responses
+        return responses.wnsResponses(wnsEnviron)
     else:
         raise Exception("Resource is not identified, check the URL")

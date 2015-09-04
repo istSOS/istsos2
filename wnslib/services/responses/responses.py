@@ -1,0 +1,74 @@
+# -*- coding: utf-8 -*-
+from wnslib.operation import wnsOperation
+from walib import databaseManager
+import json
+
+
+class wnsResponses(wnsOperation):
+
+    def __init__(self, wnsEnviron):
+        wnsOperation.__init__(self, wnsEnviron)
+        pathinfo = wnsEnviron['pathinfo']
+        self.not_id = None
+
+        if pathinfo[1] == 'response':
+            self.not_id = pathinfo[2]
+        else:
+            raise Exception("Resource is not identified, check the URL")
+
+    def executeGet(self):
+
+        params = self.wnsEnviron['parameters']
+
+        servicedb = databaseManager.PgDB(
+            self.serviceconf.connection['user'],
+            self.serviceconf.connection['password'],
+            self.serviceconf.connection['dbname'],
+            self.serviceconf.connection['host'],
+            self.serviceconf.connection['port'])
+
+        sql = "SELECT * FROM wns.responses WHERE not_id=%s "
+        par = (self.not_id,)
+
+        limit = "LIMIT 1"
+
+        if params is not None:
+            keyList = params.keys()
+
+            if 'stime' in keyList:
+                sql += " AND  (date > %s::timestamptz)"
+                par += (params['stime'][0],)
+
+            if 'etime' in keyList:
+                sql += " AND  (date < %s::timestamptz)"
+                par += (params['etime'][0],)
+
+            if 'limit' in keyList:
+                if params['limit'][0] != "all":
+                    limit = "LIMIT %s" % params['limit'][0]
+                else:
+                    limit = ""
+
+        sql += " ORDER BY date DESC "
+        sql += limit
+
+        result = servicedb.execute(sql, par)
+
+        response = []
+
+        for res in result:
+            response.append(
+                {
+                    "id": res['id'],
+                    "notification": res['notification'],
+                    "date": res['date'].strftime('%Y-%m-%dT%H:%M:%S%z'),
+                    "response": json.loads(res['response'])
+                }
+            )
+
+        self.setData(response)
+        self.setMessage("Get Responses test")
+
+
+
+

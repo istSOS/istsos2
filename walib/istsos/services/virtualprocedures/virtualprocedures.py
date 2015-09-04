@@ -29,7 +29,7 @@ import shutil
 
 # istsos/services/test/virtualprocedures/Q_TEST
 class waVirtualProcedures(waProcedures):
-    
+
     def __init__(self,waEnviron):
         super(waProcedures, self).__init__(waEnviron)
         self.servicename = self.pathinfo[2]
@@ -37,22 +37,22 @@ class waVirtualProcedures(waProcedures):
             self.procedurename = self.pathinfo[4]
         else:
             self.procedurename = None
-            
+
     def executePost(self):
         if not self.procedurename==None:
             raise Exception("POST action with url procedure name not supported")
-        
+
         waProcedures.executePost(self)
         if not self.response['success'] == True:
             self.procedurename = self.json["system"]
             self.executeDelete()
-            raise Exception("Error in registering %s" %(self.json["system"]))  
-                
-            
+            raise Exception("Error in registering %s" %(self.json["system"]))
+
+
     def executeDelete(self):
         if self.procedurename==None:
             raise Exception("Delete action without url procedure name not supported")
-        
+
         #==================================
         # delete the procedure
         #==================================
@@ -68,7 +68,7 @@ class waVirtualProcedures(waProcedures):
                 shutil.rmtree(procedureFolder)
         else:
             raise Exception("deleting procedure error!")
-            
+
     def executeGet(self):
         if self.procedurename==None:
             raise Exception("GET action without url procedure name not supported")
@@ -76,7 +76,7 @@ class waVirtualProcedures(waProcedures):
         # get the procedure
         #==================================
         waProcedures.executeGet(self)
-        
+
     def executePut(self):
         if self.procedurename==None:
             raise Exception("GET action without url procedure name not supported")
@@ -84,7 +84,7 @@ class waVirtualProcedures(waProcedures):
         # update the procedure
         #==================================
         waProcedures.executePut(self)
- 
+
 """
 {
         "system_id": "uniqueid1",
@@ -160,7 +160,7 @@ class waGetlist(waResourceService):
     def __init__(self,waEnviron):
         waResourceService.__init__(self,waEnviron)
         self.servicename = self.pathinfo[2]
-        
+
     def executeGet(self):
         if self.servicename == "default":
             raise Exception("getlist operation can not be done for default service instance.")
@@ -188,8 +188,8 @@ class waGetlist(waResourceService):
                 else:
                     elem["offerings"] = []
                 data.append(elem)
-            
+
             self.setData(data)
             self.setMessage("Procedures of service <%s> successfully retrived" % self.servicename)
-            
-        
+
+

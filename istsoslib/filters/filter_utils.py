@@ -20,6 +20,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # ===============================================================================
+from lib.etree import et
+
 def getElemTxt(node):
     """Return the text value of an XML node
 
@@ -42,7 +44,7 @@ def getElemTxt(node):
     else:
             err_txt = "get node text value: \"%s\" has no child node" %(node.nodeName)
             raise Exception(err_txt)
-        
+
 def getElemAtt(node,att):
     """Return the attribute of an XML node element
 
@@ -61,13 +63,13 @@ def getElemAtt(node,att):
     else:
         err_txt = "get node attribute value: \"%s\"has no \"%s\" attribute" %(node.nodeName,att)
         raise Exception(err_txt)
-    
+
 def get_name_from_urn(stringa,urnName,sosConfig):
     """Validate the URN and extract the name (last elment)
 
     Args:
         stringa: URN type
-        urnName: URN 
+        urnName: URN
         sosConfig: istSOS configuration object
 
     Returns:
@@ -86,7 +88,7 @@ def get_name_from_urn(stringa,urnName,sosConfig):
                 pass
             else:
                 raise Exception(1,"Urn \"%s\" is not valid: %s."%(a,urn))
-    return name 
+    return name
 
 def parse_and_get_ns(file):
     events = "start", "start-ns"
@@ -103,6 +105,6 @@ def parse_and_get_ns(file):
             ns[elem[0]] = "%s" % elem[1]
         elif event == "start":
             if root is None:
-                root = elem 
+                root = elem
     return et.ElementTree(root), ns
 

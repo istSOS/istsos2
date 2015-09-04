@@ -273,7 +273,33 @@ def executeWns(environ, start_response):
 
     from urlparse import parse_qs
     from wnslib import resourceFactory
+    import sys
+    import traceback
     import config
+    import logging, logging.config, logging.handlers
+
+    #----logging--------------------------------------------------------------------------
+    formatter = logging.Formatter('%(asctime)-6s: %(name)s - %(levelname)s - %(message)s')
+    log_filename = path.join(config.errorlog_path,"wns.log")
+    handler = logging.handlers.RotatingFileHandler(filename=log_filename, maxBytes = 1024*1024, backupCount = 20)
+    handler.setFormatter(formatter)
+    logger = logging.getLogger('istsos')
+    if len(logger.handlers) == 0:
+        logger.addHandler(handler)
+    elif len(logger.handlers) == 1 and type(logger.handlers[0])==type(handler):
+        pass
+    else:
+        for h in logger.handlers:
+            logger.removeHandler(h)
+        logger.addHandler(handler)
+
+    if config.errorlog_level == "INFO":
+        logger.setLevel(logging.INFO)
+    elif config.errorlog_level == "ERROR":
+        logger.setLevel(logging.ERROR)
+    else:
+        logger.setLevel(logging.UNSET)
+    #--------------------------------------------------------------------------------------
 
     wsgi_response = "Hello istSOS WNS"
     wsgi_mime = 'text/plain'
@@ -293,24 +319,73 @@ def executeWns(environ, start_response):
         "services_path": config.services_path,
     }
 
-    method = str(environ['REQUEST_METHOD']).upper()
-    op = resourceFactory.initResource(wnsEnviron)
-
     try:
-        if method == "GET":
-            op.executeGet()
-        elif method == "PUT":
-            op.executePut()
-        elif method == "POST":
-            op.executePost()
-        elif method == "DELETE":
-            op.executeDelete()
-        else:
-            raise Exception("HTTP method %s not supported" % method)
-        wsgi_response = op.getResponse()
+
+        try:
+            op = None
+            op = resourceFactory.initResource(wnsEnviron)
+
+            try:
+                if op.response['success']:
+
+                    method = str(environ['REQUEST_METHOD']).upper()
+                    # Data RETRIEVAL
+                    if method == "GET":
+                        op.executeGet()
+
+                    # Data UPDATE
+                    elif method == "POST":
+                        op.executePost()
+
+                    # Data INSERT
+                    elif method == "PUT":
+                        op.executePut()
+
+                    # Data DELETE
+                    elif method == "DELETE":
+                        op.executeDelete()
+
+                    else:
+                        raise Exception("HTTP method %s not supported" % wnsEnviron["method"])
+
+                    if 'log' in op.response:
+                        logger.info("Executing %s on %s: %s" % (wnsEnviron["method"],
+                            environ['PATH_INFO'], str(op.response['log'])))
+
+                    if 'message' in op.response:
+                        logger.info("Executing %s on %s: %s" % (wnsEnviron["method"],
+                         environ['PATH_INFO'], str(op.response['message'])))
+
+            except Exception as exe:
+                print >> sys.stderr, traceback.print_exc()
+                logger.error("Executing %s on %s: %s" % (wnsEnviron["method"],
+                                 environ['PATH_INFO'], str(exe)))
+                #op.setException("Executing %s on %s: %s" % (method, environ['PATH_INFO'], exe))
+                op.setException(str(exe))
+
+        except Exception as exe:
+            print >> sys.stderr, traceback.print_exc()
+            logger.error("On initialization %s on %s: %s" % (wnsEnviron["method"],
+                                 environ['PATH_INFO'], str(exe)))
+            from walib import resource
+            op = resource.waResource(wnsEnviron)
+            #op.setException("On initialization: %s" % exe)
+            op.setException(str(exe))
+
+        try:
+            wsgi_response = op.getResponse()
+        except Exception as exe:
+            print >> sys.stderr, traceback.print_exc()
+            logger.error("Executing %s on %s: %s" % (wnsEnviron["method"],
+                                 environ['PATH_INFO'], str(exe)))
+            op.setException("Error converting response to json")
+
         wsgi_mime = "application/json"
 
     except Exception as e:
+        print >> sys.stderr, traceback.print_exc()
+        logger.error("Executing %s on %s: %s" % (wnsEnviron["method"],
+                                 environ['PATH_INFO'], str(e)))
         wsgi_response = str(e)
         wsgi_mime = 'text/plain'
         wsgi_status = '400 Bad Request'

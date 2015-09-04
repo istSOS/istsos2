@@ -61,12 +61,31 @@ class wnsUsers(wnsOperation):
         for user in UsersList:
             users.append(dict(user))
 
+        self.setMessage("found [" + str(len(users)) + "] users")
         self.setData(users)
 
     def executePost(self):
         """ POST users
 
-        create a new user
+            create a new user
+
+        Examples:
+
+            {
+                "username" : "username",
+                "name": "",
+                "surname": "",
+                "email": "",
+                "twitter": "",
+                "tel":"",
+                "fax":"",
+                "address":"",
+                "zip":"",
+                "city":"",
+                "state":"",
+                "country":""
+            }
+
         """
         servicedb = databaseManager.PgDB(
             self.serviceconf.connectionWns['user'],
@@ -78,6 +97,8 @@ class wnsUsers(wnsOperation):
         json_data = self.json
         username = json_data["username"]
         email = json_data["email"]
+        name = json_data['name']
+        surname = json_data['surname']
         # optional value
         tel = json_data.get("tel", None)
         fax = json_data.get("fax", None)
@@ -88,20 +109,25 @@ class wnsUsers(wnsOperation):
         country = json_data.get("country", None)
         twitter = json_data.get("twitter", None)
 
-        sql = "INSERT INTO wns.user(username,email,twitter,tel, fax, "
-        sql += "address, zip, city, state, country)"
-        sql += " VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id;"
-        params = (username, email, twitter, tel, fax, address, zip_code, city,)
-        params += (state, country)
+        sql = "INSERT INTO wns.user(username,name,surname,email,twitter, "
+        sql += "tel, fax, address, zip, city, state, country)"
+        sql += " VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id;"
+        params = (username, name, surname, email, twitter, tel, fax, address, )
+        params += (zip_code, city, state, country)
         user_id = servicedb.execute(sql, params)[0][0]
 
-        self.setMessage(user_id)
+        self.setMessage("New user: " + str(user_id))
 
     def executePut(self):
         """ PUT user
 
         Update a existing user
         """
+
+        if not self.userid:
+            self.setException("No user id defined")
+            return
+
         servicedb = databaseManager.PgDB(
             self.serviceconf.connectionWns['user'],
             self.serviceconf.connectionWns['password'],
@@ -110,23 +136,19 @@ class wnsUsers(wnsOperation):
             self.serviceconf.connectionWns['port'])
 
         json_data = self.json
-        username = json_data["username"]
-        email = json_data["email"]
-        # optional value
-        tel = json_data.get("tel", None)
-        fax = json_data.get("fax", None)
-        address = json_data.get("address", None)
-        zip_code = json_data.get("zip", None)
-        city = json_data.get("city", None)
-        state = json_data.get("state", None)
-        country = json_data.get("country", None)
-        twitter = json_data.get("twitter", None)
 
-        sql = "UPDATE wns.user SET username=%s, email=%s, twitter=%s,"
-        sql += " tel =%s, fax= %s, address=%s, zip=%s, city=%s, state=%s,"
-        sql += "country=%s WHERE id=%s;"
-        params = (username, email, twitter, tel, fax, address, zip_code, city,)
-        params += (state, country, self.userid)
+        sql = "UPDATE wns.user SET "
+        params = ()
+
+        for key in json_data.keys():
+            sql += " " + key + "=%s,"
+            params += (json_data[key],)
+
+        sql = sql[:-1]
+
+        sql += " WHERE id=%s;"
+        params += (self.userid,)
+
         servicedb.execute(sql, params)
 
         self.setMessage("Updated user info")
