@@ -282,7 +282,7 @@ CREATE TABLE tran_log (
     count integer,
     stime_prc timestamp with time zone,
     etime_prc timestamp with time zone,
-    data json
+    data text
 );
 COMMENT ON TABLE tran_log IS 'Log table for transactional operations.';
 
