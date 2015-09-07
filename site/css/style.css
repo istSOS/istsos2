@@ -333,13 +333,16 @@ section.section {
 ============================= */
 
 #parallax1{	
-	background-image: url(../img/parallax/img1.jpg);
+	/*background-image: url(../img/parallax/img1.jpg);*/
+	background-color: #00A800;
 }
 #parallax2{	
-	background-image: url(../img/parallax/img2.jpg);
+	/*background-image: url(../img/parallax/img2.jpg);*/
+	background-color:#00A800;
 }
 #testimonials{	
-	background-image: url(../img/parallax/img333.jpg);
+	/*background-image: url(../img/parallax/img333.jpg);*/
+	background-color:#00A800;
 	/* background-size:100%; */
 	background-size: cover;
 	background-position: center center;

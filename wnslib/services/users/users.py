@@ -85,8 +85,8 @@ class wnsUsers(wnsOperation):
                 "state":"",
                 "country":""
             }
-
         """
+
         servicedb = databaseManager.PgDB(
             self.serviceconf.connectionWns['user'],
             self.serviceconf.connectionWns['password'],

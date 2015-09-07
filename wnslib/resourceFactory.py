@@ -56,7 +56,7 @@ def initResource(wnsEnviron):
         else:
             raise Exception("Resource is not identified, check the URL")
     elif resource == 'setup':
-        from wnslib.services.setup import setup
+        from wnslib import setup
         return setup.wnsSetup(wnsEnviron)
     elif resource == 'response':
         from wnslib.services.responses import responses
