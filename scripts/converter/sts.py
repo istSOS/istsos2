@@ -76,32 +76,34 @@ class StsImporter(raw2csv.Converter):
         
         # STS procedures have only one observed property
         op = self.getDefinitions()[1] 
-        
-        for line in fileObj.readlines():
+        cnt = 0
+        linetmp = ''
+        try: 
+            for line in fileObj.readlines():
+                cnt = cnt+1
+                linetmp = line
+                if line.find(skipline)>-1 or line.find('data')>-1 or len(line)==0:
+                    continue
             
-            if line.find(skipline)==0 or line.find('data')>-1:
-                continue
+                pair = line.split(";")
             
-            pair = line.split(";")
-            
-            val = {
-                op: pair[1]
-            }
-            
-            
-            data = datetime.strptime(pair[0], dateformat)
-            if "tz" in self.config:
-                data = self.getDateTimeWithTimeZone(data, self.config["tz"])
+                val = {
+                    op: pair[1]
+                }
+                        
+                data = datetime.strptime(pair[0], dateformat)
+                if "tz" in self.config:
+                    data = self.getDateTimeWithTimeZone(data, self.config["tz"])
                 
-            # Removing seconds from date
-            '''if "zerofill" in self.config:
-                if 's' in self.config['zerofill']:'''
-            data = datetime(
-                data.year, data.month, data.day, data.hour, 
-                data.minute, 0, tzinfo=data.tzinfo)
+                # Removing seconds from date
+                data = datetime(
+                    data.year, data.month, data.day, data.hour, 
+                    data.minute, 0, tzinfo=data.tzinfo)
                             
                     
-            self.setEndPosition(data)
-            self.addObservation(
-                raw2csv.Observation(data, val)
-            )
+                self.setEndPosition(data)
+                self.addObservation(
+                    raw2csv.Observation(data, val)
+                )
+        except Exception as e:
+            raise Exception("Error at row: %s:%s\n%s" % (cnt,linetmp,e))
