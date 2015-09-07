@@ -434,7 +434,7 @@ INSERT INTO obs_type (id_oty, name_oty, desc_oty) VALUES (3, 'virtual', 'virtual
 --=====================================
 -- ADDING OBSERVED PROPERTIES
 --=====================================
-/*
+INSERT INTO observed_properties VALUES ('air-temperature', 'urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature', 'air temperature at 2 meters above terrain', '{"interval": ["-40", "100"], "role": "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0"}', 1);
 INSERT INTO observed_properties VALUES ('air-rainfall', 'urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall', 'liquid precipitation or snow water equivalent', '{"role": "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0", "min": "0"}', 2);
 INSERT INTO observed_properties VALUES ('air-relative-humidity', 'urn:ogc:def:parameter:x-istsos:1.0:meteo:air:humidity:relative', 'absolute humidity relative to the maximum for that air', '{"interval": ["0", "100"], "role": "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0"}', 3);
 INSERT INTO observed_properties VALUES ('air-wind-velocity', 'urn:ogc:def:parameter:x-istsos:1.0:meteo:air:wind:velocity', 'wind speed at 1 meter above terrain', '{"role": "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0", "min": "0"}', 4);
@@ -442,13 +442,11 @@ INSERT INTO observed_properties VALUES ('solar-radiation', 'urn:ogc:def:paramete
 INSERT INTO observed_properties VALUES ('river-height', 'urn:ogc:def:parameter:x-istsos:1.0:river:water:height', '', '{"interval": ["0", "10"], "role": "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0"}', 6);
 INSERT INTO observed_properties VALUES ('river-discharge', 'urn:ogc:def:parameter:x-istsos:1.0:river:water:discharge', '', NULL, 7);
 INSERT INTO observed_properties VALUES ('soil-evapotranspiration', 'urn:ogc:def:parameter:x-istsos:1.0:meteo:soil:evapotranspiration', '', NULL, 8);
-INSERT INTO observed_properties VALUES ('air-temperature', 'urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature', 'air temperature at 2 meters above terrain', '{"interval": ["-40", "100"], "role": "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0"}', 1);
 SELECT pg_catalog.setval('obs_pr_id_opr_seq', 8, true);
 
 --=====================================
 -- ADDING UNIT OF MEASURES
 --=====================================
-
 INSERT INTO uoms VALUES ('null', '', 0);
 INSERT INTO uoms VALUES ('mm', 'millimeter', 1);
 INSERT INTO uoms VALUES ('°C', 'Celsius degree', 2);
@@ -459,6 +457,5 @@ INSERT INTO uoms VALUES ('°F', 'Fahrenheit degree', 6);
 INSERT INTO uoms VALUES ('m', 'metre', 7);
 INSERT INTO uoms VALUES ('m3/s', 'cube meter per second', 8);
 SELECT pg_catalog.setval('uoms_id_uom_seq', 8, true);
-*/
 
 """
