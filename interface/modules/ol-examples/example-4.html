@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>istSOS - Example 3</title>
+    <link rel="stylesheet" href="ol/ol.css" type="text/css">
+    <script src="ol/ol-debug.js"></script>
+    <script src="hc/jquery.min.js"></script>
+    <script src="hc/highstock.js"></script>
+    <script src="hc/exporting.js"></script>
+    <style>
+      #map {
+        width: 600px;
+        height: 400px;
+      }
+      #chart {
+        width: 600px;
+        height: 400px;
+      }
+      #details {
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <table>
+      <tr>
+        <td style='vertical-align: top;'>
+          <div id="map" class="map"></div>
+          <div id="chart"></div>
+        </td>
+        <td style='vertical-align: top;'>
+          <div id="details"></div>
+        </td>
+      <tr>
+    </table>
+    <script>
+      var map = new ol.Map({
+        layers: [
+          new ol.layer.Tile({
+            source: new ol.source.OSM()
+          }),
+          new ol.layer.Vector({
+            source: new ol.source.Vector({
+              format: new ol.format.GeoJSON(),
+              url: '../../wa/istsos/services/demo/procedures/operations/geojson?epsg=4326'
+            }),
+            style: [new ol.style.Style({
+              image: new ol.style.Circle({
+                radius: 5,
+                fill: new ol.style.Fill({color: 'green'}),
+                stroke: new ol.style.Stroke({color: 'red', width: 1})
+              })
+            })]
+          })
+        ],
+        target: 'map',
+        view: new ol.View({
+          center: [1614350, 6168773],
+          zoom: 5
+        })
+      });
+      
+      // select interaction working on "singleclick"
+      var select = new ol.interaction.Select({multi: true});
+
+      // Add the interaction to the map
+      map.addInteraction(select);
+      
+      // Listen for select event
+      select.on('select', function(e) {
+        var selected = e.selected,
+            html = '';
+        for (var c = 0, l = selected.length;c<l;c++){
+          var feature = selected[c];
+          var name = feature.getProperties().name;
+          var begin = feature.getProperties().samplingTime.beginposition;
+          var end = feature.getProperties().samplingTime.endposition;
+          html += name + "<br/><br/>" + 
+            "Begin: " + begin + "<br/>" + 
+            "End: " + end + "<br/><br/>" +
+            "Observed properties:<br/>" ;
+          html += "<ol>";
+          var from = new Date(end);
+          begin = new Date(end);
+          begin.setDate(from.getDate() - 7);
+          var op = feature.getProperties().observedproperties;
+          for (var cnt = 0; cnt < op.length; cnt++){
+              html += "<li><a href='javascript:chart(\""+name+"\",\""+begin.toISOString()+"\",\""+end+"\",\""+op[cnt].def+"\");'>" + op[cnt].name + "</a></li>";
+          }
+          html += "</ol><hr/>";
+        }
+        document.getElementById('details').innerHTML = html;
+      });
+      
+      function chart(name, begin, end, observedProperty){
+        $.getJSON('../../wa/istsos/services/demo/operations/getobservation/offerings/temporary/procedures/'+name+'/observedproperties/'+observedProperty+'/eventtime/'+begin+'/'+end, function(json) {
+        
+          //console.log(json);
+          
+          var sosData = json.data[0].result.DataArray.values;
+          var field = json.data[0].result.DataArray.field[1];
+          var data = [];
+          
+          for(var c = 0, l = sosData.length; c<l; c++){
+            var date = new Date(sosData[c][0]);
+            data.push([+date,parseFloat(sosData[c][1])]);
+          }
+          console.log(data);
+          
+          $('#chart').empty();
+          
+          $('#chart').highcharts('StockChart',{
+            rangeSelector : {
+                selected : 1
+            },
+            title : {
+                text : name
+            },
+            subtitle: {
+                text: field.definition
+            },
+            yAxis: {
+                title: {
+                    text: field.name
+                }
+            },
+            tooltip: {
+                valueDecimals: 2,
+                formatter: function() {
+                  var date = new Date(this.x);
+                  return date.toLocaleString() + "<br/>" +
+                         field.name + ": " + 
+                         this.y + ' ' + field.uom;
+                }
+            },
+            series: [{
+              name: field.name,
+              data: data,
+              labels: {
+                  formatter: function () {
+                      return this.value + " - stic";
+                  }
+              }
+            }]
+          });
+        });
+      }
+      
+    </script>
+  </body>
+</html>
