@@ -33,8 +33,8 @@ class wnsSetup(wnsOperation):
     def __init__(self, wnsEnviron):
         wnsOperation.__init__(self, wnsEnviron)
 
-    def executePost(self):
-        """ execute POST request
+    def executeGet(self):
+        """ execute GET request
         create notification.aps file
         create database schema
         """
