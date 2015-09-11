@@ -155,6 +155,27 @@ For Postgresql 9.1 and later versions:
         sudo -u postgres psql -d istsos \
           -f /usr/share/postgresql/9.1/contrib/postgis-1.5/spatial_ref_sys.sql
 
+------------------------------
+Installation using deb package
+------------------------------
+
+**1) Download istSOS package**
+
+Go to `<https://sourceforge.net/projects/istsos/files/latest/download?source=files>`_ the download of the latest deb of istSOS will start in 5 seconds, save the file in the Downloads folder in your home directory, then install executing these commands:
+
+::
+    
+    cd ~/Downloads
+    sudo dpkg -i python-istsos_<version>.deb
+    sudo apt-get -f install 
+
+This command will install all the required dependencies, with the exception of PostgreSQL and PostGIS as the database is not mandatory. In fact it could reside on other servers.
+
+
+**2) Create your PostGIS database**
+
+To install and configure the database, plese go to the 'Installation of the software on Ubuntu 14.04' paragraph and see the procedure explained at point 1, 2, and 9.
+
 --------------------------------
 Installation on windows 7 and 8
 --------------------------------
@@ -166,7 +187,7 @@ Download python 2.7 from `<https://www.python.org/downloads/>`_ and install it. 
 ::
 
     Computer > properties > advanced system settings > Environment Variables.
-    Check if the python27 exists in the variable PAth, if not add ‘;C:\Python27\’
+    Check if the python27 exists in the variable Path, if not add ‘;C:\Python27\’
 
 **2) install postgreSQL with PostGIS**
 

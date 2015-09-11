@@ -26,10 +26,10 @@ from walib import databaseManager
 
 
 class wnsSetup(wnsOperation):
-    """ Class to setup the notification system
-
-
     """
+        Class to setup the notification system
+    """
+
     def __init__(self, wnsEnviron):
         wnsOperation.__init__(self, wnsEnviron)
 
@@ -58,6 +58,18 @@ class wnsSetup(wnsOperation):
 
         sqlCommands = sqlFile.split(';')
         sqlCommands.pop()
+
+        if not self.serviceconf.connectionWns['dbname']:
+            #self.serviceconf.connectionWns = self.serviceconf.connectionWns
+            self.serviceconf.put('connectionWns', 'dbname', self.serviceconf.connection['dbname'])
+            self.serviceconf.put('connectionWns', 'host', self.serviceconf.connection['host'])
+            self.serviceconf.put('connectionWns', 'user', self.serviceconf.connection['user'])
+            self.serviceconf.put('connectionWns', 'password', self.serviceconf.connection['password'])
+            self.serviceconf.put('connectionWns', 'port', self.serviceconf.connection['port'])
+            self.serviceconf.save()
+            pass
+
+
         dbConnection = databaseManager.PgDB(
             self.serviceconf.connectionWns['user'],
             self.serviceconf.connectionWns['password'],

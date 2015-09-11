@@ -12,7 +12,6 @@ class wnsLogger(object):
 
         #TODO: try to log inside istsos logs folder
         #TODO: change new file permission
-        #errorlog_path = "/home/ist/workspace/istsos"
 
         formatter = logging.Formatter('%(asctime)-6s: %(name)s - %(levelname)s - %(message)s')
         log_filename = path.join(config.errorlog_path, "wnsnotification.log")

@@ -12,7 +12,10 @@ Loading CSV data with *csv2istsos.py*
 Using this script you should prepare ASCII files with sensor data formatted according to *text/csv;subtype=istSOS*. 
 This format is a CSV represented by a header as the first line containing the URI names of the observed properties, the following lines contains the data.
 
-Example: PROCEDURENAME_YYYYMMDDhhmmss.dat
+Example of a **text/csv;subtype=istSOS**
+
+Example: PROCEDURENAME_YYYYMMDDhhmmssfff.dat
+         T_LUGANO_20140603142000000.dat
 
 .. code-block:: rest
     
