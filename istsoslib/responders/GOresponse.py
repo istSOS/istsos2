@@ -166,7 +166,7 @@ class VirtualProcess():
                 
             self.samplingTime = (result[0],result[1])
         
-    def getData(self, procedure=None, disableAggregation=False):
+    def getData(self, procedure=None, disableAggregation=True):
         """Return the observations of associated procedure
 
 		Args:
@@ -215,8 +215,13 @@ class VirtualProcess():
         obs = Observation()
         
         obs.baseInfo(self.pgdb, result, virtualFilter.sosConfig)
-        obs.setData(self.pgdb, result, virtualFilter)
         
+        if disableAggregate:
+            virtualFilter.aggregate_function = None
+            virtualFilter.aggregate_interval = None
+            
+        obs.setData(self.pgdb, result, virtualFilter)
+            
         return obs.data
     
     def applyFunction(self):

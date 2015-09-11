@@ -387,7 +387,6 @@ class InsertObservationResponse:
                         except Exception as e:
                             com=False
                             raise e
-                            raise Exception("L: %s - %s - %s - %s") %(int(parsId[i]),int(id_et),pqi,float(filter.data[par]["vals"][ii]))
 
             #-------------------------------------
             #--insert position values if required
