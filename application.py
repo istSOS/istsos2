@@ -301,7 +301,7 @@ def executeWns(environ, start_response):
         logger.setLevel(logging.UNSET)
     #--------------------------------------------------------------------------------------
 
-    wsgi_response = "Hello istSOS WNS"
+    wsgi_response = "Hello istWNS"
     wsgi_mime = 'text/plain'
     wsgi_status = '200 OK'
 
