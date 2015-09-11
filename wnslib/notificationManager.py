@@ -237,6 +237,7 @@ def %s():
         notify['twitter']['private'] = message
         notify['mail']['subject'] = "notification from %s"
         notify['mail']['message'] = message
+        return {'message', message}
         nS.notify('%s',notify)
 
     for el in result:
