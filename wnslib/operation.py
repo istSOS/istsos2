@@ -33,8 +33,9 @@ class wnsOperation(object):
     def __init__(self, wnsEnviron, loadjson=True):
         """
         Initialize resource object
-        @param wnsEnviron: wnsEnviron variable see L(wa)
-        @type wnsEnviron: C{dictionary}
+        
+        parameters:
+            wnsEnviron (dict): wnsEnviron variable see L(wa)
         """
         self.response = {
             "success": True,
