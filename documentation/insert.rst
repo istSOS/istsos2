@@ -85,7 +85,7 @@ Even if you can use the *csv2istsos.py* script to facilitate the data loading, u
 
 To execute the XML request from the interface:
 
-    1. **Open the requests test page:** `<http://localhost/istsos/admin/requests>`_
+    1. **Open the requests test page:** `<http://localhost/istsos/modules/requests>`_
     2. **Select the desired service instance**
     3. **Choose the “POST” option**
     4. **Paste into the field the InsertObservation xml**
