@@ -282,17 +282,10 @@ def write_to_aps(name, interval, store):
 @sched.interval_schedule(minutes=%s, start_date='%s')
 def notifications_%s():
 
-    from wnslib import wnslogger
-    logger = wnslogger.wnsLogger()
     import scripts.wns.%s as %s
     try:
-        logger.logInfo("execute %s")
         res = %s.%s()
     except:
-        import sys
-        import traceback
-        logger.logError(sys.exc_info()[1])
-        logger.logError(''.join(traceback.format_tb(sys.exc_info()[2])))
         return
 
 """ % (name, interval, startDate, name, name, name, name,
