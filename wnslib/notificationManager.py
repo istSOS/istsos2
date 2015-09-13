@@ -289,7 +289,7 @@ def notifications_%s():
         return
 
 """ % (name, interval, startDate, name, name, name, name,
-                                                name, name)
+                                                name)
     )
 
     if store:
