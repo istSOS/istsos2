@@ -80,9 +80,9 @@ def ogcSpatCons2PostgisSql(ogcSpatialOperator,geomField,epsgField):
             raise sosException.SOSException("NoApplicableCode",None,"Error: srsName '%s' must be numeric!" %(epsg))
         GMLgeom = str(geometry.toxml()).replace("epsg:","EPSG:")
         if epsgField == epsg or epsg == None:
-            sql = "%s(%s,_ST_GeomFromGML('%s'),%s))" %(ogcSupportedSpatialOperators[ogcOperator],geomField,GMLgeom,epsgField)
+            sql = "%s(%s,ST_GeomFromGML('%s'),%s))" %(ogcSupportedSpatialOperators[ogcOperator],geomField,GMLgeom,epsgField)
         else:
-            sql = "%s(%s,ST_Transform(ST_Transform(_ST_GeomFromGML('%s'),%s),%s))" %(ogcSupportedSpatialOperators[ogcOperator],geomField,GMLgeom,epsg,epsgField)
+            sql = "%s(%s,ST_Transform(ST_Transform(ST_GeomFromGML('%s'),%s),%s))" %(ogcSupportedSpatialOperators[ogcOperator],geomField,GMLgeom,epsg,epsgField)
         return sql
     
     elif ogcOperator == 'ogc:BBOX':
@@ -118,9 +118,9 @@ def ogcSpatCons2PostgisSql(ogcSpatialOperator,geomField,epsgField):
             raise sosException.SOSException("NoApplicableCode",None,"Error: srsName '%s' must be numeric!" %(epsg))
         GMLgeom = str(geometry.toxml()).replace("epsg:","EPSG:")
         if epsgField == epsg or epsg == None:
-            sql = "ST_DWithin(%s,_ST_GeomFromGML('%s'),%s)" %(geomField,GMLgeom,distance)
+            sql = "ST_DWithin(%s,ST_GeomFromGML('%s'),%s)" %(geomField,GMLgeom,distance)
         else:
-            sql = "ST_DWithin(%s,ST_Transform(_ST_GeomFromGML('%s'),%s),%s)" %(geomField,GMLgeom,epsgField,distance)
+            sql = "ST_DWithin(%s,ST_Transform(ST_GeomFromGML('%s'),%s),%s)" %(geomField,GMLgeom,epsgField,distance)
         return sql
     
     elif ogcOperator in ogcUnsupportedSpatialOperators:
