@@ -37,7 +37,7 @@ def render(GC,sosConfig):
       xmlns:sml="http://www.opengis.net/sensorML/1.0.1"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.opengis.net/sos/1.0 http://schemas.opengis.net/sos/1.0.0/sosGetCapabilities.xsd"
-      version="1.0.0">'''
+      version="1.0.0">\n'''
     
     if not GC.ServiceIdentifier==[]:
         r += "  <!--~~~~~~~~~~~~~~~~~~~~~~~~-->\n"
