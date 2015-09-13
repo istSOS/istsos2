@@ -22,7 +22,7 @@
 #===============================================================================
 from os import path
 from walib import configManager
-import os
+import os, sys
 
 defaultCFGpath = path.join(path.dirname(path.split(path.abspath(__file__))[0]),
                                          "services/default.cfg")
@@ -173,45 +173,47 @@ def createSimpleNotification(name, service, params, cql, interval,
                 value (latest, max of aggregation, etc..)
         cql = cql condition to be verified (e.g.: >40)
 """
-    import json
+    import traceback
+    try:
+        import json
 
-    rparams = {
-        "request": "GetObservation",
-        "service": "SOS",
-        "version": "1.0.0",
-        "observedProperty": params['observedProperty'],
-        "responseFormat": "application/json",
-        "offering": params['offering']
-    }
+        rparams = {
+            "request": "GetObservation",
+            "service": "SOS",
+            "version": "1.0.0",
+            "observedProperty": params['observedProperty'],
+            "responseFormat": "application/json",
+            "offering": params['offering']
+        }
 
-    if "procedure" in params:
-        rparams['procedure'] = params["procedure"]
+        if "procedure" in params:
+            rparams['procedure'] = params["procedure"]
 
-    if period:
-        config = """
-    import datetime
-    import time
-    import lib.isodate as isodate
-    from lib.pytz import timezone
-    now = datetime.datetime.now().replace(tzinfo=timezone(time.tzname[0]))
-    endDate = now.strftime('%%Y-%%m-%%dT%%H:%%M:%%S%%z')
-    period = isodate.parse_duration('%s')
-    eventTime = now - period #datetime.timedelta(hours=)
-    startDate = eventTime.strftime('%%Y-%%m-%%dT%%H:%%M:%%S%%z')
+        if period:
+            config = """
+        import datetime
+        import time
+        import lib.isodate as isodate
+        from lib.pytz import timezone
+        now = datetime.datetime.now().replace(tzinfo=timezone(time.tzname[0]))
+        endDate = now.strftime('%%Y-%%m-%%dT%%H:%%M:%%S%%z')
+        period = isodate.parse_duration('%s')
+        eventTime = now - period #datetime.timedelta(hours=)
+        startDate = eventTime.strftime('%%Y-%%m-%%dT%%H:%%M:%%S%%z')
 
-    rparams = %s
-    rparams['eventTime'] = str(startDate) + "/" +str(endDate)
+        rparams = %s
+        rparams['eventTime'] = str(startDate) + "/" +str(endDate)
 
-""" % (period, json.dumps(rparams))
-    else:
-        config = """
-    rparams = %s
-""" % json.dumps(rparams)
+    """ % (period, json.dumps(rparams))
+        else:
+            config = """
+        rparams = %s
+    """ % json.dumps(rparams)
 
-    link = serviceconf.serviceurl["url"].replace('test', '')
-    link += service
+        link = serviceconf.serviceurl["url"].replace('test', '')
+        link += service
 
-    code_string = """
+        code_string = """
 def %s():
     %s
     import lib.requests as requests
@@ -228,6 +230,9 @@ def %s():
         "mail": {
             "subject": "",
             "message": ""
+        },
+        "alert":{
+            "message": ""
         }
     }
 
@@ -237,27 +242,33 @@ def %s():
         notify['twitter']['private'] = message
         notify['mail']['subject'] = "notification from %s"
         notify['mail']['message'] = message
+        notify['alert']['message'] = message
         return {'message', message}
         nS.notify('%s',notify)
 
     for el in result:
         if float(el[1]) %s:
 
-            message = 'Condition met on the requested notification\\nDate: '
-            message += str(el[0]) + '\\nCondition: ' + str(el[1]) + '%s'
+            message = 'Notification - Date: '
+            message += str(el[0]) + ' - Condition: ' + str(el[1]) + '%s'
             notify['twitter']['public'] = message
             notify['twitter']['private'] = message
             notify['mail']['subject'] = "notification from %s"
             notify['mail']['message'] = message
+            notify['alert']['message'] = message
             nS.notify('%s',notify)
             return {'message' : message}
             """ % (name, config, link, name, name,
-         cql, name, name, name)
+             cql, name, name, name)
 
-    # create script file
-    write_script_file(code_string, name)
+        # create script file
+        write_script_file(code_string, name)
 
-    write_to_aps(name, interval, store)
+        write_to_aps(name, interval, store)
+    except Exception as e:
+        print >> sys.stderr, traceback.print_exc()
+        raise e
+        
 
 
 def write_to_aps(name, interval, store):

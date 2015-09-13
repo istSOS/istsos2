@@ -32,11 +32,16 @@ class Notify(object):
     def __init__(self, serviceconfig):
         self.serviceconfig = serviceconfig
         twitter_conf = self.serviceconfig.twitter
-        self.twitter_api = twitter.Api(
+        if twitter_conf['consumer_key']:
+            self.twitter_api = twitter.Api(
                             consumer_key=twitter_conf['consumer_key'],
                             consumer_secret=twitter_conf['consumer_secret'],
                             access_token_key=twitter_conf['oauth_token'],
                             access_token_secret=twitter_conf['oauth_secret'])
+
+    def alert(self, message):
+        from easygui import msgbox
+        textbox(message)
 
     def email(self, message, to):
         """Send notification via mail
@@ -57,6 +62,8 @@ class Notify(object):
             print "please define a email text"
             return
 
+
+	
         import smtplib
         from email.MIMEMultipart import MIMEMultipart
         from email.MIMEText import MIMEText
@@ -71,14 +78,20 @@ class Notify(object):
 
         part = MIMEText(message['message'], 'plain')
         msg.attach(part)
-
-        mailServer = smtplib.SMTP("smtp.gmail.com", 587)
-        mailServer.ehlo()
-        mailServer.starttls()
-        mailServer.ehlo()
-        mailServer.login(mail_usr, mail_pwd)
-        mailServer.sendmail(mail_usr, to, msg.as_string())
-        mailServer.quit()
+        try:
+            #mailServer = smtplib.SMTP("smtp.gmail.com", 587)
+            mailServer = smtplib.SMTP("smtp.ti-edu.ch", 587)
+            mailServer.ehlo()
+            mailServer.starttls()
+            mailServer.ehlo()
+            mailServer.login(mail_usr, mail_pwd)
+            mailServer.sendmail(mail_usr, to, msg.as_string())
+            mailServer.quit()
+            print 'successfully sent the mail'
+        except Exception as e:
+            print 'failed to send mail'
+            print e
+        
 
     def post_twitter_status(self, message, name):
         """Update status twitter
