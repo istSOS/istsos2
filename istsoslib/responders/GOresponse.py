@@ -216,7 +216,7 @@ class VirtualProcess():
         
         obs.baseInfo(self.pgdb, result, virtualFilter.sosConfig)
         
-        if disableAggregate:
+        if disableAggregation:
             virtualFilter.aggregate_function = None
             virtualFilter.aggregate_interval = None
             
