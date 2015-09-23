@@ -923,16 +923,49 @@ class Observation:
             #--------- APPEND DATA IN ARRAY -----
             #------------------------------------            
             #append data
-            for line in data_res:
-                if self.procedureType=="insitu-fixed-point":
-                    data_array = [line["t"]]
-                elif self.procedureType=="insitu-mobile-point":
-                    if self.qualityIndex==True:
-                        data_array = [line["t"],line["x"],line["y"],line["z"],line["posqi"]]
-                    else:
-                        data_array = [line["t"],line["x"],line["y"],line["z"]]
-                data_array.extend([line[field] for field in valeFieldName])
-                self.data.append(data_array)
+            if filter.qualityFilter == False:
+                for line in data_res:
+                    if self.procedureType=="insitu-fixed-point":
+                        data_array = [line["t"]]
+                    elif self.procedureType=="insitu-mobile-point":
+                        if self.qualityIndex==True:
+                            data_array = [line["t"],line["x"],line["y"],line["z"],line["posqi"]]
+                        else:
+                            data_array = [line["t"],line["x"],line["y"],line["z"]]
+                    data_array.extend([line[field] for field in valeFieldName])
+                    self.data.append(data_array)
+            else:
+                #import sys
+                #print >> sys.stderr, "---------------------------------"
+                for line in data_res:
+                    if self.procedureType=="insitu-fixed-point":
+                        qis = line[2::2]
+                        data_array = [line["t"]]
+                    elif self.procedureType=="insitu-mobile-point":
+                        if self.qualityIndex==True:
+                            qis = line[4::2]
+                            data_array = [line["t"],line["x"],line["y"],line["z"],line["posqi"]]
+                    #print >> sys.stderr, qis
+                    if filter.qualityFilter[0]=='<' and not max(qis)<filter.qualityFilter[1]:
+                        #print >> sys.stderr, " not < %s" % max(qis)
+                        continue
+                    elif filter.qualityFilter[0]=='>' and not min(qis)>filter.qualityFilter[1]:
+                        #print >> sys.stderr, " not > %s" % min(qis)
+                        continue
+                    elif filter.qualityFilter[0]=='>=' and not min(qis)>=filter.qualityFilter[1]:
+                        #print >> sys.stderr, " not >= %s" % min(qis)
+                        continue
+                    elif filter.qualityFilter[0]=='<=' and not max(qis)<=filter.qualityFilter[1]:
+                        #print >> sys.stderr, " not <= %s" % max(qis)
+                        continue
+                    elif filter.qualityFilter[0]=='=' and not filter.qualityFilter[1] in qis:
+                        #print >> sys.stderr, " not = %s" % qis
+                        continue
+                    #else:
+                    #    print >> sys.stderr, " ELSE"
+
+                    data_array.extend([line[field] for field in valeFieldName])
+                    self.data.append(data_array)
             
         #-----------------------------------------                
         #CASE "virtual"

@@ -24,6 +24,7 @@ from istsoslib.filters import filter as f
 from istsoslib import sosException, sosUtils
 from lib import isodate as iso
 from filter_utils import get_name_from_urn
+import sys
 
 class sosGOfilter(f.sosFilter):
     """filter object for a GetObservations request
@@ -48,6 +49,7 @@ class sosGOfilter(f.sosFilter):
         aggregate_function (str): the function to use for aggregation (one of: "AVG","COUNT","MAX","MIN","SUM")
         aggregate_nodata_qi (str): the quality index value to use for representing no data in aggregated time serie
         qualityIndex (bool): if the quality index shall be returned (*True*) or not (*False*)
+        qualityFilter (str): CQL-like filter on quality index (>200 returns all the records with all QI greater then 200)
 
     """
     def __init__(self,sosRequest,method,requestObject,sosConfig):
@@ -245,6 +247,30 @@ class sosGOfilter(f.sosFilter):
                     raise sosException.SOSException("InvalidParameterValue","qualityIndex","qualityIndex can only be True or False!")
                 #    self.qualityIndex = sosUtils.CQLvalueFilter2PostgisSql("id_qi_fk",requestObject["qualityIndex"])
 
+            #------------ QUALITY INDEX FILTERING
+            self.qualityFilter=False
+            #import sys
+            #print >> sys.stderr, "**************************"
+            #print >> sys.stderr, requestObject
+            if requestObject.has_key("qualityfilter"):
+                #print >> sys.stderr, " > qualityFilter is set"
+                if len(requestObject["qualityfilter"])>=2:
+                    try:
+                        if requestObject["qualityfilter"][0:2]=='<=' or requestObject["qualityfilter"][0:2]=='>=':
+                            self.qualityFilter = (requestObject["qualityfilter"][0:2],float(requestObject["qualityfilter"][2:]))
+                        elif (requestObject["qualityfilter"][0]=='>' or 
+                                requestObject["qualityfilter"][0]=='=' or
+                                requestObject["qualityfilter"][0]=='<'):
+                            self.qualityFilter = (requestObject["qualityfilter"][0],float(requestObject["qualityfilter"][1:]))   
+                            
+                        # If qualityFilter is defined qualityIndex are automatically returned
+                        self.qualityIndex=True    
+                        #print >> sys.stderr, self.qualityFilter         
+                    except ValueError as ve:
+                        raise sosException.SOSException("InvalidParameterValue","qualityFilter","invalid quality index value in qualityFilter")
+                else:
+                    raise sosException.SOSException("InvalidParameterValue","qualityFilter","qualityFilter operator can only be in ['<','>','<=','>=','=']")
+                  
 
 
         #**********************
