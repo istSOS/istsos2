@@ -100,7 +100,8 @@ And add the following lines just before the last VirtualHost  tag:
 	    #Include conf-available/serve-cgi-bin.conf
 
            WSGIScriptAlias /istsos /usr/local/istsos/application.py
-           Alias /istsos/admin /usr/local/istsos/interface
+           Alias /istsos/admin /usr/local/istsos/interface/admin
+           Alias /istsos/modules /usr/local/istsos/interface/modules
     </VirtualHost> 
 
 .. warning::
@@ -118,7 +119,8 @@ And add the following lines just before the last VirtualHost  tag:
         
         [...]
                WSGIScriptAlias /istsos /usr/local/istsos/application.py
-               Alias /istsos/admin /usr/local/istsos/interface
+               Alias /istsos/admin /usr/local/istsos/interface/admin
+               Alias /istsos/modules /usr/local/istsos/interface/modules
                <LocationMatch /istsos>
                    Options +Indexes +FollowSymLinks +MultiViews
                    AllowOverride all
@@ -239,14 +241,12 @@ Open conf/extra/httpd-vhosts.conf, delete the two examples of <VirtualHost> and 
 
     <VirtualHost *:80>
             ServerAdmin webmaster@localhost
-            #DocumentRoot "C:/istsos/interface"
             DocumentRoot "C:/Apache2/htdocs"
             <Directory />
                     Options FollowSymLinks
                     AllowOverride None
             </Directory>
 
-            #<Directory C:/istsos/interface/>
             <Directory C:/Apache2/htdocs/>
                     Options Indexes FollowSymLinks MultiViews
                     AllowOverride None
@@ -283,7 +283,8 @@ Open conf/extra/httpd-vhosts.conf, delete the two examples of <VirtualHost> and 
                     Deny from all
                     Allow from 127.0.0.1
             </Location>
-            Alias /istsos/admin "c:/istsos/interface"
+            Alias /istsos/admin "c:/istsos/interface/admin"
+            Alias /istsos/modules "c:/istsos/interface/modules"
     </VirtualHost>
 
 **8) restart Apache 2.2**
