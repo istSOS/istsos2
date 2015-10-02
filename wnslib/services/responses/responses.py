@@ -55,7 +55,7 @@ class wnsResponses(wnsOperation):
 
         try:
             result = servicedb.execute(sql, par)
-        except: psycopg2.Error as e:
+        except psycopg2.Error as e:
             self.setException(e.pgerror)
             return
 

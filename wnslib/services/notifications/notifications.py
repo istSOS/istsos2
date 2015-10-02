@@ -150,13 +150,6 @@ class wnsNotifications(wnsOperation):
             sql = "UPDATE wns.notification SET description = %s "
             params = (description,)
 
-            if interval:
-                if not self.json.get("function") and not self.json.get("params"):
-                    self.setException("Please define a function path")
-                    return
-                sql += ", interval = %s "
-                params += (interval, )
-
             sql += " WHERE id=%s RETURNING *"
             params += (self.not_id,)
 
@@ -168,7 +161,7 @@ class wnsNotifications(wnsOperation):
                 return
         else:
             sql = "SELECT * FROM wns.notification WHERE id=%s"
-            params = (self.not_id)
+            params = (self.not_id,)
 
             try:
                 row = servicedb.executeInTransaction(sql, params)
@@ -215,7 +208,21 @@ class wnsNotifications(wnsOperation):
                     if description:
                         servicedb.rollbackTransaction()
                     return
+
             if description:
+                servicedb.commitTransaction()
+            else:
+                sql = "UPDATE wns.notification SET interval = %s, store = %s"
+                sql += " WHERE id=%s"
+
+                params = (interval, store, self.not_id)
+
+                try:
+                    servicedb.executeInTransaction(sql, params)
+                except psycopg2.Error as e:
+                    self.setException(e.pgerror)
+                    servicedb.rollbackTransaction()
+
                 servicedb.commitTransaction()
 
         except Exception, e:
