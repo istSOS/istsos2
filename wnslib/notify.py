@@ -38,9 +38,11 @@ class Notify(object):
                             consumer_secret=twitter_conf['consumer_secret'],
                             access_token_key=twitter_conf['oauth_token'],
                             access_token_secret=twitter_conf['oauth_secret'])
+        else:
+            self.twitter_api = None
 
     def alert(self, message):
-        from easygui import msgbox
+        from easygui import textbox
         textbox(message)
 
     def email(self, message, to):
@@ -62,14 +64,14 @@ class Notify(object):
             print "please define a email text"
             return
 
-
-	
         import smtplib
         from email.MIMEMultipart import MIMEMultipart
         from email.MIMEText import MIMEText
 
         mail_usr = self.serviceconfig.mail['usermail']
         mail_pwd = self.serviceconfig.mail['password']
+        smtp_server = self.serviceconfig.mail['smtp']
+        port = self.serviceconfig.mail['port']
 
         msg = MIMEMultipart('alternative')
         msg['Subject'] = message['subject']
@@ -79,8 +81,7 @@ class Notify(object):
         part = MIMEText(message['message'], 'plain')
         msg.attach(part)
         try:
-            #mailServer = smtplib.SMTP("smtp.gmail.com", 587)
-            mailServer = smtplib.SMTP("smtp.ti-edu.ch", 587)
+            mailServer = smtplib.SMTP(smtp_server, port)
             mailServer.ehlo()
             mailServer.starttls()
             mailServer.ehlo()
@@ -91,7 +92,6 @@ class Notify(object):
         except Exception as e:
             print 'failed to send mail'
             print e
-        
 
     def post_twitter_status(self, message, name):
         """Update status twitter
@@ -100,6 +100,10 @@ class Notify(object):
             message: tweet to send (remember max 140 char)
             name: name of the notification (to create hashtag)
         """
+
+        if not self.twitter_api:
+            print "please define a twitter account to update status"
+
         # Update Status
         if not 'public' in message.keys():
             print "please define a twitter public message"
@@ -131,6 +135,10 @@ class Notify(object):
             to: user twitter_id
             name: name of the notification (to create hashtag)
         """
+
+        if not self.twitter_api:
+            print "please define a twitter account to send private message"
+
         if not 'private' in message.keys():
             print "please define a twitter public message"
             return

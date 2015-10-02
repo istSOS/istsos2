@@ -22,15 +22,15 @@
 #===============================================================================
 from os import path
 from walib import configManager
-import os, sys
+import os
+import sys
 
-defaultCFGpath = path.join(path.dirname(path.split(path.abspath(__file__))[0]),
-                                         "services/default.cfg")
+import config
+
+defaultCFGpath = path.join(config.services_path, "default.cfg")
 serviceconf = configManager.waServiceConfig(defaultCFGpath)
-services_path = path.join(path.dirname(path.split(path.abspath(__file__))[0]),
-                                             "services/notifications.aps")
-wns_script_path = path.join(path.dirname(path.split(path.abspath(__file__))[0]),
-                                             "scripts/wns/")
+services_path = path.join(config.services_path, "notifications.aps")
+wns_script_path = path.join(config.scripts_path, "wns")
 
 
 def delNotification(name):
@@ -268,7 +268,6 @@ def %s():
     except Exception as e:
         print >> sys.stderr, traceback.print_exc()
         raise e
-        
 
 
 def write_to_aps(name, interval, store):
@@ -330,7 +329,9 @@ def write_script_file(code, name):
         name (String): name of the function
 
     """
-    script = open(wns_script_path + name + ".py", 'w')
+
+    function_path = path.join(wns_script_path, name + ".py")
+    script = open(function_path, 'w')
     script.write(code)
     script.close()
 

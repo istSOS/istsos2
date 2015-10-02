@@ -24,6 +24,8 @@ from os import path
 services_path = path.join(path.dirname(path.abspath(__file__)), "services")
 istsoslib_path = path.join(path.dirname(path.abspath(__file__)), "istsoslib")
 istsoswalib_path = path.join(path.dirname(path.abspath(__file__)), "walib")
+istsoswnslib_path = path.join(path.dirname(path.abspath(__file__)), "wnslib")
+scripts_path = path.join(path.dirname(path.abspath(__file__)), "scripts")
 errorlog_path = path.join(path.dirname(path.abspath(__file__)), "logs")
 errorlog_level = "INFO"
 debug=False

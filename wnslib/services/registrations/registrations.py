@@ -23,6 +23,8 @@
 from walib import databaseManager
 from wnslib.operation import wnsOperation
 
+import psycopg2
+
 
 class wnsRegistrations(wnsOperation):
     """ Class to manage user subscription to notification
@@ -85,18 +87,17 @@ class wnsRegistrations(wnsOperation):
             params += (self.notification, )
 
         NotificationList = servicedb.select(sql, params)
-        RegistrationsList = {}
+        RegistrationsList = []
 
+        #TODO: Better message
         for el in NotificationList:
             el = dict(el)
-            del el['id']
-            user_id = el['user_id_fk']
+            del el['not_id_fk']
             del el['user_id_fk']
-            if not(user_id in RegistrationsList):
-                RegistrationsList[user_id] = [dict(el)]
-            else:
-                RegistrationsList[user_id].append(dict(el))
 
+            RegistrationsList.append(dict(el))
+
+        self.setMessage("Notification subscription for user: " + self.user_id)
         self.setData(RegistrationsList)
 
     def executePost(self):
@@ -121,12 +122,30 @@ class wnsRegistrations(wnsOperation):
             return
 
         if self.user_id and self.notification:
+
+            # Check notification type
+            for noti in not_list:
+                if noti == "mail" or noti == "email":
+                    if not self.serviceconf.mail['usermail']:
+                        self.setException("Cannot subscribe via email")
+                        return
+                if noti == "twitter":
+                    if not self.serviceconfig.twitter['consumer_key']:
+                        self.setException("Cannot subscribe via twitter")
+
             sql = """INSERT INTO wns.registration (user_id_fk, not_id_fk,
                             not_list) VALUES (%s,%s, %s);"""
             par = [self.user_id, self.notification, not_list]
 
-            servicedb.execute(sql, par)
-            self.setMessage('OK')
+            try:
+                servicedb.execute(sql, par)
+            except psycopg2.Error as e:
+                self.setException(e.pgerror)
+                return
+
+            message = 'User ' + self.user_id + ' subscribed to notification '
+            message += str(self.notification)
+            self.setMessage(message)
             return
         else:
             self.setException("Please defien user and notification")
@@ -150,20 +169,34 @@ class wnsRegistrations(wnsOperation):
             return
 
         if self.user_id and self.notification:
+
+            # Check notification type
+            for noti in not_list:
+                if noti == "mail" or noti == "email":
+                    if not self.serviceconf.mail['usermail']:
+                        self.setException("Cannot subscribe via email")
+                        return
+                if noti == "twitter":
+                    if not self.serviceconfig.twitter['consumer_key']:
+                        self.setException("Cannot subscribe via twitter")
+
             sql = """UPDATE wns.registration SET not_list=%s
                      WHERE user_id_fk=%s AND not_id_fk=%s;"""
             par = [not_list, self.user_id, self.notification]
-            servicedb.execute(sql, par)
-            self.setMessage('OK')
-            return
+            try:
+                servicedb.execute(sql, par)
+            except psycopg2.Error as e:
+                self.setException(e.pgerror)
+                return
+
+            self.setMessage('Update subscription')
+
         else:
             self.setException("Please defien user and notification")
 
     def executeDelete(self):
         """ DELETE subscription
-
         delete user from notification alert
-
         """
         servicedb = databaseManager.PgDB(
             self.serviceconf.connectionWns['user'],
@@ -176,7 +209,15 @@ class wnsRegistrations(wnsOperation):
             sql = """DELETE FROM wns.registration
                     WHERE user_id_fk = %s AND not_id_fk = %s;"""
             par = [self.user_id, self.notification]
-            servicedb.execute(sql, par)
-            self.setMessage('OK')
+            try:
+                servicedb.execute(sql, par)
+            except psycopg2.Error as e:
+                self.setException(e.pgerror)
+                return
+
+            message = "User" + self.user_id
+            message += ' unsubscribed from notification ' + self.notification
+
+            self.setMessage(message)
         else:
             self.setException('Please define a user_id and a notification_id')

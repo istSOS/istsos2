@@ -22,6 +22,7 @@
 # ===============================================================================
 from wnslib.operation import wnsOperation
 from walib import databaseManager
+import psycopg2
 
 
 class wnsUsers(wnsOperation):
@@ -112,11 +113,16 @@ class wnsUsers(wnsOperation):
         sql = "INSERT INTO wns.user(username,name,surname,email,twitter, "
         sql += "tel, fax, address, zip, city, state, country)"
         sql += " VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id;"
+
         params = (username, name, surname, email, twitter, tel, fax, address, )
         params += (zip_code, city, state, country)
-        user_id = servicedb.execute(sql, params)[0][0]
+        try:
+            user_id = servicedb.execute(sql, params)[0][0]
+        except psycopg2.Error as e:
+            self.setException(e.pgerror)
+            return
 
-        self.setMessage("New user: " + str(user_id))
+        self.setMessage("New user id: " + str(user_id))
 
     def executePut(self):
         """ PUT user
@@ -149,7 +155,11 @@ class wnsUsers(wnsOperation):
         sql += " WHERE id=%s;"
         params += (self.userid,)
 
-        servicedb.execute(sql, params)
+        try:
+            servicedb.execute(sql, params)
+        except psycopg2.Error as e:
+            self.setException(e.pgerror)
+            return
 
         self.setMessage("Updated user info")
 
@@ -168,7 +178,12 @@ class wnsUsers(wnsOperation):
         if self.userid:
             sql = "DELETE FROM wns.user WHERE id=%s;"
             par = [self.userid]
-            servicedb.execute(sql, par)
-            self.setMessage('OK')
+            try:
+                servicedb.execute(sql, par)
+            except psycopg2.Error as e:
+                self.setException(e.pgerror)
+                return
+
+            self.setMessage('User deleted')
         else:
             self.setException("Please define a user id!!!")

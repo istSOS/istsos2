@@ -23,8 +23,9 @@
 from os import path
 from walib import configManager
 
-defaultCFGpath = path.join(path.dirname(path.split(path.abspath(__file__))[0]),
-                                         "services/default.cfg")
+import config
+
+defaultCFGpath = path.join(config.services_path, "default.cfg")
 serviceconf = configManager.waServiceConfig(defaultCFGpath)
 
 
@@ -55,6 +56,7 @@ def notify(name, message, status=True):
     usersList = dbConnection.select(sql, params)
 
     notifier = notify.Notify(serviceconf)
+
     if status:
         try:
             notifier.post_twitter_status(message['twitter'], name)
@@ -68,20 +70,21 @@ def notify(name, message, status=True):
         contact = dict(dbConnection.select(sql, par)[0])
 
         for con in user['not_list']:
-            
-            if con == 'alert':s
+
+            if con == 'alert':
                 notifier.alert(message['alert'])
-            
+
             if con == 'mail' or con == 'email':
                 if 'mail' in message.keys():
                     notifier.email(message['mail'], contact['email'])
-            
+
             elif con == 'twitter':
                 if 'twitter' in message.keys() and 'twitter' in contact.keys():
                     notifier.twitter(message['twitter'],
                                                 contact['twitter'], name)
+
             elif con == 'fax':
                 notifier.fax(message, contact['fax'], name)
-            
+
             elif con == 'sms':
                 notifier.sms(message, contact['tel'], name)

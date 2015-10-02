@@ -32,9 +32,6 @@ def initResource(wnsEnviron):
     pathinfo.pop(0)
     resource = pathinfo.pop(0)
 
-    #print >> sys.stderr, pathinfo
-    #print >> sys.stderr, resource
-
     if resource == 'user':
         if len(pathinfo) <= 1:
             from wnslib.services.users import users
@@ -49,14 +46,13 @@ def initResource(wnsEnviron):
                 raise Exception("Resource is not identified, check the URL")
 
     elif resource == 'notification':
-        print >> sys.stderr, "Notifcation request"
         if len(pathinfo) <= 1:
             from wnslib.services.notifications import notifications
             return notifications.wnsNotifications(wnsEnviron)
         else:
             raise Exception("Resource is not identified, check the URL")
     elif resource == 'setup':
-        from wnslib import setup
+        from wnslib.services.setup import setup
         return setup.wnsSetup(wnsEnviron)
     elif resource == 'response':
         from wnslib.services.responses import responses

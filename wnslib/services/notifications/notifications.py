@@ -23,6 +23,7 @@
 from wnslib.operation import wnsOperation
 from walib import databaseManager
 import sys
+import psycopg2
 
 
 class wnsNotifications(wnsOperation):
@@ -82,18 +83,23 @@ class wnsNotifications(wnsOperation):
         description = self.json["description"]
         interval = self.json["interval"]
         not_id = None
+        store = self.json.get("store", False)
 
-        sql = """INSERT INTO wns.notification (name, description, interval)
-                        VALUES (%s,%s, %s) RETURNING id;"""
-        par = [name, description, interval]
-        not_id = servicedb.executeInTransaction(sql, par)[0][0]
+        sql = """INSERT INTO wns.notification (name, description,
+                        interval, store) VALUES (%s,%s, %s, %s) RETURNING id;"""
+        par = [name, description, interval, store]
+        try:
+            not_id = servicedb.executeInTransaction(sql, par)[0][0]
+        except psycopg2.Error as e:
+            self.setException(e.pgerror)
+            servicedb.rollbackTransaction()
+            return
 
         if not not_id:
             self.setException('Exception while creating a new notification')
             return
         try:
             from wnslib import notificationManager as notManager
-            store = self.json.get("store", False)
             if "params" in self.json.keys():
                 params = self.json["params"]
                 condition = self.json["condition"]
@@ -118,8 +124,10 @@ class wnsNotifications(wnsOperation):
             self.setException(msg)
             servicedb.rollbackTransaction()
             return
+
         servicedb.commitTransaction()
-        self.setMessage(not_id)
+        self.setMessage(
+                    "New notifcation added, notification id: " + str(not_id))
 
     def executePut(self):
         """ PUT notification
@@ -130,38 +138,52 @@ class wnsNotifications(wnsOperation):
         interval = self.json.get("interval", None)
 
         from wnslib import notificationManager as notManager
-
-        if description:
-            servicedb = databaseManager.PgDB(
+        servicedb = databaseManager.PgDB(
                 self.serviceconf.connectionWns['user'],
                 self.serviceconf.connectionWns['password'],
                 self.serviceconf.connectionWns['dbname'],
                 self.serviceconf.connectionWns['host'],
                 self.serviceconf.connectionWns['port'])
 
+        if description:
+
             sql = "UPDATE wns.notification SET description = %s "
             params = (description,)
 
             if interval:
-                if not self.json.get("function"):
+                if not self.json.get("function") and not self.json.get("params"):
                     self.setException("Please define a function path")
                     return
                 sql += ", interval = %s "
                 params += (interval, )
 
-            sql += " WHERE id=%s;"
-
+            sql += " WHERE id=%s RETURNING *"
             params += (self.not_id,)
-            servicedb.executeInTransaction(sql, params)
 
-        if not self.json.get("params") or not self.json.get("function"):
+            try:
+                row = servicedb.executeInTransaction(sql, params)
+            except psycopg2.Error as e:
+                self.setException(e.pgerror)
+                servicedb.rollbackTransaction()
+                return
+
+        if not self.json.get("params") and not self.json.get("function"):
             self.setMessage("Updated notifcation description")
             servicedb.commitTransaction()
             return
 
+        if self.json.get('params') and self.json.get('function'):
+            self.setException("What?!?!")
+            servicedb.rollbackTransaction()
+            return
+
         try:
-            name = self.json["name"]
-            interval = self.json["interval"]
+            interval = self.json.get("interval", row[0][3])
+            name = row[0][1]
+            store = self.json.get("store", row[0][4])
+
+            # Delete old notification function
+            notManager.delNotification(name)
 
             if "params" in self.json.keys():
                 print >> sys.stderr, "simpleNot"
@@ -171,11 +193,13 @@ class wnsNotifications(wnsOperation):
                 period = self.json.get("period", None)
 
                 notManager.createSimpleNotification(name, service, params,
-                                            condition, interval, period)
+                                            condition, interval, period, store)
             else:
                 print >> sys.stderr, "Notification"
-                funcFile = self.json["function"]
-                msg = notManager.addNotification(name, funcFile, interval)
+                function_path = self.json["function"]
+                msg = notManager.addNotification(name, function_path,
+                                                        interval, store)
+
                 if msg:
                     self.setException(msg)
                     if description:
@@ -183,8 +207,6 @@ class wnsNotifications(wnsOperation):
                     return
             if description:
                 servicedb.commitTransaction()
-            # Delete old notification function
-            notManager.delNotification(name)
 
         except Exception, e:
             msg = "The following error occoured: " + str(e)
@@ -194,7 +216,7 @@ class wnsNotifications(wnsOperation):
             self.setException(msg)
             return
 
-        self.setMessage("Notification updated")
+        self.setMessage("Notification " + name + " updated")
 
     def executeDelete(self):
         """DELETE notification
@@ -218,7 +240,7 @@ class wnsNotifications(wnsOperation):
             if notname:
                 notManager.delNotification(notname)
                 servicedb.commitTransaction()
-                self.setMessage('OK')
+                self.setMessage('Notifcation ' + notname + ' deleted')
             else:
                 servicedb.rollbackTransaction()
                 self.setException("Canno't delete the notifcation")

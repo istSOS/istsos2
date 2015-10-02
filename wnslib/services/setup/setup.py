@@ -21,8 +21,11 @@
 #
 # ===============================================================================
 from os import path
-from wnslib.operation import wnsOperation
 from walib import databaseManager
+import config
+
+from wnslib.operation import wnsOperation
+from wnslib import sqlschema
 
 
 class wnsSetup(wnsOperation):
@@ -38,11 +41,10 @@ class wnsSetup(wnsOperation):
         create notification.aps file
         create database schema
         """
-        directory = path.dirname(path.split(path.abspath(__file__))[0])
-        services_dir = path.join(directory, "services")
-        wns_dir = path.join(directory, "wnslib")
-        sql_dir = path.join(wns_dir, "dbSetup.sql")
+        services_dir = config.services_path
         aps_dir = path.join(services_dir, "notifications.aps")
+
+        #print "Service path: ", services_dir
 
         import datetime
         now = datetime.datetime.now()
@@ -52,23 +54,19 @@ class wnsSetup(wnsOperation):
         aps.write("### CREATED ON " + str(startDate) + " ###")
         aps.close()
 
-        db = open(sql_dir, 'r')
-        sqlFile = db.read()
-        db.close()
-
-        sqlCommands = sqlFile.split(';')
-        sqlCommands.pop()
-
         if not self.serviceconf.connectionWns['dbname']:
-            #self.serviceconf.connectionWns = self.serviceconf.connectionWns
-            self.serviceconf.put('connectionWns', 'dbname', self.serviceconf.connection['dbname'])
-            self.serviceconf.put('connectionWns', 'host', self.serviceconf.connection['host'])
-            self.serviceconf.put('connectionWns', 'user', self.serviceconf.connection['user'])
-            self.serviceconf.put('connectionWns', 'password', self.serviceconf.connection['password'])
-            self.serviceconf.put('connectionWns', 'port', self.serviceconf.connection['port'])
+            #Copy connection params to connectionWns
+            self.serviceconf.put('connectionWns', 'dbname',
+                                self.serviceconf.connection['dbname'])
+            self.serviceconf.put('connectionWns', 'host',
+                                self.serviceconf.connection['host'])
+            self.serviceconf.put('connectionWns', 'user',
+                                self.serviceconf.connection['user'])
+            self.serviceconf.put('connectionWns', 'password',
+                                self.serviceconf.connection['password'])
+            self.serviceconf.put('connectionWns', 'port',
+                                self.serviceconf.connection['port'])
             self.serviceconf.save()
-            pass
-
 
         dbConnection = databaseManager.PgDB(
             self.serviceconf.connectionWns['user'],
@@ -77,7 +75,8 @@ class wnsSetup(wnsOperation):
             self.serviceconf.connectionWns['host'],
             self.serviceconf.connectionWns['port'])
 
-        dbConnection.execute(sqlFile)
+        dbConnection.execute(sqlschema.wnsschema)
+
         msg = "Notification.aps file created in %s " % services_dir
         msg += "\nDatabase schema WNS correctly created"
 
