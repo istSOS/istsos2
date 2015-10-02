@@ -83,11 +83,7 @@ class wnsNotifications(wnsOperation):
         description = self.json["description"]
         interval = self.json["interval"]
         not_id = None
-        store = self.json.get("store", False){
-"name": "monthlyReport",
-"interval": 720,
-"function": "/home/ist/notification.py"
-}
+        store = self.json.get("store", False)
 
         sql = """INSERT INTO wns.notification (name, description,
                         interval, store) VALUES (%s,%s, %s, %s) RETURNING id;"""
