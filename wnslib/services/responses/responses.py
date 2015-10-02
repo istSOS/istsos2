@@ -2,6 +2,7 @@
 from wnslib.operation import wnsOperation
 from walib import databaseManager
 import json
+import psycopg2
 
 
 class wnsResponses(wnsOperation):
@@ -52,7 +53,11 @@ class wnsResponses(wnsOperation):
         sql += " ORDER BY date DESC "
         sql += limit
 
-        result = servicedb.execute(sql, par)
+        try:
+            result = servicedb.execute(sql, par)
+        except: psycopg2.Error as e:
+            self.setException(e.pgerror)
+            return
 
         response = []
 

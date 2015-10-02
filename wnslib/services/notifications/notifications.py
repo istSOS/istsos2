@@ -83,7 +83,11 @@ class wnsNotifications(wnsOperation):
         description = self.json["description"]
         interval = self.json["interval"]
         not_id = None
-        store = self.json.get("store", False)
+        store = self.json.get("store", False){
+"name": "monthlyReport",
+"interval": 720,
+"function": "/home/ist/notification.py"
+}
 
         sql = """INSERT INTO wns.notification (name, description,
                         interval, store) VALUES (%s,%s, %s, %s) RETURNING id;"""
@@ -159,6 +163,16 @@ class wnsNotifications(wnsOperation):
 
             sql += " WHERE id=%s RETURNING *"
             params += (self.not_id,)
+
+            try:
+                row = servicedb.executeInTransaction(sql, params)
+            except psycopg2.Error as e:
+                self.setException(e.pgerror)
+                servicedb.rollbackTransaction()
+                return
+        else:
+            sql = "SELECT * FROM wns.notification WHERE id=%s"
+            params = (self.not_id)
 
             try:
                 row = servicedb.executeInTransaction(sql, params)
