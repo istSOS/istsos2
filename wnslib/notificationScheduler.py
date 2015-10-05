@@ -54,7 +54,6 @@ def notify(name, message, status=True):
     params = (name,)
 
     usersList = dbConnection.select(sql, params)
-
     notifier = notify.Notify(serviceconf)
 
     if status:
@@ -82,6 +81,8 @@ def notify(name, message, status=True):
                 if 'twitter' in message.keys() and 'twitter' in contact.keys():
                     notifier.twitter(message['twitter'],
                                                 contact['twitter'], name)
+                else:
+                    print "Please define a Twitter id"
 
             elif con == 'fax':
                 notifier.fax(message, contact['fax'], name)

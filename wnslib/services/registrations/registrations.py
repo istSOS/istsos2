@@ -89,7 +89,6 @@ class wnsRegistrations(wnsOperation):
         NotificationList = servicedb.select(sql, params)
         RegistrationsList = []
 
-        #TODO: Better message
         for el in NotificationList:
             el = dict(el)
             del el['not_id_fk']
@@ -121,6 +120,9 @@ class wnsRegistrations(wnsOperation):
             self.setException('Please add a notification type')
             return
 
+        if not self.check_data(not_list):
+            return
+
         if self.user_id and self.notification:
 
             # Check notification type
@@ -130,8 +132,9 @@ class wnsRegistrations(wnsOperation):
                         self.setException("Cannot subscribe via email")
                         return
                 if noti == "twitter":
-                    if not self.serviceconfig.twitter['consumer_key']:
+                    if not self.serviceconf.twitter['consumer_key']:
                         self.setException("Cannot subscribe via twitter")
+                        return
 
             sql = """INSERT INTO wns.registration (user_id_fk, not_id_fk,
                             not_list) VALUES (%s,%s, %s);"""
@@ -146,9 +149,8 @@ class wnsRegistrations(wnsOperation):
             message = 'User ' + self.user_id + ' subscribed to notification '
             message += str(self.notification)
             self.setMessage(message)
-            return
         else:
-            self.setException("Please defien user and notification")
+            self.setException("Please define user and notification")
 
     def executePut(self):
         """ PUT registration
@@ -168,6 +170,9 @@ class wnsRegistrations(wnsOperation):
             self.setException('Please add a notification type')
             return
 
+        if not self.check_data(not_list):
+            return
+
         if self.user_id and self.notification:
 
             # Check notification type
@@ -177,7 +182,7 @@ class wnsRegistrations(wnsOperation):
                         self.setException("Cannot subscribe via email")
                         return
                 if noti == "twitter":
-                    if not self.serviceconfig.twitter['consumer_key']:
+                    if not self.serviceconf.twitter['consumer_key']:
                         self.setException("Cannot subscribe via twitter")
 
             sql = """UPDATE wns.registration SET not_list=%s
@@ -221,3 +226,39 @@ class wnsRegistrations(wnsOperation):
             self.setMessage(message)
         else:
             self.setException('Please define a user_id and a notification_id')
+
+    def check_data(self, data):
+        """
+            Method to check subscription
+
+            Check if a user can receive notification via mail or twitter
+
+        """
+        servicedb = databaseManager.PgDB(
+            self.serviceconf.connectionWns['user'],
+            self.serviceconf.connectionWns['password'],
+            self.serviceconf.connectionWns['dbname'],
+            self.serviceconf.connectionWns['host'],
+            self.serviceconf.connectionWns['port'])
+
+        sql = "SELECT * FROM wns.user WHERE id = %s"
+        params = (self.user_id,)
+
+        try:
+            user = servicedb.execute(sql, params)[0]
+        except psycopg2.Error as e:
+            self.setException(e.pgerror)
+            return False
+
+        for tmp in data:
+
+            if tmp == "mail" or tmp == "email":
+                if not user['email']:
+                    self.setException("User can't receive notification via mail")
+                    return False
+
+            if tmp == "twitter" and not user["twitter"]:
+                self.setException("User cann't receive notification via twitter")
+                return False
+
+        return True

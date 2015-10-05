@@ -62,6 +62,7 @@ sched._threadpool = threadpool.ThreadPool(core_threads=10,
                                             max_threads=50, keepalive=10)
 
 sched.start()
+print "Running..."
 
 
 #===========================
@@ -70,7 +71,7 @@ sched.start()
 @sched.interval_schedule(seconds=5)
 def istsos_job():
     global schedmd5
-    print "Checking changes"
+    #print "Checking changes"
     if not schedmd5:
         print " > Initialization.."
         for service, scheduler in recursive_glob(rootdir=wns_path,
@@ -85,10 +86,8 @@ def istsos_job():
                 print "  > Change detectd: %s" % service
                 schedmd5[service] = md5_now
                 jobs = sched.get_jobs()
-                #print jobs
                 for j in jobs[1:]:
                     print " job: %s" % j.name
                     if j.name.startswith(service):
                         sched.unschedule_job(j)
                 execfile(scheduler)
-

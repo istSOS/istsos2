@@ -61,7 +61,6 @@ def delNotification(name):
     aps_file = open(services_path, 'w')
     aps_file.writelines(data)
     aps_file.close()
-
     delete_script_file(name)
 
 
@@ -168,9 +167,10 @@ def createSimpleNotification(name, service, params, cql, interval,
     """
     """
     Inputs:
-        params = dict of {key:val1, key:val1, ...} to compose
-                the GetObservation request returning 1
-                value (latest, max of aggregation, etc..)
+        params = example: { "offering": "temporary",
+                            "observedProperty": "air:temperature,air:rainfall",
+                            "procedure": "T_TREVANO"
+                           }
         cql = cql condition to be verified (e.g.: >40)
 """
     import traceback
@@ -207,7 +207,7 @@ def createSimpleNotification(name, service, params, cql, interval,
     """ % (period, json.dumps(rparams))
         else:
             config = """
-        rparams = %s
+    rparams = %s
     """ % json.dumps(rparams)
 
         link = serviceconf.serviceurl["url"].replace('test', '')
@@ -285,6 +285,7 @@ def write_to_aps(name, interval, store):
     now = datetime.datetime.now()
     startDate = now.strftime('%Y-%m-%d %H:%M:%S')
     aps_file = open(services_path, 'a')
+
     # write to notification.aps
     aps_file.writelines(
         """
@@ -297,7 +298,6 @@ def notifications_%s():
         res = %s.%s()
     except:
         return
-
 """ % (name, interval, startDate, name, name, name, name,
                                                 name)
     )
@@ -322,7 +322,7 @@ def notifications_%s():
 def write_script_file(code, name):
     """Create function python file
 
-    create a function_name.py in the scripts/wns folder
+    create a function_name.py in the wns/scripts folder
 
     Args:
         code (String): python code

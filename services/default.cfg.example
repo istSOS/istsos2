@@ -102,6 +102,8 @@ port = 5432
 [mail]
 usermail = ""
 password = ""
+smtp = ""
+port = ""
 
 [twitter]
 oauth_token = ""

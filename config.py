@@ -26,7 +26,6 @@ istsoslib_path = path.join(path.dirname(path.abspath(__file__)), "istsoslib")
 istsoswalib_path = path.join(path.dirname(path.abspath(__file__)), "walib")
 istsoswnslib_path = path.join(path.dirname(path.abspath(__file__)), "wnslib")
 wns_path = path.join(path.dirname(path.abspath(__file__)), "wns")
-scripts_path = path.join(wns_path, "scripts")
 errorlog_path = path.join(path.dirname(path.abspath(__file__)), "logs")
 errorlog_level = "INFO"
 debug = False
