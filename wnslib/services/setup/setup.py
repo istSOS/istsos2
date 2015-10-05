@@ -41,7 +41,7 @@ class wnsSetup(wnsOperation):
         create notification.aps file
         create database schema
         """
-        services_dir = config.services_path
+        services_dir = config.wns_path
         aps_dir = path.join(services_dir, "notifications.aps")
 
         #print "Service path: ", services_dir

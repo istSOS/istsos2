@@ -72,7 +72,7 @@ class wnsResponses(wnsOperation):
             )
 
         self.setData(response)
-        self.setMessage("Get Responses test")
+        self.setMessage("Found [" + str(len(response)) + "] element")
 
 
 

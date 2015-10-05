@@ -29,8 +29,8 @@ import config
 
 defaultCFGpath = path.join(config.services_path, "default.cfg")
 serviceconf = configManager.waServiceConfig(defaultCFGpath)
-services_path = path.join(config.services_path, "notifications.aps")
-wns_script_path = path.join(config.scripts_path, "wns")
+services_path = path.join(config.wns_path, "notifications.aps")
+wns_script_path = path.join(config.wns_path, "scripts")
 
 
 def delNotification(name):
@@ -292,7 +292,7 @@ def write_to_aps(name, interval, store):
 @sched.interval_schedule(minutes=%s, start_date='%s')
 def notifications_%s():
 
-    import scripts.wns.%s as %s
+    import wns.scripts.%s as %s
     try:
         res = %s.%s()
     except:

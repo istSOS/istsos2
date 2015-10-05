@@ -25,10 +25,11 @@ services_path = path.join(path.dirname(path.abspath(__file__)), "services")
 istsoslib_path = path.join(path.dirname(path.abspath(__file__)), "istsoslib")
 istsoswalib_path = path.join(path.dirname(path.abspath(__file__)), "walib")
 istsoswnslib_path = path.join(path.dirname(path.abspath(__file__)), "wnslib")
-scripts_path = path.join(path.dirname(path.abspath(__file__)), "scripts")
+wns_path = path.join(path.dirname(path.abspath(__file__)), "wns")
+scripts_path = path.join(wns_path, "scripts")
 errorlog_path = path.join(path.dirname(path.abspath(__file__)), "logs")
 errorlog_level = "INFO"
-debug=False
+debug = False
 #==================================================================================
 # if you have to move some of "istsoslib" "walib" or "service" folder
 # in a different location you have to override the above paths
