@@ -50,12 +50,13 @@ class wnsUsers(wnsOperation):
             self.serviceconf.connectionWns['host'],
             self.serviceconf.connectionWns['port'])
 
+        sql = "SELECT * FROM wns.user "
+        params = None
+
         if self.userid:
-            sql = "SELECT * FROM wns.user WHERE id=%s;"
+            sql += " WHERE id=%s;"
             params = (self.userid,)
-        else:
-            sql = "SELECT * FROM wns.user;"
-            params = None
+
         UsersList = servicedb.select(sql, params)
 
         users = []

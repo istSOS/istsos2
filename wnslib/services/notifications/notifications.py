@@ -51,14 +51,15 @@ class wnsNotifications(wnsOperation):
             self.serviceconf.connectionWns['host'],
             self.serviceconf.connectionWns['port'])
 
+        sql = "SELECT * FROM wns.notification "
+        params = None
+
         if self.not_id:
-            sql = "SELECT * FROM wns.notification WHERE id=%s;"
+            sql += " WHERE id=%s;"
             params = (self.not_id,)
-        else:
-            sql = "SELECT * FROM wns.notification"
-            params = None
 
         NotificationList = servicedb.select(sql, params)
+
         Notification = []
 
         for notif in NotificationList:

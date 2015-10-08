@@ -57,6 +57,7 @@ Go to `<https://sourceforge.net/projects/istsos/files/latest/download?source=fil
     sudo chmod 755 -R /usr/local/istsos
     sudo chown -R www-data:www-data /usr/local/istsos/services
     sudo chown -R www-data:www-data /usr/local/istsos/logs
+    sudo chown -R www-data:www-data /usr/local/istsos/wns
 
 **7) Configure Apache and WSGI**
 

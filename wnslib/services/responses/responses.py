@@ -13,7 +13,10 @@ class wnsResponses(wnsOperation):
         self.not_id = None
 
         if pathinfo[1] == 'response':
-            self.not_id = pathinfo[2]
+            try:
+                self.not_id = pathinfo[2]
+            except Exception:
+                raise Exception("Please define a notification id")
         else:
             raise Exception("Resource is not identified, check the URL")
 
