@@ -6,8 +6,20 @@ import psycopg2
 
 
 class wnsResponses(wnsOperation):
+    """
+
+        Class to read stored responses from db and send back to user
+
+        Attributes:
+            not_id (int): notification id
+
+
+    """
 
     def __init__(self, wnsEnviron):
+        """
+
+        """
         wnsOperation.__init__(self, wnsEnviron)
         pathinfo = wnsEnviron['pathinfo']
         self.not_id = None
@@ -21,7 +33,9 @@ class wnsResponses(wnsOperation):
             raise Exception("Resource is not identified, check the URL")
 
     def executeGet(self):
-
+        """
+            GET request
+        """
         params = self.wnsEnviron['parameters']
 
         servicedb = databaseManager.PgDB(

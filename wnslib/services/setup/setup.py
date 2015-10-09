@@ -38,8 +38,9 @@ class wnsSetup(wnsOperation):
 
     def executeGet(self):
         """ execute GET request
-        create notification.aps file
-        create database schema
+
+            create notification.aps file
+            create database schema
         """
         services_dir = config.wns_path
         aps_dir = path.join(services_dir, "notifications.aps")

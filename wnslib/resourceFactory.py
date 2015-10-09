@@ -25,6 +25,9 @@ import copy
 
 
 def initResource(wnsEnviron):
+    """
+        resource factory
+    """
     path = wnsEnviron['path']
     print >> sys.stderr, path
 

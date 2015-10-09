@@ -27,7 +27,12 @@ import psycopg2
 
 
 class wnsRegistrations(wnsOperation):
-    """ Class to manage user subscription to notification
+    """
+        Class to manage user subscription to notification
+
+        Attributes:
+            user_id (int): user id
+            notification (int): notification id
     """
 
     def __init__(self, wnsEnviron):
@@ -104,8 +109,7 @@ class wnsRegistrations(wnsOperation):
 
         subscribe a user to a notification
 
-        Returns:
-            OK if no problem
+        Return confirm message if subscribed
         """
         servicedb = databaseManager.PgDB(
             self.serviceconf.connectionWns['user'],
@@ -155,7 +159,7 @@ class wnsRegistrations(wnsOperation):
     def executePut(self):
         """ PUT registration
 
-        Update user subscription to notification
+            Update user subscription to notification
         """
         servicedb = databaseManager.PgDB(
             self.serviceconf.connectionWns['user'],
@@ -201,7 +205,7 @@ class wnsRegistrations(wnsOperation):
 
     def executeDelete(self):
         """ DELETE subscription
-        delete user from notification alert
+            delete user from notification alert
         """
         servicedb = databaseManager.PgDB(
             self.serviceconf.connectionWns['user'],

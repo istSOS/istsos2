@@ -1948,8 +1948,12 @@ class Api(object):
     else:
       raise TwitterError({'message': "Specify at least one of user_id or screen_name."})
 
+
     json = self._RequestUrl(url, 'POST', data=data)
+
     data = self._ParseAndCheckTwitter(json.content)
+
+
 
     return DirectMessage.NewFromJsonDict(data)
 

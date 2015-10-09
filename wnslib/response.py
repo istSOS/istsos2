@@ -33,6 +33,10 @@ from lib.pytz import timezone
 class Response(object):
     """
         Class used to store a notifcation result
+
+        Attributes:
+            serviceconf (obj): service configuration object
+            __message (dict): dictionary response
     """
 
     __message = {
@@ -42,20 +46,40 @@ class Response(object):
     }
 
     def __init__(self):
-        ""
+        """
+
+        """
         defaultCFGpath = path.join(path.dirname(path.split(
                         path.abspath(__file__))[0]), "services/default.cfg")
         self.serviceconf = configManager.waServiceConfig(defaultCFGpath)
         now = datetime.datetime.now().replace(tzinfo=timezone(time.tzname[0]))
-        self.setDate(now)
+        self.__setDate(now)
 
     def setResponse(self, result):
+        """
+            set response message
+
+            Args:
+                result (str/dict): response message, if could be a string or a python dict
+        """
         self.__message['response'] = result
 
     def setNotification(self, not_name):
+        """
+            set notification name
+
+            Args:
+                not_name (str): notification name
+        """
         self.__message['notification'] = not_name
 
-    def setDate(self, date):
+    def __setDate(self, date):
+        """
+            set date
+
+            Args:
+                date (str): date in isoformat
+        """
         self.__message['date'] = date
 
     def writeToFile(self):

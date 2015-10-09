@@ -41,20 +41,29 @@ class Notify(object):
         else:
             self.twitter_api = None
 
-    def alert(self, message):
-        from easygui import textbox
-        textbox(message)
+    def alert(self, message, name):
+        """
+            alert notification with popup
+
+            Args:
+                message (str): message to notify
+                name (str): notification name
+        """
+        # this is blocking
+        #TODO: find a non blocking solution. Thread?
+        from easygui import msgbox
+        msgbox(message, title="Notification from " + name)
 
     def email(self, message, to):
-        """Send notification via mail
-        Args:
-            message: dict with object a mail message
-                {
-                    "subject": "subject",
-                    "message": "message to send"
-                }
-            to: mail where to send notification
         """
+        Send notification via mail
+
+        Args:
+            message (dict): dict with object and mail message
+
+            to (str): mail where to send notification
+        """
+
         print 'send mail'
 
         if not 'subject' in message.keys():
@@ -97,21 +106,17 @@ class Notify(object):
         """Update status twitter
 
         Args:
-            message: tweet to send (remember max 140 char)
-            name: name of the notification (to create hashtag)
+            message (str): tweet to send (remember max 140 char)
+            name (str): name of the notification (to create hashtag)
         """
 
         if not self.twitter_api:
             print "please define a twitter account to update status"
 
-        # Update Status
-        if not 'public' in message.keys():
-            print "please define a twitter public message"
-            return
 
         print 'update twitter status'
         tweet = '#' + name + ' '
-        tweet += message['public']
+        tweet += message
 
         if len(message) < 140:
             try:
@@ -127,30 +132,33 @@ class Notify(object):
             raise Exception("Message for twitter to long!!!, MAX 140 character")
 
     def twitter(self, message, to, name):
-        """Twitter private message
+        """
         Send a Twitter private message
 
         Args:
-            message: private message to send
-            to: user twitter_id
-            name: name of the notification (to create hashtag)
+            message (str): tweet to send (remember max 140 char)
+            to (str): user twitter_id to send
+            name (str):  name of the notification (to create hashtag)
         """
+
+        import json
 
         if not self.twitter_api:
             print "please define a twitter account to send private message"
 
-        if not 'private' in message.keys():
-            print "please define a twitter public message"
-            return
         print 'Send via Twitter'
         # Send direct message
         tweet = '#' + name + ' '
-        tweet += message['private']
+        tweet += message
+
+        user = self.twitter_api.getUser(screen_name=to)
+        user = json.loads(str(user))
 
         if len(message) < 140:
             print 'send direct message'
             try:
-                self.twitter_api.PostDirectMessage(tweet, to, name)
+                self.twitter_api.PostDirectMessage(user_id=user['id'],
+                                    text=tweet, screen_name=to)
             except twitter.TwitterError, e:
                 if e[0][0]['code'] == 187:
                     print 'Duplicate tweet'
@@ -162,7 +170,13 @@ class Notify(object):
             raise Exception("Message for twitter to long!!!, MAX 140 character")
 
     def fax(self, message, to, name):
+        """
+            Not implemented
+        """
         print "notify via FAX"
 
     def sms(self, message, to, name):
+        """
+            not implemented
+        """
         print "notify via SMS"

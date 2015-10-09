@@ -26,7 +26,12 @@ import psycopg2
 
 
 class wnsUsers(wnsOperation):
-    """ Class to manage user
+    """
+        Class to manage user
+
+        Attributes:
+            userid (int): user id
+
     """
 
     def __init__(self, wnsEnviron):

@@ -33,10 +33,11 @@ def notify(name, message, status=True):
     """Notify manager
 
     check users subscription and raise notification
+
     Args:
-        name:        name of the notification
-        message:     message to notify
-        status:      if True update status on twitter
+        name (str):        name of the notification
+        message (dict):     dictionary with message to notify
+        status (bool):     if True update status on twitter
     """
     from walib import databaseManager as dbm
     from wnslib import notify
@@ -58,7 +59,7 @@ def notify(name, message, status=True):
 
     if status:
         try:
-            notifier.post_twitter_status(message['twitter'], name)
+            notifier.post_twitter_status(message['twitter']['public'], name)
         except AttributeError as e:
             # missing or wrong autentiation data
             print e
@@ -71,7 +72,7 @@ def notify(name, message, status=True):
         for con in user['not_list']:
 
             if con == 'alert':
-                notifier.alert(message['alert'])
+                notifier.alert(message['alert'], name)
 
             if con == 'mail' or con == 'email':
                 if 'mail' in message.keys():
@@ -79,7 +80,7 @@ def notify(name, message, status=True):
 
             elif con == 'twitter':
                 if 'twitter' in message.keys() and 'twitter' in contact.keys():
-                    notifier.twitter(message['twitter'],
+                    notifier.twitter(message['twitter']['private'],
                                                 contact['twitter'], name)
                 else:
                     print "Please define a Twitter id"

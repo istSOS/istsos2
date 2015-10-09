@@ -40,7 +40,7 @@ def delNotification(name):
     remove the function file
 
     Args:
-        name (string): Name of the notification
+        name (str): Name of the notification
 
     """
     aps_file = open(services_path, 'r')
@@ -65,19 +65,20 @@ def delNotification(name):
 
 
 def addNotification(name, func_path, interval, store=False):
-    """Add new function to notification.asp file.
+    """
 
-    The function should terminate with a call
-    to notify() in case the condition is met
+    Add new complex notification
 
     Args:
-        name (string): Name of the function
-        func_path (string): path to the function
-        interval (integer): number of minutes how ofter the function is executed
-        store (boolean): flag, if true the system store the notification result
+        name (str): Name of the function
+        func_path (str): path to the function
+        interval (int): number of minutes how ofter the function is executed
+        store (bool): flag, if true the system store the notification result
+                        default False
 
-    Returns:
-        return message error if problem with file
+    Raises:
+        Exception: raise exception if python function is wrong
+
     """
 
     print func_path
@@ -86,17 +87,18 @@ def addNotification(name, func_path, interval, store=False):
     f.close()
 
     # check code vaidity
-    flag = __check_valid_python(code, func_path)
-    if flag:
-        return flag
+    __check_valid_python(code, func_path)
+    #if flag:
+    #    return flag
 
     # check correct name
-    flag = __check_valid_name(name, func_path)
-    if flag:
-        return flag
+    __check_valid_name(name, func_path)
+    #if flag:
+    #    return flag
 
     if not "notify(" in code:
-        return "The function MUST contain a notificationScheduler.notify() call"
+        msg = "The function MUST contain a notificationScheduler.notify() call"
+        raise Exception(msg)
 
     # write code to file
     write_script_file(code, name)
@@ -105,31 +107,36 @@ def addNotification(name, func_path, interval, store=False):
 
 
 def __check_valid_python(code, func_path):
-    """Check if a script is correct
+    """
+
+    Check if a script is syntaxly correct
 
     Args:
-        code: name of the function
-        func_path: path to the function file
+        code (str): name of the function
+        func_path (str): path to the function file
 
-    Returns:
-        a string error if code not valid
+    Raises:
+        Exception: Exception if syntax not valid
     """
     try:
         # check only the syntax
         compile(code, func_path, 'exec')
-    except Exception, e:
-        return "Error on function: " + str(e)
+    except Exception as e:
+        print "Exception in validate python"
+        raise e
 
 
 def __check_valid_name(name, func_path):
-    """Check valid function name
+    """
+
+    Check valid function name
 
     Args:
-        name: name of the function
-        func_path: path to the function file
+        name (str): name of the function
+        func_path (str): path to the function file
 
-    Returns:
-        a string error if name not valid
+    Raises:
+        Exception: raise exception if name not valid
 
     """
     flag_name = False
@@ -143,7 +150,9 @@ def __check_valid_name(name, func_path):
                 flag_not = True
 
     if not flag_name and not flag_not:
-        return '\nThe function name must be equal to notification name!!!'
+        msg = "The function name must be equal to notification name!!!"
+        raise Exception(msg)
+        #return '\nThe function name must be equal to notification name!!!'
 
 
 def createSimpleNotification(name, service, params, cql, interval,
@@ -154,25 +163,19 @@ def createSimpleNotification(name, service, params, cql, interval,
     notification.aps file
 
     Args:
-        name: Name of the function
-        service: service
-        params: params to compose getObservation request
-        cql: condition to reach to send notification
-        interval: interval
-        period: isodate period over witch the getObservation is executed
-        store: flag, if true the system store the notification result
+        name (str): Name of the function
+        service (str): service
+        params (dict): params to compose getObservation request
+        cql (str): condition to reach to send notification
+        interval (int): interval
+        period (str): isodate period over witch the getObservation is executed
+        store (bool): flag, if true the system store the notification result
 
-    Returns:
+    Raises:
+        Exception: exception if something goes wrong
 
     """
-    """
-    Inputs:
-        params = example: { "offering": "temporary",
-                            "observedProperty": "air:temperature,air:rainfall",
-                            "procedure": "T_TREVANO"
-                           }
-        cql = cql condition to be verified (e.g.: >40)
-"""
+
     import traceback
     try:
         import json
@@ -265,6 +268,7 @@ def %s():
         write_script_file(code_string, name)
 
         write_to_aps(name, interval, store)
+
     except Exception as e:
         print >> sys.stderr, traceback.print_exc()
         raise e
@@ -274,9 +278,9 @@ def write_to_aps(name, interval, store):
     """Add function call to notification.aps
 
     Args:
-        name (String): name of the function
-        interval (Integer): interval, how often is performed the notification
-        store (boolean): True if the system must store the notification result
+        name (str): name of the function
+        interval (int): interval, how often is performed the notification
+        store (bool): True if the system must store the notification result
 
     """
 
@@ -325,8 +329,8 @@ def write_script_file(code, name):
     create a function_name.py in the wns/scripts folder
 
     Args:
-        code (String): python code
-        name (String): name of the function
+        code (str): python code
+        name (str): name of the function
 
     """
 
@@ -337,17 +341,19 @@ def write_script_file(code, name):
 
 
 def delete_script_file(name):
-    """remove function python file
+    """
+
     remove function_name.py and function_name.pyc files
 
     Args:
-        name (String): function name
+        name (str): function name
     """
     if os.path.exists(wns_script_path + name + '.py'):
         os.remove(wns_script_path + name + '.py')
-        print "file removed"
         if os.path.exists(wns_script_path + name + '.pyc'):
             os.remove(wns_script_path + name + '.pyc')
+
+        print "file removed"
     else:
         print "file not found"
 

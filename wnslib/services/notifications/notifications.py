@@ -27,7 +27,11 @@ import psycopg2
 
 
 class wnsNotifications(wnsOperation):
-    """ Class to manage notification
+    """
+    Class to manage notification
+
+    Attributes:
+        not_id (int): notification id
 
     """
 
@@ -42,7 +46,9 @@ class wnsNotifications(wnsOperation):
     def executeGet(self):
         """ GET request
 
-        get notification
+            get notification request handler
+
+            return list of notification
         """
         servicedb = databaseManager.PgDB(
             self.serviceconf.connectionWns['user'],
@@ -71,7 +77,8 @@ class wnsNotifications(wnsOperation):
     def executePost(self):
         """ POST notification
 
-        create new notifcation, simple or complex
+            post notifation request handler
+            create new notifcation, simple or complex
         """
         servicedb = databaseManager.PgDB(
             self.serviceconf.connectionWns['user'],
@@ -133,7 +140,9 @@ class wnsNotifications(wnsOperation):
     def executePut(self):
         """ PUT notification
 
-        Update a existing notification
+            Put notification request handler
+
+            Update a existing notification
         """
         description = self.json.get("description", None)
         interval = self.json.get("interval", None)
@@ -239,7 +248,8 @@ class wnsNotifications(wnsOperation):
     def executeDelete(self):
         """DELETE notification
 
-        delete selected notification
+            delete notification request handler
+            delete selected notification
         """
         servicedb = databaseManager.PgDB(
             self.serviceconf.connectionWns['user'],
