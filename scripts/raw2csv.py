@@ -293,7 +293,7 @@ class Converter():
         
         # Load and Check folderIn + pattern and sort alfabetically
         if self.fileArray == None:
-          fileArray = self.prepareFiles()
+          self.fileArray = self.prepareFiles()
             
         for fileObj in self.fileArray:
             if self.skipFile(os.path.split(fileObj)[1]):
@@ -399,7 +399,7 @@ class Converter():
         if not os.path.isdir(self.folderIn):
             msg = "Input folder (%s) does not exist" % self.folderIn
             self.addException(msg)
-            raise FileReaderError ( msg)
+            raise FileReaderError (msg)
         
         files = filter(path.isfile, glob.glob(os.path.join(self.folderIn, "%s" % (self.pattern))))
         files.sort()
