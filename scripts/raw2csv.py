@@ -79,6 +79,10 @@ class Converter():
             'timedelta': timedelta(days=1)
         }
         """
+        # Can be used to speedup directory reading doinng it only once
+        #  > "folderIn" and "pattern" must be identical
+        
+        self.fileArray = None
         
         self.req = requests.session()
     
@@ -288,9 +292,10 @@ class Converter():
         self.endPosition = None
         
         # Load and Check folderIn + pattern and sort alfabetically
-        fileArray = self.prepareFiles()
+        if self.fileArray == None:
+          fileArray = self.prepareFiles()
             
-        for fileObj in fileArray:
+        for fileObj in self.fileArray:
             if self.skipFile(os.path.split(fileObj)[1]):
                 if self.debug:
                     self.log(" > Skipping file %s" % os.path.split(fileObj)[1])
@@ -303,11 +308,11 @@ class Converter():
             dat = open(fileObj,'rU')
             try:
                 self.parse(dat,os.path.split(fileObj)[1])
+                dat.close()
             except Exception as e:
                 self.log(" !! Error while parsing file: %s" % os.path.split(fileObj)[1])
                 dat.close()
                 raise e
-            dat.close()
         
         self.log(" > Parsed %s observations" % len(self.observations))
         

@@ -132,7 +132,7 @@ def execute (args, logger=None):
             if data['success']==False:
                 raise Exception ("Description of procedure %s can not be loaded: %s" % (proc, data['message']))
             else:
-                print " > %s" % data['message']
+                print "%s > %s" % (proc,data['message'])
             
             data = data['data']
             
@@ -158,7 +158,7 @@ def execute (args, logger=None):
             if data['success']==False:
                 raise Exception ("Last observation of procedure %s can not be loaded: %s" % (proc, data['message']))
             else:
-                print " > %s" % data['message']
+                print "%s > %s" % (proc,data['message'])
                     
             data = data['data'][0]
             data['AssignedSensorId'] = aid
@@ -184,7 +184,7 @@ def execute (args, logger=None):
             files.sort()
             
             if debug:
-                print " > %s %s found" % (len(files), "Files" if len(files)>1 else "File")
+                print "%s > %s %s found" % (proc, len(files), "Files" if len(files)>1 else "File")
                 
             if len(files)>0:
                 for f in files:
@@ -232,7 +232,7 @@ def execute (args, logger=None):
                             traceback.print_exc()
                             raise e
                             
-                log ("Before insert ST:")
+                log ("Before insert ST: %s" % proc)
                 if 'beginPosition' in data["samplingTime"]:
                     log (" > Begin: %s" % data["samplingTime"]["beginPosition"])
                 if 'endPosition' in data["samplingTime"]:
@@ -266,7 +266,7 @@ def execute (args, logger=None):
                 
                 #data["result"]["DataArray"]["elementCount"] = str(len(data['result']['DataArray']['values']))
                 
-                log ("Insert ST:")
+                log ("Insert ST: %s" % proc)
                 log (" > Begin: %s" % bp.isoformat())
                 log ("   + End: %s" % ep.isoformat())
                 log (" > Values: %s" % len( data['result']['DataArray']['values']))
