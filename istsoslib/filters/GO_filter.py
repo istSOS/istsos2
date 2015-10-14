@@ -258,23 +258,24 @@ class sosGOfilter(f.sosFilter):
                     try:
                         if requestObject["qualityfilter"][0:2]=='<=' or requestObject["qualityfilter"][0:2]=='>=':
                             self.qualityFilter = (requestObject["qualityfilter"][0:2],float(requestObject["qualityfilter"][2:]))
-                        elif (requestObject["qualityfilter"][0]=='>' or 
+                        elif (requestObject["qualityfilter"][0]=='>' or
                                 requestObject["qualityfilter"][0]=='=' or
                                 requestObject["qualityfilter"][0]=='<'):
-                            self.qualityFilter = (requestObject["qualityfilter"][0],float(requestObject["qualityfilter"][1:]))   
-                            
+                            self.qualityFilter = (requestObject["qualityfilter"][0],float(requestObject["qualityfilter"][1:]))
+
                         # If qualityFilter is defined qualityIndex are automatically returned
-                        self.qualityIndex=True    
-                        #print >> sys.stderr, self.qualityFilter         
+                        self.qualityIndex=True
+                        #print >> sys.stderr, self.qualityFilter
                     except ValueError as ve:
                         raise sosException.SOSException("InvalidParameterValue","qualityFilter","invalid quality index value in qualityFilter")
                 else:
                     raise sosException.SOSException("InvalidParameterValue","qualityFilter","qualityFilter operator can only be in ['<','>','<=','>=','=']")
-                  
+
 
 
         #**********************
         if method == "POST":
+
             from xml.dom import minidom
             #---------- THE OFFERING
             offs = requestObject.getElementsByTagName('offering')
@@ -548,6 +549,7 @@ class sosGOfilter(f.sosFilter):
             #------------ QUALITY INDEX
             self.qualityIndex=False
             qidx = requestObject.getElementsByTagName('qualityIndex')
+
             if len(qidx)>0:
                 if len(qidx)<2:
                     val = qidx[0].firstChild
@@ -565,3 +567,4 @@ class sosGOfilter(f.sosFilter):
                 err_txt = "\"qualityIndex\" is allowed with multiplicity 1 only"
                 raise sosException.SOSException("NoApplicableCode",None,err_txt)
 
+            self.qualityFilter=False
