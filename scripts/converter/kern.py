@@ -116,24 +116,26 @@ class KernImporter(raw2csv.Converter):
         for line in fileObj.readlines():
             cnt = cnt+1
             try:
-                # indica una riga di intestazione con la data di inizio dei dati
+                # Special characters https://it.wikipedia.org/wiki/Carattere_di_controllo#Tavole
+                
+                # SOH indica una riga di intestazione con la data di inizio dei dati
                 if line.find('\x01TI')>=0:
                     line = line.replace('\x01','')
                     isHead = True
                 else:
                     isHead = False
                     
-                # inidica l'inizio di un blocco con i dati
+                # STX indica l'inizio di un blocco con i dati
                 if line.find('\x02')>=0:
                     line = line.replace('\x02','')
                     isData = True
                 
-                # inidica la fine del blocco con i dati 
+                # ETX indica la fine del blocco con i dati 
                 if line.find('\x03')>=0:
                     line = line.replace('\x03','')
                     isData = False
                     
-                # inidica la fine del file
+                # EOT indica la fine del file
                 if line.find('\x04')>=0:
                     line = line.replace('\x04','')
                     break
@@ -150,7 +152,7 @@ class KernImporter(raw2csv.Converter):
                 if isData and line[0] in ['D','d','o']:
                     dataMinutes = line[1]
 
-                    # Controllo del capo d'anno
+                    # Controllo del capodanno
                     if int(startMinutes)>int(dataMinutes):
                         year = year + 1
                         
@@ -174,6 +176,6 @@ class KernImporter(raw2csv.Converter):
                     )
                    
             except Exception as e:
-                self.log("%s-%s:%s" % (fileName,cnt,line))
+                self.log("%s:%s\n Line: %s" % (fileName,cnt,line))
                 self.log(traceback.print_exc())
                 raise e

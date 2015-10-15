@@ -428,17 +428,17 @@ class Converter():
         obs = observation.getObservedProperties()
         for o in obs:
             if not o in self.obsindex:
-                raise ObservationError("Observation (%s) is not observed by this procedure." % (o))
+                raise ObservationError("Observation (%s) is not observed by procedure %s." % (o,self.name))
         
         # Check if duplicate dates are present
         if observation.getEventime() in self.observationsCheck:
             # If the date is already present and the data added are different then it laounch an exception
             if str(self.observationsCheck[observation.getEventime()]) != str(observation):
-                msg = "Observation (%s) is already present in the file (%)." % (observation, self.executing['file'])
+                msg = "Observation (%s: %s) is already present in the file (%s)." % (self.name, observation, self.executing['file'])
                 self.addException(msg)
                 raise RedundacyError(msg)
             else:
-                self.addWarning("Identical observation (%s) has been already processed (file %s), skipping." % (observation, self.executing['file']))
+                self.addWarning("Identical observation (%s: %s) has been already processed (file %s), skipping." % (self.name, observation, self.executing['file']))
         else:
             self.observations.append(observation)
             self.observationsCheck[observation.getEventime()]=observation

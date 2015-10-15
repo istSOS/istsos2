@@ -82,10 +82,19 @@ class StsImporter(raw2csv.Converter):
             for line in fileObj.readlines():
                 cnt = cnt+1
                 linetmp = line
+                
                 if line.find(skipline)>-1 or line.find('data')>-1 or len(line)==0:
                     continue
-            
+                
                 pair = line.split(";")
+                
+                if len(pair)!=2:
+                  continue
+                
+                try:
+                    data = datetime.strptime(pair[0], dateformat)
+                except Exception as e:
+                    continue
             
                 val = {
                     op: pair[1]
@@ -105,5 +114,7 @@ class StsImporter(raw2csv.Converter):
                 self.addObservation(
                     raw2csv.Observation(data, val)
                 )
+                
         except Exception as e:
             raise Exception("Error at row: %s:%s\n%s" % (cnt,linetmp,e))
+
