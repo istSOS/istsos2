@@ -85,6 +85,11 @@ def notify(name, message, status=True):
                 else:
                     print "Please define a Twitter id"
 
+            elif con == "ftp":
+                if "ftp" in message.keys() and "ftp" in contact.keys():
+                    import json
+                    notifier.ftp(json.loads(contact['ftp']), message['ftp'])
+
             elif con == 'fax':
                 notifier.fax(message, contact['fax'], name)
 

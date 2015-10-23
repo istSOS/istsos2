@@ -81,7 +81,8 @@ CREATE TABLE "user" (
     state text,
     country text,
     name text,
-    surname text
+    surname text,
+    ftp text
 );
 
 ALTER TABLE wns."user" OWNER TO postgres;

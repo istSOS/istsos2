@@ -48,6 +48,8 @@ class wnsUsers(wnsOperation):
 
         return a list with all user
         """
+        import json
+
         servicedb = databaseManager.PgDB(
             self.serviceconf.connectionWns['user'],
             self.serviceconf.connectionWns['password'],
@@ -66,7 +68,10 @@ class wnsUsers(wnsOperation):
 
         users = []
         for user in UsersList:
-            users.append(dict(user))
+            tmp = dict(user)
+            if user['ftp']:
+                tmp['ftp'] = json.loads(tmp['ftp'])
+            users.append(tmp)
 
         self.setMessage("found [" + str(len(users)) + "] users")
         self.setData(users)
@@ -90,7 +95,12 @@ class wnsUsers(wnsOperation):
                 "zip":"",
                 "city":"",
                 "state":"",
-                "country":""
+                "country":"",
+                "ftp": {
+                    "url": "",
+                    "user": "",
+                    "passwd": ""
+                }
             }
         """
 
@@ -115,13 +125,15 @@ class wnsUsers(wnsOperation):
         state = json_data.get("state", None)
         country = json_data.get("country", None)
         twitter = json_data.get("twitter", None)
+        ftp = json_data.get("ftp", None)
 
         sql = "INSERT INTO wns.user(username,name,surname,email,twitter, "
-        sql += "tel, fax, address, zip, city, state, country)"
-        sql += " VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id;"
+        sql += "tel, fax, address, zip, city, state, country, ftp)"
+        sql += " VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s, %s) RETURNING id;"
 
         params = (username, name, surname, email, twitter, tel, fax, address, )
-        params += (zip_code, city, state, country)
+        params += (zip_code, city, state, country, ftp)
+
         try:
             user_id = servicedb.execute(sql, params)[0][0]
         except psycopg2.Error as e:
@@ -135,6 +147,8 @@ class wnsUsers(wnsOperation):
 
         Update a existing user
         """
+
+        import json as jsonlib
 
         if not self.userid:
             self.setException("No user id defined")
@@ -152,9 +166,16 @@ class wnsUsers(wnsOperation):
         sql = "UPDATE wns.user SET "
         params = ()
 
+        if "ftp" in json_data.keys():
+            sql += ""
+
         for key in json_data.keys():
-            sql += " " + key + "=%s,"
-            params += (json_data[key],)
+            if key != "ftp":
+                sql += " " + key + "=%s,"
+                params += (json_data[key],)
+            else:
+                sql += " " + key + "=%s,"
+                params += (jsonlib.dumps(json_data[key]),)
 
         sql = sql[:-1]
 

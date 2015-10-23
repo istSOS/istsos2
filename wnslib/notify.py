@@ -113,7 +113,6 @@ class Notify(object):
         if not self.twitter_api:
             print "please define a twitter account to update status"
 
-
         print 'update twitter status'
         tweet = '#' + name + ' '
         tweet += message
@@ -159,7 +158,7 @@ class Notify(object):
             try:
                 self.twitter_api.PostDirectMessage(user_id=user['id'],
                                     text=tweet, screen_name=to)
-            except twitter.TwitterError, e:
+            except twitter.TwitterError as e:
                 if e[0][0]['code'] == 187:
                     print 'Duplicate tweet'
                 else:
@@ -168,6 +167,35 @@ class Notify(object):
                 print e
         else:
             raise Exception("Message for twitter to long!!!, MAX 140 character")
+
+    def ftp(self, ftp_params, message):
+        import ftplib
+        import StringIO
+
+        print "try ftp"
+        print "ftp: ", ftp_params
+        print "message: ", message
+
+        try:
+            ftps = ftplib.FTP(ftp_params['server'])
+        except Exception as e:
+            print e
+
+        try:
+            ftps.login(user=ftp_params['user'], passwd=ftp_params['passwd'])
+        except Exception as e:
+            print e
+
+        # create temporary file
+        mess = StringIO.StringIO(message['message'])
+        # FTP requeire a file
+
+        ftps.storlines('STOR %s' % message['filename'], mess)
+
+        mess.close()
+        ftps.close()
+
+        print "end ftp"
 
     def fax(self, message, to, name):
         """
