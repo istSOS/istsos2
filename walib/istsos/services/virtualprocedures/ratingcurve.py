@@ -140,7 +140,7 @@ class waRatingcurves(waResourceService):
             # check if valid
             #count = response['ObservationCollection']['member'][0]['result']['DataArray']['values'][1]
 
-            sql = "INSERT INTO %s.tran_log(transactional_time_trl, " % self.service
+            sql = "INSERT INTO %s.tran_log(transaction_time_trl, " % self.service
             sql += "operation_trl, procedure_trl, begin_trl, end_trl, count) "
             sql += "VALUES (%s, %s, %s, %s, %s, %s)"
 
@@ -207,7 +207,6 @@ class waRatingcurves(waResourceService):
 
         return result
 
-
     def __check_changes(self, old, new):
         from copy import deepcopy
         from dateutil.parser import parse
@@ -229,7 +228,7 @@ class waRatingcurves(waResourceService):
         for new_elem in new:
             change_elem = self.__get_old_intervals(old, new_elem, True)
 
-            print change_elem
+            #print change_elem
 
             if len(change_elem) == 0:
                 myresult.append(new_elem)
