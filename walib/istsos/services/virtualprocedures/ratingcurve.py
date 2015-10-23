@@ -69,16 +69,21 @@ class waRatingcurves(waResourceService):
         Method for executing a POST requests that create a new SOS observed property
 
         """
-
-        # log changes to db
-        if self.serviceconf.getobservation['transactional_log']:
-            self.__logToDB()
-
         if not os.path.exists(self.procedureFolder):
             raise Exception("Virtual procedure <%s> not set" % self.procedurename)
             #os.makedirs(self.procedureFolder)
+        if os.path.isfile(self.RCfilename):
+            old_json = RCload(self.RCfilename)
+        else:
+            old_json = {}
+
         if RCsave(self.json, self.RCfilename):
             self.setMessage("Rating-curve parameters of procedure <%s> successfully saved" % self.procedurename)
+
+        # log changes to db
+        print "flag: ", self.serviceconf.getobservation['transactional_log']
+        if self.serviceconf.getobservation['transactional_log']:
+            self.__logToDB(old_json)
 
     def executeDelete(self):
         if os.path.isfile(self.RCfilename):
@@ -86,45 +91,171 @@ class waRatingcurves(waResourceService):
         else:
             raise Exception("Rating-curve parameters of procedure <%s> not set" % self.procedurename)
 
-    def __logToDB(self):
+    def __logToDB(self, old_json):
         # read old values
         from walib import databaseManager
         import datetime
-        import json as jsonlib
-
-        old_json = {}
-        # read old values if available
-        if os.path.isfile(self.RCfilename):
-            old_json = RCload(self.RCfilename)
+        import copy
+        import lib.isodate as isodate
+        import lib.requests as requests
 
         # get new data
-        new_json = self.json
+        new_json = copy.deepcopy(self.json)
 
         if old_json == new_json:
             return
 
-        data = {
-            "old": old_json,
-            "new": new_json
-        }
+        result = self.__check_changes(old_json, new_json)
+
         now = datetime.datetime.now()
 
-        # write changes to db
-        sql = "INSERT INTO %s.tran_log(transaction_time_trl," % self.service
-        sql += " operation_trl, procedure_trl, data)"
-        sql += " VALUES (%s, %s, %s, %s)"
-
-        params = (now, "RatingCurve", self.procedurename,
-                                    jsonlib.dumps(data))
-
         servicedb = databaseManager.PgDB(
-            self.serviceconf.connection['user'],
-            self.serviceconf.connection['password'],
-            self.serviceconf.connection['dbname'],
-            self.serviceconf.connection['host'],
-            self.serviceconf.connection['port'])
+                self.serviceconf.connection['user'],
+                self.serviceconf.connection['password'],
+                self.serviceconf.connection['dbname'],
+                self.serviceconf.connection['host'],
+                self.serviceconf.connection['port'])
 
-        servicedb.execute(sql, params)
+        for res in result:
+
+            interval = isodate.duration_isoformat(res['to'] - res['from'])
+
+            # request the last observation of the procedure
+            rparams = {
+                "request": "GetObservation",
+                "service": "SOS",
+                "version": "1.0.0",
+                "procedure": self.procedurename,
+                "observedProperty": ":",
+                "responseFormat": "application/json",
+                "offering": "temporary",  # offering[0]['name']
+                "aggregateFunction": "count",
+                "eventTime":res['from'].strftime('%%Y-%%m-%%dT%%H:%%M:%%S%%z') + "/" + res['to'].strftime('%%Y-%%m-%%dT%%H:%%M:%%S%%z'),
+                "aggregateInterval": interval
+            }
+
+            response = requests.get(
+                self.serviceconf.serviceurl["url"],
+                params=rparams
+            )
+
+            # check if valid
+            count = response['ObservationCollection']['member'][0]['result']['DataArray']['values'][1]
+
+            sql = "INSERT INTO %s.tran_log(transactional_time_trl, " % self.service
+            sql += "operation_trl, procedure_trl, begin_trl, end_trl, count) "
+            sql += "VALUES (%s, %s, %s, %s, %s, %s)"
+
+            params = (now, "RatingCurve", self.procedurename, res['from'],)
+            params += (res['to'], count)
+
+            servicedb.execute(sql, params)
+
+        ## write changes to db
+            #sql = "INSERT INTO %s.tran_log
+            # (transaction_time_trl," % self.service
+            #sql += " operation_trl, procedure_trl, data)"
+            #sql += " VALUES (%s, %s, %s, %s)"
+
+            #params = (now, "RatingCurve", self.procedurename,
+                                        #jsonlib.dumps(data))
+
+
+
+    def __check_equals(self, old, new):
+        for var in ['A', 'B', 'C', 'K', 'up_val', 'low_val']:
+            if float(old[var]) != float(new[var]):
+                return False
+        return True
+
+    def __get_old_intervals(self, old, new, last_element):
+        """
+            Some magic!
+
+            old: array of intervals
+            new: new interval
+        """
+        from copy import deepcopy
+
+        result = []
+
+        nfrom = new['from']
+        nto = new['to']
+
+        for interval in old:
+
+            ofrom = interval['from']
+            oto = interval['to']
+
+            if oto < nfrom or nto < ofrom:
+                continue
+
+            # if old == new
+            # old  |---------------|
+            # new  |---------------|
+            if nfrom == ofrom and nto == oto:
+                tmp = deepcopy(interval)
+                result.append(tmp)
+            # old |----|
+            # new |--|
+            # new  |-|
+            # new  |---|
+            elif nfrom >= ofrom and nto <= oto:
+                tmp = deepcopy(interval)
+                tmp['from'] = nfrom
+                tmp['to'] = nto
+                result.append(tmp)
+            # if new between 2 old intervals
+            # old   |------|
+            # new |----|
+            # ret   |--|
+            elif nfrom < ofrom and nto > ofrom and nto <= oto:
+                tmp = deepcopy(interval)
+                tmp['to'] = nto
+                result.append(tmp)
+            elif (nfrom >= ofrom and nfrom < oto) and nto > oto:
+                tmp = deepcopy(interval)
+                tmp['from'] = nfrom
+                result.append(tmp)
+
+        return result
+
+
+    def __check_changes(self, old, new):
+        from copy import deepcopy
+        from dateutil.parser import parse
+
+        for elem in old:
+            elem['from'] = parse(elem['from']).replace(hour=0, tzinfo=None)
+            elem['to'] = parse(elem['to']).replace(hour=0, tzinfo=None)
+
+        for elem in new:
+            elem['from'] = parse(elem['from']).replace(hour=0, tzinfo=None)
+            elem['to'] = parse(elem['to']).replace(hour=0, tzinfo=None)
+
+        # if no old curve -> new
+        if len(old) == 0:
+            return new
+
+        myresult = []
+
+        for new_elem in new:
+            change_elem = self.__get_old_intervals(old, new_elem, True)
+
+            print change_elem
+
+            if len(change_elem) == 0:
+                myresult.append(new_elem)
+                continue
+
+            for old_elem in change_elem:
+                if not self.__check_equals(new_elem, old_elem):
+                    tmp = deepcopy(new_elem)
+                    tmp['from'] = old_elem['from']
+                    tmp['to'] = old_elem['to']
+                    myresult.append(tmp)
+
+        return myresult
 
 
 def RCload(filename):

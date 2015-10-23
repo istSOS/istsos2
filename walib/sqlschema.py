@@ -281,8 +281,7 @@ CREATE TABLE tran_log (
     end_trl timestamp with time zone,
     count integer,
     stime_prc timestamp with time zone,
-    etime_prc timestamp with time zone,
-    data text
+    etime_prc timestamp with time zone
 );
 COMMENT ON TABLE tran_log IS 'Log table for transactional operations.';
 
