@@ -107,8 +107,6 @@ def execute (args, logger=None):
             if args['noqi'] == True: 
                 noqi = True
             
-        #print "noqi: %s" % noqi
-            
         maxobs = 5000
         if 'm' in args:
             maxobs = int(args['m'])
@@ -132,7 +130,7 @@ def execute (args, logger=None):
             if data['success']==False:
                 raise Exception ("Description of procedure %s can not be loaded: %s" % (proc, data['message']))
             else:
-                print "%s > %s" % (proc,data['message'])
+                log("%s > %s" % (proc,data['message']))
             
             data = data['data']
             
@@ -158,7 +156,7 @@ def execute (args, logger=None):
             if data['success']==False:
                 raise Exception ("Last observation of procedure %s can not be loaded: %s" % (proc, data['message']))
             else:
-                print "%s > %s" % (proc,data['message'])
+                log("%s > %s" % (proc,data['message']))
                     
             data = data['data'][0]
             data['AssignedSensorId'] = aid
@@ -184,7 +182,7 @@ def execute (args, logger=None):
             files.sort()
             
             if debug:
-                print "%s > %s %s found" % (proc, len(files), "Files" if len(files)>1 else "File")
+                log("%s > %s %s found" % (proc, len(files), "Files" if len(files)>1 else "File"))
                 
             if len(files)>0:
                 for f in files:
@@ -228,6 +226,7 @@ def execute (args, logger=None):
                             data['result']['DataArray']['values'].append(observation)
                             
                         except Exception as e:
+                            log ("Errore alla riga: %s - %s)" % (i, lines[i]))
                             print "Errore alla riga: %s - %s)" % (i, lines[i])
                             traceback.print_exc()
                             raise e
@@ -340,15 +339,16 @@ def execute (args, logger=None):
                             log (res.json()['message'])
                         
                     
-                    print "~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~"
         pass
     
     except requests.exceptions.HTTPError as eh:
         print "ERROR: %s\n\n" % eh
+        log ("ERROR: %s\n\n" % eh)
         traceback.print_exc()
         pass
     except Exception as e:    
         print "ERROR: %s\n\n" % e
+        log ("ERROR: %s\n\n" % e)
         traceback.print_exc()
         pass
         
