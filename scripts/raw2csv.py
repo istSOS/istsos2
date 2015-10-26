@@ -290,14 +290,17 @@ class Converter():
         archive.close()
         
         
-    def execute(self):
+    def execute(self, fileArray=None):
         
         self.observations = []
         self.observationsCheck = {}
         self.endPosition = None
         
         # Load and Check folderIn + pattern and sort alfabetically
-        if self.fileArray == None:
+        if fileArray != None:
+          self.fileArray = fileArray
+          
+        elif self.fileArray == None:
           self.fileArray = self.prepareFiles()
             
         for fileObj in self.fileArray:
