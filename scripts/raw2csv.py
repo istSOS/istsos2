@@ -100,6 +100,7 @@ class Converter():
         self.auth = (self.user, self.password) if (self.user != None and self.password != None) else None
 
         self.debugfile = False
+        self.externalDebug = False
         if debug == 'file':
             self.debug = False
             try:
@@ -108,6 +109,9 @@ class Converter():
               self.log(str(e))
               self.debug = True
               self.debugfile = False
+        elif getattr(debug,'log',False):
+            self.externalDebug = debug
+            #self.debug = True
         else:
             self.debug = debug
         
@@ -136,8 +140,7 @@ class Converter():
         self.describe = None
         self.endPosition = None
         
-        if self.debug:
-            self.log("%s initialized." % self.name)
+        self.log("%s initialized." % self.name)
         
         
         # Messages collected during processing
@@ -172,7 +175,9 @@ class Converter():
         os.rmdir(self.folderOut)
     
     def log(self, message):
-        if self.debug:
+        if self.externalDebug:
+            self.externalDebug.log(message)
+        elif self.debug:
             print message 
         if self.debugfile:
             self.debugfile.write("%s\n" % message)
@@ -297,11 +302,9 @@ class Converter():
             
         for fileObj in self.fileArray:
             if self.skipFile(os.path.split(fileObj)[1]):
-                if self.debug:
-                    self.log(" > Skipping file %s" % os.path.split(fileObj)[1])
+                self.log(" > Skipping file %s" % os.path.split(fileObj)[1])
                 continue
-            if self.debug:
-                self.log(" > Working on file %s" % os.path.split(fileObj)[1])
+            self.log(" > Working on file %s" % os.path.split(fileObj)[1])
             self.executing = {
                 "file": fileObj
             }
