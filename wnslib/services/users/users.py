@@ -104,6 +104,8 @@ class wnsUsers(wnsOperation):
             }
         """
 
+        import json as jsonlib
+
         servicedb = databaseManager.PgDB(
             self.serviceconf.connectionWns['user'],
             self.serviceconf.connectionWns['password'],
@@ -132,7 +134,7 @@ class wnsUsers(wnsOperation):
         sql += " VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s, %s) RETURNING id;"
 
         params = (username, name, surname, email, twitter, tel, fax, address, )
-        params += (zip_code, city, state, country, ftp)
+        params += (zip_code, city, state, country, jsonlib.dumps(ftp))
 
         try:
             user_id = servicedb.execute(sql, params)[0][0]
