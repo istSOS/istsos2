@@ -173,8 +173,6 @@ class Notify(object):
         import StringIO
 
         print "try ftp"
-        print "ftp: ", ftp_params
-        print "message: ", message
 
         try:
             ftps = ftplib.FTP(ftp_params['server'])

@@ -72,6 +72,7 @@ print "Running..."
 def istsos_job():
     global schedmd5
     #print "Checking changes"
+
     if not schedmd5:
         print " > Initialization.."
         for service, scheduler in recursive_glob(rootdir=wns_path,
