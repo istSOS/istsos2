@@ -50,6 +50,21 @@ except ImportError as e:
     print str(e)
     raise e
     
+    
+class DebugConverter(dict):
+
+    def log(self, message):
+        raise Exception("addMessage must be overwritten")
+        
+    def addMessage(self, message):
+        raise Exception("addMessage must be overwritten")
+        
+    def addWarning(self, message):
+        raise Exception("addWarning must be overwritten")
+        
+    def addException(self, message):
+        raise Exception("addException must be overwritten")
+    
 class Converter():
     def __init__(self, name, url, service, folderIn, pattern, folderOut=None, 
                  qualityIndex=False, exceptionBehaviour={}, 
@@ -116,9 +131,8 @@ class Converter():
               self.log(str(e))
               self.debug = True
               self.debugfile = False
-        elif getattr(debug,'log',False):
+        elif isinstance(debug,DebugConverter):
             self.externalDebug = debug
-            #self.debug = True
         else:
             self.debug = debug
         
@@ -189,25 +203,37 @@ class Converter():
     
     def addMessage(self, message):
         self.log(message)
-        self.messages.append({
+        m = {
             "time": datetime.now(),
             "stack": stack(),
             "text": message
-        })
+        }
+        if self.externalDebug:
+            self.externalDebug.addMessage(m)
+        else:
+          self.messages.append(m)
         
     def addWarning(self, message):
-        self.warnings.append({
+        m = {
             "time": datetime.now(),
             "stack": stack(),
             "text": message
-        })
+        }
+        if self.externalDebug:
+            self.externalDebug.addWarning(m)
+        else:
+          self.warnings.append(m)
         
     def addException(self, message):
-        self.exceptions.append({
+        m = {
             "time": datetime.now(),
             "stack": stack(),
             "text": message
-        })
+        }
+        if self.externalDebug:
+            self.externalDebug.addException(m)
+        else:
+          self.exceptions.append(m)
         
     def parse(self, fileObj, name=None):
         raise Exception("This function must be overwritten")
