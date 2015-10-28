@@ -286,6 +286,7 @@ class waProcedures(waResourceService):
         # update foi geometry inside db
         if proc.data['location']:
         
+            name = proc.data['location']['properties']['name']
             foiX = proc.data['location']['geometry']['coordinates'][0]
             foiY = proc.data['location']['geometry']['coordinates'][1]
             foiZ = proc.data['location']['geometry']['coordinates'][2]
@@ -297,7 +298,7 @@ class waProcedures(waResourceService):
             sql += " SET geom_foi = ST_Transform(ST_GeomFromText('POINT(%s %s %s)',%s), %s)"
             sql += " WHERE name_foi=%s"
 
-            params = (foiX, foiY, foiZ, foiSrid, epsg, foi['properties']['name'])
+            params = (foiX, foiY, foiZ, foiSrid, epsg, name)
 
             servicedb.executeInTransaction(sql, params)
 
