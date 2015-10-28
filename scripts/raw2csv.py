@@ -155,6 +155,9 @@ class Converter():
                 
         # Load describeSensor from istSOS WALib (http://localhost/istsos/wa/istsos/services/demo/procedures/T_LUGANO)
         self.loadSensorMetadata()
+
+    def getName(self):
+      return self.name
     
     def __del__(self):
         self.log(" > End of conversion 4 %s. Bye bye.. ;)" % self.name)
@@ -185,18 +188,21 @@ class Converter():
     
     def addMessage(self, message):
         self.messages.append({
+            "time": datetime.now(),
             "stack": stack(),
             "text": message
         })
         
     def addWarning(self, message):
         self.warnings.append({
+            "time": datetime.now(),
             "stack": stack(),
             "text": message
         })
         
     def addException(self, message):
         self.exceptions.append({
+            "time": datetime.now(),
             "stack": stack(),
             "text": message
         })
