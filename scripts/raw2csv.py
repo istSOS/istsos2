@@ -103,7 +103,7 @@ class Converter():
         self.exceptions = []
         
         self.debugfile = False
-        self.externalDebug = False
+        self.debugConverter = False
         if debug == 'file':
             self.debug = False
             try:
@@ -113,7 +113,7 @@ class Converter():
               self.debug = True
               self.debugfile = False
         elif isinstance(debug,DebugConverter):
-            self.externalDebug = debug
+            self.debugConverter = debug
         else:
             self.debug = debug
         
@@ -194,8 +194,8 @@ class Converter():
         os.rmdir(self.folderOut)
     
     def log(self, message):
-        if self.externalDebug:
-            self.externalDebug.log(message)
+        if self.debugConverter:
+            self.debugConverter.log(message)
         elif self.debug:
             print message 
         if self.debugfile:
@@ -209,8 +209,8 @@ class Converter():
             "stack": stack(),
             "text": message
         }
-        if self.externalDebug:
-            self.externalDebug.addMessage(m)
+        if self.debugConverter:
+            self.debugConverter.addMessage(m)
         else:
           self.messages.append(m)
         
@@ -220,8 +220,8 @@ class Converter():
             "stack": stack(),
             "text": message
         }
-        if self.externalDebug:
-            self.externalDebug.addWarning(m)
+        if self.debugConverter:
+            self.debugConverter.addWarning(m)
         else:
           self.warnings.append(m)
         
@@ -231,8 +231,8 @@ class Converter():
             "stack": stack(),
             "text": message
         }
-        if self.externalDebug:
-            self.externalDebug.addException(m)
+        if self.debugConverter:
+            self.debugConverter.addException(m)
         else:
           self.exceptions.append(m)
         
@@ -281,15 +281,16 @@ class Converter():
     
     def csv2istsos(self):
         from scripts import csv2istsos
-        csv2istsos.datacache = {
-            self.name: self.describe
-        }
         csv2istsos.execute({
-            'u': self.url,
-            's': self.service,
-            'wd': self.folderOut,
-            'p': [self.name]
-        },self)
+              'u': self.url,
+              's': self.service,
+              'wd': self.folderOut,
+              'p': [self.name]
+          }, conf = {
+              'logger': debugConverter if isinstance(debugConverter,DebugConverter) else self,
+              'description': self.describe
+        })
+        addMessage("csv2istsos finished")
         
     def istsos2istsos(self, ssrv, durl=None, function=None, resolution=None, nodataValue=None, nodataQI=None):
         from scripts import istsos2istsos
@@ -305,6 +306,7 @@ class Converter():
             'nodataValue': nodataValue if nodataValue is not None else None, 
             'nodataQI': nodataQI if nodataQI is not None else None
         },self)
+        addMessage("istsos2istsos finished")
     
     def archive(self):
         
@@ -367,9 +369,11 @@ class Converter():
         
         # Save the CSV file in text/csv;subtype='istSOS/2.0.0'
         if self.isEmpty(): # The procedure is registered but no observations are still inserted
+            self.addMessage("Preparing CSV")    
             self.save()
             return True
         elif isinstance(self.getIOEndPosition(), datetime) and self.getIOEndPosition() > self.getDSEndPosition():
+            self.addMessage("Preparing CSV")    
             self.save()
             return True
         else:

@@ -43,17 +43,36 @@ try:
     from lib.requests.auth import HTTPBasicAuth
     import lib.isodate as iso
     from lib.pytz import timezone
+    from scripts.raw2csv import DebugConverter
 except ImportError as e:
     print "\nError loading internal libs:\n >> did you run the script from the istSOS root folder?\n\n"
     raise e
 
-datacache = {}
+datacache = None
 
-def execute (args, logger=None):
+def execute (args, conf=None):
     
     def log(message):
-        if logger:
-            logger.log(message)
+        if 'logger' in conf:
+            conf['logger'].log(message)
+        else:
+            print message
+    
+    def addMessage(self, message):
+        if 'logger' in conf:
+            conf['logger'].addMessage(message)
+        else:
+            print message
+        
+    def addWarning(self, message):
+        if 'logger' in conf:
+            conf['logger'].addWarning(message)
+        else:
+            print message
+        
+    def addException(self, message):
+        if 'logger' in conf:
+            conf['logger'].addException(message)
         else:
             print message
     
@@ -118,21 +137,23 @@ def execute (args, logger=None):
             
             log("\nProcedure: %s" % proc)
             
-            # Load procedure description                
-            res = req.get("%s/wa/istsos/services/%s/procedures/%s" % (
-                url,
-                service,
-                proc
-                ), auth=auth, verify=False)
-                
-            data = res.json()
-                
-            if data['success']==False:
-                raise Exception ("Description of procedure %s can not be loaded: %s" % (proc, data['message']))
+            if 'description' in conf:
+              data = conf['description']
             else:
-                log("%s > %s" % (proc,data['message']))
-            
-            data = data['data']
+              # Load procedure description                
+              res = req.get("%s/wa/istsos/services/%s/procedures/%s" % (
+                  url,
+                  service,
+                  proc
+                  ), auth=auth, verify=False)
+                  
+              data = res.json()
+                  
+              if data['success']==False:
+                  raise Exception ("Description of procedure %s can not be loaded: %s" % (proc, data['message']))
+              else:
+                  log("%s > %s" % (proc,data['message']))
+              data = data['data']
             
             aid = data['assignedSensorId']
             
@@ -226,10 +247,7 @@ def execute (args, logger=None):
                             data['result']['DataArray']['values'].append(observation)
                             
                         except Exception as e:
-                            log ("Errore alla riga: %s - %s)" % (i, lines[i]))
-                            print "Errore alla riga: %s - %s)" % (i, lines[i])
-                            traceback.print_exc()
-                            raise e
+                            raise Exception("Errore alla riga: %s - %s\n%s" % (i, lines[i],str(e)))
                             
                 log ("Before insert ST: %s" % proc)
                 if 'beginPosition' in data["samplingTime"]:
@@ -342,19 +360,13 @@ def execute (args, logger=None):
         pass
     
     except requests.exceptions.HTTPError as eh:
-        print "ERROR: %s\n\n" % eh
-        log ("ERROR: %s\n\n" % eh)
+        addException(str(eh))
         traceback.print_exc()
-        pass
-    except Exception as e:    
-        print "ERROR: %s\n\n" % e
-        log ("ERROR: %s\n\n" % e)
-        traceback.print_exc()
-        pass
         
-    pass
-    
-
+    except Exception as e:    
+        addException(str(eh))
+        traceback.print_exc()
+        
     
 if __name__ == "__main__":
 
