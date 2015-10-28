@@ -375,8 +375,48 @@ class Converter():
         else:
             self.log("Nothing to save")     
             return False
-        
-    
+            
+        '''{
+            "name" : "Microseconds",
+            "uom" : "µs"    
+        },{
+            "name" : "Milliseconds",
+            "uom" : "ms"    
+        },{
+            "name" : "Seconds",
+            "uom" : "s"    
+        },{
+            "name" : "Minutes",
+            "uom" : "min"    
+        },{
+            "name" : "Hours",
+            "uom" : "h"    
+        },{
+            "name" : "Days",
+            "uom" : "d"    
+        }'''
+        if 'capabilities' in self.describe:
+            for capability in self.describe['capabilities']:
+                if capability['definition'] == 'urn:x-ogc:def:classifier:x-istsos:1.0:acquisitionTimeResolution':
+                    delay = datetime.now() - self.getIOEndPosition() 
+                    timeResolution = None
+                    if capability['uom'] == 'd':
+                        timeResolution = timedelta(days=float(capability['value']))
+                    elif capability['uom'] == 'h':
+                        timeResolution = timedelta(hours=float(capability['value']))
+                    elif capability['uom'] == 'min':
+                        timeResolution = timedelta(minutes=float(capability['value']))
+                    elif capability['uom'] == 's':
+                        timeResolution = timedelta(seconds=float(capability['value']))
+                    elif capability['uom'] == 'ms':
+                        timeResolution = timedelta(milliseconds=float(capability['value']))
+                    elif capability['uom'] == 'µs':
+                        timeResolution = timedelta(microseconds=float(capability['value']))
+                    
+                    if delay > timeResolution:
+                        self.addWarning("Acquisition Time Resolution (%s %s) exceded by %s" (
+                          capability['value'], capability['uom'], (delay-timeResolution)))
+          
     def loadSensorMetadata(self):
         """
         Uses WALib to get the DescribeSensor document
