@@ -290,7 +290,6 @@ class Converter():
               'logger': self.debugConverter if isinstance(self.debugConverter,DebugConverter) else self,
               'description': self.describe
         })
-        self.addMessage("csv2istsos finished")
         
     def istsos2istsos(self, ssrv, durl=None, function=None, resolution=None, nodataValue=None, nodataQI=None):
         from scripts import istsos2istsos
@@ -306,7 +305,6 @@ class Converter():
             'nodataValue': nodataValue if nodataValue is not None else None, 
             'nodataQI': nodataQI if nodataQI is not None else None
         },self)
-        self.addMessage("istsos2istsos finished")
     
     def archive(self):
         
@@ -368,16 +366,14 @@ class Converter():
         self.validate()
         
         # Save the CSV file in text/csv;subtype='istSOS/2.0.0'
-        if self.isEmpty(): # The procedure is registered but no observations are still inserted
-            self.addMessage("Preparing CSV")    
+        if self.isEmpty(): # The procedure is registered but no observations are still inserted  
             self.save()
             return True
-        elif isinstance(self.getIOEndPosition(), datetime) and self.getIOEndPosition() > self.getDSEndPosition():
-            self.addMessage("Preparing CSV")    
+        elif isinstance(self.getIOEndPosition(), datetime) and self.getIOEndPosition() > self.getDSEndPosition(): 
             self.save()
             return True
         else:
-            self.addMessage("Nothing to save")     
+            self.log("Nothing to save")     
             return False
         
     
