@@ -290,15 +290,17 @@ class waProcedures(waResourceService):
             foiX = float(proc.data['location']['geometry']['coordinates'][0])
             foiY = float(proc.data['location']['geometry']['coordinates'][1])
             foiZ = float(proc.data['location']['geometry']['coordinates'][2])
-            foiSrid = proc.data['location']['crs']['properties']['name']
+            foiSrid = int(proc.data['location']['crs']['properties']['name'])
             
-            epsg = self.serviceconf.geo['istsosepsg']
+            epsg = int(self.serviceconf.geo['istsosepsg'])
 
             sql = "UPDATE %s.foi " % self.service
             sql += " SET geom_foi = ST_Transform(ST_GeomFromText('POINT(%s %s %s)',%s), %s)"
             sql += " WHERE name_foi=%s"
 
             params = (foiX, foiY, foiZ, foiSrid, epsg, name)
+
+            print >> sys.stderr, servicedb.mogrify(sql,params)
 
             servicedb.executeInTransaction(sql, params)
 
@@ -535,7 +537,7 @@ class waProcedures(waResourceService):
             smlobj = procedure.Procedure()
             smlobj.loadXML(res.content)
         except Exception as e:
-            print >> sys.stderr, "\n\nSML: %s\n%s\n" % (self.procedurename,res.content)
+            #print >> sys.stderr, "\n\nSML: %s\n%s\n" % (self.procedurename,res.content)
             raise Exception("Error loading DescribeSensor of '%s' [STATUS CODE: %s]: %s" % (self.procedurename,res.status_code,e))
 
         # Searching for the assignedSensorId from the database
