@@ -290,7 +290,7 @@ class Converter():
               'logger': self.debugConverter if isinstance(self.debugConverter,DebugConverter) else self,
               'description': self.describe
         })
-        addMessage("csv2istsos finished")
+        self.addMessage("csv2istsos finished")
         
     def istsos2istsos(self, ssrv, durl=None, function=None, resolution=None, nodataValue=None, nodataQI=None):
         from scripts import istsos2istsos
@@ -306,7 +306,7 @@ class Converter():
             'nodataValue': nodataValue if nodataValue is not None else None, 
             'nodataQI': nodataQI if nodataQI is not None else None
         },self)
-        addMessage("istsos2istsos finished")
+        self.addMessage("istsos2istsos finished")
     
     def archive(self):
         
