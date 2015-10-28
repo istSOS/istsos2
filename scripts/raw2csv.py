@@ -82,6 +82,11 @@ class Converter():
         # Can be used to speedup directory reading doinng it only once
         #  > "folderIn" and "pattern" must be identical
         
+        # Messages collected during processing
+        self.messages = []
+        self.warnings = []
+        self.exceptions = []
+        
         self.addMessage("%s initialization" % name)
         
         self.fileArray = None
@@ -143,12 +148,6 @@ class Converter():
         self.endPosition = None
         
         self.log("%s initialized." % self.name)
-        
-        
-        # Messages collected during processing
-        self.messages = []
-        self.warnings = []
-        self.exceptions = []
         
         # Single loop execution information
         self.executing = {
