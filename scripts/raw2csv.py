@@ -369,13 +369,10 @@ class Converter():
         self.validate()
         
         # Checking acquisition delay
-        print "Checking capabilites"
         if 'capabilities' in self.describe:
-            print " > found"
             for capability in self.describe['capabilities']:
-                print " >> %s " % capability['definition']
                 if capability['definition'] == 'urn:x-ogc:def:classifier:x-istsos:1.0:acquisitionTimeResolution':
-                    delay = datetime.now() - self.getIOEndPosition() 
+                    delay = self.getDateTimeWithTimeZone(datetime.utcnow(),'00:00') - self.getIOEndPosition() 
                     timeResolution = None
                     if capability['uom'] == 'd':
                         timeResolution = timedelta(days=float(capability['value']))
@@ -389,13 +386,12 @@ class Converter():
                         timeResolution = timedelta(milliseconds=float(capability['value']))
                     elif capability['uom'] == 'µs':
                         timeResolution = timedelta(microseconds=float(capability['value']))
-                    
-                    print "Delay: %s Time resolution: %s" % (delay, timeResolution)
-                    
                     if delay > timeResolution:
-                        self.addWarning("Acquisition Time Resolution (%s %s) exceded by %s" (
-                          capability['value'], capability['uom'], (delay-timeResolution)))
+                        self.addWarning("Acquisition Time Resolution (%s %s) exceded by %s" % (
+                          capability['value'], capability['uom'], str(delay-timeResolution)))
         
+        self.addMessage(" > Last observation; %s" % self.getIOEndPosition()) 
+
         # Save the CSV file in text/csv;subtype='istSOS/2.0.0'
         if self.isEmpty(): # The procedure is registered but no observations are still inserted  
             self.save()
