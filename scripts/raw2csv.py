@@ -102,6 +102,21 @@ class Converter():
         self.warnings = []
         self.exceptions = []
         
+        self.debugfile = False
+        self.externalDebug = False
+        if debug == 'file':
+            self.debug = False
+            try:
+                self.debugfile = open(os.path.join(self.folderOut, "log.txt"), "w")
+            except Exception as e:
+              self.log(str(e))
+              self.debug = True
+              self.debugfile = False
+        elif isinstance(debug,DebugConverter):
+            self.externalDebug = debug
+        else:
+            self.debug = debug
+        
         self.addMessage("%s initialization" % name)
         
         self.fileArray = None
@@ -121,20 +136,6 @@ class Converter():
         self.password = password
         self.auth = (self.user, self.password) if (self.user != None and self.password != None) else None
 
-        self.debugfile = False
-        self.externalDebug = False
-        if debug == 'file':
-            self.debug = False
-            try:
-                self.debugfile = open(os.path.join(self.folderOut, "log.txt"), "w")
-            except Exception as e:
-              self.log(str(e))
-              self.debug = True
-              self.debugfile = False
-        elif isinstance(debug,DebugConverter):
-            self.externalDebug = debug
-        else:
-            self.debug = debug
         
         self.archivefolder = archivefolder
         
