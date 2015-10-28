@@ -82,6 +82,8 @@ class Converter():
         # Can be used to speedup directory reading doinng it only once
         #  > "folderIn" and "pattern" must be identical
         
+        self.addMessage("%s initialization" % name)
+        
         self.fileArray = None
         
         self.req = requests.session()
@@ -187,6 +189,7 @@ class Converter():
                 
     
     def addMessage(self, message):
+        self.log(message)
         self.messages.append({
             "time": datetime.now(),
             "stack": stack(),
@@ -308,10 +311,14 @@ class Converter():
           
         elif self.fileArray == None:
           self.fileArray = self.prepareFiles()
+          
+        falen = len(self.fileArray)
+        proclen = falen
             
         for fileObj in self.fileArray:
             if self.skipFile(os.path.split(fileObj)[1]):
                 self.log(" > Skipping file %s" % os.path.split(fileObj)[1])
+                proclen = proclen - 1
                 continue
             self.log(" > Working on file %s" % os.path.split(fileObj)[1])
             self.executing = {
@@ -326,20 +333,21 @@ class Converter():
                 dat.close()
                 raise e
         
-        self.log(" > Parsed %s observations" % len(self.observations))
+        self.addMessage("Files (processed/total): %s/%s" % (falen,proclen))
+        self.addMessage("Parsed %s observations" % len(self.observations))
         
         # Validating array of observations
         self.validate()
         
         # Save the CSV file in text/csv;subtype='istSOS/2.0.0'
-        if self.isEmpty(): # The procedure is registered but there are no observations
+        if self.isEmpty(): # The procedure is registered but no observations are still inserted
             self.save()
             return True
         elif isinstance(self.getIOEndPosition(), datetime) and self.getIOEndPosition() > self.getDSEndPosition():
             self.save()
             return True
         else:
-            self.log(" > Nothing to save")     
+            self.addMessage("Nothing to save")     
             return False
         
     
@@ -368,6 +376,8 @@ class Converter():
             if (out['definition'].find(":qualityIndex")>=0) and (self.qualityIndex==False):
                 continue
             self.obsindex.append(out['definition'])
+            
+        self.addMessage("ST[%s-%s]" % (self.getDSBeginPosition(),self.getDSEndPosition()))
             
     def getDSBeginPosition(self):
         if u'constraint' in self.describe['outputs'][0]:
@@ -486,12 +496,14 @@ class Converter():
         else:
             # End position is used to advance the sampling time in cases where 
             # there is a "no data" observation (rain)
+            self.addMessage("No data, but end position updated")
             if self.getIOEndPosition() == None:
                 raise IstSOSError("The file has no observations, if this happens, you shall use the setEndPosition function to set the endPosition manually")
             f = open(os.path.join(self.folderOut,"%s_%s.dat" % (
                 self.name,
                 datetime.strftime(self.getIOEndPosition().astimezone(timezone('UTC')), "%Y%m%d%H%M%S%f"))), 'w')
             f.write("%s\n" % ",".join(self.obsindex))
+            
         f.flush()
         f.close()
         
