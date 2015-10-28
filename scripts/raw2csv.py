@@ -359,7 +359,7 @@ class Converter():
                 dat.close()
                 raise e
         
-        self.addMessage("Files (processed/total): %s/%s" % (falen,proclen))
+        self.addMessage("Files (processed/total): %s/%s" % (proclen,falen))
         self.addMessage("Parsed %s observations" % len(self.observations))
         
         # Validating array of observations
