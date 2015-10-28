@@ -25,9 +25,6 @@ from walib.resource import waResourceService
 import lib.requests as requests
 import os
 import sys
-from copy import deepcopy
-import json as libjson
-
 
 convertToSec = {
 'min': lambda x: x * 60,
@@ -276,32 +273,31 @@ class waProcedures(waResourceService):
         f.write(smlstring)
         f.close()
         self.setMessage("SensorML successfully updated")
-        servicedb = databaseManager.PgDB(self.serviceconf.connection['user'],
-                                         self.serviceconf.connection['password'],
-                                         self.serviceconf.connection['dbname'],
-                                         self.serviceconf.connection['host'],
-                                         self.serviceconf.connection['port']
-                                         )
+        servicedb = databaseManager.PgDB(
+            self.serviceconf.connection['user'],
+            self.serviceconf.connection['password'],
+            self.serviceconf.connection['dbname'],
+            self.serviceconf.connection['host'],
+            self.serviceconf.connection['port']
+        )
         msg1 = ""
         msg2 = ""
 
-        epsg = self.serviceconf.geo['istsosepsg']
-
         # update foi geometry inside db
         if proc.data['location']:
-
-            foi = deepcopy(proc.data['location'])
-            foi_geometry = foi['geometry']
-            foi_geometry['crs'] = foi['crs']
-            # set correct crs
-            foi_geometry['crs']['properties']['name'] = "EPSG:" + str(foi_geometry['crs']['properties']['name'])
-
+        
+            foiX = proc.data['location']['geometry']['coordinates'][0]
+            foiY = proc.data['location']['geometry']['coordinates'][1]
+            foiZ = proc.data['location']['geometry']['coordinates'][2]
+            foiSrid = proc.data['location']['crs']['properties']['name']
+            
+            epsg = self.serviceconf.geo['istsosepsg']
 
             sql = "UPDATE %s.foi " % self.service
-            sql += " SET geom_foi = ST_Transform(ST_GeomFromGeoJSON(%s), %s)"
+            sql += " SET geom_foi = ST_Transform(ST_GeomFromText('POINT(%s %s %s)',%s), %s)"
             sql += " WHERE name_foi=%s"
 
-            params = (libjson.dumps(foi_geometry), epsg, foi['properties']['name'])
+            params = (foiX, foiY, foiZ, foiSrid, epsg, foi['properties']['name'])
 
             servicedb.executeInTransaction(sql, params)
 
