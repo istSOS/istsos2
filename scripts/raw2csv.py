@@ -362,41 +362,18 @@ class Converter():
         self.addMessage("Files (processed/total): %s/%s" % (proclen,falen))
         self.addMessage("Parsed %s observations" % len(self.observations))
         
+        if falen > 5000:
+            self.addWarning("Reading folder slow, the '(%s)' folder contains %s files" % (self.folderIn,falen))
+        
         # Validating array of observations
         self.validate()
         
-        # Save the CSV file in text/csv;subtype='istSOS/2.0.0'
-        if self.isEmpty(): # The procedure is registered but no observations are still inserted  
-            self.save()
-            return True
-        elif isinstance(self.getIOEndPosition(), datetime) and self.getIOEndPosition() > self.getDSEndPosition(): 
-            self.save()
-            return True
-        else:
-            self.log("Nothing to save")     
-            return False
-            
-        '''{
-            "name" : "Microseconds",
-            "uom" : "µs"    
-        },{
-            "name" : "Milliseconds",
-            "uom" : "ms"    
-        },{
-            "name" : "Seconds",
-            "uom" : "s"    
-        },{
-            "name" : "Minutes",
-            "uom" : "min"    
-        },{
-            "name" : "Hours",
-            "uom" : "h"    
-        },{
-            "name" : "Days",
-            "uom" : "d"    
-        }'''
+        # Checking acquisition delay
+        print "Checking capabilites"
         if 'capabilities' in self.describe:
+            print " > found"
             for capability in self.describe['capabilities']:
+                print " >> %s " % capability['definition']
                 if capability['definition'] == 'urn:x-ogc:def:classifier:x-istsos:1.0:acquisitionTimeResolution':
                     delay = datetime.now() - self.getIOEndPosition() 
                     timeResolution = None
@@ -413,9 +390,23 @@ class Converter():
                     elif capability['uom'] == 'µs':
                         timeResolution = timedelta(microseconds=float(capability['value']))
                     
+                    print "Delay: %s Time resolution: %s" % (delay, timeResolution)
+                    
                     if delay > timeResolution:
                         self.addWarning("Acquisition Time Resolution (%s %s) exceded by %s" (
                           capability['value'], capability['uom'], (delay-timeResolution)))
+        
+        # Save the CSV file in text/csv;subtype='istSOS/2.0.0'
+        if self.isEmpty(): # The procedure is registered but no observations are still inserted  
+            self.save()
+            return True
+        elif isinstance(self.getIOEndPosition(), datetime) and self.getIOEndPosition() > self.getDSEndPosition(): 
+            self.save()
+            return True
+        else:
+            self.log("Nothing to save")     
+            return False
+            
           
     def loadSensorMetadata(self):
         """
