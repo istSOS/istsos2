@@ -287,7 +287,7 @@ class Converter():
               'wd': self.folderOut,
               'p': [self.name]
           }, conf = {
-              'logger': debugConverter if isinstance(debugConverter,DebugConverter) else self,
+              'logger': self.debugConverter if isinstance(self.debugConverter,DebugConverter) else self,
               'description': self.describe
         })
         addMessage("csv2istsos finished")

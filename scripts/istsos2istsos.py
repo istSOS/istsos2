@@ -68,6 +68,14 @@ pp = pprint.PrettyPrinter(indent=4)
 
 def execute (args, logger=None):
     
+    def log(message):
+        if debug:
+            if logger:
+                logger.log(message)
+            else:
+                print message
+                
+                
     # SCRIPT CONFIGURATION
     # =========================================================================
     
@@ -132,12 +140,6 @@ def execute (args, logger=None):
     if args.has_key('apwd'):
         apwd = args['apwd']
     
-    def log(message):
-        if debug:
-            if logger:
-                logger.log(message)
-            else:
-                print message
             
     # PROCESSING STARTS HERE ==================================================
     
