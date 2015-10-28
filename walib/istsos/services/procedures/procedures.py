@@ -287,9 +287,9 @@ class waProcedures(waResourceService):
         if proc.data['location']:
         
             name = proc.data['location']['properties']['name']
-            foiX = proc.data['location']['geometry']['coordinates'][0]
-            foiY = proc.data['location']['geometry']['coordinates'][1]
-            foiZ = proc.data['location']['geometry']['coordinates'][2]
+            foiX = float(proc.data['location']['geometry']['coordinates'][0])
+            foiY = float(proc.data['location']['geometry']['coordinates'][1])
+            foiZ = float(proc.data['location']['geometry']['coordinates'][2])
             foiSrid = proc.data['location']['crs']['properties']['name']
             
             epsg = self.serviceconf.geo['istsosepsg']
