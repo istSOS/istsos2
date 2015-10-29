@@ -52,7 +52,7 @@ except ImportError as e:
     
     
 class DebugConverter(dict):
-
+    
     def log(self, message):
         raise Exception("addMessage must be overwritten")
         
@@ -64,13 +64,18 @@ class DebugConverter(dict):
         
     def addException(self, message):
         raise Exception("addException must be overwritten")
+        
+    def addConverter(self, converter):
+        if not hasattr(self,'converters'):
+            self.converters = {}
+        self.converters[converter.name] = converter
     
 class Converter():
     def __init__(self, name, url, service, folderIn, pattern, folderOut=None, 
-                 qualityIndex=False, exceptionBehaviour={}, 
-                 user=None, password=None, debug=False, 
-                 csvlength=5000, 
-                 filenamecheck = None, archivefolder = None):
+            qualityIndex=False, exceptionBehaviour={}, 
+            user=None, password=None, debug=False, 
+            csvlength=5000, 
+            filenamecheck = None, archivefolder = None):
         """
         Info:        
         
@@ -97,6 +102,13 @@ class Converter():
         # Can be used to speedup directory reading doinng it only once
         #  > "folderIn" and "pattern" must be identical
         
+        self.fileArray = None
+        self.name = name
+        self.url = url
+        self.service = service
+        self.folderIn = folderIn
+        self.pattern = pattern
+        
         # Messages collected during processing
         self.messages = []
         self.warnings = []
@@ -114,20 +126,14 @@ class Converter():
               self.debugfile = False
         elif isinstance(debug,DebugConverter):
             self.debugConverter = debug
+            self.debugConverter.addConverter(self)
         else:
             self.debug = debug
         
         self.addMessage("%s initialization" % name)
         
-        self.fileArray = None
         
         self.req = requests.session()
-    
-        self.name = name
-        self.url = url
-        self.service = service
-        self.folderIn = folderIn
-        self.pattern = pattern
         
         self.folderOut = folderOut if folderOut is not None else tempfile.mkdtemp()
         
@@ -369,32 +375,9 @@ class Converter():
         self.validate()
         
         # Checking acquisition delay
-        if 'capabilities' in self.describe:
-            for capability in self.describe['capabilities']:
-                if capability['definition'] == 'urn:x-ogc:def:classifier:x-istsos:1.0:acquisitionTimeResolution':
-                    end = self.getIOEndPosition()
-                    if not end:
-                        end = self.getDSEndPosition()
-                    if not end:
-                        break
-                    delay = self.getDateTimeWithTimeZone(datetime.utcnow(),'00:00') - end
-                    timeResolution = None
-                    if capability['uom'] == 'd':
-                        timeResolution = timedelta(days=float(capability['value']))
-                    elif capability['uom'] == 'h':
-                        timeResolution = timedelta(hours=float(capability['value']))
-                    elif capability['uom'] == 'min':
-                        timeResolution = timedelta(minutes=float(capability['value']))
-                    elif capability['uom'] == 's':
-                        timeResolution = timedelta(seconds=float(capability['value']))
-                    elif capability['uom'] == 'ms':
-                        timeResolution = timedelta(milliseconds=float(capability['value']))
-                    elif capability['uom'] == 'µs':
-                        timeResolution = timedelta(microseconds=float(capability['value']))
-                    if delay > timeResolution:
-                        self.addWarning("%s, acquisition Time Resolution (%s %s) exceded by %s" % (
-                          self.getName(), capability['value'], capability['uom'], str(delay-timeResolution)))
-                    break
+        if self.isDelayExceeding():
+            self.addWarning("%s, acquisition Time Resolution (%s %s) exceeded by %s" % (
+              self.getName(), self.capability['value'], self.capability['uom'], str(self.getDelayExceeding())))
         
         self.addMessage(" > Last observation; %s" % self.getIOEndPosition()) 
 
@@ -435,9 +418,53 @@ class Converter():
             if (out['definition'].find(":qualityIndex")>=0) and (self.qualityIndex==False):
                 continue
             self.obsindex.append(out['definition'])
-            
+        
+        self.acquisitionTimeResolution = None
+        if 'capabilities' in self.describe:
+            for capability in self.describe['capabilities']:
+                if capability['definition'] == 'urn:x-ogc:def:classifier:x-istsos:1.0:acquisitionTimeResolution':
+                    self.capability = capability
+                    if capability['uom'] == 'd':
+                        self.acquisitionTimeResolution = timedelta(days=float(capability['value']))
+                    elif capability['uom'] == 'h':
+                        self.acquisitionTimeResolution = timedelta(hours=float(capability['value']))
+                    elif capability['uom'] == 'min':
+                        self.acquisitionTimeResolution = timedelta(minutes=float(capability['value']))
+                    elif capability['uom'] == 's':
+                        self.acquisitionTimeResolution = timedelta(seconds=float(capability['value']))
+                    elif capability['uom'] == 'ms':
+                        self.acquisitionTimeResolution = timedelta(milliseconds=float(capability['value']))
+                    elif capability['uom'] == 'µs':
+                        self.acquisitionTimeResolution = timedelta(microseconds=float(capability['value']))
+                    break
+                    
         self.addMessage("ST[%s-%s]" % (self.getDSBeginPosition(),self.getDSEndPosition()))
-            
+    
+    def getAcquisitionTimeResolution(self):
+        return self.acquisitionTimeResolution
+        
+    def getDelay(self):
+        end = self.getIOEndPosition()
+        if not end:
+            end = self.getDSEndPosition()
+            if end:
+                return self.getDateTimeWithTimeZone(datetime.utcnow(),'00:00') - end
+        else:
+            return self.getDateTimeWithTimeZone(datetime.utcnow(),'00:00') - end
+        return None
+        
+    def isDelayExceeding(self):
+        delay = self.getDelay()
+        if delay!=None and self.getAcquisitionTimeResolution()!=None and delay > self.getAcquisitionTimeResolution():
+            return True
+        return False
+        
+    def getDelayExceeding(self):
+        delay = self.getDelay()
+        if delay!=None and self.getAcquisitionTimeResolution()!=None:
+            return delay - self.getAcquisitionTimeResolution()
+        return timedelta()
+        
     def getDSBeginPosition(self):
         if u'constraint' in self.describe['outputs'][0]:
             return iso.parse_datetime(self.describe['outputs'][0]['constraint']['interval'][0])
