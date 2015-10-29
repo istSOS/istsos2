@@ -381,7 +381,9 @@ class VirtualProcessHQ(VirtualProcess):
                     data_out.append([ rec[0], -999.9, 110 ])
                 else:
                     for o in range(len(self.hqCurves['from'])):
-                        if (self.hqCurves['from'][o] < rec[0] <= self.hqCurves['to'][o]) and (self.hqCurves['low'][o] <= float(rec[1]) < self.hqCurves['up'][o]):
+                        if rec[1] == None:
+                            data_out.append([ rec[0], -999.9 ])
+                        elif (self.hqCurves['from'][o] < rec[0] <= self.hqCurves['to'][o]) and (self.hqCurves['low'][o] <= float(rec[1]) < self.hqCurves['up'][o]):
                             if (float(rec[1])-self.hqCurves['B'][o]) >=0:
                                 data_out.append([ rec[0], "%.3f" %(self.hqCurves['K'][o] + self.hqCurves['A'][o]*((float(rec[1])-self.hqCurves['B'][o])**self.hqCurves['C'][o])), rec[2] ])
                             else:
@@ -395,7 +397,9 @@ class VirtualProcessHQ(VirtualProcess):
             data_out=[]
             for rec in data:
                 for o in range(len(self.hqCurves['from'])):
-                    if (self.hqCurves['from'][o] < rec[0] <= self.hqCurves['to'][o]) and (self.hqCurves['low'][o] <= float(rec[1]) < self.hqCurves['up'][o]):
+                    if rec[1] == None:
+                        data_out.append([ rec[0], -999.9 ])
+                    elif (self.hqCurves['from'][o] < rec[0] <= self.hqCurves['to'][o]) and (self.hqCurves['low'][o] <= float(rec[1]) < self.hqCurves['up'][o]):
                         if (float(rec[1])-self.hqCurves['B'][o]) >=0:
                             data_out.append([ rec[0], "%.3f" %(self.hqCurves['K'][o] + self.hqCurves['A'][o]*((float(rec[1])-self.hqCurves['B'][o])**self.hqCurves['C'][o])) ])
                         else:
