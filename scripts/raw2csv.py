@@ -372,7 +372,12 @@ class Converter():
         if 'capabilities' in self.describe:
             for capability in self.describe['capabilities']:
                 if capability['definition'] == 'urn:x-ogc:def:classifier:x-istsos:1.0:acquisitionTimeResolution':
-                    delay = self.getDateTimeWithTimeZone(datetime.utcnow(),'00:00') - self.getIOEndPosition() 
+                    end = self.getIOEndPosition()
+                    if not end:
+                        end = self.getDSEndPosition()
+                    if not end:
+                        break
+                    delay = self.getDateTimeWithTimeZone(datetime.utcnow(),'00:00') - end
                     timeResolution = None
                     if capability['uom'] == 'd':
                         timeResolution = timedelta(days=float(capability['value']))
@@ -387,8 +392,9 @@ class Converter():
                     elif capability['uom'] == 'µs':
                         timeResolution = timedelta(microseconds=float(capability['value']))
                     if delay > timeResolution:
-                        self.addWarning("Acquisition Time Resolution (%s %s) exceded by %s" % (
-                          capability['value'], capability['uom'], str(delay-timeResolution)))
+                        self.addWarning("%s, acquisition Time Resolution (%s %s) exceded by %s" % (
+                          self.getName(), capability['value'], capability['uom'], str(delay-timeResolution)))
+                    break
         
         self.addMessage(" > Last observation; %s" % self.getIOEndPosition()) 
 
