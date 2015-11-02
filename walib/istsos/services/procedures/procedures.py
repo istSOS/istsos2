@@ -583,6 +583,10 @@ class waGetlist(waResourceService):
                                             self.serviceconf.connection['host'],
                                             self.serviceconf.connection['port']
             )
+            if self.waEnviron['parameters'] and self.waEnviron['parameters'].has_key('tzoffset'):
+                tzoffset = self.waEnviron['parameters']['tzoffset'][0]
+                servicedb.setTimeTZ(tzoffset)
+
             proceduresList = utils.getProcedureNamesList(servicedb,self.servicename)
             for proc in proceduresList:
                 elem = {}
