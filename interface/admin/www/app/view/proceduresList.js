@@ -173,7 +173,7 @@ Ext.define('istsos.view.proceduresList', {
         }
         this.mask.show();
         Ext.Ajax.request({
-            url: Ext.String.format('{0}/istsos/services/{1}/procedures/operations/getlist?offset='+((new Date()).getTimezoneOffset()/-60), wa.url,this.istService),
+            url: Ext.String.format('{0}/istsos/services/{1}/procedures/operations/getlist?tzoffset='+((new Date()).getTimezoneOffset()/-60), wa.url,this.istService),
             scope: this,
             method: "GET",
             success: function(response){
