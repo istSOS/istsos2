@@ -78,6 +78,38 @@ class PgDB(Database):
             else:
                 raise Exception("CONNECTION ERROR: %s" % e)
 
+    def setTimeTZ(self,tz):
+        """
+        Set the database Time Zone for this connection:
+        
+        @param tz: object that define the Time Zone
+        
+        .. note::  The input parameter can be af differents types:
+            1. A String that can be handled by postgresql (see Time Zone at http://www.postgresql.org/docs/current/static/sql-set.html)
+            2. An integer, for instance -7. The time zone 7 hours west from UTC (equivalent to PDT / -07:00). Positive values are east from UTC.
+            3. A datetime with timezone information
+        """
+        import datetime
+        offset = "UTC"
+        if type(tz) == type("") or type(tz) == type(1):
+            offset = tz
+        elif type(tz) == datetime.datetime:
+            try:
+                o = tz.utcoffset()
+                seconds = o.total_seconds()
+                offset = seconds / 3600
+            except:
+                seconds = o.seconds
+                if o.days < 0:
+                    offset = -1 * ((86400 - seconds) / 3600)
+                else:
+                    offset = seconds / 3600
+                
+        else:
+            raise Exception("Time Zone object tz Unknown, (%s)" % type(tz))
+        
+        self.execute("SET SESSION TIME ZONE '%s';" % offset)
+
     def select(self,sql,par=None):
         """ Execute a select statement"""
         if sql.lstrip()[0:6].lower() == "select":
