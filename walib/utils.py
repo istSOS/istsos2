@@ -32,6 +32,16 @@ def valid_NCName(name):
             return False
     return True
 
+class FakeConfig(object):
+    def __init__(self):
+        self.schema = None
+        self.virtual_processes_folder = None
+        
+class Object(object):
+    def __init__(self):
+        self.procedure = None
+        self.sosConfig = FakeConfig()
+
 def validatedb(user,password,dbname,host,port=5432,service=None):
     """
     Validate a service db connection parameters
@@ -236,7 +246,8 @@ def getProcedureNamesList(pgdb,service,offering=None, observationType=None):
             rows = pgdb.select(sql,(offering, observationType))
             
     if rows:
-    
+        import config
+        import os
         ret = []
         for row in rows:
             begin = ""
@@ -247,6 +258,36 @@ def getProcedureNamesList(pgdb,service,offering=None, observationType=None):
             if row["etime_prc"]:
                 end = row["etime_prc"].strftime("%Y-%m-%dT%H:%M:%S%z")
             
+            if row["name_oty"] == 'virtual':
+                virtual_processes_folder = "%s/%s/virtual/" % (config.services_path, service)
+                vpFolder = os.path.join(virtual_processes_folder, row["name_prc"])
+                try:
+                    sys.path.append(vpFolder)
+                except:
+                    raise Exception("Error in loading virtual procedure path")
+                    
+                # check if python file exist
+                if os.path.isfile("%s/%s.py" % (vpFolder,row["name_prc"])):
+                    
+                    #import procedure process
+                    exec "import %s as vproc" %(row["name_prc"])  in globals(), locals()
+                    
+                    fakeFilter = Object()
+                    fakeFilter.procedure = row["name_prc"]
+                    fakeFilter.sosConfig.schema = service
+                    fakeFilter.sosConfig.virtual_processes_folder = virtual_processes_folder
+                    
+                    # Initialization of virtual procedure will load the source data
+                    vp = vproc.istvp()
+                    vp._configure(fakeFilter,pgdb)
+                    
+                    begin, end = vp.getSampligTime()
+                    
+                    if begin: 
+                        begin = begin.strftime("%Y-%m-%dT%H:%M:%S%z")
+                    if end:
+                        end = end.strftime("%Y-%m-%dT%H:%M:%S%z")
+
             ret.append({ 
                 "id": row["id_prc"], 
                 "name": row["name_prc"], 
