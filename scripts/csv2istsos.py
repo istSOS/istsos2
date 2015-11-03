@@ -53,7 +53,7 @@ datacache = None
 def execute (args, conf=None):
     
     def log(message):
-        if 'logger' in conf:
+        if conf != None and 'logger' in conf:
             conf['logger'].log(message)
         else:
             print message
@@ -137,7 +137,7 @@ def execute (args, conf=None):
             
             log("\nProcedure: %s" % proc)
             
-            if 'description' in conf:
+            if conf != None and 'description' in conf:
               data = conf['description']
             else:
               # Load procedure description                
@@ -360,11 +360,11 @@ def execute (args, conf=None):
         pass
     
     except requests.exceptions.HTTPError as eh:
-        addException(str(eh))
+        #addException(str(eh))
         traceback.print_exc()
         
     except Exception as e:    
-        addException(str(eh))
+        #addException(str(e))
         traceback.print_exc()
         
     
