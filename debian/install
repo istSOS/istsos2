@@ -1,0 +1,10 @@
+*.py /usr/share/istsos
+interface /usr/share/istsos
+istsoslib /usr/share/istsos
+scripts /usr/share/istsos
+services /usr/share/istsos
+walib /usr/share/istsos
+wnslib /usr/share/istsos
+lib /usr/share/istsos
+logs /usr/share/logs
+debian/istsos.conf /etc/apache2/sites-available/

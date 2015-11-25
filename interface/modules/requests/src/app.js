@@ -24,6 +24,7 @@ Ext.application({
         'ServiceModel'
     ],
     stores: [
+        'Requests',
         'Services',
         'Methods'
     ],

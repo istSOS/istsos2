@@ -16,6 +16,10 @@ Ext.define('istsos.view.proceduresList', {
 
     initComponent: function() {
         var me = this;
+        
+        Ext.create('istsos.store.gridProceduresList',{
+          storeId: 'procedureListSearch',
+        });
         Ext.create('istsos.store.gridProceduresList',{
             fields: [
                 {

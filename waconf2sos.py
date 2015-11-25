@@ -21,6 +21,7 @@
 #
 # ===============================================================================
 from walib import resource
+import walib.users as user
 import string
 import config
 import sys
@@ -32,7 +33,6 @@ class istsosConfig():
             "path" : environ['PATH_INFO'],
             "method" : str(environ['REQUEST_METHOD']).upper(),
             "pathinfo" : environ['PATH_INFO'].strip()[1:].split("/"),
-            #"wsgi_input" : environ['wsgi.input'].read(int(environ["CONTENT_LENGTH"])) if environ.get("CONTENT_LENGTH") else None,
             "url_scheme" : environ['wsgi.url_scheme'],
             "http_host" : environ['HTTP_HOST'] if environ.get('HTTP_HOST') else None,
             "server_name" : environ['SERVER_NAME'],
@@ -43,15 +43,16 @@ class istsosConfig():
             "istsos_path" : config.istsoslib_path
         }
         
-        """
-        i = waEnviron["pathinfo"].index("services")
-        if i>0 and i<len(waEnviron["pathinfo"])-1:
-            service = waEnviron["pathinfo"][i+1]
-        else:
-            service = None
-        serviceobj = resource.waResourceService(waEnviron,service,loadjson=False)
-        """
-        serviceobj = resource.waResourceService(waEnviron,waEnviron["pathinfo"][-1],loadjson=False)
+        self.user = user.getUser(environ)
+                
+        serviceobj = resource.waResourceService(
+            waEnviron,waEnviron["pathinfo"][-1],loadjson=False)
+        
+        # Passing the basic authentication header in waEnviron
+        #   shall be used in istSOS lib request from walib
+        if 'HTTP_AUTHORIZATION' in environ:
+            waEnviron['HTTP_AUTHORIZATION'] = environ['HTTP_AUTHORIZATION']
+            
         
         self.debug=config.debug
         

@@ -180,7 +180,7 @@ def getOfferingDetailsList(pgdb,service):
     else:
         return []
 
-def getProcedureNamesList(pgdb,service,offering=None, observationType=None):
+def getProcedureNamesList(pgdb, service, offering=None, observationType=None, procedure=None):
     """
     Return the list of procedures:
         
@@ -197,53 +197,110 @@ def getProcedureNamesList(pgdb,service,offering=None, observationType=None):
     
     >>> Return example:
         [
-            { "id":1,"name":"Chiasso", "description": "", "assignedid": "1234"},
-            { "id":2,"name":"Bellinzona", "description": "", "assignedid": "1235"},
-            { "id":3,"name":"Lugano", "description": "", "assignedid": "1236"}
+            { 
+              "id":1,
+              "name":"Chiasso", 
+              "description": "", 
+              "assignedid": "1234", 
+              "sensortype": "in-situ-fixed", 
+              "samplingTime": {
+                "beginposition": "2015-10-08T02:56:16+01", 
+                "endposition": "2015-10-08T08:56:16+01"
+              }
+            },
+            {...}
         ]
     """
+    
     if offering==None:
         if observationType==None:            
             sql = """
                 SELECT id_prc, name_prc, desc_prc, assignedid_prc, name_oty, stime_prc, etime_prc
                 FROM %s.procedures, %s.obs_type 
-                WHERE id_oty_fk = id_oty 
-                ORDER BY name_prc""" %((service,)*2)
-            rows = pgdb.select(sql)
+                WHERE id_oty_fk = id_oty """  % ((service,)*2)
+            
+            if procedure:
+                sql += """
+                    AND name_prc = %s
+                    ORDER BY name_prc;
+                """
+                rows = pgdb.select(sql, (procedure,))
+            else:
+                sql += """
+                    ORDER BY name_prc;
+                """
+                rows = pgdb.select(sql)
             
         else:
             sql = """
                 SELECT id_prc, name_prc, desc_prc, assignedid_prc, name_oty, stime_prc, etime_prc
                 FROM %s.procedures, %s.obs_type 
-                WHERE id_oty_fk = id_oty""" % ((service,)*2)
-            sql += """
-                AND name_oty = %s
-                ORDER BY name_prc""" 
-            rows = pgdb.select(sql,(observationType,))
+                WHERE id_oty_fk = id_oty """ % ((service,)*2)
+            
+            if procedure:
+                sql += """
+                    AND name_oty = %s
+                    AND name_prc = %s
+                    ORDER BY name_prc;
+                """
+                rows = pgdb.select(sql, (observationType, procedure))
+            else:
+                sql += """
+                    AND name_oty = %s
+                    ORDER BY name_prc""" 
+                rows = pgdb.select(sql, (observationType,))
     else:
         if observationType==None:   
             sql  = """
                 SELECT id_prc, name_prc, desc_prc, assignedid_prc, name_oty, stime_prc, etime_prc
-                FROM %s.off_proc op, %s.procedures p, %s.offerings o, %s.obs_type """ %((service,)*4)
-            sql += """ 
-                WHERE o.id_off = op.id_off_fk 
-                AND op.id_prc_fk = p.id_prc  
-                AND id_oty_fk = id_oty
-                AND o.name_off = %s
-                ORDER BY p.name_prc; """
-            rows = pgdb.select(sql,(offering,))
+                FROM %s.off_proc op, %s.procedures p, %s.offerings o, %s.obs_type """  % ((service,)*4)
+            
+            if procedure:
+                sql += """
+                    WHERE o.id_off = op.id_off_fk 
+                    AND op.id_prc_fk = p.id_prc  
+                    AND id_oty_fk = id_oty
+                    AND o.name_off = %s
+                    AND p.name_prc = %s
+                    ORDER BY p.name_prc; 
+                """
+                rows = pgdb.select(sql, (offering, procedure))
+                
+            else:
+                sql += """ 
+                    WHERE o.id_off = op.id_off_fk 
+                    AND op.id_prc_fk = p.id_prc  
+                    AND id_oty_fk = id_oty
+                    AND o.name_off = %s
+                    ORDER BY p.name_prc; """
+                rows = pgdb.select(sql, (offering,))
         else:
             sql = """
                 SELECT id_prc, name_prc, desc_prc, assignedid_prc, name_oty, stime_prc, etime_prc
                 FROM %s.off_proc op, %s.procedures p, %s.offerings o, %s.obs_type """ % ((service,)*4)
-            sql += """
-                WHERE o.id_off=op.id_off_fk 
-                AND op.id_prc_fk=p.id_prc 
-                AND id_oty_fk = id_oty
-                AND o.name_off = %s
-                AND name_oty = %s
-                ORDER BY name_prc""" 
-            rows = pgdb.select(sql,(offering, observationType))
+                
+            
+            if procedure:
+                sql += """
+                    WHERE o.id_off=op.id_off_fk 
+                    AND op.id_prc_fk=p.id_prc 
+                    AND id_oty_fk = id_oty
+                    AND o.name_off = %s
+                    AND name_oty = %s
+                    AND name_prc = %s
+                    ORDER BY name_prc;
+                """
+                rows = pgdb.select(sql, (offering, observationType, procedure))
+            else:
+            
+                sql += """
+                    WHERE o.id_off=op.id_off_fk 
+                    AND op.id_prc_fk=p.id_prc 
+                    AND id_oty_fk = id_oty
+                    AND o.name_off = %s
+                    AND name_oty = %s
+                    ORDER BY name_prc""" 
+                rows = pgdb.select(sql, (offering, observationType))
             
     if rows:
         import config
@@ -457,11 +514,16 @@ def getOfferingsFromProcedure(pgdb,service,procedure):
     else:
         return None    
 
-def verifyxmlservice(url):
+def verifyxmlservice(url, waEnviron):
     import lib.requests as requests
     from lib.etree import et
     try:
-        response = requests.get(url)
+        if 'HTTP_AUTHORIZATION' in waEnviron:
+            print >> sys.stderr, "Adding authentication"
+            response = requests.get(url, headers={'Authorization': waEnviron['HTTP_AUTHORIZATION']})
+        else:
+            print >> sys.stderr, "No authentication"
+            response = requests.get(url)
         response.raise_for_status()
         root = et.fromstring(response.text)
         if not root.find("Exception") == None:

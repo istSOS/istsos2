@@ -19,6 +19,8 @@
 
         <script type="text/javascript" src="dygraphs/dygraph-combined.js"></script>
 
+        <script type="text/javascript" src="app/engine/wa.js"></script>
+        
         <script type="text/javascript" src="app/store/Offerings.js"></script>
         <script type="text/javascript" src="app/store/gridProceduresList.js"></script>
         <script type="text/javascript" src="app/store/Services.js"></script>
@@ -41,8 +43,6 @@
 
         <script type="text/javascript" src="app/Procedure.js"></script>
 
-
-
         <style type="text/css">
 
             .x-btn-default-toolbar-small .x-btn-inner {
@@ -59,7 +59,6 @@
             function pad(n){return n<10 ? '0'+n : n}
             
             Ext.ns("wa");
-            wa.url = "../wa";
 
             Ext.Loader.setConfig({
                 enabled: false

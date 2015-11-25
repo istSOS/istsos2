@@ -14,8 +14,8 @@
                 "width": null
             }
         },
-        "urlPrefix": "http://localhost/istsos/requests",
-        "exportPath": "/home/milan/workspace/istsos/trunk/interface/modules/requests/pub",
+        "urlPrefix": "http://localhost/istsos/modules/requests",
+        "exportPath": "/home/milan/workspace/istsos/interface/modules/requests/www/",
         "spacesToIndent": 4,
         "sdkPath": "",
         "lineEnding": "LF",
@@ -24,7 +24,13 @@
         "buildShouldOverwriteIndex": true,
         "generateArchitectVersion": false,
         "displayfield-ExtBox1-1278-inputEl": "Not Installed",
-        "displayfield-ExtBox1-1384-inputEl": "Not Installed"
+        "displayfield-ExtBox1-1384-inputEl": "Not Installed",
+        "displayfield-ExtBox1-1274-inputEl": "Not Installed",
+        "lastBuildSelection": {
+            "value": "webBuild",
+            "display": "Build web app"
+        },
+        "displayfield-ExtBox1-1289-inputEl": "Not Installed"
     },
     "xdsVersion": "3.0.4",
     "xdsBuild": 1386,
@@ -52,8 +58,8 @@
             "620c1079-f183-4686-a0e6-7db556fc2587",
             "caf28366-60a5-436d-839b-6c2d60d1835f",
             "7b8b674c-2c8c-4492-8179-8de0b405d2d3",
-            "c86bb3b0-cd36-4cc8-b7e7-66e34f53a90d",
-            "77406adb-63a3-4799-932b-62dad119f0a0"
+            "77406adb-63a3-4799-932b-62dad119f0a0",
+            "bac8fda6-17d1-4644-bba3-b378c3960b65"
         ],
         "app": [
             "application"

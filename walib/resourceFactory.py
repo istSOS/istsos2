@@ -33,6 +33,10 @@ def initResource(waEnviron):
     
     if resource == "istsos":
         
+        '''if 'user' in waEnviron and not waEnviron['user'].isAdmin():
+            from walib import users
+            return users.waUserUnauthorized(waEnviron)'''
+        
         resource = pathinfo.pop(0)
         
         # --------------------------
@@ -53,9 +57,10 @@ def initResource(waEnviron):
             elif resource == "validatedb":
                 from walib.istsos import istsos
                 return istsos.waValidatedb(waEnviron)
+            ''' checking if not need any more
             elif resource == "initialization":
                 from walib.istsos import istsos
-                return istsos.waInitialization(waEnviron)
+                return istsos.waInitialization(waEnviron)'''
         
         # --------------------------
         # Entering istsos.services
@@ -289,5 +294,9 @@ def initResource(waEnviron):
                 elif resource == "status":
                     from walib.istsos.services.status import status
                     return status.waStatus(waEnviron)
+                    
+    elif resource == "user":
+        from walib import users
+        return users.waUsers(waEnviron)
                                    
     raise Exception("Resource is not identified, check the URL")

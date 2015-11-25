@@ -30,7 +30,7 @@ Ext.define('requests.store.Services', {
             storeId: 'Services',
             proxy: {
                 type: 'ajax',
-                url: '../wa/istsos/services',
+                url: '../../wa/istsos/services',
                 reader: {
                     type: 'json',
                     root: 'data'

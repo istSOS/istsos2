@@ -45,21 +45,30 @@ class waStatus(waIstsos):
         @note: This method creates a C{self.data} object in the form of a list of
         dictionaries as below:
             
-        >>> template = {"service" : None, 
-                        "offerings" : None,
-                        "procedures" : None,
-                        "observedProperties" : None,
-                        "featuresOfInterest" : None,
-                        "getCapabilities" : None,
-                        "describeSensor" : None,
-                        "getObservations" : None,
-                        "registerSensor" : None,
-                        "insertObservation" : None,
-                        "getFeatureOfInterest" : None,
-                        "availability" : "up"
-                        } 
+        >>> template = {
+                "service" : None, 
+                "offerings" : None,
+                "procedures" : None,
+                "observedProperties" : None,
+                "featuresOfInterest" : None,
+                "getCapabilities" : None,
+                "describeSensor" : None,
+                "getObservations" : None,
+                "registerSensor" : None,
+                "insertObservation" : None,
+                "getFeatureOfInterest" : None,
+                "availability" : "up"
+            }
         """
         services = utils.getServiceList(self.waconf.paths["services"],listonly=True)
+        
+        if self.user and not self.user.isAdmin():
+            servicesAllowed = []
+            for item in services:
+                if self.user.allowedService(item):
+                    servicesAllowed.append(item)
+            services = servicesAllowed
+            
         data = []
         for service in services:
             srv = {}
@@ -80,17 +89,17 @@ class waStatus(waIstsos):
             
             request = "?request=getCapabilities&section=serviceidentification&service=SOS"
                         
-            srv["availability"] = utils.verifyxmlservice(urlget+request)
+            srv["availability"] = utils.verifyxmlservice(urlget+request,self.waEnviron)
             
             #test if connection is valid
             #-------------------------------------------------------------------
             connection = config.get("connection")
             try:
                 servicedb = databaseManager.PgDB(connection['user'],
-                                            connection['password'],
-                                            connection['dbname'],
-                                            connection['host'],
-                                            connection['port']
+                    connection['password'],
+                    connection['dbname'],
+                    connection['host'],
+                    connection['port']
                 )
                 srv["database"] = "active"
             except:
@@ -158,8 +167,11 @@ class waAbout(waIstsos):
         import lib.requests as requests
         
         try:
-            import lib.requests as requests
-            response = requests.get("http://istsos.googlecode.com/svn/wiki/currentversion.wiki")
+            headers = {}
+            if 'HTTP_AUTHORIZATION' in self.waEnviron:
+                headers['Authorization'] = self.waEnviron['HTTP_AUTHORIZATION']
+                
+            response = requests.get("http://istsos.googlecode.com/svn/wiki/currentversion.wiki", headers=headers)
             data = {}
             try:
                 response.raise_for_status()
@@ -217,6 +229,8 @@ class waValidatedb(waIstsos):
         self.setData(res)
         self.setMessage("Database validation request successfully executed")
         
+''' checking if not need any more
+
 class waInitialization(waIstsos):
     def __init__(self, waEnviron):
         waIstsos.__init__(self,waEnviron)
@@ -251,7 +265,7 @@ class waInitialization(waIstsos):
         config = configManager.waServiceConfig(defaultcfgpath)
         config.put("initialization","level",self.json["level"])
         config.save()
-        self.setMessage("Initializatuion level successfully recorded")
+        self.setMessage("Initializatuion level successfully recorded")'''
 
 
             

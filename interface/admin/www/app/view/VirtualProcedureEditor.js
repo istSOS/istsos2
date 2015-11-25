@@ -4,7 +4,7 @@ Ext.define('istsos.view.VirtualProcedureEditor', {
 
     initComponent: function() {
         var me = this;
-        
+
         // Store for the rating curve grid
         var ratingCurveStore = Ext.create('istsos.store.RatingCurve');
         Ext.define('ratingCurveModel', {
@@ -44,38 +44,38 @@ Ext.define('istsos.view.VirtualProcedureEditor', {
                 }
             ]
         });
-        
+
         // Store for combo listing virtual procedures
         var plist = Ext.create('istsos.store.vplist');
         plist.getProxy().url = Ext.String.format(
-            '{0}/istsos/services/{1}/virtualprocedures/operations/getlist', 
+            '{0}/istsos/services/{1}/virtualprocedures/operations/getlist',
             wa.url, this.istService
         );
-        
+
         me.callParent(arguments);
-        
+
         Ext.getCmp('vppanel').mask = new Ext.LoadMask(Ext.getCmp('vppanel'), {msg:"Please wait..."});
-        
-        
+
+
         // Refresh combo store of virtual procedures every time it is expanded
         /*Ext.getCmp('vpcmbplist').on("expand",function(combo){
             this.removeAll();
             this.load();
         },plist);*/
-        
+
         // When virtual procedure is selected in combo load rating curve grid
         Ext.getCmp('vpcmbplist').on("select",function(combo, record, index, eOpts){
             this.loadRatingCurve(record[0].get('name'));
             this.loadCode(record[0].get('name'));
         },this);
-        
-        
+
+
         // *****************************************
         //              CODE EDITOR
         // *****************************************
-        
+
         this.codeExist = false;
-        
+
         Ext.getCmp('vpcodingform').add(
             Ext.create('Ext.ux.form.field.CodeMirror', {
                 anchor: '100%',
@@ -95,14 +95,14 @@ Ext.define('istsos.view.VirtualProcedureEditor', {
                 matchBrackets: true
             })
         );
-        
-        
+
+
         Ext.getCmp('vpbtnsavecode').on('click',function(){
-            
+
             Ext.Ajax.request({
-                url: Ext.String.format('{0}/istsos/services/{1}/virtualprocedures/{2}/code', 
-                    wa.url, 
-                    this.istService, 
+                url: Ext.String.format('{0}/istsos/services/{1}/virtualprocedures/{2}/code',
+                    wa.url,
+                    this.istService,
                     Ext.getCmp('vpcmbplist').getValue()),
                 scope: this,
                 method: this.codeExist? "PUT": "POST",
@@ -116,9 +116,9 @@ Ext.define('istsos.view.VirtualProcedureEditor', {
                     }
                 }
             });
-            
+
         },this);
-        
+
         Ext.getCmp('vpbtndeletecode').on('click',function(){
             Ext.Msg.show({
                 title:'Erasing rating curve',
@@ -129,9 +129,9 @@ Ext.define('istsos.view.VirtualProcedureEditor', {
                 fn: function(btn){
                     if (btn == 'yes'){
                         Ext.Ajax.request({
-                            url: Ext.String.format('{0}/istsos/services/{1}/virtualprocedures/{2}/code', 
-                                wa.url, 
-                                this.istService, 
+                            url: Ext.String.format('{0}/istsos/services/{1}/virtualprocedures/{2}/code',
+                                wa.url,
+                                this.istService,
                                 Ext.getCmp('vpcmbplist').getValue()),
                             scope: this,
                             method: "DELETE",
@@ -147,20 +147,20 @@ Ext.define('istsos.view.VirtualProcedureEditor', {
                     }
                 }
             });
-            
+
         },this);
-        
-        
+
+
         // *****************************************
         //           RATING CURVE EDITOR
         // *****************************************
-        
+
         var ratingCurveGrid = Ext.getCmp('vpgridratingcurve');
-        
+
         // Add row on rating curve grid @ end
         Ext.getCmp('vpbtnaddrc').on('click',function(){
             var row = this.store.getCount();
-            var r = Ext.create('ratingCurveModel');            
+            var r = Ext.create('ratingCurveModel');
             if (row>0){
                 var previous = this.store.getAt(row-1);
                 r.set("from",previous.get("to"));
@@ -170,7 +170,7 @@ Ext.define('istsos.view.VirtualProcedureEditor', {
                 this.editingPlugin.startEditByPosition({row: row, column: 1});
             }
         },ratingCurveGrid);
-        
+
         // Add row on rating curve grid above selection
         Ext.getCmp('vpbtnaddbelowrc').on('click',function(){
             var r = Ext.create('ratingCurveModel');
@@ -181,7 +181,7 @@ Ext.define('istsos.view.VirtualProcedureEditor', {
             this.store.insert(row, r);
             this.editingPlugin.startEditByPosition({row: row, column: 0});
         },ratingCurveGrid);
-        
+
         // Add row on rating curve grid below selection
         Ext.getCmp('vpbtnaddaboverc').on('click',function(){
             var r = Ext.create('ratingCurveModel');
@@ -191,7 +191,7 @@ Ext.define('istsos.view.VirtualProcedureEditor', {
             this.store.insert(row, r);
             this.editingPlugin.startEditByPosition({row: row, column: 0});
         },ratingCurveGrid);
-        
+
         // Remove selected row from rating curve grid
         Ext.getCmp('vpbtnremoverc').on('click',function(){
             var r = Ext.create('ratingCurveModel');
@@ -202,51 +202,51 @@ Ext.define('istsos.view.VirtualProcedureEditor', {
             Ext.getCmp('vpbtnaddaboverc').disable();
             Ext.getCmp('vpbtnremoverc').disable();
         },ratingCurveGrid);
-        
+
         // Enable buttons when grid rows selected
         ratingCurveGrid.getSelectionModel().on("select",function(){
             Ext.getCmp('vpbtnaddbelowrc').enable();
             Ext.getCmp('vpbtnaddaboverc').enable();
             Ext.getCmp('vpbtnremoverc').enable();
         });
-        
+
         // Enable buttons when grid rows deselected
         ratingCurveGrid.getSelectionModel().on("deselect",function(){
             Ext.getCmp('vpbtnaddbelowrc').disable();
             Ext.getCmp('vpbtnaddaboverc').disable();
             Ext.getCmp('vpbtnremoverc').disable();
         });
-        
+
         Ext.getCmp('vpbtnsaverc').on('click',function(){
-                    
+
             try{
                 this.validateRatingCurve();
             }catch (e){
                 Ext.Msg.alert('Validation error', e);
                 return;
             }
-            
+
             var recs = Ext.getCmp('vpgridratingcurve').store.getRange();
             var data = [];
-            
+
             for (var c = 0; c < recs.length; c++){
                 var rec = recs[c];
                 data.push({
-                    "from": Ext.Date.format(rec.data.from,'c'), 
-                    "to": Ext.Date.format(rec.data.to,'c'), 
-                    "up_val": ""+rec.get("up_val"), 
-                    "low_val": ""+rec.get("low_val"), 
-                    "A": ""+rec.get("A"), 
-                    "B": ""+rec.get("B"), 
-                    "C": ""+rec.get("C"), 
+                    "from": Ext.Date.format(rec.data.from,'c'),
+                    "to": Ext.Date.format(rec.data.to,'c'),
+                    "up_val": ""+rec.get("up_val"),
+                    "low_val": ""+rec.get("low_val"),
+                    "A": ""+rec.get("A"),
+                    "B": ""+rec.get("B"),
+                    "C": ""+rec.get("C"),
                     "K": ""+rec.get("K")
                 });
             }
-            
+
             Ext.Ajax.request({
-                url: Ext.String.format('{0}/istsos/services/{1}/virtualprocedures/{2}/ratingcurve', 
-                    wa.url, 
-                    this.istService, 
+                url: Ext.String.format('{0}/istsos/services/{1}/virtualprocedures/{2}/ratingcurve',
+                    wa.url,
+                    this.istService,
                     Ext.getCmp('vpcmbplist').getValue()),
                 scope: this,
                 method: "POST",
@@ -260,11 +260,11 @@ Ext.define('istsos.view.VirtualProcedureEditor', {
                     }
                 }
             });
-            
+
         },this);
-        
+
         Ext.getCmp('vpbtndeleterc').on('click',function(){
-            
+
             Ext.Msg.show({
                 title:'Erasing rating curve',
                 msg: 'Are you sure you want to erase the rating curve data?',
@@ -274,7 +274,7 @@ Ext.define('istsos.view.VirtualProcedureEditor', {
                 fn: function(btn){
                     if (btn == 'yes'){
                         Ext.Ajax.request({
-                            url: Ext.String.format('{0}/istsos/services/{1}/virtualprocedures/{2}/ratingcurve', 
+                            url: Ext.String.format('{0}/istsos/services/{1}/virtualprocedures/{2}/ratingcurve',
                                 wa.url, this.istService, Ext.getCmp('vpcmbplist').getValue()),
                             scope: this,
                             method: "DELETE",
@@ -286,18 +286,18 @@ Ext.define('istsos.view.VirtualProcedureEditor', {
                                     this.loadRatingCurve(Ext.getCmp('vpcmbplist').getValue());
                                 }
                             }
-                        });      
+                        });
                     }
                 }
             });
         },this);
-        
+
     },
     loadRatingCurve: function(procedure){
         Ext.getCmp('vppanel').mask.show();
         Ext.getCmp('vpgridratingcurve').store.removeAll();
         Ext.Ajax.request({
-            url: Ext.String.format('{0}/istsos/services/{1}/virtualprocedures/{2}/ratingcurve', 
+            url: Ext.String.format('{0}/istsos/services/{1}/virtualprocedures/{2}/ratingcurve',
                 wa.url, this.istService, procedure),
             scope: this,
             method: "GET",
@@ -333,15 +333,15 @@ Ext.define('istsos.view.VirtualProcedureEditor', {
         }
         var from, to;
         for (var c = 0; c < recs.length; c++){
-        
+
             var rec = recs[c];
-            
+
             try{
                 this.validateRatingCurveRecord(rec);
             }catch (e){
                 throw 'Line ' + (c+1) + ': ' + e;
             }
-            
+
             // Check dates
             if (c===0){
                 from = rec.get('from');
@@ -370,7 +370,7 @@ Ext.define('istsos.view.VirtualProcedureEditor', {
         Ext.getCmp('vppanel').mask.show();
         Ext.getCmp('vpcodingform').loadRecord( { data:{code:''} });
         Ext.Ajax.request({
-            url: Ext.String.format('{0}/istsos/services/{1}/virtualprocedures/{2}/code', 
+            url: Ext.String.format('{0}/istsos/services/{1}/virtualprocedures/{2}/code',
                 wa.url, this.istService, procedure),
             scope: this,
             method: "GET",

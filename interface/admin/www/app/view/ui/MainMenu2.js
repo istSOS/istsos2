@@ -42,7 +42,7 @@ Ext.define('istsos.view.ui.MainMenu2', {
                         align: 'stretch',
                         type: 'hbox'
                     },
-                    collapsed: true,
+                    collapsed: false,
                     hideCollapseTool: true,
                     title: '',
                     region: 'north',
@@ -80,18 +80,18 @@ Ext.define('istsos.view.ui.MainMenu2', {
                                     xtype: 'button',
                                     id: 'btnObservations',
                                     enableToggle: true,
-                                    text: 'Data viewer',
+                                    text: 'Data Management',
                                     toggleGroup: 'mainmenu'
                                 },
                                 {
                                     xtype: 'button',
                                     id: 'btnStatus',
                                     allowDepress: false,
-                                    text: 'Status'
+                                    text: 'Status (beta)'
                                 },
                                 {
                                     xtype: 'container',
-                                    html: ' <div class=\'mainHeaderTitle\'><a href=\'http://istsos.org\' target=\'_BLANK\'><img height=28 src=\'images/istsos-logo.png\'/></a></div>',
+                                    html: ' <div class=\'mainHeaderTitle\'><a href=\'http://istsos.org\' target=\'_BLANK\'><img height=28 src=\'images/istsos-logo-clear.png\'/></a></div>',
                                     flex: 1
                                 }
                             ]

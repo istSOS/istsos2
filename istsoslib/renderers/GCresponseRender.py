@@ -40,9 +40,9 @@ def render(GC,sosConfig):
       version="1.0.0">\n'''
     
     if not GC.ServiceIdentifier==[]:
-        r += "  <!--~~~~~~~~~~~~~~~~~~~~~~~~-->\n"
+        '''r += "  <!--~~~~~~~~~~~~~~~~~~~~~~~~-->\n"
         r += "  <!-- Service Identification -->\n"
-        r += "  <!--~~~~~~~~~~~~~~~~~~~~~~~~-->\n"
+        r += "  <!--~~~~~~~~~~~~~~~~~~~~~~~~-->\n"'''
         r += "  <ows:ServiceIdentification>\n"
         r += "    <ows:Title>" + GC.ServiceIdentifier.title  + "</ows:Title>\n"
         r += "    <ows:Abstract>" + GC.ServiceIdentifier.abstract +"</ows:Abstract>\n"
@@ -58,9 +58,9 @@ def render(GC,sosConfig):
         r += "  </ows:ServiceIdentification>\n"
 
     if not GC.ServiceProvider==[]:
-        r += "  <!--~~~~~~~~~~~~~~~~~~~~~~-->\n"
+        '''r += "  <!--~~~~~~~~~~~~~~~~~~~~~~-->\n"
         r += "  <!-- Provider Description -->\n"
-        r += "  <!--~~~~~~~~~~~~~~~~~~~~~~-->\n"
+        r += "  <!--~~~~~~~~~~~~~~~~~~~~~~-->\n"'''
         r += "  <ows:ServiceProvider>\n"
         r += "    <ows:ProviderName>" + GC.ServiceProvider.providerName + "</ows:ProviderName>\n"
         r += "    <ows:ProviderSite xlink:href=\"" + GC.ServiceProvider.providerSite + "\"/>\n"
@@ -85,9 +85,9 @@ def render(GC,sosConfig):
         r += "  </ows:ServiceProvider>\n"
 
     if GC.OperationsMetadata:
-        r += "  <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->\n"
+        '''r += "  <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->\n"
         r += "  <!-- operations Metadata Section -->\n"
-        r += "  <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->\n"
+        r += "  <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->\n"'''
         r += "  <ows:OperationsMetadata>\n"
         for o in GC.OperationsMetadata.OP:
             r += "    <ows:Operation name=\"" + o.name + "\">\n"
@@ -127,9 +127,9 @@ def render(GC,sosConfig):
         r += "  </ows:OperationsMetadata>\n"
         
     if not GC.ObservationOfferingList==[]:
-        r += "  <!--~~~~~~~~~~~~~~~~~~-->\n"
+        '''r += "  <!--~~~~~~~~~~~~~~~~~~-->\n"
         r += "  <!-- Contents Section -->\n"
-        r += "  <!--~~~~~~~~~~~~~~~~~~-->\n"
+        r += "  <!--~~~~~~~~~~~~~~~~~~-->\n"'''
         r += "  <Contents>\n"
         r += "    <ObservationOfferingList>\n"
         for ofl in GC.ObservationOfferingList.offerings:

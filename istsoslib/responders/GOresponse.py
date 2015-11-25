@@ -70,7 +70,7 @@ class VirtualProcess():
             self.applyFunction()
     
     def getSampligTime(self):
-        """Extract sampling time of Vrtual procedure"""
+        """Extract sampling time of Virtual procedure"""
         self.setSampligTime()
         return self.samplingTime
         
@@ -127,6 +127,7 @@ class VirtualProcess():
                         exec "import %s as vproc" %(p)
                         vp = vproc.istvp()
                         if len(vp.procedures)>0:
+                            # Add data source of virtual procedure
                             tmp.extend(vp.procedures.keys())
                         
                 else:
@@ -165,6 +166,8 @@ class VirtualProcess():
                 raise Exception("Database error: %s - %s" % (sql, e))    
                 
             self.samplingTime = (result[0],result[1])
+            
+            
         
     def getData(self, procedure=None, disableAggregation=True):
         """Return the observations of associated procedure

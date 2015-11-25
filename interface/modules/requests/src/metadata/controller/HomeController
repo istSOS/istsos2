@@ -22,7 +22,7 @@
                 "designer|targetType": "Ext.form.field.ComboBox",
                 "fn": "onServiceSelected",
                 "implHandler": [
-                    "this.getServiceUrl().setValue((window.location.origin + window.location.pathname).replace(\"requests/\",combo.getValue()));"
+                    "this.getServiceUrl().setValue((window.location.origin + window.location.pathname).replace(\"modules/requests/\",combo.getValue()));"
                 ],
                 "name": "select",
                 "scope": "me"

@@ -23,7 +23,13 @@
 import sys, os
 from walib import configManager
 from walib import utils as ut
+from istsoslib import sosException
 
+class ServiceNotFound(Exception):
+    def __init__(self, message, service):
+        Exception.__init__(self, message)
+        self.service = service
+        
 class waResource(object):
     """
     Base class for istSOS Web Admin REST operations
@@ -35,6 +41,9 @@ class waResource(object):
         @param waEnviron: waEnviron variable see L(wa)
         @type waEnviron: C{dictionary}
         """
+        self.user = False
+        if 'user' in waEnviron:
+            self.user = waEnviron['user']
         self.response = {
             "success": True,
             "message": ""
@@ -48,6 +57,9 @@ class waResource(object):
             import json
 
             self.json = ut.encodeobject(json.loads(waEnviron['wsgi_input']))
+
+    def checkAuthorization(self):
+        return True
 
     def validateGet(self):
         """ base method to validate GET request """
@@ -85,6 +97,9 @@ class waResource(object):
         import json
         #return json.dumps(self.response, ensure_ascii=False)
         return json.dumps(self.response)
+        
+    def getMime(self):
+        return "application/json"
 
     def setData(self,data):
         """ Set data in response """
@@ -116,7 +131,6 @@ class waResourceAdmin(waResource):
         class waconf():
             def __init__(self):
                 self.paths = {}
-
         self.waconf = waconf()
         self.waconf.paths["services"] = waEnviron["services_path"]
         self.waconf.paths["istsos"] = waEnviron["istsos_path"]
@@ -133,10 +147,11 @@ class waResourceService(waResourceAdmin):
                 self.service = self.pathinfo[i+1]
             else:
                 self.service = None
-
         else:
             self.service = service
-
+            
+        self.checkAuthorization()
+        
         #set default config path
         if not os.path.isdir(self.waconf.paths["services"]):
             raise Exception("servicespath is not configured in the wa.cfg file [%s]." % self.waconf.paths["services"])
@@ -148,7 +163,7 @@ class waResourceService(waResourceAdmin):
         if not (self.service == None or self.service == 'default'):
             serviceCFGpath = os.path.join(self.waconf.paths["services"], "%s" % self.service, "%s.cfg" % self.service)
             if not os.path.isfile(serviceCFGpath):
-                raise Exception("istsos [%s] configuration file not found in %s." % (self.service,serviceCFGpath))
+                raise ServiceNotFound("istsos [%s] configuration file not found in %s." % (self.service,serviceCFGpath),self.service)
             self.servicepath = os.path.join(self.waconf.paths["services"], "%s" % self.service)
 
             sensormlpath = os.path.join(self.waconf.paths["services"], "%s" % self.service, "sml")
@@ -164,7 +179,16 @@ class waResourceService(waResourceAdmin):
         if self.service == None or self.service == 'default':
             self.serviceconf = configManager.waServiceConfig(defaultCFGpath)
         else:
-            self.serviceconf = configManager.waServiceConfig(defaultCFGpath,serviceCFGpath)
+            self.serviceconf = configManager.waServiceConfig(defaultCFGpath, serviceCFGpath)
+            
+    def checkAuthorization(self):
+        if self.service and self.user and not self.user.isAdmin():
+            if self.service == 'default':
+                raise sosException.SOSException(
+                    "ResourceNotFound", "Authorization", "Access to admin request are not allowed.")
+            elif not self.user.allowedService(self.service):
+                raise sosException.SOSException(
+                    "ResourceNotFound", "Authorization", "You don't have the permissions to access the '%s' instance." % self.service)
 
 
 class waResourceConfigurator(waResourceService):

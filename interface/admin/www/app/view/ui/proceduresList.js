@@ -30,6 +30,22 @@ Ext.define('istsos.view.ui.proceduresList', {
                             xtype: 'button',
                             id: 'btnRemove',
                             text: 'Delete selected'
+                        },
+                        {
+                            xtype: 'tbseparator',
+                            flex: 1
+                        },
+                        {
+                            xtype: 'combobox',
+                            id: 'listSearch',
+                            fieldLabel: 'Search procedure',
+                            labelWidth: 115,
+                            displayField: 'name',
+                            forceSelection: true,
+                            queryDelay: 300,
+                            queryParam: 'procedure',
+                            store: 'procedureListSearch',
+                            valueField: 'name'
                         }
                     ]
                 }

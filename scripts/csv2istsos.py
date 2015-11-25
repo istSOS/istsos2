@@ -111,10 +111,10 @@ def execute (args, conf=None):
             test = args['t']
         
         user = None
-        if 'user' in args:
+        if 'user' in args and args['user']!=None:
             user = args['user']
-        passw = None
-        if 'password' in args:
+        password = None
+        if 'password' in args and args['password']!=None:
             password = args['password']
             
         auth = None

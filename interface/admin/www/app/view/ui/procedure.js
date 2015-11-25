@@ -136,6 +136,13 @@ Ext.define('istsos.view.ui.procedure', {
                                             anchor: '100%'
                                         },
                                         {
+                                            xtype: 'displayfield',
+                                            hidden: true,
+                                            id: 'procedureNameRO',
+                                            fieldLabel: 'Name',
+                                            anchor: '100%'
+                                        },
+                                        {
                                             xtype: 'textfield',
                                             id: 'procedurename',
                                             name: 'system',

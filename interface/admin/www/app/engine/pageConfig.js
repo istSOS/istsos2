@@ -14,8 +14,9 @@ Ext.ns("istsos","istsos.engine");
 
 istsos.EMPTY = "EMPTY";
 istsos.SUBMIT = "SUBMIT";
+
 // execute a next page operation without executing any other service operation
-istsos.WIZARD_JUST_NEXT = "WIZARD_JUST_NEXT"; 
+istsos.WIZARD_JUST_NEXT = "WIZARD_JUST_NEXT";
 istsos.WIZARD = "WIZARD";
 istsos.WIZARD_NEXT_FINISH = "WIZARD_NEXT_FINISH";
 istsos.WIZARD_FINISH = "WIZARD_FINISH";
@@ -129,7 +130,7 @@ istsos.engine.serviceConfig = {
             istFooter: istsos.EMPTY
         }
     }
-}
+};
 
 istsos.engine.defaultConfig = {
     "Server": {
@@ -154,12 +155,6 @@ istsos.engine.defaultConfig = {
             },
             istFooter: istsos.EMPTY
         }
-        /*"Logs": {
-            istTitle: "Server Logs",
-            icon: 'emblem-shared.svg',
-            istBody: "<p><STRONG>Logs:</STRONG></p>",
-            istFooter: istsos.EMPTY
-        },*/
     },
     "Default Settings": {
         "Database": {
@@ -233,12 +228,19 @@ istsos.engine.observationConfig = {
             istBody: ["istsos.view.Editor1"],
             wapage: 'MainCenter',
             istFooter: istsos.EMPTY
+        },
+        "Data Viewer": {
+            istTitle: "Data Viewer",
+            icon: 'editor.svg',
+            istBody: ["istsos.view.ViewerPanel"],
+            wapage: 'MainCenter',
+            istFooter: istsos.EMPTY
         }
     }
 }
 
 istsos.engine.pageWizard = {
-    "initialization": {
+    /*"initialization": {
         "Welcome": {
             istTitle: "Welcome",
             istDescription: "Hi,<br>istSOS manager needs some configuration before running correctly",
@@ -247,9 +249,9 @@ istsos.engine.pageWizard = {
         },
         "defaultDatabase": {
             istTitle: "Default database connection",
-            istDescription: "Fill the parameter required to connect to your database:<br><br>" + 
+            istDescription: "Fill the parameter required to connect to your database:<br><br>" +
             "If the database name does not exist this procedure will create a " +
-            "new one and then it will be used to store istSOS data and " + 
+            "new one and then it will be used to store istSOS data and " +
             "configuration for each service instance.",
             istBody: ["istsos.view.database"],
             istOperation: {
@@ -336,7 +338,7 @@ istsos.engine.pageWizard = {
             istDescription: "Now you are able to use your istSOS.",
             istFooter: istsos.WIZARD_FINISH
         }
-    },
+    },*/
     "newservice": {
         "newServiceWizard": {
             istTitle: "Initialize a new service",
@@ -368,9 +370,6 @@ istsos.engine.pageWizard = {
         "newServiceComplete": {
             istTitle: "Configuration complete",
             istDescription: "Now you are able to use your istSOS.",
-            /*istFunction: {
-                onSubmit: "finish"
-            },*/
             istFooter: istsos.WIZARD_FINISH
         }
     }

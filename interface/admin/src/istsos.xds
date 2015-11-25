@@ -5,7 +5,7 @@
         "directAPI": "",
         "spacesToIndent": "4",
         "codeGenFormat": "Class",
-        "exportPath": "/media/milan/workspace/istsos/trunk/interface/admin/www/",
+        "exportPath": "/home/milan/workspace/istsos/interface/admin/www/",
         "extPath": "ext/",
         "lineEnding": "LF",
         "instantiateStore": true,
@@ -17,232 +17,6 @@
     },
     "xdsVersion": "1.2.3",
     "components": [
-        {
-            "id": "ExtBox1-ext-gen1666",
-            "type": "viewport",
-            "reference": {
-                "name": "items",
-                "type": "array"
-            },
-            "codeClass": null,
-            "userConfig": {
-                "id": "mainPanel",
-                "itemId": "",
-                "layout": "border",
-                "designer|userClassName": "MainPanel"
-            },
-            "cn": [
-                {
-                    "id": "ExtBox1-ext-gen1754",
-                    "type": "panel",
-                    "reference": {
-                        "name": "items",
-                        "type": "array"
-                    },
-                    "codeClass": null,
-                    "userConfig": {
-                        "border": 0,
-                        "id": "mainCenter",
-                        "layout": "fit",
-                        "bodyPadding": null,
-                        "title": "",
-                        "designer|userClassName": "MyPanel",
-                        "layout|region": "center"
-                    }
-                },
-                {
-                    "id": "ExtBox1-ext-gen2198",
-                    "type": "panel",
-                    "reference": {
-                        "name": "items",
-                        "type": "array"
-                    },
-                    "codeClass": null,
-                    "userConfig": {
-                        "border": 0,
-                        "cls": null,
-                        "height": 70,
-                        "html": "<div class='mainHeaderTitle'>istSOS manager</div>\n<div class='mainHeaderSubtitle'> &gt; Control Panel for Sensor Observation Service</div>",
-                        "id": "mainHead",
-                        "padding": null,
-                        "bodyCls": "mainHeader",
-                        "bodyPadding": "15 0 0 8",
-                        "bodyStyle": null,
-                        "title": "",
-                        "designer|userClassName": "MyPanel2",
-                        "layout|region": "north"
-                    }
-                },
-                {
-                    "id": "ExtBox1-ext-gen2515",
-                    "type": "panel",
-                    "reference": {
-                        "name": "items",
-                        "type": "array"
-                    },
-                    "codeClass": null,
-                    "userConfig": {
-                        "border": 0,
-                        "height": 25,
-                        "html": "Open Source Software by Institute of Earth Science - SUPSI",
-                        "id": "mainFoot",
-                        "bodyCls": "mainFooter",
-                        "bodyPadding": 8,
-                        "title": "",
-                        "designer|userClassName": "MyPanel3",
-                        "layout|region": "south"
-                    }
-                },
-                {
-                    "id": "ExtBox1-ext-gen5563",
-                    "type": "panel",
-                    "reference": {
-                        "name": "items",
-                        "type": "array"
-                    },
-                    "codeClass": null,
-                    "userConfig": {
-                        "border": 0,
-                        "id": "panelMenu",
-                        "width": 210,
-                        "layout": "border",
-                        "title": "",
-                        "designer|userClassName": "MyPanel13",
-                        "layout|region": "west"
-                    },
-                    "cn": [
-                        {
-                            "id": "ExtBox1-ext-gen12379",
-                            "type": "toolbar",
-                            "reference": {
-                                "name": "dockedItems",
-                                "type": "array"
-                            },
-                            "codeClass": null,
-                            "userConfig": {
-                                "height": 30,
-                                "style": "background-color: white !important;",
-                                "ui": null,
-                                "designer|userClassName": "MyToolbar5",
-                                "container|align": "stretch",
-                                "container|padding": 2,
-                                "layout|region": "north",
-                                "dock": "top"
-                            },
-                            "cn": [
-                                {
-                                    "id": "ExtBox1-ext-gen12556",
-                                    "type": "button",
-                                    "reference": {
-                                        "name": "items",
-                                        "type": "array"
-                                    },
-                                    "codeClass": null,
-                                    "userConfig": {
-                                        "id": "btnMainMenu",
-                                        "enableToggle": true,
-                                        "pressed": true,
-                                        "text": "Server",
-                                        "toggleGroup": "menugroup",
-                                        "designer|userClassName": "MyButton7",
-                                        "layout|flex": 1
-                                    }
-                                },
-                                {
-                                    "id": "ExtBox1-ext-gen12776",
-                                    "type": "button",
-                                    "reference": {
-                                        "name": "items",
-                                        "type": "array"
-                                    },
-                                    "codeClass": null,
-                                    "userConfig": {
-                                        "id": "btnServicesMenu",
-                                        "enableToggle": true,
-                                        "text": "Services",
-                                        "toggleGroup": "menugroup",
-                                        "designer|userClassName": "MyButton8",
-                                        "layout|flex": 1
-                                    }
-                                },
-                                {
-                                    "id": "ExtBox1-ext-gen12998",
-                                    "type": "button",
-                                    "reference": {
-                                        "name": "items",
-                                        "type": "array"
-                                    },
-                                    "codeClass": null,
-                                    "userConfig": {
-                                        "id": "btnDataMenu",
-                                        "enableToggle": true,
-                                        "text": "Data",
-                                        "toggleGroup": "menugroup",
-                                        "designer|userClassName": "MyButton9",
-                                        "layout|flex": 1
-                                    }
-                                }
-                            ]
-                        },
-                        {
-                            "id": "ExtBox1-ext-gen6842",
-                            "type": "panel",
-                            "reference": {
-                                "name": "items",
-                                "type": "array"
-                            },
-                            "codeClass": null,
-                            "userConfig": {
-                                "border": 0,
-                                "id": "menuCard",
-                                "activeItem": 0,
-                                "layout": "card",
-                                "title": "",
-                                "designer|userClassName": "MyPanel15",
-                                "layout|region": "center"
-                            },
-                            "cn": [
-                                {
-                                    "id": "ExtBox1-ext-gen2221",
-                                    "type": "component",
-                                    "reference": {
-                                        "name": "items",
-                                        "type": "array"
-                                    },
-                                    "codeClass": null,
-                                    "userConfig": {
-                                        "baseCls": null,
-                                        "id": "mainMenu",
-                                        "padding": "10px",
-                                        "style": "background: #fff;",
-                                        "styleHtmlContent": true,
-                                        "width": 150,
-                                        "designer|userClassName": "MyComponent"
-                                    }
-                                },
-                                {
-                                    "id": "ExtBox1-ext-gen16528",
-                                    "type": "panel",
-                                    "reference": {
-                                        "name": "items",
-                                        "type": "array"
-                                    },
-                                    "codeClass": null,
-                                    "userConfig": {
-                                        "border": 0,
-                                        "id": "servicesMenu",
-                                        "layout": "accordion",
-                                        "bodyPadding": "10px",
-                                        "title": "",
-                                        "designer|userClassName": "MyPanel16"
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
         {
             "id": "ExtBox1-ext-gen2664",
             "type": "panel",
@@ -2190,6 +1964,24 @@
                                                 "name": "assignedSensorId",
                                                 "value": null,
                                                 "fieldLabel": "Sensor ID",
+                                                "designer|userClassName": "MyDisplayField12",
+                                                "layout|anchor": "100%"
+                                            }
+                                        },
+                                        {
+                                            "id": "ExtBox1-ext-gen53462",
+                                            "type": "displayfield",
+                                            "reference": {
+                                                "name": "items",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "hidden": true,
+                                                "id": "procedureNameRO",
+                                                "name": null,
+                                                "value": null,
+                                                "fieldLabel": "Name",
                                                 "designer|userClassName": "MyDisplayField12",
                                                 "layout|anchor": "100%"
                                             }
@@ -6652,6 +6444,41 @@
                                 "designer|userClassName": "MyButton67",
                                 "layout|flex": null
                             }
+                        },
+                        {
+                            "id": "ExtBox1-ext-gen32599",
+                            "type": "tbseparator",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "designer|userClassName": "MySeparator1",
+                                "layout|flex": 1
+                            }
+                        },
+                        {
+                            "id": "ExtBox1-ext-gen32389",
+                            "type": "combobox",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "id": "listSearch",
+                                "fieldLabel": "Search procedure",
+                                "labelWidth": 115,
+                                "displayField": "name",
+                                "forceSelection": true,
+                                "queryDelay": 300,
+                                "queryParam": "procedure",
+                                "store": "procedureListSearch",
+                                "valueField": "name",
+                                "designer|userClassName": "MyComboBox32",
+                                "layout|flex": null
+                            }
                         }
                     ]
                 },
@@ -7689,7 +7516,7 @@
                             },
                             "codeClass": null,
                             "userConfig": {
-                                "title": "Quality index",
+                                "title": "Service",
                                 "designer|userClassName": "MyFieldSet54"
                             },
                             "cn": [
@@ -8498,7 +8325,8 @@
                 "minWidth": null,
                 "width": null,
                 "layout": "border",
-                "designer|userClassName": "MainMenu2"
+                "designer|userClassName": "MainMenu2",
+                "designer|userAlias": "mainmenu2"
             },
             "cn": [
                 {
@@ -8533,7 +8361,7 @@
                         "id": "submenu",
                         "margin": "0px 0px 1px 0px ",
                         "layout": "hbox",
-                        "collapsed": true,
+                        "collapsed": false,
                         "hideCollapseTool": true,
                         "title": "",
                         "designer|userClassName": "MyPanel33",
@@ -8621,7 +8449,7 @@
                                     "userConfig": {
                                         "id": "btnObservations",
                                         "enableToggle": true,
-                                        "text": "Data viewer",
+                                        "text": "Data Management",
                                         "toggleGroup": "mainmenu",
                                         "designer|userClassName": "MyButton50",
                                         "layout|flex": null
@@ -8638,7 +8466,7 @@
                                     "userConfig": {
                                         "id": "btnStatus",
                                         "allowDepress": false,
-                                        "text": "Status",
+                                        "text": "Status (beta)",
                                         "designer|userClassName": "MyButton50",
                                         "layout|flex": null
                                     }
@@ -8653,7 +8481,7 @@
                                     "codeClass": null,
                                     "userConfig": {
                                         "componentCls": null,
-                                        "html": " <div class='mainHeaderTitle'><a href='http://istsos.org' target='_BLANK'><img height=28 src='images/istsos-logo.png'/></a></div>",
+                                        "html": " <div class='mainHeaderTitle'><a href='http://istsos.org' target='_BLANK'><img height=28 src='images/istsos-logo-clear.png'/></a></div>",
                                         "designer|userClassName": "MyContainer2",
                                         "layout|flex": 1
                                     }
@@ -8717,456 +8545,6 @@
                         "designer|userClassName": "MyTextField147",
                         "layout|anchor": "100%"
                     }
-                }
-            ]
-        },
-        {
-            "id": "ExtBox1-ext-gen16552",
-            "type": "panel",
-            "reference": {
-                "name": "items",
-                "type": "array"
-            },
-            "codeClass": null,
-            "userConfig": {
-                "border": 0,
-                "height": 600,
-                "id": "chartpanel",
-                "minHeight": 400,
-                "minWidth": 1130,
-                "padding": null,
-                "width": null,
-                "autoScroll": true,
-                "layout": "border",
-                "bodyStyle": "background-color: white;",
-                "title": "",
-                "designer|userClassName": "Chart",
-                "designer|userAlias": "chart"
-            },
-            "cn": [
-                {
-                    "id": "ExtBox1-ext-gen16832",
-                    "type": "panel",
-                    "reference": {
-                        "name": "items",
-                        "type": "array"
-                    },
-                    "codeClass": null,
-                    "userConfig": {
-                        "border": 0,
-                        "html": null,
-                        "id": "charttwo",
-                        "minWidth": 500,
-                        "layout": "vbox",
-                        "bodyPadding": null,
-                        "bodyStyle": null,
-                        "title": "",
-                        "designer|userClassName": "MyPanel37",
-                        "container|align": "stretch",
-                        "layout|region": "center"
-                    },
-                    "cn": [
-                        {
-                            "id": "ExtBox1-ext-gen38046",
-                            "type": "panel",
-                            "reference": {
-                                "name": "items",
-                                "type": "array"
-                            },
-                            "codeClass": null,
-                            "userConfig": {
-                                "border": 0,
-                                "height": 150,
-                                "id": "plotcalc",
-                                "activeItem": 0,
-                                "layout": "card",
-                                "title": "",
-                                "designer|userClassName": "MyPanel32",
-                                "layout|flex": null
-                            },
-                            "cn": [
-                                {
-                                    "id": "ExtBox1-ext-gen55251",
-                                    "type": "panel",
-                                    "reference": {
-                                        "name": "items",
-                                        "type": "array"
-                                    },
-                                    "codeClass": null,
-                                    "userConfig": {
-                                        "border": 0,
-                                        "padding": "0px 5px 5px 5px ",
-                                        "title": "",
-                                        "designer|userClassName": "MyPanel63"
-                                    },
-                                    "cn": [
-                                        {
-                                            "id": "ExtBox1-ext-gen24163",
-                                            "type": "fieldset",
-                                            "reference": {
-                                                "name": "items",
-                                                "type": "array"
-                                            },
-                                            "codeClass": null,
-                                            "userConfig": {
-                                                "padding": null,
-                                                "title": "2. Plot data",
-                                                "designer|userClassName": "MyFieldSet43"
-                                            },
-                                            "cn": [
-                                                {
-                                                    "id": "ExtBox1-ext-gen48190",
-                                                    "type": "linkedinstance",
-                                                    "reference": {
-                                                        "name": "items",
-                                                        "type": "array"
-                                                    },
-                                                    "codeClass": null,
-                                                    "userConfig": {
-                                                        "id": "plotdatafrm",
-                                                        "designer|userClassName": "ProcedurePlotter",
-                                                        "designer|userAlias": "procedureplotter"
-                                                    },
-                                                    "iconCls": "icon-linkedinstance",
-                                                    "masterInstanceId": "ExtBox1-ext-gen22938"
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                {
-                                    "id": "ExtBox1-ext-gen23260",
-                                    "type": "panel",
-                                    "reference": {
-                                        "name": "items",
-                                        "type": "array"
-                                    },
-                                    "codeClass": null,
-                                    "userConfig": {
-                                        "border": 0,
-                                        "id": "calccnt",
-                                        "padding": "9 10 0 10",
-                                        "layout": "fit",
-                                        "title": "",
-                                        "designer|userClassName": "MyPanel40"
-                                    }
-                                }
-                            ]
-                        },
-                        {
-                            "id": "ExtBox1-ext-gen18479",
-                            "type": "panel",
-                            "reference": {
-                                "name": "items",
-                                "type": "array"
-                            },
-                            "codeClass": null,
-                            "userConfig": {
-                                "border": 0,
-                                "html": "<div style='border-radius: 3px 3px 3px 3px !important; background-color: white; border: thin solid green; width: 100%; height: 100%;' id='chartCnt'></div>",
-                                "margin": null,
-                                "title": "",
-                                "designer|userClassName": "MyPanel36",
-                                "layout|flex": 0.7,
-                                "layout|margins": "0 10 5 10"
-                            }
-                        },
-                        {
-                            "id": "ExtBox1-ext-gen38938",
-                            "type": "panel",
-                            "reference": {
-                                "name": "items",
-                                "type": "array"
-                            },
-                            "codeClass": null,
-                            "userConfig": {
-                                "border": 0,
-                                "height": 30,
-                                "padding": "0 10 5 10",
-                                "layout": "hbox",
-                                "title": "",
-                                "designer|userClassName": "MyPanel39",
-                                "container|align": "middle",
-                                "container|padding": "0 10 5 10",
-                                "layout|flex": null
-                            },
-                            "cn": [
-                                {
-                                    "id": "ExtBox1-ext-gen39663",
-                                    "type": "button",
-                                    "reference": {
-                                        "name": "items",
-                                        "type": "array"
-                                    },
-                                    "codeClass": null,
-                                    "userConfig": {
-                                        "id": "btnRangeDay",
-                                        "enableToggle": true,
-                                        "text": "Day",
-                                        "toggleGroup": "timeline",
-                                        "designer|userClassName": "MyButton35",
-                                        "layout|flex": 1
-                                    }
-                                },
-                                {
-                                    "id": "ExtBox1-ext-gen39909",
-                                    "type": "button",
-                                    "reference": {
-                                        "name": "items",
-                                        "type": "array"
-                                    },
-                                    "codeClass": null,
-                                    "userConfig": {
-                                        "id": "btnRangeWeek",
-                                        "enableToggle": true,
-                                        "text": "Week",
-                                        "toggleGroup": "timeline",
-                                        "designer|userClassName": "MyButton38",
-                                        "layout|flex": 1
-                                    }
-                                },
-                                {
-                                    "id": "ExtBox1-ext-gen40157",
-                                    "type": "button",
-                                    "reference": {
-                                        "name": "items",
-                                        "type": "array"
-                                    },
-                                    "codeClass": null,
-                                    "userConfig": {
-                                        "id": "btnRangeAll",
-                                        "enableToggle": true,
-                                        "pressed": true,
-                                        "text": "All",
-                                        "toggleGroup": "timeline",
-                                        "designer|userClassName": "MyButton39",
-                                        "layout|flex": 1
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "id": "ExtBox1-ext-gen46485",
-                    "type": "panel",
-                    "reference": {
-                        "name": "items",
-                        "type": "array"
-                    },
-                    "codeClass": null,
-                    "userConfig": {
-                        "border": 0,
-                        "id": "chartthree",
-                        "minWidth": 350,
-                        "width": 350,
-                        "layout": "vbox",
-                        "collapsed": false,
-                        "title": null,
-                        "designer|userClassName": "MyPanel28",
-                        "container|align": "stretch",
-                        "layout|region": "east"
-                    },
-                    "cn": [
-                        {
-                            "id": "ExtBox1-ext-gen54346",
-                            "type": "panel",
-                            "reference": {
-                                "name": "items",
-                                "type": "array"
-                            },
-                            "codeClass": null,
-                            "userConfig": {
-                                "border": 0,
-                                "height": 105,
-                                "layout": "fit",
-                                "title": "",
-                                "designer|userClassName": "MyPanel29",
-                                "layout|flex": null
-                            },
-                            "cn": [
-                                {
-                                    "id": "ExtBox1-ext-gen34866",
-                                    "type": "form",
-                                    "reference": {
-                                        "name": "items",
-                                        "type": "array"
-                                    },
-                                    "codeClass": null,
-                                    "userConfig": {
-                                        "border": 0,
-                                        "height": null,
-                                        "id": "chartfilterFrm",
-                                        "padding": null,
-                                        "bodyPadding": "0 10 5 0",
-                                        "collapseFirst": false,
-                                        "collapsed": false,
-                                        "title": "",
-                                        "designer|userClassName": "MyForm35",
-                                        "weight": null
-                                    },
-                                    "cn": [
-                                        {
-                                            "id": "ExtBox1-ext-gen56987",
-                                            "type": "fieldset",
-                                            "reference": {
-                                                "name": "items",
-                                                "type": "array"
-                                            },
-                                            "codeClass": null,
-                                            "userConfig": {
-                                                "margin": null,
-                                                "padding": 5,
-                                                "title": "3. Start editing",
-                                                "designer|userClassName": "MyFieldSet44"
-                                            },
-                                            "cn": [
-                                                {
-                                                    "id": "ExtBox1-ext-gen19637",
-                                                    "type": "combobox",
-                                                    "reference": {
-                                                        "name": "items",
-                                                        "type": "array"
-                                                    },
-                                                    "codeClass": null,
-                                                    "userConfig": {
-                                                        "id": "oeCbEditableProcedures",
-                                                        "name": "procedure",
-                                                        "fieldLabel": "Procedure",
-                                                        "labelWidth": 70,
-                                                        "displayField": "name",
-                                                        "queryMode": "local",
-                                                        "store": "editableProcedure",
-                                                        "valueField": "name",
-                                                        "designer|userClassName": "MyComboBox4",
-                                                        "layout|anchor": "100%"
-                                                    }
-                                                },
-                                                {
-                                                    "id": "ExtBox1-ext-gen19398",
-                                                    "type": "container",
-                                                    "reference": {
-                                                        "name": "items",
-                                                        "type": "array"
-                                                    },
-                                                    "codeClass": null,
-                                                    "userConfig": {
-                                                        "height": 25,
-                                                        "layout": "hbox",
-                                                        "designer|userClassName": "MyContainer27",
-                                                        "container|align": "stretch"
-                                                    },
-                                                    "cn": [
-                                                        {
-                                                            "id": "ExtBox1-ext-gen18753",
-                                                            "type": "button",
-                                                            "reference": {
-                                                                "name": "items",
-                                                                "type": "array"
-                                                            },
-                                                            "codeClass": null,
-                                                            "userConfig": {
-                                                                "hidden": true,
-                                                                "id": "btnCancelEditor",
-                                                                "text": "Cancel",
-                                                                "designer|userClassName": "MyButton31",
-                                                                "layout|flex": 1
-                                                            }
-                                                        },
-                                                        {
-                                                            "id": "ExtBox1-ext-gen57550",
-                                                            "type": "button",
-                                                            "reference": {
-                                                                "name": "items",
-                                                                "type": "array"
-                                                            },
-                                                            "codeClass": null,
-                                                            "userConfig": {
-                                                                "id": "btnStartEditor",
-                                                                "text": "Start editing",
-                                                                "designer|userClassName": "MyButton31",
-                                                                "layout|flex": 1
-                                                            }
-                                                        }
-                                                    ]
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            "id": "ExtBox1-ext-gen53959",
-                            "type": "panel",
-                            "reference": {
-                                "name": "items",
-                                "type": "array"
-                            },
-                            "codeClass": null,
-                            "userConfig": {
-                                "border": 0,
-                                "id": "chartgridcnt",
-                                "layout": "fit",
-                                "title": "",
-                                "designer|userClassName": "MyPanel27",
-                                "layout|flex": 1,
-                                "layout|margins": "0 10 5 0"
-                            }
-                        }
-                    ]
-                },
-                {
-                    "id": "ExtBox1-ext-gen33626",
-                    "type": "panel",
-                    "reference": {
-                        "name": "items",
-                        "type": "array"
-                    },
-                    "codeClass": null,
-                    "userConfig": {
-                        "border": 0,
-                        "padding": null,
-                        "width": 300,
-                        "layout": "fit",
-                        "title": "",
-                        "designer|userClassName": "MyPanel57",
-                        "layout|region": "west"
-                    },
-                    "cn": [
-                        {
-                            "id": "ExtBox1-ext-gen19609",
-                            "type": "fieldset",
-                            "reference": {
-                                "name": "items",
-                                "type": "array"
-                            },
-                            "codeClass": null,
-                            "userConfig": {
-                                "height": null,
-                                "padding": 5,
-                                "layout": "fit",
-                                "title": "1. Choose procedure",
-                                "designer|userClassName": "MyFieldSet8"
-                            },
-                            "cn": [
-                                {
-                                    "id": "ExtBox1-ext-gen38983",
-                                    "type": "linkedinstance",
-                                    "reference": {
-                                        "name": "items",
-                                        "type": "array"
-                                    },
-                                    "codeClass": null,
-                                    "userConfig": {
-                                        "id": "pchoose"
-                                    },
-                                    "iconCls": "icon-linkedinstance",
-                                    "masterInstanceId": "ExtBox1-ext-gen27604"
-                                }
-                            ]
-                        }
-                    ]
                 }
             ]
         },
@@ -9829,36 +9207,6 @@
             }
         },
         {
-            "id": "ExtBox1-ext-gen20039",
-            "type": "panel",
-            "reference": {
-                "name": "items",
-                "type": "array"
-            },
-            "codeClass": null,
-            "userConfig": {
-                "border": 0,
-                "height": null,
-                "width": null,
-                "layout": "fit",
-                "designer|userClassName": "ChartContainer"
-            },
-            "cn": [
-                {
-                    "id": "ExtBox1-ext-gen20456",
-                    "type": "linkedinstance",
-                    "reference": {
-                        "name": "items",
-                        "type": "array"
-                    },
-                    "codeClass": null,
-                    "userConfig": {},
-                    "iconCls": "icon-linkedinstance",
-                    "masterInstanceId": "ExtBox1-ext-gen16552"
-                }
-            ]
-        },
-        {
             "id": "ExtBox1-ext-gen21655",
             "type": "viewport",
             "reference": {
@@ -10069,75 +9417,21 @@
             },
             "cn": [
                 {
-                    "id": "ExtBox1-ext-gen44227",
-                    "type": "panel",
+                    "id": "ExtBox1-ext-gen40479",
+                    "type": "linkedinstance",
                     "reference": {
                         "name": "items",
                         "type": "array"
                     },
                     "codeClass": null,
                     "userConfig": {
-                        "border": 0,
-                        "layout": "border",
-                        "title": "",
-                        "designer|userClassName": "MyPanel55",
                         "layout|region": "center"
                     },
-                    "cn": [
-                        {
-                            "id": "ExtBox1-ext-gen69897",
-                            "type": "linkedinstance",
-                            "reference": {
-                                "name": "items",
-                                "type": "array"
-                            },
-                            "codeClass": null,
-                            "userConfig": {
-                                "layout|region": "center",
-                                "id": "chartpanel"
-                            },
-                            "iconCls": "icon-linkedinstance",
-                            "masterInstanceId": "ExtBox1-ext-gen66433"
-                        },
-                        {
-                            "id": "ExtBox1-ext-gen31930",
-                            "type": "panel",
-                            "reference": {
-                                "name": "items",
-                                "type": "array"
-                            },
-                            "codeClass": null,
-                            "userConfig": {
-                                "height": 250,
-                                "layout": "fit",
-                                "collapsible": true,
-                                "hideCollapseTool": null,
-                                "title": "Grid",
-                                "designer|userClassName": "MyPanel60",
-                                "layout|region": "south",
-                                "layout|split": true
-                            },
-                            "cn": [
-                                {
-                                    "id": "ExtBox1-ext-gen28324",
-                                    "type": "linkedinstance",
-                                    "reference": {
-                                        "name": "items",
-                                        "type": "array"
-                                    },
-                                    "codeClass": null,
-                                    "userConfig": {
-                                        "id": "gridpanel"
-                                    },
-                                    "iconCls": "icon-linkedinstance",
-                                    "masterInstanceId": "ExtBox1-ext-gen27799"
-                                }
-                            ]
-                        }
-                    ]
+                    "iconCls": "icon-linkedinstance",
+                    "masterInstanceId": "ExtBox1-ext-gen30192"
                 },
                 {
-                    "id": "ExtBox1-ext-gen29581",
+                    "id": "ExtBox1-ext-gen30387",
                     "type": "panel",
                     "reference": {
                         "name": "items",
@@ -10155,9 +9449,116 @@
                         "designer|userClassName": "MyPanel3",
                         "layout|region": "south"
                     }
+                }
+            ]
+        },
+        {
+            "id": "ExtBox1-ext-gen30192",
+            "type": "panel",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "border": 0,
+                "layout": "border",
+                "designer|userClassName": "ViewerPanel",
+                "designer|userAlias": "viewerpanel"
+            },
+            "cn": [
+                {
+                    "id": "ExtBox1-ext-gen30195",
+                    "type": "panel",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "border": 0,
+                        "layout": "border",
+                        "title": "",
+                        "designer|userClassName": "MyPanel55",
+                        "layout|region": "center"
+                    },
+                    "cn": [
+                        {
+                            "id": "ExtBox1-ext-gen30204",
+                            "type": "linkedinstance",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "layout|region": "center",
+                                "id": "chartpanel"
+                            },
+                            "iconCls": "icon-linkedinstance",
+                            "masterInstanceId": "ExtBox1-ext-gen66433"
+                        },
+                        {
+                            "id": "ExtBox1-ext-gen30293",
+                            "type": "panel",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "height": 300,
+                                "layout": "border",
+                                "collapsible": true,
+                                "hideCollapseTool": true,
+                                "title": "",
+                                "designer|userClassName": "MyPanel60",
+                                "layout|region": "south",
+                                "layout|split": true
+                            },
+                            "cn": [
+                                {
+                                    "id": "ExtBox1-ext-gen30304",
+                                    "type": "linkedinstance",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "layout|flex": 1,
+                                        "layout|region": "center",
+                                        "id": "gridpanel"
+                                    },
+                                    "iconCls": "icon-linkedinstance",
+                                    "masterInstanceId": "ExtBox1-ext-gen27799"
+                                },
+                                {
+                                    "id": "ExtBox1-ext-gen47948",
+                                    "type": "linkedinstance",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "layout|flex": 1,
+                                        "layout|region": "east",
+                                        "layout|split": true,
+                                        "id": "proceduremap",
+                                        "width": 150,
+                                        "collapsible": true,
+                                        "hideCollapseTool": true
+                                    },
+                                    "iconCls": "icon-linkedinstance",
+                                    "masterInstanceId": "ExtBox1-ext-gen43149"
+                                }
+                            ]
+                        }
+                    ]
                 },
                 {
-                    "id": "ExtBox1-ext-gen32436",
+                    "id": "ExtBox1-ext-gen30396",
                     "type": "panel",
                     "reference": {
                         "name": "items",
@@ -10174,7 +9575,7 @@
                     },
                     "cn": [
                         {
-                            "id": "ExtBox1-ext-gen32757",
+                            "id": "ExtBox1-ext-gen30405",
                             "type": "linkedinstance",
                             "reference": {
                                 "name": "items",
@@ -10379,27 +9780,61 @@
                             }
                         },
                         {
-                            "id": "ExtBox1-ext-gen19631",
-                            "type": "combobox",
+                            "id": "ExtBox1-ext-gen33975",
+                            "type": "fieldcontainer",
                             "reference": {
                                 "name": "items",
                                 "type": "array"
                             },
                             "codeClass": null,
                             "userConfig": {
-                                "disabled": true,
-                                "id": "oeCbProcedure",
-                                "itemId": null,
-                                "name": "procedure",
-                                "fieldLabel": "Procedure",
-                                "labelWidth": 70,
-                                "displayField": "name",
-                                "queryMode": "local",
-                                "store": "procedurelist",
-                                "valueField": "name",
-                                "designer|userClassName": "MyComboBox3",
-                                "layout|anchor": "100%"
-                            }
+                                "height": 22,
+                                "layout": "hbox",
+                                "fieldLabel": "",
+                                "designer|userClassName": "MyFieldContainer13",
+                                "container|align": "stretch"
+                            },
+                            "cn": [
+                                {
+                                    "id": "ExtBox1-ext-gen19631",
+                                    "type": "combobox",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "disabled": true,
+                                        "id": "oeCbProcedure",
+                                        "itemId": null,
+                                        "name": "procedure",
+                                        "fieldLabel": "Procedure",
+                                        "labelWidth": 70,
+                                        "displayField": "name",
+                                        "queryMode": "local",
+                                        "store": "procedurelist",
+                                        "valueField": "name",
+                                        "designer|userClassName": "MyComboBox3",
+                                        "layout|flex": 1
+                                    }
+                                },
+                                {
+                                    "id": "ExtBox1-ext-gen34963",
+                                    "type": "button",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "id": "wResetObservedProperties",
+                                        "margin": "0px 0px 0px 4px",
+                                        "text": "reset",
+                                        "designer|userClassName": "MyButton83",
+                                        "layout|flex": null
+                                    }
+                                }
+                            ]
                         },
                         {
                             "id": "ExtBox1-ext-gen19692",
@@ -11163,6 +10598,26 @@
             ]
         },
         {
+            "id": "ExtBox1-ext-gen43149",
+            "type": "panel",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "border": null,
+                "html": "<div id='map' style='width: 100%; height: 100%; background-color: white;'></div>\n<div id=\"popup\" class=\"ol-popup\">\n      <a href=\"#\" id=\"popup-closer\" class=\"ol-popup-closer\"></a>\n      <div id=\"popup-content\"></div>\n    </div>",
+                "id": null,
+                "minWidth": 350,
+                "width": 350,
+                "collapsed": false,
+                "title": null,
+                "designer|userClassName": "ProcedureMap",
+                "designer|userAlias": "proceduremap"
+            }
+        },
+        {
             "id": "ExtBox1-ext-gen32036",
             "type": "panel",
             "reference": {
@@ -11906,6 +11361,1159 @@
                                             "userConfig": {
                                                 "width": 40,
                                                 "designer|userClassName": "MyContainer32",
+                                                "layout|flex": null
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "ExtBox1-ext-gen49545",
+            "type": "panel",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "height": null,
+                "width": null,
+                "layout": "border",
+                "title": "",
+                "designer|userClassName": "VirtualDischargeEditor",
+                "designer|userAlias": "virtualdischargeeditor"
+            },
+            "cn": [
+                {
+                    "id": "ExtBox1-ext-gen49548",
+                    "type": "form",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "height": 50,
+                        "bodyPadding": 10,
+                        "title": "",
+                        "designer|userClassName": "MyForm46",
+                        "layout|flex": null,
+                        "layout|region": "north"
+                    },
+                    "cn": [
+                        {
+                            "id": "ExtBox1-ext-gen49559",
+                            "type": "combobox",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "id": "vpcmbplist",
+                                "fieldLabel": "Virtual procedure",
+                                "labelWidth": 150,
+                                "allowBlank": false,
+                                "displayField": "name",
+                                "forceSelection": true,
+                                "store": "vplist",
+                                "valueField": "name",
+                                "designer|userClassName": "MyComboBox31",
+                                "layout|anchor": "100%"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ExtBox1-ext-gen49577",
+                    "type": "panel",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "layout": "vbox",
+                        "title": "Rating curve",
+                        "designer|userClassName": "MyPanel81",
+                        "container|align": "stretch",
+                        "layout|region": "center"
+                    },
+                    "cn": [
+                        {
+                            "id": "ExtBox1-ext-gen49582",
+                            "type": "toolbar",
+                            "reference": {
+                                "name": "dockedItems",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "designer|userClassName": "MyToolbar25",
+                                "layout|flex": 1,
+                                "dock": "top"
+                            },
+                            "cn": [
+                                {
+                                    "id": "ExtBox1-ext-gen49589",
+                                    "type": "tbtext",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "style": null,
+                                        "text": "ADD",
+                                        "designer|userClassName": "MyTextItem",
+                                        "layout|flex": null
+                                    }
+                                },
+                                {
+                                    "id": "ExtBox1-ext-gen49594",
+                                    "type": "button",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "id": "vpbtnaddrc",
+                                        "text": "> at end",
+                                        "designer|userClassName": "MyButton77",
+                                        "layout|flex": null
+                                    }
+                                },
+                                {
+                                    "id": "ExtBox1-ext-gen49599",
+                                    "type": "button",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "disabled": true,
+                                        "id": "vpbtnaddaboverc",
+                                        "text": "> above selected",
+                                        "designer|userClassName": "MyButton77",
+                                        "layout|flex": null
+                                    }
+                                },
+                                {
+                                    "id": "ExtBox1-ext-gen49604",
+                                    "type": "button",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "disabled": true,
+                                        "id": "vpbtnaddbelowrc",
+                                        "text": "> below selected",
+                                        "designer|userClassName": "MyButton77",
+                                        "layout|flex": null
+                                    }
+                                },
+                                {
+                                    "id": "ExtBox1-ext-gen49609",
+                                    "type": "tbseparator",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "margin": "0px 8px 0px 8px",
+                                        "padding": null,
+                                        "designer|userClassName": "MySeparator1",
+                                        "layout|flex": null
+                                    }
+                                },
+                                {
+                                    "id": "ExtBox1-ext-gen49614",
+                                    "type": "button",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "disabled": true,
+                                        "id": "vpbtnremoverc",
+                                        "text": "Remove selected",
+                                        "designer|userClassName": "MyButton78",
+                                        "layout|flex": null
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "id": "ExtBox1-ext-gen49619",
+                            "type": "gridpanel",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "border": 0,
+                                "id": "vpgridratingcurve",
+                                "title": "",
+                                "store": "ratingcurve",
+                                "designer|userClassName": "MyGridPanel16",
+                                "layout|flex": 1
+                            },
+                            "cn": [
+                                {
+                                    "id": "ExtBox1-ext-gen49626",
+                                    "type": "datecolumn",
+                                    "reference": {
+                                        "name": "columns",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "sortable": false,
+                                        "dataIndex": "from",
+                                        "flex": 0.13,
+                                        "text": "From",
+                                        "format": "Y-m-d",
+                                        "designer|userClassName": "MyDateColumn2"
+                                    },
+                                    "cn": [
+                                        {
+                                            "id": "ExtBox1-ext-gen49629",
+                                            "type": "datefield",
+                                            "reference": {
+                                                "name": "field",
+                                                "type": "object"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "name": "from",
+                                                "fieldLabel": "Label",
+                                                "hideLabel": true,
+                                                "format": "Y-m-d",
+                                                "designer|userClassName": "MyDateField8"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "ExtBox1-ext-gen49632",
+                                    "type": "datecolumn",
+                                    "reference": {
+                                        "name": "columns",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "sortable": false,
+                                        "dataIndex": "to",
+                                        "flex": 0.13,
+                                        "text": "To",
+                                        "format": "Y-m-d",
+                                        "designer|userClassName": "MyDateColumn3"
+                                    },
+                                    "cn": [
+                                        {
+                                            "id": "ExtBox1-ext-gen49635",
+                                            "type": "datefield",
+                                            "reference": {
+                                                "name": "field",
+                                                "type": "object"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "name": "to",
+                                                "fieldLabel": "Label",
+                                                "hideLabel": true,
+                                                "format": "Y-m-d",
+                                                "designer|userClassName": "MyDateField9"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "ExtBox1-ext-gen49638",
+                                    "type": "numbercolumn",
+                                    "reference": {
+                                        "name": "columns",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "sortable": false,
+                                        "dataIndex": "low_val",
+                                        "flex": 0.13,
+                                        "text": "Low",
+                                        "format": "0,000.0000",
+                                        "designer|userClassName": "MyNumberColumn4"
+                                    },
+                                    "cn": [
+                                        {
+                                            "id": "ExtBox1-ext-gen49641",
+                                            "type": "numberfield",
+                                            "reference": {
+                                                "name": "field",
+                                                "type": "object"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "fieldLabel": "Label",
+                                                "hideLabel": true,
+                                                "decimalPrecision": 4,
+                                                "designer|userClassName": "MyNumberField10"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "ExtBox1-ext-gen49644",
+                                    "type": "numbercolumn",
+                                    "reference": {
+                                        "name": "columns",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "sortable": false,
+                                        "dataIndex": "up_val",
+                                        "flex": 0.13,
+                                        "text": "Up",
+                                        "format": "0,000.0000",
+                                        "designer|userClassName": "MyNumberColumn5"
+                                    },
+                                    "cn": [
+                                        {
+                                            "id": "ExtBox1-ext-gen49647",
+                                            "type": "numberfield",
+                                            "reference": {
+                                                "name": "field",
+                                                "type": "object"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "fieldLabel": "Label",
+                                                "hideLabel": true,
+                                                "decimalPrecision": 4,
+                                                "designer|userClassName": "MyNumberField11"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "ExtBox1-ext-gen49650",
+                                    "type": "numbercolumn",
+                                    "reference": {
+                                        "name": "columns",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "sortable": false,
+                                        "dataIndex": "A",
+                                        "flex": 0.13,
+                                        "text": "A",
+                                        "format": "0,000.0000",
+                                        "designer|userClassName": "MyNumberColumn6"
+                                    },
+                                    "cn": [
+                                        {
+                                            "id": "ExtBox1-ext-gen49653",
+                                            "type": "numberfield",
+                                            "reference": {
+                                                "name": "field",
+                                                "type": "object"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "fieldLabel": "Label",
+                                                "hideLabel": true,
+                                                "decimalPrecision": 4,
+                                                "designer|userClassName": "MyNumberField12"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "ExtBox1-ext-gen49656",
+                                    "type": "numbercolumn",
+                                    "reference": {
+                                        "name": "columns",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "sortable": false,
+                                        "dataIndex": "B",
+                                        "flex": 0.13,
+                                        "text": "B",
+                                        "format": "0,000.0000",
+                                        "designer|userClassName": "MyNumberColumn7"
+                                    },
+                                    "cn": [
+                                        {
+                                            "id": "ExtBox1-ext-gen49659",
+                                            "type": "numberfield",
+                                            "reference": {
+                                                "name": "field",
+                                                "type": "object"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "fieldLabel": "Label",
+                                                "hideLabel": true,
+                                                "decimalPrecision": 4,
+                                                "designer|userClassName": "MyNumberField13"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "ExtBox1-ext-gen49662",
+                                    "type": "numbercolumn",
+                                    "reference": {
+                                        "name": "columns",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "sortable": false,
+                                        "dataIndex": "C",
+                                        "flex": 0.13,
+                                        "text": "C",
+                                        "format": "0,000.0000",
+                                        "designer|userClassName": "MyNumberColumn8"
+                                    },
+                                    "cn": [
+                                        {
+                                            "id": "ExtBox1-ext-gen49665",
+                                            "type": "numberfield",
+                                            "reference": {
+                                                "name": "field",
+                                                "type": "object"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "fieldLabel": "Label",
+                                                "hideLabel": true,
+                                                "decimalPrecision": 4,
+                                                "designer|userClassName": "MyNumberField14"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "ExtBox1-ext-gen49668",
+                                    "type": "numbercolumn",
+                                    "reference": {
+                                        "name": "columns",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "sortable": false,
+                                        "dataIndex": "K",
+                                        "flex": 0.13,
+                                        "text": "K",
+                                        "format": "0,000.0000",
+                                        "designer|userClassName": "MyNumberColumn9"
+                                    },
+                                    "cn": [
+                                        {
+                                            "id": "ExtBox1-ext-gen49671",
+                                            "type": "numberfield",
+                                            "reference": {
+                                                "name": "field",
+                                                "type": "object"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "fieldLabel": "Label",
+                                                "hideLabel": true,
+                                                "decimalPrecision": 4,
+                                                "designer|userClassName": "MyNumberField15"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "ExtBox1-ext-gen49674",
+                                    "type": "gridview",
+                                    "reference": {
+                                        "name": "viewConfig",
+                                        "type": "object"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "designer|userClassName": "MyGridView15"
+                                    }
+                                },
+                                {
+                                    "id": "ExtBox1-ext-gen49677",
+                                    "type": "gridcelleditingplugin",
+                                    "reference": {
+                                        "name": "plugins",
+                                        "type": "array"
+                                    },
+                                    "codeClass": "Ext.grid.plugin.CellEditing",
+                                    "userConfig": {
+                                        "designer|userClassName": "MyCellEditingPlugin"
+                                    }
+                                },
+                                {
+                                    "id": "ExtBox1-ext-gen49680",
+                                    "type": "rowselectionmodel",
+                                    "reference": {
+                                        "name": "selModel",
+                                        "type": "object"
+                                    },
+                                    "codeClass": "Ext.selection.RowModel",
+                                    "userConfig": {
+                                        "allowDeselect": true,
+                                        "designer|userClassName": "MyRowSelectionModel"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "id": "ExtBox1-ext-gen49683",
+                            "type": "panel",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "border": 0,
+                                "height": 60,
+                                "layout": "hbox",
+                                "title": "",
+                                "designer|userClassName": "MyPanel83",
+                                "container|align": "stretch",
+                                "container|padding": "8px 0px 8px 0px",
+                                "layout|flex": null
+                            },
+                            "cn": [
+                                {
+                                    "id": "ExtBox1-ext-gen49690",
+                                    "type": "container",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "width": 40,
+                                        "designer|userClassName": "MyContainer32",
+                                        "layout|flex": null
+                                    }
+                                },
+                                {
+                                    "id": "ExtBox1-ext-gen49697",
+                                    "type": "button",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "id": "vpbtndeleterc",
+                                        "text": "Delete Rating Curve File",
+                                        "designer|userClassName": "MyButton75",
+                                        "layout|flex": 1
+                                    }
+                                },
+                                {
+                                    "id": "ExtBox1-ext-gen49704",
+                                    "type": "container",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "width": 40,
+                                        "designer|userClassName": "MyContainer32",
+                                        "layout|flex": null
+                                    }
+                                },
+                                {
+                                    "id": "ExtBox1-ext-gen49711",
+                                    "type": "button",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "id": "vpbtnsaverc",
+                                        "text": "Store the File",
+                                        "designer|userClassName": "MyButton76",
+                                        "layout|flex": 1
+                                    }
+                                },
+                                {
+                                    "id": "ExtBox1-ext-gen49718",
+                                    "type": "container",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "width": 40,
+                                        "designer|userClassName": "MyContainer32",
+                                        "layout|flex": null
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "ExtBox1-ext-gen34042",
+            "type": "viewport",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "style": "background-color: #004106;",
+                "layout": "fit",
+                "designer|userClassName": "Welcome"
+            },
+            "cn": [
+                {
+                    "id": "ExtBox1-ext-gen34156",
+                    "type": "panel",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "border": 0,
+                        "id": "contentcards",
+                        "activeItem": 0,
+                        "layout": "card",
+                        "title": "",
+                        "designer|userClassName": "MyPanel"
+                    },
+                    "cn": [
+                        {
+                            "id": "ExtBox1-ext-gen46182",
+                            "type": "container",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "id": null,
+                                "padding": 18,
+                                "style": "background-color: #004106;",
+                                "layout": "vbox",
+                                "designer|userClassName": "MyContainer50",
+                                "container|align": "center",
+                                "container|pack": "center",
+                                "container|padding": 18
+                            },
+                            "cn": [
+                                {
+                                    "id": "ExtBox1-ext-gen33726",
+                                    "type": "panel",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "border": 0,
+                                        "height": 150,
+                                        "id": "loginCard",
+                                        "style": "background-color: #004106;",
+                                        "width": 300,
+                                        "layout": "anchor",
+                                        "designer|userClassName": "MyContainer53"
+                                    },
+                                    "cn": [
+                                        {
+                                            "id": "ExtBox1-ext-gen37603",
+                                            "type": "container",
+                                            "reference": {
+                                                "name": "items",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "height": 50,
+                                                "style": "background-color: #004106;",
+                                                "layout": "hbox",
+                                                "designer|userClassName": "MyContainer56",
+                                                "container|align": "middle"
+                                            },
+                                            "cn": [
+                                                {
+                                                    "id": "ExtBox1-ext-gen48390",
+                                                    "type": "container",
+                                                    "reference": {
+                                                        "name": "items",
+                                                        "type": "array"
+                                                    },
+                                                    "codeClass": null,
+                                                    "userConfig": {
+                                                        "html": "<h1>Welcome to</h1>",
+                                                        "style": "text-align: center; color: white; font-size: 18px;",
+                                                        "width": null,
+                                                        "designer|userClassName": "MyContainer51",
+                                                        "layout|flex": 1
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "id": "ExtBox1-ext-gen41536",
+                                            "type": "container",
+                                            "reference": {
+                                                "name": "items",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "height": 50,
+                                                "style": "background-color: #004106;",
+                                                "layout": "hbox",
+                                                "designer|userClassName": "MyContainer57",
+                                                "container|align": "middle",
+                                                "container|pack": "center"
+                                            },
+                                            "cn": [
+                                                {
+                                                    "id": "ExtBox1-ext-gen39798",
+                                                    "type": "image",
+                                                    "reference": {
+                                                        "name": "items",
+                                                        "type": "array"
+                                                    },
+                                                    "codeClass": null,
+                                                    "userConfig": {
+                                                        "height": 40,
+                                                        "width": 170,
+                                                        "src": "images/istsos-logo.png",
+                                                        "designer|userClassName": "MyImg"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "id": "ExtBox1-ext-gen35699",
+                                            "type": "container",
+                                            "reference": {
+                                                "name": "items",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "height": 50,
+                                                "style": "background-color: #004106;",
+                                                "layout": "hbox",
+                                                "designer|userClassName": "MyContainer55",
+                                                "container|align": "middle",
+                                                "container|pack": "center"
+                                            },
+                                            "cn": [
+                                                {
+                                                    "id": "ExtBox1-ext-gen48603",
+                                                    "type": "button",
+                                                    "reference": {
+                                                        "name": "items",
+                                                        "type": "array"
+                                                    },
+                                                    "codeClass": null,
+                                                    "userConfig": {
+                                                        "id": "btnLogin",
+                                                        "margin": null,
+                                                        "padding": null,
+                                                        "width": 80,
+                                                        "text": "Login",
+                                                        "designer|userClassName": "MyButton",
+                                                        "layout|flex": null
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "ExtBox1-ext-gen43280",
+                                    "type": "container",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "height": 30,
+                                        "hidden": true,
+                                        "html": null,
+                                        "id": "loginFailed",
+                                        "margin": "15px 0px 0px 0px",
+                                        "width": 150,
+                                        "layout": "vbox",
+                                        "designer|userClassName": "MyContainer58",
+                                        "container|align": "center",
+                                        "layout|flex": 1
+                                    },
+                                    "cn": [
+                                        {
+                                            "id": "ExtBox1-ext-gen44063",
+                                            "type": "container",
+                                            "reference": {
+                                                "name": "items",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "html": "Login failed",
+                                                "style": "color: red;",
+                                                "width": null,
+                                                "designer|userClassName": "MyContainer59",
+                                                "layout|flex": 1
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "ExtBox1-ext-gen54873",
+            "type": "panel",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "height": null,
+                "id": "mapviewer",
+                "width": null,
+                "layout": "border",
+                "title": "",
+                "designer|userClassName": "MapViewer"
+            },
+            "cn": [
+                {
+                    "id": "ExtBox1-ext-gen55617",
+                    "type": "container",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "html": "<div id='map' style='width: 100%; height: 100%; background-color: white;'></div>\n<div id=\"popup\" class=\"ol-popup\">\n      <a href=\"#\" id=\"popup-closer\" class=\"ol-popup-closer\"></a>\n      <div id=\"popup-content\"></div>\n    </div>",
+                        "id": "mapCnt",
+                        "designer|userClassName": "MyContainer38",
+                        "layout|region": "center"
+                    }
+                },
+                {
+                    "id": "ExtBox1-ext-gen55821",
+                    "type": "panel",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "width": 450,
+                        "layout": "fit",
+                        "title": "",
+                        "designer|userClassName": "MyPanel78",
+                        "layout|region": "west"
+                    },
+                    "cn": [
+                        {
+                            "id": "ExtBox1-ext-gen58213",
+                            "type": "panel",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "border": 0,
+                                "itemId": "chartone",
+                                "minWidth": 280,
+                                "padding": "10px 0px 0px 0px",
+                                "layout": "border",
+                                "bodyPadding": "",
+                                "title": "",
+                                "designer|userClassName": "ProcedureChooser",
+                                "designer|userAlias": "procedurechooser"
+                            },
+                            "cn": [
+                                {
+                                    "id": "ExtBox1-ext-gen58218",
+                                    "type": "form",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "border": 0,
+                                        "height": 120,
+                                        "id": "oeSettings",
+                                        "padding": null,
+                                        "bodyPadding": "0 10 0 10",
+                                        "bodyStyle": null,
+                                        "title": "",
+                                        "designer|userClassName": "MyForm6",
+                                        "layout|region": "north"
+                                    },
+                                    "cn": [
+                                        {
+                                            "id": "ExtBox1-ext-gen58229",
+                                            "type": "combobox",
+                                            "reference": {
+                                                "name": "items",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "id": "cmbServices",
+                                                "fieldLabel": "Service",
+                                                "labelWidth": 70,
+                                                "displayField": "service",
+                                                "store": "storeServices",
+                                                "valueField": "service",
+                                                "designer|userClassName": "MyComboBox12",
+                                                "layout|anchor": "100%"
+                                            }
+                                        },
+                                        {
+                                            "id": "ExtBox1-ext-gen33565",
+                                            "type": "fieldcontainer",
+                                            "reference": {
+                                                "name": "items",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "height": 22,
+                                                "layout": "hbox",
+                                                "fieldLabel": "",
+                                                "designer|userClassName": "MyFieldContainer12",
+                                                "container|align": "stretch"
+                                            },
+                                            "cn": [
+                                                {
+                                                    "id": "ExtBox1-ext-gen58236",
+                                                    "type": "combobox",
+                                                    "reference": {
+                                                        "name": "items",
+                                                        "type": "array"
+                                                    },
+                                                    "codeClass": null,
+                                                    "userConfig": {
+                                                        "disabled": true,
+                                                        "id": "oeCbOffering",
+                                                        "itemId": null,
+                                                        "name": "offering",
+                                                        "fieldLabel": "Offering",
+                                                        "labelWidth": 70,
+                                                        "displayField": "name",
+                                                        "queryMode": "local",
+                                                        "store": "offerings",
+                                                        "valueField": "name",
+                                                        "designer|userClassName": "MyComboBox",
+                                                        "layout|flex": 1
+                                                    }
+                                                },
+                                                {
+                                                    "id": "ExtBox1-ext-gen35838",
+                                                    "type": "button",
+                                                    "reference": {
+                                                        "name": "items",
+                                                        "type": "array"
+                                                    },
+                                                    "codeClass": null,
+                                                    "userConfig": {
+                                                        "id": "btnResetOffering",
+                                                        "margin": "0px 0px 0px 4px",
+                                                        "text": "reset",
+                                                        "designer|userClassName": "MyButton83",
+                                                        "layout|flex": null
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "id": "ExtBox1-ext-gen31140",
+                                            "type": "fieldcontainer",
+                                            "reference": {
+                                                "name": "items",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "height": 22,
+                                                "layout": "hbox",
+                                                "fieldLabel": "",
+                                                "designer|userClassName": "MyFieldContainer10",
+                                                "container|align": "stretch"
+                                            },
+                                            "cn": [
+                                                {
+                                                    "id": "ExtBox1-ext-gen58243",
+                                                    "type": "combobox",
+                                                    "reference": {
+                                                        "name": "items",
+                                                        "type": "array"
+                                                    },
+                                                    "codeClass": null,
+                                                    "userConfig": {
+                                                        "disabled": true,
+                                                        "id": "oeCbProcedure",
+                                                        "itemId": null,
+                                                        "name": "procedure",
+                                                        "fieldLabel": "Procedure",
+                                                        "labelWidth": 70,
+                                                        "displayField": "name",
+                                                        "queryMode": "local",
+                                                        "store": "procedurelist",
+                                                        "valueField": "name",
+                                                        "designer|userClassName": "MyComboBox3",
+                                                        "layout|flex": 1
+                                                    }
+                                                },
+                                                {
+                                                    "id": "ExtBox1-ext-gen31700",
+                                                    "type": "button",
+                                                    "reference": {
+                                                        "name": "items",
+                                                        "type": "array"
+                                                    },
+                                                    "codeClass": null,
+                                                    "userConfig": {
+                                                        "id": "btnResetProcedures",
+                                                        "margin": "0px 0px 0px 4px",
+                                                        "text": "reset",
+                                                        "designer|userClassName": "MyButton83",
+                                                        "layout|flex": null
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "id": "ExtBox1-ext-gen32548",
+                                            "type": "fieldcontainer",
+                                            "reference": {
+                                                "name": "items",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "height": 22,
+                                                "layout": "hbox",
+                                                "fieldLabel": "",
+                                                "designer|userClassName": "MyFieldContainer10",
+                                                "container|align": "stretch"
+                                            },
+                                            "cn": [
+                                                {
+                                                    "id": "ExtBox1-ext-gen32554",
+                                                    "type": "combobox",
+                                                    "reference": {
+                                                        "name": "items",
+                                                        "type": "array"
+                                                    },
+                                                    "codeClass": null,
+                                                    "userConfig": {
+                                                        "disabled": true,
+                                                        "id": "oeCbObservedProperty",
+                                                        "name": "observedproperty",
+                                                        "fieldLabel": "Property",
+                                                        "labelWidth": 70,
+                                                        "displayField": "name",
+                                                        "forceSelection": true,
+                                                        "queryMode": "local",
+                                                        "store": "observedproperties",
+                                                        "valueField": "definition",
+                                                        "designer|userClassName": "MyComboBox4",
+                                                        "layout|flex": 1
+                                                    }
+                                                },
+                                                {
+                                                    "id": "ExtBox1-ext-gen32560",
+                                                    "type": "button",
+                                                    "reference": {
+                                                        "name": "items",
+                                                        "type": "array"
+                                                    },
+                                                    "codeClass": null,
+                                                    "userConfig": {
+                                                        "id": "btnResetObservedProperties",
+                                                        "margin": "0px 0px 0px 4px",
+                                                        "text": "reset",
+                                                        "designer|userClassName": "MyButton83",
+                                                        "layout|flex": null
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "ExtBox1-ext-gen58257",
+                                    "type": "form",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "border": 0,
+                                        "id": "proceduresTree",
+                                        "autoScroll": true,
+                                        "layout": "vbox",
+                                        "bodyPadding": "0 10 0 10",
+                                        "title": "",
+                                        "designer|userClassName": "MyPanel26",
+                                        "container|align": "stretch",
+                                        "container|pack": "end",
+                                        "layout|region": "center"
+                                    },
+                                    "cn": [
+                                        {
+                                            "id": "ExtBox1-ext-gen30251",
+                                            "type": "container",
+                                            "reference": {
+                                                "name": "items",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "height": 400,
+                                                "html": "<div id=\"chart\" style=\"height: 300px; width: 100%;\"></div>",
+                                                "designer|userClassName": "MyContainer48",
                                                 "layout|flex": null
                                             }
                                         }
@@ -14318,6 +14926,47 @@
                             "codeClass": null,
                             "userConfig": {
                                 "designer|userClassName": "Json Reader23"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "ExtBox1-ext-gen6049",
+            "type": "jsonstore",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "storeId": "MyJsonStore24",
+                "designer|userClassName": "MyJsonStore24"
+            },
+            "cn": [
+                {
+                    "id": "ExtBox1-ext-gen6053",
+                    "type": "ajaxproxy",
+                    "reference": {
+                        "name": "proxy",
+                        "type": "object"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "designer|userClassName": "Ajax Proxy26"
+                    },
+                    "cn": [
+                        {
+                            "id": "ExtBox1-ext-gen6059",
+                            "type": "jsonreader",
+                            "reference": {
+                                "name": "reader",
+                                "type": "object"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "designer|userClassName": "Json Reader24"
                             }
                         }
                     ]

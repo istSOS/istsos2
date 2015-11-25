@@ -130,7 +130,7 @@ class waMemberslist(waProcedures):
                 elem["name"] = proc["name"]
                 ops = utils.getObservedPropertiesFromProcedure(dbm,self.service,proc["name"])
                 if ops != None:
-                    elem["observedproperties"] = [ {"name" : op["name"], "uom" : op["uom"]  } for op in ops ]
+                    elem["observedproperties"] = [ {"name": op["name"], "uom": op["uom"], "def": op["def"]} for op in ops ]
                 else:
                     elem["observedproperties"] = []
                 offs = utils.getOfferingsFromProcedure(dbm,self.service,proc["name"])

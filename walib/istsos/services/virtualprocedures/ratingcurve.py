@@ -96,8 +96,6 @@ class waRatingcurves(waResourceService):
         from walib import databaseManager
         import datetime
         import copy
-        #import lib.isodate as isodate
-        #import lib.requests as requests
 
         # get new data
         new_json = copy.deepcopy(self.json)
@@ -118,28 +116,7 @@ class waRatingcurves(waResourceService):
 
         for res in result:
 
-            # request the last observation of the procedure
-            #rparams = {
-                #"request": "GetObservation",
-                #"service": "SOS",
-                #"version": "1.0.0",
-                #"procedure": self.procedurename,
-                #"observedProperty": ":",
-                #"responseFormat": "application/json",
-                #"offering": "temporary",  # offering[0]['name']
-                #"aggregateFunction": "count",
-                #"eventTime":res['from'].strftime('%%Y-%%m-%%dT%%H:%%M:%%S%%z') + "/" + res['to'].strftime('%%Y-%%m-%%dT%%H:%%M:%%S%%z'),
-                #"aggregateInterval": interval
-            #}
-
-            #response = requests.get(
-                #self.serviceconf.serviceurl["url"],
-                #params=rparams
-            #)
             count = 0
-            # check if valid
-            #count = response['ObservationCollection']['member'][0]['result']['DataArray']['values'][1]
-
             sql = "INSERT INTO %s.tran_log(transaction_time_trl, " % self.service
             sql += "operation_trl, procedure_trl, begin_trl, end_trl, count) "
             sql += "VALUES (%s, %s, %s, %s, %s, %s)"

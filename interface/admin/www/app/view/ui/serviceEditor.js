@@ -30,7 +30,7 @@ Ext.define('istsos.view.ui.serviceEditor', {
                     items: [
                         {
                             xtype: 'fieldset',
-                            title: 'Quality index',
+                            title: 'Service',
                             items: [
                                 {
                                     xtype: 'textfield',

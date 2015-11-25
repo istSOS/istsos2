@@ -291,7 +291,9 @@ class Converter():
               'u': self.url,
               's': self.service,
               'wd': self.folderOut,
-              'p': [self.name]
+              'p': [self.name],
+              'user': self.user,
+              'password': self.password
           }, conf = {
               'logger': self.debugConverter if isinstance(self.debugConverter,DebugConverter) else self,
               'description': self.describe
@@ -309,7 +311,9 @@ class Converter():
             'function': function if function is not None else None,
             'resolution': resolution if resolution is not None else None,
             'nodataValue': nodataValue if nodataValue is not None else None, 
-            'nodataQI': nodataQI if nodataQI is not None else None
+            'nodataQI': nodataQI if nodataQI is not None else None,
+            'user': self.user,
+            'pwd': self.password
         },self)
     
     def archive(self):
@@ -560,7 +564,6 @@ class Converter():
           - underscore _
           - datetime in UTC
           - extension (.dat)
-        .astimezone(pytz.utc).isoformat()
         """
         self.log("End position: %s" % self.getIOEndPosition())
         if len(self.observations)>0:

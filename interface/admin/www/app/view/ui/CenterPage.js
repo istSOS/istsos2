@@ -5,24 +5,24 @@ Ext.define('istsos.view.ui.CenterPage', {
             Ext.apply(this,config);
         }
         this.istDocId = Ext.id();
-        this.addEvents('operationSubmit', 'operationPost', 'operationPut', 
+        this.addEvents('operationSubmit', 'operationPost', 'operationPut',
             'operationDelete', 'operationGet');
         this.callParent(arguments);
     },
     initComponent: function() {
         this.callParent(arguments);
-        
+
         /*if(this.istTitle){
             this.setTitle(this.istTitle);
         }
         if(this.istBody) {
             if (this.istService) {
-                this.setBody(this.istBody,this.istService); 
+                this.setBody(this.istBody,this.istService);
             }else{
-                this.setBody(this.istBody); 
+                this.setBody(this.istBody);
             }
         }*/
-        
+
         if(this.istService){
             Ext.Ajax.request({
                 url: Ext.String.format('{0}/istsos/services/{1}/configsections',wa.url, this.istService),
@@ -38,9 +38,9 @@ Ext.define('istsos.view.ui.CenterPage', {
                     }
                     if(this.istBody) {
                         if (this.istService) {
-                            this.setBody(this.istBody,this.istService); 
+                            this.setBody(this.istBody,this.istService);
                         }else{
-                            this.setBody(this.istBody); 
+                            this.setBody(this.istBody);
                         }
                     }
                 }
@@ -51,9 +51,9 @@ Ext.define('istsos.view.ui.CenterPage', {
             }
             if(this.istBody) {
                 if (this.istService) {
-                    this.setBody(this.istBody,this.istService); 
+                    this.setBody(this.istBody,this.istService);
                 }else{
-                    this.setBody(this.istBody); 
+                    this.setBody(this.istBody);
                 }
             }
         }
@@ -80,45 +80,14 @@ Ext.define('istsos.view.ui.CenterPage', {
             istFunction: this.istFunction,
             istOperation: this.istOperation,
             istFooter: this.istFooter,
-            istSections: this.configsections  
+            istSections: this.configsections
         };
     },
     initWaurl: function(){
         this.waurl = this.istOperation.restUrl.replace("","");
     },
     setTitle: function(title){
-        
         this.getComponent(1).setTitle( (!Ext.isEmpty(this.istService) ? this.istService: '') + " > " + title);
-        
-    /*this.getComponent(0).removeAll(true);
-        
-        if(Ext.isString(title)){
-            this.getComponent(0).update(title);
-        }else{
-            if(Ext.isArray(title)){
-                if(title.length==1){
-                    this.getComponent(0).add(Ext.create(title[0]));
-                }else{
-                    throw "CenterPage can't handle the configuration array given.";
-                }
-            }
-        }*/
-        
-    /*this.getComponent(0).add(
-            Ext.create('Ext.draw.Component', {
-                items: [{
-                    type: 'text',
-                    text: title,
-                    fill: '#FFFFFF',
-                    font: "20px 'Nova Square'",
-                    y: 5,
-                    rotate: {
-                        degrees: -90
-                    }
-                }]
-            })
-        );*/
-        
     },
     setBody: function(){
         this.getComponent(1).removeAll(true);
@@ -156,7 +125,7 @@ Ext.define('istsos.view.ui.CenterPage', {
                 if(this.istBody.length==1){
                     this.istForm = Ext.create(this.istBody[0],Ext.apply({
                         flex: 1
-                    },this.getIstConfig()));  
+                    },this.getIstConfig()));
                     this.initListeners();
                     this.getComponent(1).add({
                         xtype: 'panel',
@@ -178,20 +147,20 @@ Ext.define('istsos.view.ui.CenterPage', {
         // Initialize the function to call when the page is displayed.
         // in the config the paramenters to are:
         // istOperation: the url where the standard REST call must be done
-        // istBodyOnLoad: the function name of the panel (this.istForm) 
+        // istBodyOnLoad: the function name of the panel (this.istForm)
         //                  that is loaded inside.
-        
+
         if (!Ext.isEmpty(this.istOperation) || !Ext.isEmpty(this.istFunction)) {
             this.istForm.on("afterrender",function(cmp, eOpts){
-                
+
                 if (!Ext.isEmpty(this.istFunction) && !Ext.isEmpty(this.istFunction.onLoad)){
                     Ext.callback(this.istForm[this.istFunction.onLoad], this);
                 }
-                
+
                 if (!Ext.isEmpty(this.istOperation)){
                     this.operationGet();
                 }
-                
+
             },this, {
                 single: true
             });
@@ -245,7 +214,7 @@ Ext.define('istsos.view.ui.CenterPage', {
             Ext.callback(this.istForm[this.istFunction.onSubmit], this);
         }
         if (!Ext.isEmpty(this.istForm) && !Ext.isEmpty(this.istOperation)){
-            
+
             if (Ext.isEmpty(this.mask)) {
                 this.mask = new Ext.LoadMask(this.body, {
                     msg:"Inserting data..."
@@ -263,7 +232,7 @@ Ext.define('istsos.view.ui.CenterPage', {
             }else{
                 throw "Misconfiguration in pageConfig";
             }
-            
+
             Ext.Ajax.request({
                 url: url,
                 scope: this,
@@ -271,40 +240,18 @@ Ext.define('istsos.view.ui.CenterPage', {
                 jsonData: json,
                 success: function(response){
                     var json = Ext.decode(response.responseText);
-                    /*
-                    if (Ext.getCmp('messageField') != undefined) {
-                        if (json.success && !Ext.isEmpty(json.message)) {
-                            Ext.getCmp('messageField').setVisible(true);
-                            json['data']['message']=json['message']
-                        }else{
-                            Ext.getCmp('messageField').setVisible(false);
-                        }
-                    }var msg = Ext.getCmp('messagesbox');
-                    if (msg){
-                        var el = msg.getEl();
-                        msg.update(json['message']);
-                        el.fadeIn({
-                            duration: 500,
-                            easing: 'elasticIn'
-                        }).fadeOut({
-                            delay: 3000,
-                            duration: 500,
-                            easing: null
-                        });
-                        
-                    }*/
                     this.istForm.loadRecord(json);
                     this.mask.hide();
                     this.fireEvent("operationSubmit",json);
                 }
             });
         }
-                
+
     },
     operationGet: function(){
         if (!Ext.isEmpty(this.istOperation)) {
             Ext.getCmp('webadmincmp').showMask("Please wait...");
-            
+
             var url = null;
             if (Ext.isObject(this.istOperation)) {
                 url = this.istOperation.restUrl;
@@ -330,11 +277,11 @@ Ext.define('istsos.view.ui.CenterPage', {
             });
         }
     },
-    operationPost: function(){  
+    operationPost: function(){
         Ext.getCmp('webadmincmp').showMask("Inserting data...");
-        
+
         var json = this.istForm.getValues();
-        
+
         Ext.Ajax.request({
             url: this.waurl,
             scope: this,
@@ -356,10 +303,10 @@ Ext.define('istsos.view.ui.CenterPage', {
             }
         });
     },
-    operationPut: function(){  
+    operationPut: function(){
         Ext.getCmp('webadmincmp').showMask("Updating data...");
         var json = this.istForm.getValues();
-        
+
         Ext.Ajax.request({
             url: this.waurl,
             scope: this,

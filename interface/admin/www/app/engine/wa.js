@@ -1,6 +1,7 @@
 wa = {};
 wa.isodef = "urn:ogc:def:parameter:x-istsos:1.0:time:iso8601";
-wa.url = "../wa";
+wa.basepath = "../";
+wa.url = wa.basepath+"wa";
 
 wa.createPath = function(){
     var waUrl = wa.url;
@@ -20,7 +21,7 @@ wa.createPath = function(){
  * arguments: FormPanel object, service name [optional], operation name
  */
 wa.initConfigForm = function () {
-    
+
     var waUrl = wa.url;
     for (var i = 0; i < arguments.length; i++) {
         if (Ext.isObject(arguments[i])){
@@ -31,9 +32,9 @@ wa.initConfigForm = function () {
             waUrl += "/"+arguments[i];
         }
     }
-    
+
     arguments[0].waurl = waUrl;
-    
+
     arguments[0].on("afterlayout",function(cmp, eOpts){
         if (Ext.isEmpty(cmp.mask)) {
             cmp.mask = new Ext.LoadMask(this.body, {
@@ -42,7 +43,7 @@ wa.initConfigForm = function () {
         }
         cmp.mask.show();
     });
-    
+
     arguments[0].on("afterrender",function(cmp, eOpts){
         Ext.Ajax.request({
             url: cmp.waurl,
@@ -59,7 +60,7 @@ wa.initConfigForm = function () {
             }
         });
     //wa.initConfigSubmit(cmp);
-        
+
     });
 }
 
@@ -93,3 +94,9 @@ wa.initConfigSubmit = function (panel){
         });
     },panel);
 }
+
+/*var head = document.getElementsByTagName("head")[0];
+var script = document.createElement("script");
+script.type = "text/javascript";
+script.src = wa.url+"/user";
+head.appendChild(script);*/

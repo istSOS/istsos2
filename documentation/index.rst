@@ -42,6 +42,7 @@ istSOS is released under the GPL :ref:`license`, and runs on all major platforms
     getobs
     editobs
     virtual
+    security
     mapping
     wns
  

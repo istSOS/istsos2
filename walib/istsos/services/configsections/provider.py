@@ -39,6 +39,7 @@ class waProvider(waResourceConfigurator):
     providerSite = http://istgeo.ist.supsi.ch
     contactFax = +4179123459
     '''
+    
     template = {
         "providername" : ["provider","providerName"],
         "providersite" : ["provider","providerSite"],
@@ -53,4 +54,7 @@ class waProvider(waResourceConfigurator):
         "contactfax" : ["provider","contactFax"],
         "contactemail" : ["provider","contactEmail"]
     }
+    
+    def checkAuthorization(self):
+        pass
 

@@ -6,8 +6,8 @@
     <om:procedure xlink:href="urn:ogc:def:procedure:x-istsos:1.0:LOCARNO"/>
     <om:samplingTime>
         <gml:TimePeriod>
-            <gml:beginPosition>2014-06-03T13:10:00Z</gml:beginPosition>
-            <gml:endPosition>2014-06-03T13:50:00Z</gml:endPosition>
+            <gml:beginPosition>2015-06-03T14:10:00+02</gml:beginPosition>
+            <gml:endPosition>2015-06-03T14:50:00+02</gml:endPosition>
         </gml:TimePeriod>
     </om:samplingTime>
     <om:observedProperty>
@@ -55,7 +55,7 @@
             <swe:encoding>
                 <swe:TextBlock blockSeparator="@" decimalSeparator="." tokenSeparator=","/>
             </swe:encoding>
-            <swe:values>2014-06-03T13:10:00Z,0,200,20.4,200@2014-06-03T13:20:00Z,0.1,200,19.5,200@2014-06-03T13:30:00Z,0.1,200,19.1,200@2014-06-03T13:40:00Z,0,200,19.5,200@2014-06-03T13:50:00Z,0,200,20.6,200</swe:values>
+            <swe:values>2015-06-03T14:10:00+02,0,200,20.4,200@2015-06-03T14:20:00+02,0.1,200,19.5,200@2015-06-03T14:30:00+02,0.1,200,19.1,200@2015-06-03T14:40:00+02,0,200,19.5,200@2015-06-03T14:50:00+02,0,200,20.6,200</swe:values>
         </swe:DataArray>
     </om:result>
 </om:Observation>

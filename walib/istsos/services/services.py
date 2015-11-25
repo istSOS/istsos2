@@ -379,6 +379,14 @@ class waServices(waResourceAdmin):
         if self.urlservicename == None:
             try:
                 serviceslist = utils.getServiceList(self.waEnviron["services_path"],listonly=False)
+                
+                if self.user and not self.user.isAdmin():
+                    servicesAllowed = []
+                    for item in serviceslist:
+                        if self.user.allowedService(item['service']):
+                            servicesAllowed.append(item)
+                    serviceslist = servicesAllowed
+                
             except Exception as ex:
                 print >> sys.stderr, traceback.print_exc()
                 raise ex
@@ -474,6 +482,12 @@ class waGetobservation(waResourceService):
                     
         import lib.requests as requests
         
+        headers = {}
+        if 'HTTP_AUTHORIZATION' in self.waEnviron:
+            headers['Authorization'] = self.waEnviron['HTTP_AUTHORIZATION']
+            
+        print headers
+            
         rparams = {
             "request": "GetObservation",
             "service": "SOS",
@@ -515,7 +529,8 @@ class waGetobservation(waResourceService):
           
         response = requests.get(
             self.serviceconf.serviceurl["url"], 
-            params=rparams
+            params=rparams,
+            headers=headers
         )
         
         # build the response --------------------------------------------------- 
@@ -722,13 +737,15 @@ class waInsertobservation(waResourceService):
         iostring = et.tostring(root, encoding="UTF-8")
                 
         import lib.requests as requests
+        
+        headers = {"Content-type": "text/xml"}
+        if 'HTTP_AUTHORIZATION' in self.waEnviron:
+            headers['Authorization'] = self.waEnviron['HTTP_AUTHORIZATION']
+            
         response = requests.post(
             self.serviceconf.serviceurl["url"], 
             data=iostring, 
-            headers={
-                "Content-type": "text/xml",
-                "User-Agent": "WalibPost;InsertObservation"
-            }
+            headers=headers
         )
         data = response.text
         

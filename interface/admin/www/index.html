@@ -1,469 +1,118 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <title>istSOS webadmin developer page</title>
-	<link rel="icon" href="favicon.ico" />
-	<link rel="stylesheet" type="text/css" href="ext/resources/css/ext-all.css"/>
-        <!--[if gte IE 9]>
-            <style type="text/css">
-                .gradient {
-                filter: none;
-                }
-            </style>
-        <![endif]-->
-        <link rel="stylesheet" type="text/css" href="css/main.css"/>
+<html lang="en">
 
-        <link href='https://fonts.googleapis.com/css?family=Electrolize' rel='stylesheet' type='text/css'>
-        <!--
-        <link href='http://fonts.googleapis.com/css?family=Karla:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
-        <link href='http://fonts.googleapis.com/css?family=Exo' rel='stylesheet' type='text/css'>
-        <link href='http://fonts.googleapis.com/css?family=Patrick+Hand' rel='stylesheet' type='text/css'>
-        <link href='http://fonts.googleapis.com/css?family=Nova+Square' rel='stylesheet' type='text/css'>
-        <link href='http://fonts.googleapis.com/css?family=Mate+SC' rel='stylesheet' type='text/css'>
-        <link href='http://fonts.googleapis.com/css?family=Imprima' rel='stylesheet' type='text/css'>
-        -->
+<head>
 
-        <script type="text/javascript" src="ext/ext-all-debug.js"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-        <script type="text/javascript" src="dygraphs/dygraph-combined.js"></script>
-        <!--<script type="text/javascript" src="http://dygraphs.com/dygraph-dev.js"></script>-->
+    <title>istSOS: Welcome</title>
 
-        <script type="text/javascript" src="codemirror/lib/codemirror.js"></script>
-        <link   rel="stylesheet" href="codemirror/lib/codemirror.css">
-        <script type="text/javascript" src="codemirror/mode/javascript/javascript.js"></script>
-        <script type="text/javascript" src="codemirror/mode/python/python.js"></script>
-        <script type="text/javascript" src="ext/codemirror.js"></script>
-
-
-        <script type="text/javascript" src="app/engine/wa.js"></script>
-        <script type="text/javascript" src="app/engine/pageConfig.js"></script>
-        <script type="text/javascript" src="app/engine/pageManager.js"></script>
-
-        <script type="text/javascript">
-            
-            function pad(n){return n<10 ? '0'+n : n}
-            
-            function ISO8601FromDate(isodate) {
-                alert("ISO8601FromDate is deprecated!!");
-                function pad(n){return n<10 ? '0'+n : n}
-                var offset = isodate.getTimezoneOffset()/-60;
-                var tz = ((offset > 0) ? "+"+pad(offset) : pad(offset))
-                return isodate.getFullYear()+'-'
-                    + pad(isodate.getMonth()+1)+'-'
-                    + pad(isodate.getDate())+'T'
-                    + pad(isodate.getHours())+':'
-                    + pad(isodate.getMinutes())+':'
-                    + pad(isodate.getSeconds())+'.'
-                    + isodate.getMilliseconds() + tz;
-            }
-            String.prototype.capitalize = function(){
-                return this.toLowerCase().replace( /(^|\s)([a-z])/g , function(m,p1,p2){ return p1+p2.toUpperCase(); } );
-            };
-            Ext.override(Ext.layout.Layout, {
-                renderItem: function(item, target, position) {
-                    if (item && !item.rendered && item.isFieldLabelable && item.fieldLabel && item.allowBlank == false) {
-                        item.fieldLabel = '<span title="This is a mandatory parameter">' + item.fieldLabel + '<span style="color:red">*</span></span>';
-                    }
-                    this.callOverridden(arguments);
-                }
-            });
-            Function.prototype.defer =
-                function(n,o) {
-                // Get arguments as array
-                var a = [];
-                for(var i=2; i<arguments.length; i++)
-                    a.push(arguments[i]);
-                var that = this;
-                window.setTimeout(function(){return that.apply(o,a);},n);
-            };
-            Ext.override(Ext.chart.Chart, {  
-                onMouseUp: function(e) {
-                    var me = this,
-                    position = me.getEventXY(e),
-                    item;
-                    if (me.mask) {
-                        me.mixins.mask.onMouseUp.call(me, e);
-                    }
-                    me.series.each(function(series) {
-                        if (Ext.draw.Draw.withinBox(position[0], position[1], series.bbox)) {
-                            if (series.getItemForPoint) {
-                                item = series.getItemForPoint(position[0], position[1]);
-                                if (item) {
-                                    series.fireEvent('itemmouseup', item, e);
-                                }
-                            }
-                        }
-                    }, me);
-                }
-            });
-            Ext.override(Ext.view.DropZone, {  
-                onNodeDrop: function (node, dragZone, e, data) {
-                    var me = this,
-                    dropHandled = false,
-                    dropHandlers = {
-                        wait : false,
-                        processDrop : function () {
-                            me.invalidateDrop();
-                            me.handleNodeDrop(data, me.overRecord, me.currentPosition);
-                            dropHandled = true;
-                            me.fireViewEvent('drop', node, data, me.overRecord, me.currentPosition);
-                        },
-                        cancelDrop : function () {
-                            me.invalidateDrop();
-                            dropHandled = true;
-                        }
-                    },
-                    performOperation = false;
-                    if (me.valid) {
-                        performOperation = me.fireViewEvent('beforedrop', node, data, me.overRecord, me.currentPosition, dropHandlers);
-                        if (dropHandlers.wait) {
-                            return;
-                        }
-                        if (performOperation !== false) {
-                            if (!dropHandled) {
-                                dropHandlers.processDrop();
-                            }
-                        }
-                    }
-                    return performOperation;
-                }
-            });
-            
-            
-            Ext.override(Ext.form.FieldSet, {
-                setExpanded: function(expanded) {
-                    var me = this,
-                    checkboxCmp = me.checkboxCmp,
-                    toggleCmp = me.toggleCmp,
-                    event;
-
-                    expanded = !!expanded;
-        
-                    if (checkboxCmp) {
-                        checkboxCmp.setValue(expanded);
-                    }
-        
-                    if (toggleCmp) {
-                        toggleCmp.setType(expanded ? 'up' : 'down');
-                    }
-        
-                    if (expanded) {
-                        event = "expand";
-                        me.removeCls(me.baseCls + '-collapsed');
-                    } else {
-                        event = "collapse";
-                        me.addCls(me.baseCls + '-collapsed');
-                    }
-                    me.collapsed = !expanded;
-                    if (expanded) {
-                        // ensure subitems will get rendered and layed out when expanding
-                        me.getComponentLayout().childrenChanged = true;
-                    }
-                    me.doComponentLayout();
-                    me.fireEvent(event, me);
-                    return me;
-                }
-            });
-
-            /* 
-            This reusable script is copyrighted.
-            Copyright (c) 2004,2005,2006 Claude Ostyn
-            This script is free for use with attribution
-            under the Creative Commons Attribution-ShareAlike 2.5 License.
-            To view a copy of this license, visit
-            http://creativecommons.org/licenses/by-sa/2.5/
-            or send a letter to
-            Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
-
-            For any other use, contact Claude Ostyn via tools@Ostyn.com.
-
-            USE AT YOUR OWN RISK!
-            THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-            EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-            OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-            NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHOR OR COPYRIGHT HOLDER
-            BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
-            ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-            CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-            SOFTWARE.
-             */
-
-            function centisecsToISODuration(n, bPrecise)
-            {
-                // Note: SCORM and IEEE 1484.11.1 require centisec precision
-                // Parameters:
-                // n = number of centiseconds
-                // bPrecise = optional parameter; if true, duration will
-                // be expressed without using year and/or month fields.
-                // If bPrecise is not true, and the duration is long,
-                // months are calculated by approximation based on average number
-                // of days over 4 years (365*4+1), not counting the extra days
-                // for leap years. If a reference date was available,
-                // the calculation could be more precise, but becomes complex,
-                // since the exact result depends on where the reference date
-                // falls within the period (e.g. beginning, end or ???)
-                // 1 year ~ (365*4+1)/4*60*60*24*100 = 3155760000 centiseconds
-                // 1 month ~ (365*4+1)/48*60*60*24*100 = 262980000 centiseconds
-                // 1 day = 8640000 centiseconds
-                // 1 hour = 360000 centiseconds
-                // 1 minute = 6000 centiseconds
-                var str = "P";
-                var nCs=n;
-                var nY=0, nM=0, nD=0, nH=0, nMin=0, nS=0;
-                n = Math.max(n,0); // there is no such thing as a negative duration
-                var nCs = n;
-                // Next set of operations uses whole seconds
-                with (Math)
-                {
-                    nCs = round(nCs);
-                    if (bPrecise == true)
-                    {
-                        nD = floor(nCs / 8640000);
-                    }
-                    else
-                    {
-                        nY = floor(nCs / 3155760000);
-                        nCs -= nY * 3155760000;
-                        nM = floor(nCs / 262980000);
-                        nCs -= nM * 262980000;
-                        nD = floor(nCs / 8640000);
-                    }
-                    nCs -= nD * 8640000;
-                    nH = floor(nCs / 360000);
-                    nCs -= nH * 360000;
-                    var nMin = floor(nCs /6000);
-                    nCs -= nMin * 6000
-                }
-                // Now we can construct string
-                if (nY > 0) str += nY + "Y";
-                if (nM > 0) str += nM + "M";
-                if (nD > 0) str += nD + "D";
-                if ((nH > 0) || (nMin > 0) || (nCs > 0))
-                {
-                    str += "T";
-                    if (nH > 0) str += nH + "H";
-                    if (nMin > 0) str += nMin + "M";
-                    if (nCs > 0) str += (nCs / 100) + "S";
-                }
-                if (str == "P") str = "PT0H0M0S";
-                // technically PT0S should do but SCORM test suite assumes longer form.
-                return str;
-            }
-        </script>
-        <script type="text/javascript" src="app/view/ui/BasePage.js"></script>
-        <script type="text/javascript" src="app/view/BasePage.js"></script>
-        <script type="text/javascript" src="app/view/ui/CenterPage.js"></script>
-        <script type="text/javascript" src="app/view/ui/WizardPage.js"></script>
-
-        <script type="text/javascript" src="app/view/ui/contactinfo.js"></script>
-        <script type="text/javascript" src="app/view/contactinfo.js"></script>
-        <script type="text/javascript" src="app/view/ui/paths.js"></script>
-        <script type="text/javascript" src="app/view/paths.js"></script>
-        <script type="text/javascript" src="app/view/ui/about.js"></script>
-        <script type="text/javascript" src="app/view/about.js"></script>
-        <script type="text/javascript" src="app/view/ui/contacts.js"></script>
-        <script type="text/javascript" src="app/view/contacts.js"></script>
-        <script type="text/javascript" src="app/view/ui/config.js"></script>
-        <script type="text/javascript" src="app/view/config.js"></script>
-        <script type="text/javascript" src="app/view/ui/database.js"></script>
-        <script type="text/javascript" src="app/view/database.js"></script>
-        <script type="text/javascript" src="app/view/ui/newservice.js"></script>
-        <script type="text/javascript" src="app/view/newservice.js"></script>
-
-        <script type="text/javascript" src="app/view/ui/identification.js"></script>
-        <script type="text/javascript" src="app/view/identification.js"></script>
-        <script type="text/javascript" src="app/view/ui/provider.js"></script>
-        <script type="text/javascript" src="app/view/provider.js"></script>
-
-        <script type="text/javascript" src="app/view/ui/FormDataQuality.js"></script>
-        <script type="text/javascript" src="app/view/FormDataQuality.js"></script>
-        <script type="text/javascript" src="app/store/DataQualityStore.js"></script>
-
-
-        <script type="text/javascript" src="app/store/DataQualityStore.js"></script>
-        <script type="text/javascript" src="app/store/Offerings.js"></script>
-        <script type="text/javascript" src="app/store/Procedures.js"></script>
-        <script type="text/javascript" src="app/store/ObservedProperties.js"></script>
-        <!--<script type="text/javascript" src="app/store/Observations.js"></script>-->
-
-        <script type="text/javascript" src="app/store/Services.js"></script>
-
-        <script type="text/javascript" src="app/view/ui/ObservationEditorColumn.js"></script>
-        <script type="text/javascript" src="app/view/ObservationEditorColumn.js"></script>
-        <script type="text/javascript" src="app/view/ui/ObservationEditor.js"></script>
-        <script type="text/javascript" src="app/view/ObservationEditor.js"></script>
-
-        <script type="text/javascript" src="app/view/ui/serviceconfig.js"></script>
-        <script type="text/javascript" src="app/view/serviceconfig.js"></script>
-
-        <script type="text/javascript" src="app/view/ui/geo.js"></script>
-        <script type="text/javascript" src="app/view/geo.js"></script>
-
-        <script type="text/javascript" src="app/view/ui/getobservation.js"></script>
-        <script type="text/javascript" src="app/view/getobservation.js"></script>
-
-        <script type="text/javascript" src="app/store/serverstatus.js"></script>
-
-
-        <script type="text/javascript" src="app/view/ui/status.js"></script>
-        <script type="text/javascript" src="app/view/status.js"></script>
-
-        <script type="text/javascript" src="app/view/ui/serviceurl.js"></script>
-        <script type="text/javascript" src="app/view/serviceurl.js"></script>
-
-        <script type="text/javascript" src="app/store/cmbIdentification.js"></script>
-        <script type="text/javascript" src="app/store/cmbSystemType.js"></script>
-        <script type="text/javascript" src="app/store/cmbSml.js"></script>
-        <script type="text/javascript" src="app/store/cmbName.js"></script>
-        <script type="text/javascript" src="app/store/cmbDocumentFormat.js"></script>
-        <script type="text/javascript" src="app/store/gridDocumentation.js"></script>
-        <script type="text/javascript" src="app/store/gridOutputs.js"></script>
-        <script type="text/javascript" src="app/store/Constraint.js"></script>
-
-        <script type="text/javascript" src="app/view/ui/procedure.js"></script>
-        <script type="text/javascript" src="app/view/procedure.js"></script>
-
-        <script type="text/javascript" src="app/store/gridProceduresList.js"></script>
-
-        <script type="text/javascript" src="app/view/ui/proceduresList.js"></script>
-        <script type="text/javascript" src="app/view/proceduresList.js"></script>
-
-        <script type="text/javascript" src="app/store/gridObservedProperties.js"></script>
-        <script type="text/javascript" src="app/store/gridUoms.js"></script>
-
-        <script type="text/javascript" src="app/view/ui/obsPropEditor.js"></script>
-        <script type="text/javascript" src="app/view/obsPropEditor.js"></script>
-
-        <script type="text/javascript" src="app/view/ui/uomsEditor.js"></script>
-        <script type="text/javascript" src="app/view/uomsEditor.js"></script>
-
-        <script type="text/javascript" src="app/store/gridOfferings.js"></script>
-        <script type="text/javascript" src="app/view/ui/offeringsEditor.js"></script>
-        <script type="text/javascript" src="app/view/offeringsEditor.js"></script>
-
-        <script type="text/javascript" src="app/store/cmbNameDescription.js"></script>
-        <script type="text/javascript" src="app/view/ui/qualityindexEditor.js"></script>
-        <script type="text/javascript" src="app/view/qualityindexEditor.js"></script>
-
-        <!-- DEVELOPERS INCLUDE -->
-        <script type="text/javascript" src="app/view/ui/MainMenu.js"></script>
-        <script type="text/javascript" src="app/view/MainMenu.js"></script>
-        <script type="text/javascript" src="app/view/ui/MainMenu2.js"></script>
-        <script type="text/javascript" src="app/view/MainMenu2.js"></script>
-
-        <script type="text/javascript" src="app/view/ui/ObservationEditorAdvancedOperations.js"></script>
-        <script type="text/javascript" src="app/view/ObservationEditorAdvancedOperations.js"></script>
-
-        <script type="text/javascript" src="app/view/ui/serviceEditor.js"></script>
-        <script type="text/javascript" src="app/view/serviceEditor.js"></script>
-
-
-        <script type="text/javascript" src="app/Procedure.js"></script>
-        <script type="text/javascript" src="app/store/AggregateFunctionStore.js"></script>
-
-        <script type="text/javascript" src="app/view/ui/ProcedureChooser.js"></script>
-        <script type="text/javascript" src="app/view/ProcedureChooser.js"></script>
-        
-        <script type="text/javascript" src="app/view/ui/ProcedurePlotter.js"></script>
-        <script type="text/javascript" src="app/view/ProcedurePlotter.js"></script>
-        
-        <script type="text/javascript" src="app/view/ui/CheckColumn.js"></script>
-        <script type="text/javascript" src="app/view/CheckColumn.js"></script>
-
-        <script type="text/javascript" src="app/view/ui/Calc.js"></script>
-        <script type="text/javascript" src="app/view/Calc.js"></script>
-
-        <script type="text/javascript" src="app/view/ui/Chart.js"></script>
-        <script type="text/javascript" src="app/view/Chart.js"></script>
-        
-        
-        <script type="text/javascript" src="app/view/ui/ProcedureChart.js"></script>
-        <script type="text/javascript" src="app/view/ProcedureChart.js"></script>
-        <script type="text/javascript" src="app/view/ui/ProcedureGrid.js"></script>
-        <script type="text/javascript" src="app/view/ProcedureGrid.js"></script>
-        <script type="text/javascript" src="app/view/ui/ProcedureGridEditor.js"></script>
-        <script type="text/javascript" src="app/view/ProcedureGridEditor.js"></script>
-        
-        
-        <script type="text/javascript" src="app/view/ui/Editor1.js"></script>
-        <script type="text/javascript" src="app/view/Editor1.js"></script>
-        
-        
-        <script type="text/javascript" src="app/store/RatingCurve.js"></script>
-        <script type="text/javascript" src="app/store/vplist.js"></script>
-        <script type="text/javascript" src="app/view/ui/VirtualProcedureEditor.js"></script>
-        <script type="text/javascript" src="app/view/VirtualProcedureEditor.js"></script>
-
-
-
+    <link rel="stylesheet" type="text/css" href="ext/resources/css/ext-all.css"/>
+    <link rel="stylesheet" type="text/css" href="ol/ol.css"/>
+    <!--[if gte IE 9]>
         <style type="text/css">
-            .x-btn-default-toolbar-small .x-btn-inner {
-                color: white !important;
-            }
-            .x-btn-arrow {
-                background-image: url('ext/resources/themes/images/default/button/arrow.gif');
-                display: block;
+            .gradient {
+            filter: none;
             }
         </style>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" href="css/main.css"/>
 
-        <script type="text/javascript">
-            
-            Ext.ns("wa");
-            wa.isodef = "urn:ogc:def:parameter:x-istsos:1.0:time:iso8601";
-            wa.url = "../wa";
+    <style media="screen">
+        .w_labels {
+          font-size: smaller;
+          color: #4E4E4E;
+        }
 
-            Ext.Loader.setConfig({
-                enabled: false
-            });
-            
-            Ext.application({
-                
-                name: 'istsos',
+        a, a:visited, a:active {
+          color: #1a0dab;
+          text-decoration: none;
+        }
+        a:hover {
+          text-decoration: underline;
+        }
+    </style>
 
-                launch: function() {
-                    
-                    Ext.QuickTips.init();
-                    
-                    Ext.Ajax.on("requestexception",function(conn, response, options, eOpts ){
-                        try{
-                            var json = Ext.decode(response.responseText);
-                            if(!json.success && !Ext.isEmpty(json.message)){
-                                Ext.Msg.alert(response.statusText, json.message);
-                            }
-                        }catch(e){
-                            console.error(response);
+    <script type="text/javascript" src="ext/ext-all-debug.js"></script>
+
+    <script type="text/javascript" src="dygraphs/dygraph-combined.js"></script>
+    <script type="text/javascript" src="codemirror/lib/codemirror.js"></script>
+    <link rel="stylesheet" type="text/css" href="codemirror/lib/codemirror.css"/>
+    <script type="text/javascript" src="codemirror/mode/javascript/javascript.js"></script>
+    <script type="text/javascript" src="codemirror/mode/python/python.js"></script>
+    <script type="text/javascript" src="ext/codemirror.js"></script>
+
+
+    <script type="text/javascript" src="app/engine/wa.js"></script>
+    <script type="text/javascript" src="app/engine/pageConfig.js"></script>
+    <script type="text/javascript" src="app/engine/pageManager.js"></script>
+
+
+
+    <script type="text/javascript" src="app/store/Services.js"></script>
+
+
+    <script type="text/javascript" src="app/view/ui/MainMenu2.js"></script>
+    <script type="text/javascript" src="app/view/MainMenu2.js"></script>
+
+    <script type="text/javascript" src="app/view/ui/Welcome.js"></script>
+    <script type="text/javascript" src="app/view/Welcome.js"></script>
+    <script type="text/javascript" src="app/Procedure.js"></script>
+
+
+    <script type="text/javascript" src="app/view/ui/ProcedureMap.js"></script>
+    <script type="text/javascript" src="app/view/ProcedureMap.js"></script>
+
+    <script type="text/javascript">
+
+        Ext.ns("wa");
+        /*wa.basepath = "../";
+        wa.url = wa.basepath+"wa";*/
+        Ext.Loader.setConfig({
+            enabled: true
+        });
+        Ext.application({
+            name: 'istsos',
+            launch: function() {
+                Ext.QuickTips.init();
+                Ext.Ajax.on("requestexception",function(conn, response, options, eOpts ){
+                    try{
+                        var json = Ext.decode(response.responseText);
+                        if(!json.success && !Ext.isEmpty(json.message)){
+                            Ext.Msg.alert(response.statusText, json.message);
                         }
-                    });
-                    
-                    Ext.Ajax.on("requestcomplete",function(conn, response, options, eOpts ){
-                        try{
-                            var json = Ext.decode(response.responseText);
-                            if(!json.success && !Ext.isEmpty(json.message)){
-                                Ext.Msg.alert("Server message",json.message + "<br/><br/>" + 
-                                    "<small>Status response: " + response.statusText + "</small><br/>" + 
-                                    "<small>Resource: " + json.resource + "</small><br/>" + 
-                                    "<small>Method: " + json.method + "</small><br/>" + 
-                                    "<small>Path " + json.path + "</small>");
-                                console.error(json.message);
-                            }else if (json.success && !Ext.isEmpty(json.message)){
-                                console.log(json.message);
-                            }
-                        }catch(e){
-                            console.error(response);
+                    }catch(e){
+                        console.error(response);
+                    }
+                });
+                Ext.Ajax.on("requestcomplete",function(conn, response, options, eOpts ){
+                    try{
+                        var json = Ext.decode(response.responseText);
+                        if(!json.success && !Ext.isEmpty(json.message)){
+                            Ext.Msg.alert("Server message",json.message + "<br/><br/>" +
+                                "<small>Status response: " + response.statusText + "</small><br/>" +
+                                "<small>Resource: " + json.resource + "</small><br/>" +
+                                "<small>Method: " + json.method + "</small><br/>" +
+                                "<small>Path " + json.path + "</small>");
+                            console.error(json.message);
+                        }else if (json.success && !Ext.isEmpty(json.message)){
+                            console.log(json.message);
                         }
-                    });
-                    
-                    
-                    
-                    Ext.create('Ext.Viewport', {
-                        layout: "fit",
-                        items: Ext.create('istsos.view.MainMenu2')
-                    }).show();
-                    
-                }
-            });
-        </script>
-    </head>
-    <body></body>
+                    }catch(e){
+                        console.error(response);
+                    }
+                });
+                Ext.create('istsos.view.Welcome').show();
+            }
+        });
+
+    </script>
+</head>
+
+<body>
+  </body>
 </html>

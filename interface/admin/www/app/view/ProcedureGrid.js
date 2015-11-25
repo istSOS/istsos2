@@ -28,17 +28,17 @@ Ext.define('istsos.view.ProcedureGrid', {
         }
     },
     initEditorGrid: function(procedures, procedureName, observedProperty){
-        
+
         this.resetConfig({
             readOnlyGrid: false,
             observedProperty: observedProperty
         });
-        
+
         // @todo think something better and "shirker"
         this.procedures=procedures;
         var procedure = procedures[procedureName];
         this.procedure=procedure;
-        
+
         if (!Ext.getStore('editorQiStore')) {
             Ext.create('Ext.data.Store', {
                 storeId: 'editorQiStore',
@@ -74,14 +74,11 @@ Ext.define('istsos.view.ProcedureGrid', {
             Ext.getStore('editorQiStore').getProxy().url = Ext.String.format('{0}/istsos/services/{1}/dataqualities',wa.url, this.procedure.service);
             Ext.getStore('editorQiStore').load();
         }
-        
-        
-        
-        
+
         Ext.get(this.id).mask("Initializing editor grid..");
-        
+
         var properties = procedure.data.result.DataArray.field;
-        
+
         var columns = [{
             xtype: 'numbercolumn',
             dataIndex: 'micro',
@@ -91,12 +88,12 @@ Ext.define('istsos.view.ProcedureGrid', {
         },{
             xtype: 'gridcolumn',
             dataIndex: procedure.iso8601Field, // isodate is always present at position one
-            flex: 0.7,
+            //flex: 0.7,
             header: 'Date'
         }];
-        
+
         for (var i = 1; i < properties.length; i++) {
-            
+
             columns.push({
                 //xtype: 'numbercolumn',
                 header: properties[i].name,
@@ -137,16 +134,16 @@ Ext.define('istsos.view.ProcedureGrid', {
             });
             i++;
         }
-        
+
         var observedProperty = this.observedProperty.definition;
         for (var i = 2; i < columns.length; i++) {
-            if (//columns[i]['definition']==procedure.isodef && 
-                columns[i]['definition']!=observedProperty && 
+            if (//columns[i]['definition']==procedure.isodef &&
+                columns[i]['definition']!=observedProperty &&
                 columns[i]['definition']!=observedProperty+':qualityIndex') {
                 columns[i]['hidden']=true;
             }
         }
-        
+
         this.grid = Ext.create('Ext.grid.Panel', {
             xtype: 'grid',
             //id: 'oegrid',
@@ -155,7 +152,7 @@ Ext.define('istsos.view.ProcedureGrid', {
             autoRender: true,
             autoScroll: true,
             viewConfig: {
-            
+
             },
             columns: columns,
             plugins: [Ext.create('Ext.grid.plugin.CellEditing')],
@@ -222,7 +219,7 @@ Ext.define('istsos.view.ProcedureGrid', {
                                 },
                                 scope: this
                             });
-                            
+
                         }else{
                             this.destroyGrid();
                         }
@@ -269,17 +266,17 @@ Ext.define('istsos.view.ProcedureGrid', {
         });
         this.removeAll();
         this.add(this.grid);
-        
+
         this.procedure.store.on('update',function(){
             this.enable();
         },Ext.getCmp('btnSave'));
         this.procedure.store.on('seriesupdated',function(){
             this.enable();
         },Ext.getCmp('btnSave'));
-        
+
         Ext.get(this.id).unmask();
-        
-        
+
+
     },
     destroyGrid: function(){
         Ext.getCmp('btnSave').disable();
@@ -289,36 +286,36 @@ Ext.define('istsos.view.ProcedureGrid', {
     },
     /*
  * procedures is a dictionary of istsos.Sensor objects
- * 
+ *
  * {
  *    "T_BIASCA": {istsos.Sensor}
  * }
  */
     initReadOnlyGrid: function(procedures, observedProperty){
         // @todo: Check if procedures has loaded some data
-        
+
         this.resetConfig({
             readOnlyGrid: true,
             observedProperty: observedProperty
         });
         this.procedures = procedures;
-        
+
         Ext.get('gridpanel').mask("Initializing read only grid..");
-        
+
         var keys = Object.keys(procedures);
         keys = keys.sort();
-        
+
         // Initialization of the grid store and the data model *****************
         var modelFields = [
         {
-            name: 'micro', 
+            name: 'micro',
             type: 'int'
         },
 
         {
-            name: 'iso8601', 
+            name: 'iso8601',
             type: 'string'
-        }            
+        }
         ];
         var template = {
             micro: null,
@@ -328,10 +325,10 @@ Ext.define('istsos.view.ProcedureGrid', {
             var key = keys[c];
             if (Ext.Array.contains(procedures[key].getObservedProperties(),observedProperty)) {
                 modelFields.push({
-                    name: key, 
+                    name: key,
                     type: 'string'
                 },{
-                    name: key+'_qi', 
+                    name: key+'_qi',
                     type: 'string'
                 });
                 template[key] = "-";
@@ -356,22 +353,22 @@ Ext.define('istsos.view.ProcedureGrid', {
             }
         });
         // Suspends the firing of all events:
-        // Pass as true to queue up suspended events to be fired after 
+        // Pass as true to queue up suspended events to be fired after
         // the resumeEvents call instead of discarding all suspended events.
         this.store.suspendEvents(false);
         // Merging loaded data to this grid store
-        
+
         for (var c = 0; c < keys.length; c++) {
             var key = keys[c];
             if (Ext.Array.contains(procedures[key].getObservedProperties(),observedProperty)) {
-                
+
                 var recs = procedures[key].store.getRange();
-                
+
                 for (var j = 0, l = recs.length; j < l; j++) {
-                    
+
                     var rec = null;
                     var idx = this.store.indexOfId(recs[j].get("micro"));
-                    
+
                     if (idx==-1) { // If record does not exist create a new one
                         rec = Ext.create('procedureGridDatamodel', template);
                         rec.set("micro",recs[j].get("micro"));
@@ -380,19 +377,19 @@ Ext.define('istsos.view.ProcedureGrid', {
                     }else{// if record exists then use it
                         rec = this.store.getAt(idx);
                     }
-                    
+
                     // Set the property choosen in the chart store in the right column
                     var v = parseFloat(recs[j].get(procedures[key].storeConvertFieldToId[observedProperty]));
                     rec.set(key,v);
-                    rec.set(key+"_qi", recs[j].get(procedures[key].storeConvertFieldToId[observedProperty+":qualityIndex"]));   
+                    rec.set(key+"_qi", recs[j].get(procedures[key].storeConvertFieldToId[observedProperty+":qualityIndex"]));
                     rec.commit(true);
                 }
             }
         }
         this.store.sort('micro');
         this.store.resumeEvents();
-        
-        
+
+
         // Initialization of the two always present columns ********************
         var columns = [{
             xtype: 'numbercolumn',
@@ -442,7 +439,7 @@ Ext.define('istsos.view.ProcedureGrid', {
             autoRender: true,
             autoScroll: true,
             viewConfig: {
-            
+
             },
             columns: columns,
             selModel: Ext.create('Ext.selection.RowModel', {
@@ -478,20 +475,20 @@ Ext.define('istsos.view.ProcedureGrid', {
                 }
             ]
         });
-        
+
         this.removeAll();
         this.add(this.grid);
-        
+
         Ext.get('gridpanel').unmask();
-        
+
     },
     showCsv: function(){
         //chartdata
         var ret = [this.observedProperty];
-        
+
         var keys = Object.keys(this.procedures);
         keys = keys.sort();
-        
+
         var lineStr = ['DATETIME'];
         for (var c = 0; c < keys.length; c++) {
             var key = keys[c];
@@ -502,7 +499,7 @@ Ext.define('istsos.view.ProcedureGrid', {
             }
         }
         ret.push(lineStr.join(","));
-        
+
         var records = this.store.getRange();
         for (var cnta = 0; cnta < records.length; cnta++){
             var rec = records[cnta];
@@ -537,9 +534,9 @@ Ext.define('istsos.view.ProcedureGrid', {
     /*
  * MicroArray can be of two type:
  * 1. one array with an integer representing a micro id to be highlighted
- *    example: [1351326600000000] 
+ *    example: [1351326600000000]
  * 2. one array with two integers representing an interval of micro ids to be highlighted
- *    example: [1351326000000000,1351327000000000] 
+ *    example: [1351326000000000,1351327000000000]
  */
     updateGridSelection: function(microArray){
         if (!Ext.isEmpty(this.grid)) {
@@ -561,15 +558,17 @@ Ext.define('istsos.view.ProcedureGrid', {
         }
     },
     removeProcedure: function(procedure){
+      if(this.procedures){
         delete this.procedures[procedure.getName()];
         if (Ext.Object.getSize(this.procedures)==0) {
-            this.removeAll();
+          this.removeAll();
         }else{
-            if (this.readOnlyGrid) {
-                this.initReadOnlyGrid(
-                    this.procedures,
-                    this.observedProperty);
-            }
+          if (this.readOnlyGrid) {
+            this.initReadOnlyGrid(
+              this.procedures,
+              this.observedProperty);
+          }
         }
+      }
     }
 });

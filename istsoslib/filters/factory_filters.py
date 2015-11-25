@@ -67,7 +67,12 @@ def sosFactoryFilter(environ,sosConfig):
         from xml.dom import minidom
         
         content = environ['wsgi.input'].read(request_body_size)
+        print >> sys.stderr, "***************************************************"
+        
+        print >> sys.stderr, content
+        
         if content_type.startswith("application/x-www-form-urlencoded"):
+            print >> sys.stderr, "application/x-www-form-urlencoded"
             form = cgi.parse_qs(content)
             if form.has_key("request"):
                 xmldoc = minidom.parseString(form["request"][0])
@@ -75,6 +80,7 @@ def sosFactoryFilter(environ,sosConfig):
                 raise sosException.SOSException("MissingParameterValue","request","Parameter \"request\" is mandatory")
 
         else:
+            print >> sys.stderr, "body"
             try:
                 xmldoc = minidom.parseString(content)
             except:

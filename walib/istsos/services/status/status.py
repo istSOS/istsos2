@@ -155,8 +155,6 @@ class waStatus(waResourceService):
 
         #param = self.waEnviron['parameters']['type'][0]
 
-        print "asdasdasd"
-
         procedureData = []
         lastValue = {'values': 'No observation', 'uom': 'No observation'}
         for procedure in utils.getProcedureNamesList(servicedb, self.service):
@@ -190,7 +188,6 @@ class waStatus(waResourceService):
                 status['lastObservation'] = status['lastObservation'].strftime("%Y-%m-%dT%H:%M:%S%z")
                 lastValue = self.__getLastObservation(servicedb,procedure['name'])
 
-
             procedureData.append(
                 {
                     "procedure": procedure['name'],
@@ -209,13 +206,13 @@ class waStatus(waResourceService):
                 if self.__containsOp(procedure, op['name']):
                     lastValue = self.__getLastValue(procedure, op['name'])
                     jsonProc = {
-                                    "name": procedure['procedure'],
-                                    "lastObservation": procedure['status']['lastObservation'],
-                                    "lastMeasure": lastValue['values'],
-                                    "oum": lastValue['uom'],
-                                    "delay": procedure['status']['delay'],
-                                    "cycle": procedure['status']['cycle']
-                                }
+                        "name": procedure['procedure'],
+                        "lastObservation": procedure['status']['lastObservation'],
+                        "lastMeasure": lastValue['values'],
+                        "oum": lastValue['uom'],
+                        "delay": procedure['status']['delay'],
+                        "cycle": procedure['status']['cycle']
+                    }
                     if procedure['status']['status'] == "OK":
                         jsonProc['type'] = 'ok'
                         propOk.append(jsonProc)
@@ -372,9 +369,15 @@ class waStatus(waResourceService):
         }
 
         import lib.requests as requests
+        
+        headers = {}
+        if 'HTTP_AUTHORIZATION' in self.waEnviron:
+            headers['Authorization'] = self.waEnviron['HTTP_AUTHORIZATION']
+            
         response = requests.get(
             self.serviceconf.serviceurl["url"],
-            params=rparams
+            params=rparams,
+            headers=headers
         )
 
         dataArray = response.json()['ObservationCollection']['member'][0]['result']['DataArray']

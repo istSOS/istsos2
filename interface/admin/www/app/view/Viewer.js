@@ -20,60 +20,10 @@ Ext.define('istsos.view.Viewer', {
     extend: 'istsos.view.ui.Viewer',
 
     initComponent: function() {
-        
-        var me = this;
-        me.callParent(arguments);
-        
-        Ext.getCmp('pchoose').on("procedureAdded",function(procedure) {
-            this.addProcedure(procedure);
-        },Ext.getCmp('chartpanel'));
-        
-        Ext.getCmp('pchoose').on("procedureRemoved",function(procedure) {
-            this.removeProcedure(procedure);
-        },Ext.getCmp('chartpanel'));
-        
-        Ext.getCmp('pchoose').on("procedureRemoved",function(procedure) {
-            this.removeProcedure(procedure);
-        },Ext.getCmp('gridpanel'));
-        
-        Ext.getCmp('chartpanel').on("queueLoaded",function(chartpanel) {
-            this.initReadOnlyGrid(
-                chartpanel.procedures,
-                Ext.getCmp("oeCbObservedProperty").getValue());
-        },Ext.getCmp("gridpanel"));
-        
-        Ext.getCmp('chartpanel').on("clickCallback",function(panel, e, x, pts) {
-            this.updateGridSelection([x]);
-            panel.highlightRegion(x);
-        },Ext.getCmp('gridpanel'));
-        
-        /*Ext.getCmp('gridpanel').on("select",function(panel, grid, record, index, eOpts) {
-            console.log("select:");
-            console.dir(arguments);
-        },Ext.getCmp('chartpanel'));*/
-        
-        Ext.getCmp('gridpanel').on("selectionchange",function(panel, grid, selected, eOpts) {
-            
-            if (selected.length==1) {
-                //this.addAnnotation(selected[0].get('micro'));
-                this.highlightRegion(selected[0].get('micro'));
-            }else if (selected.length>1) {
-                var rec, begin, end;
-                rec = selected[0];
-                begin = rec.get('micro');
-                rec = selected[selected.length-1];
-                end = rec.get('micro');
-                this.highlightRegion(begin,end);
-            }else if (selected.length==0) {
-                this.highlightRegion();
-                this.removeAnnotations();
-            }
-        },Ext.getCmp('chartpanel'));
-        
-        /*Ext.getCmp('chartpanel').on("underlayCallback",function(panel, e, x, pts) {
-            console.log("underlayCallback:");
-            console.dir(arguments);
-        });*/
-        
+
+      var me = this;
+      me.callParent(arguments);
+      
+
     }
 });

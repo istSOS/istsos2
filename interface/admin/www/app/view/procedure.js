@@ -1,17 +1,17 @@
 Ext.define('istsos.view.procedure', {
     extend: 'istsos.view.ui.procedure',
     initComponent: function() {
-        
+
         var me = this;
-        
+
         var systy = Ext.create('istsos.store.cmbSystemType');
-        systy.getProxy().url = Ext.String.format('{0}/istsos/services/{1}/systemtypes', 
+        systy.getProxy().url = Ext.String.format('{0}/istsos/services/{1}/systemtypes',
             wa.url, this.istService);
         Ext.create('istsos.store.cmbDocumentFormat');
         Ext.create('istsos.store.gridDocumentation');
         Ext.create('istsos.store.gridOutputs');
         Ext.create('istsos.store.Constraint');
-        
+
         // Identification SML tool
         Ext.create('istsos.store.cmbSml',{
             "storeId": 'cmbidentification',
@@ -25,13 +25,13 @@ Ext.define('istsos.view.procedure', {
                 }
             }
         });
-        
+
         Ext.create('istsos.store.cmbSml',{
             "storeId": 'grididentification'
         });
-        
+
         // Capabilites SML tool
-        
+
         Ext.create('Ext.data.Store', {
             storeId: 'cmbCapabilities',
             autoLoad: true,
@@ -65,7 +65,7 @@ Ext.define('istsos.view.procedure', {
             }
             ]
         });
-        
+
         Ext.create('Ext.data.Store', {
             storeId: 'cmbcapabilitiesuom',
             autoLoad: true,
@@ -95,7 +95,7 @@ Ext.define('istsos.view.procedure', {
             }
             ]
         });
-        
+
         Ext.create('Ext.data.Store', {
             storeId: 'cmbcapabilitiesuom2',
             autoLoad: true,
@@ -125,11 +125,11 @@ Ext.define('istsos.view.procedure', {
             }
             ]
         });
-        
+
         Ext.create('istsos.store.cmbSml',{
             "storeId": 'gridCapabilities'
         });
-        
+
         Ext.create('istsos.store.cmbName',{
             "storeId": 'locationEPSG',
             "autoLoad": true,
@@ -144,11 +144,11 @@ Ext.define('istsos.view.procedure', {
                 }
             }
         });
-        
+
         Ext.create('istsos.store.cmbSml',{
             "storeId": 'gridinput'
         });
-        
+
         Ext.create('istsos.store.cmbSml',{
             "storeId": 'cmbphenomenon',
             "proxy": {
@@ -174,7 +174,7 @@ Ext.define('istsos.view.procedure', {
                 }
             }
         });
-        
+
         Ext.create('istsos.store.cmbSml',{
             "storeId": 'cmbuom',
             "proxy": {
@@ -188,34 +188,41 @@ Ext.define('istsos.view.procedure', {
                 }
             }
         });
-        
+
         Ext.define('smlfield', {
             extend: 'Ext.data.Model',
             fields: [
             {
-                name: 'name', 
+                name: 'name',
                 type: 'string'
             },
             {
-                name: 'value', 
+                name: 'value',
                 type: 'string'
             },
             {
-                name: 'definition', 
+                name: 'definition',
                 type: 'string'
             }
             ]
         });
-        
-        
+
+
         // Stores used for the utils - copy template
         Ext.create('istsos.store.Offerings');
         Ext.create('istsos.store.gridProceduresList');
         var ssrv = Ext.create('istsos.store.Services');
         ssrv.getProxy().url = Ext.String.format('{0}/istsos/services',wa.url);
-        
+
         me.callParent(arguments);
-        
+
+
+        if (!Ext.Array.contains(wa.user.groups, 'admin') && !Ext.Array.contains(wa.user.groups, 'networkmanager')){
+            Ext.getCmp('procedurename').setVisible(false);
+            Ext.getCmp('procedureNameRO').setVisible(true);
+        }
+
+
         Ext.getCmp('procedurename').on('change',function(field, newValue, oldValue, eOpts){
             var gridIdentification = Ext.getCmp('gridIdentification');
             var rec = gridIdentification.store.findRecord(
@@ -223,7 +230,7 @@ Ext.define('istsos.view.procedure', {
                 'urn:ogc:def:identifier:OGC:uniqueID'
             );
             if (Ext.isEmpty(rec)){ // unique id still not exist
-                gridIdentification.store.insert(0, 
+                gridIdentification.store.insert(0,
                     Ext.create('smlfield', {
                         'name': 'uniqueID',
                         'definition': 'urn:ogc:def:identifier:OGC:uniqueID',
@@ -234,17 +241,17 @@ Ext.define('istsos.view.procedure', {
                 rec.set('value',this.istSections.urn.procedure+newValue);
             }
         },this);
-        
+
         Ext.getCmp("constrChoose").select(0);
 
         Ext.getCmp("constrChoose").on("select",function(combo, records, eOpts){
-        
+
             var value = combo.getValue();
-            
+
             var from = Ext.getCmp('constrFrom');
             var to = Ext.getCmp('constrTo');
             var list = Ext.getCmp('constrList');
-            
+
             switch (value) {
                 case 0:
                   from.setVisible(false);
@@ -273,20 +280,20 @@ Ext.define('istsos.view.procedure', {
                   break;
             }
         });
-        
+
         // Combos used for the utils - copy template
         Ext.getCmp("cmbServices").on("select",function(combo, records, eOpts){
-        
+
             var pr = Ext.getCmp('oeCbProcedure');
             pr.reset();
             pr.getStore().removeAll();
             pr.disable();
-            
+
             var o = Ext.getCmp('oeCbOffering');
             o.reset();
             o.getStore().removeAll();
             o.disable();
-            
+
             Ext.Ajax.request({
                 url: Ext.String.format('{0}/istsos/services/{1}/offerings/operations/getlist',
                     wa.url,combo.getValue()),
@@ -299,20 +306,20 @@ Ext.define('istsos.view.procedure', {
                         this.enable();
                     }else{
                         this.disable();
-                        Ext.Msg.alert("Server message", "\"" + json['message'] + "\"<br/><br/>" + 
+                        Ext.Msg.alert("Server message", "\"" + json['message'] + "\"<br/><br/>" +
                                 "<small>Status response: " + response.statusText + "</small>");
                     }
                 }
             });
         });
-        
+
         Ext.getCmp("oeCbOffering").on("select",function(combo, records, eOpts){
-            
+
             var pr = Ext.getCmp('oeCbProcedure');
             pr.reset();
             pr.getStore().removeAll();
             pr.disable();
-            
+
             Ext.Ajax.request({
                 url: Ext.String.format('{0}/istsos/services/{1}/offerings/{2}/procedures/operations/memberslist',
                     wa.url,Ext.getCmp('cmbServices').getValue(),combo.getValue()),
@@ -325,21 +332,21 @@ Ext.define('istsos.view.procedure', {
                         this.enable();
                     }else{
                         this.disable();
-                        Ext.Msg.alert("Server message", "\"" + json['message'] + "\"<br/><br/>" + 
+                        Ext.Msg.alert("Server message", "\"" + json['message'] + "\"<br/><br/>" +
                                 "<small>Status response: " + response.statusText + "</small>");
                     }
                 }
             });
         });
         Ext.getCmp("btnTemplateFill").on("click",this.executeCopy,this);
-        
+
         this.initSmlFieldPanel('smlIdentification');
         this.initSmlFieldPanel('smlCapabilities');
         this.initSmlFieldPanel('smlDocumentation');
         this.initSmlFieldPanel('smlInputs');
-        
+
         var cmp = Ext.getCmp('smlOutputs');
-        
+
         cmp.getComponent('frmSml').getComponent('btnAddSml').on('click',function(){
             var main = Ext.getCmp('smlOutputs');
             var form = main.getComponent('frmSml');
@@ -385,7 +392,7 @@ Ext.define('istsos.view.procedure', {
                             var vals = json['list'].split(',');
                             for (var c = 0; c < vals.length; c++){
                                 if(!Ext.isNumeric(vals[c])){
-                                    msg = "Value ("+vals[c]+") inserted is not " + 
+                                    msg = "Value ("+vals[c]+") inserted is not " +
                                     "numeric, and it should be numeric";
                                     break;
                                 }
@@ -393,7 +400,7 @@ Ext.define('istsos.view.procedure', {
                         }
                         break;
                 }
-                
+
                 if (msg){
                     Ext.MessageBox.show({
                         title: 'Warning',
@@ -403,13 +410,13 @@ Ext.define('istsos.view.procedure', {
                     });
                     return;
                 }
-                
+
             }
-            
+
             var role = "urn:ogc:def:classifiers:x-istsos:1.0:qualityIndex:check:reasonable";
-            
+
             var rec = cmb.findRecord('definition',cmb.getValue()), r = null;
-            
+
             switch (json.ctype) {
                 case 1: // Greater then
                     r = Ext.create('smlfield', {
@@ -463,48 +470,48 @@ Ext.define('istsos.view.procedure', {
                         "uom" : json.uom,
                         "description" : json.description
                     });
-                    
+
             }
-        
-            
+
+
             var last = store.getCount();
             /*if (last>0) {
                 last--;
             }*/
             store.insert(last, r);
             form.getForm().reset();
-        
+
             //store.insert(0, r);
             form.getForm().reset();
         },this);
-        
+
         cmp.getComponent('gridSml').getComponent('gridToolbar').getComponent(
             'btnRemoveSml').on('click',function(){
             this.removeSmlfield('smlOutputs',{
                 "skipInsert":true
             });
         },this);
-        
+
         Ext.getCmp('applicationType').on("select",function(){
             var cb = Ext.getCmp('cbDetailsDefinition');
             var tf = Ext.getCmp('cbDetailsMeasure');
-             
+
             var v = cb.getValue();
             var rec = cb.findRecord(cb.valueField || cb.displayField, v);
             tf.setValue(rec.get("defaultMeasure"));
         });
-        
+
         var caricami = function(field){
             field.store.load();
             field.un("focus",caricami);
         }
         Ext.getCmp('applicationType').on("focus", caricami);
-        
-        
+
+
     },
     executeCopy: function(){
         // Load data from a /istsos/services/this.istService/procedures/{name} GET request
-        
+
         if (Ext.isEmpty(this.mask)) {
             this.mask = new Ext.LoadMask(this.body, {
                 msg:"Please wait..."
@@ -512,9 +519,9 @@ Ext.define('istsos.view.procedure', {
         }
         this.mask.show();
         Ext.Ajax.request({
-            url: Ext.String.format('{0}/istsos/services/{1}/procedures/{2}', 
-                wa.url, 
-                Ext.getCmp('cmbServices').getValue(), 
+            url: Ext.String.format('{0}/istsos/services/{1}/procedures/{2}',
+                wa.url,
+                Ext.getCmp('cmbServices').getValue(),
                 Ext.getCmp('oeCbProcedure').getValue()),
             //url: 'app/data/procedure.json',
             scope: this,
@@ -558,22 +565,22 @@ Ext.define('istsos.view.procedure', {
         });
     },
     loadJSON: function(json, hidefield){
-    
+
         //console.dir(json);
         if (!Ext.isBoolean(hidefield)) {
             hidefield=true;
         }
         if (hidefield) {
-            Ext.getCmp('toolspanel').setVisible(false); // tools panel 
+            Ext.getCmp('toolspanel').setVisible(false); // tools panel
             Ext.getCmp('asid').setVisible(true); // assigned sensor id field
             Ext.getCmp('frmSmlOutputs').setVisible(false); // Editing panel of observed properties
             Ext.getCmp('smlOutputs').getComponent('gridSml').removeDocked(Ext.getCmp('smlOutputs').getComponent('gridSml').getComponent('gridToolbar'),true);
         //Ext.getCmp('smlOutputs').getComponent('gridSml').getComponent('gridToolbar').setVisible(false); // Remove observed property button
         }
-        
+
         this.loadedJson = json;
-        
-        
+
+
         // IDENTIFICATION
         var store = Ext.getCmp("smlIdentification").getComponent('gridSml').getStore();
         var c = json["data"]["identification"];
@@ -581,11 +588,12 @@ Ext.define('istsos.view.procedure', {
             var r = Ext.create('smlfield', Ext.apply({}, c[i]));
             store.insert(0, r);
         }
-        
+
         // GENERAL INFORMATION
         Ext.getCmp('generalInfo').loadRecord(json);
-        
-        
+        Ext.getCmp('procedureNameRO').setValue(Ext.getCmp('procedurename').getValue());
+
+
         // CLASSIFICATION
         var data = {}
         for (var i in json["data"]["classification"]) {
@@ -599,10 +607,10 @@ Ext.define('istsos.view.procedure', {
         Ext.getCmp("classification").loadRecord({
             data: data
         });
-        
+
         // CHARACTERISTICS
         Ext.getCmp('characteristics').loadRecord(json);
-        
+
         // CONTACTS
         var data = {}
         for (var i in json["data"]["contacts"]) {
@@ -621,7 +629,7 @@ Ext.define('istsos.view.procedure', {
                 });
             }
         }
-        
+
         // DOCUMENTATION
         store = Ext.getCmp("smlDocumentation").getComponent('gridSml').getStore();
         var c = json["data"]["documentation"];
@@ -629,7 +637,7 @@ Ext.define('istsos.view.procedure', {
             var r = Ext.create('smlfield', Ext.apply({}, c[i]));
             store.insert(0, r);
         }
-        
+
         // LOCATION
         c = json["data"]["location"];
         var epsg = c["crs"]["properties"]['name'];
@@ -645,14 +653,14 @@ Ext.define('istsos.view.procedure', {
                 name: c["properties"]['name']
             }
         });
-        
+
         /*if (Ext.isEmpty(c["crs"]["properties"]['name'])) {
             Ext.getCmp('cbepsg').setValue(c["crs"]["properties"]['name']);
         }*/
-        
+
         // INTERFACES
         Ext.getCmp('frmInterfaces').loadRecord(json);
-        
+
         // INPUTS
         store = Ext.getCmp("smlInputs").getComponent('gridSml').getStore();
         store.removeAll();
@@ -661,26 +669,26 @@ Ext.define('istsos.view.procedure', {
             var r = Ext.create('smlfield', Ext.apply({}, c[i]));
             store.insert(0, r);
         }
-        
+
         // OUTPUTS
         store = Ext.getCmp("smlOutputs").getComponent('gridSml').getStore();
         store.removeAll();
         var c = json["data"]["outputs"];
-        
+
         for (var i = 0; i < c.length; i++) {
             if (c[i]['name']!='Time') {
-               
+
                 var cnf = {
                     "name" : c[i]['name'],
                     "definition" : c[i]['definition'],
                     "uom" : c[i]['uom'],
                     "description" : c[i]['description'],
                     "role" : "",
-                    "from" : "", 
-                    "to": "", 
+                    "from" : "",
+                    "to": "",
                     "list": ""
                 };
-               
+
                 if (c[i]['constraint']){
                     if (c[i]['constraint']["role"]){
                         cnf.role = c[i]['constraint']["role"];
@@ -696,38 +704,38 @@ Ext.define('istsos.view.procedure', {
                          cnf.from = c[i]['constraint']["min"];
                     }
                 }
-                
+
                 var r = Ext.create('smlfield', cnf);
                 store.insert(0, r);
             }
         }
-        
+
         // CAPABILITIES
-        
+
         store = Ext.getCmp("smlCapabilities").getComponent('gridSml').getStore();
         var c = json["data"]["capabilities"];
         for (var i in c) {
             if (c[i]['definition']=='urn:x-ogc:def:classifier:x-istsos:1.0:acquisitionTimeResolution') {
-                
+
                 // Set combo
                 Ext.getCmp('atrCombo').setValue(c[i]['uom']);
                 // Set value
                 Ext.getCmp('atrValue').setValue(c[i]['value']);
-                
+
                 //Ext.getCmp("tfAcquisitionResolution").setValue(c[i]['value']);
             }else if (c[i]['definition']=='urn:x-ogc:def:classifier:x-istsos:1.0:samplingTimeResolution') {
-                
+
                 // Set combo
                 Ext.getCmp('strCombo').setValue(c[i]['uom']);
                 // Set value
                 Ext.getCmp('strValue').setValue(c[i]['value']);
-                
+
                 //Ext.getCmp("tfSamplingResolution").setValue(c[i]['value']);
             }else if (c[i]['definition'].indexOf('urn:x-ogc:def:classifier:x-istsos:1.0:storageType')>-1) {
-                
+
                 // Set combo
                 Ext.getCmp('storeTypeValue').setValue(c[i]['definition'].replace('urn:x-ogc:def:classifier:x-istsos:1.0:storageType:',''));
-                
+
                 //Ext.getCmp("tfSamplingResolution").setValue(c[i]['value']);
             }else{
                 store.insert(0, Ext.create('smlfield', c[i]));
@@ -744,40 +752,40 @@ Ext.define('istsos.view.procedure', {
             me = this;
         }
         jsonData = Ext.apply(jsonData,me.getSystemInfo());
-            
+
         jsonData = Ext.apply(jsonData,{
             "identification": me.getSmlStore("smlIdentification")
         });
-            
+
         jsonData['classification']=me.getClassification();
         jsonData = Ext.apply(jsonData,me.getCharacteristics());
-            
+
         jsonData['contacts']=me.getContacts();
-            
+
         jsonData = Ext.apply(jsonData,{
             "documentation": me.getSmlStore("smlDocumentation")
         });
-        
+
         jsonData = Ext.apply(jsonData,{
             "capabilities": me.getCapabilities()
         });
-            
+
         jsonData['location']=me.getLocation();
-            
+
         jsonData = Ext.apply(jsonData,me.getInterfaces());
-            
+
         jsonData = Ext.apply(jsonData,{
             "inputs": me.getSmlStore("smlInputs")
         });
-            
+
         jsonData = Ext.apply(jsonData,{
             "outputs": me.getOutputs()
         });
-            
+
         jsonData["history"] = [];
-            
+
         return jsonData;
-            
+
     },
     executePut: function(){
         try{
@@ -787,14 +795,14 @@ Ext.define('istsos.view.procedure', {
                 });
             }
             this.mask.show();
-            
+
             var me = null;
             if (!Ext.isEmpty(this.istForm)) {
                 me = this.istForm;
             }else{
                 me = this;
             }
-        
+
             Ext.Ajax.request({
                 url: Ext.String.format('{0}/istsos/services/{1}/procedures/{2}', wa.url,
                     this.istService, me.loadedJson['data']['system']),
@@ -833,62 +841,62 @@ Ext.define('istsos.view.procedure', {
                 });
             }
             this.mask.show();
-            
+
             jsonData = Ext.apply(jsonData,me.getSystemInfo());
-            
+
             jsonData = Ext.apply(jsonData,{
                 "identification": me.getSmlStore("smlIdentification")
             });
-            
-            
+
+
             jsonData['classification']=me.getClassification();
             jsonData = Ext.apply(jsonData,me.getCharacteristics());
-            
+
             jsonData['contacts']=me.getContacts();
-            
+
             jsonData = Ext.apply(jsonData,{
                 "documentation": me.getSmlStore("smlDocumentation")
             });
-            
+
             jsonData = Ext.apply(jsonData,{
                 "capabilities": me.getCapabilities()
             });
-            
+
             jsonData['location']=me.getLocation();
-            
+
             jsonData = Ext.apply(jsonData,me.getInterfaces());
-            
+
             jsonData = Ext.apply(jsonData,{
                 "inputs": me.getSmlStore("smlInputs")
             });
-            
+
             jsonData = Ext.apply(jsonData,{
                 "outputs": me.getOutputs()
             });
-            
+
             jsonData["history"] = [];
-            
+
             //console.dir(jsonData);
-            
+
             this.loadedJson = {
                 data: jsonData
             };
             me.loadedJson = {
                 data: jsonData
             };
-            
+
             var posturl = Ext.String.format(
-                '{0}/istsos/services/{1}/procedures', 
+                '{0}/istsos/services/{1}/procedures',
                 wa.url,this.istService
             );
-            
+
             if (jsonData['classification']['systemtype']=='virtual'){
                 posturl = Ext.String.format(
-                    '{0}/istsos/services/{1}/virtualprocedures', 
+                    '{0}/istsos/services/{1}/virtualprocedures',
                     wa.url,this.istService
                 );
             }
-            
+
             Ext.Ajax.request({
                 url: posturl,
                 scope: this,
@@ -899,26 +907,26 @@ Ext.define('istsos.view.procedure', {
                     this.mask.hide();
                     if (json.success) {
                         this.fireEvent("operationSubmit",json);
-                        /*this.istFunction= {  
-                            onLoad: 'executeGet', 
-                            onSubmit: 'executePut' 
+                        /*this.istFunction= {
+                            onLoad: 'executeGet',
+                            onSubmit: 'executePut'
                         }*/
-                        istsos.engine.pageManager.openPage({  
-                            istTitle: 'Edit procedure',  
-                            istBody: ['istsos.view.procedure'],  
-                            istFooter: istsos.SUBMIT,  
-                            istService: this.istService,  
-                            istProcedure: request.jsonData.system,  
-                            istFunction: {  
-                                onLoad: 'executeGet', 
-                                onSubmit: 'executePut' 
+                        istsos.engine.pageManager.openPage({
+                            istTitle: 'Edit procedure',
+                            istBody: ['istsos.view.procedure'],
+                            istFooter: istsos.SUBMIT,
+                            istService: this.istService,
+                            istProcedure: request.jsonData.system,
+                            istFunction: {
+                                onLoad: 'executeGet',
+                                onSubmit: 'executePut'
                             }
                         });
                     }
                 }
             });
-        
-        } catch (ex) { 
+
+        } catch (ex) {
             this.mask.hide();
             Ext.MessageBox.show({
                 title: 'Warning',
@@ -932,7 +940,7 @@ Ext.define('istsos.view.procedure', {
         var form = Ext.getCmp('generalInfo').getForm();
         if (!form.isValid()) {
             throw {
-                message: 'General info: mandatory params not filled.', 
+                message: 'General info: mandatory params not filled.',
                 cmp: "generalInfo"
             };
         }
@@ -946,7 +954,7 @@ Ext.define('istsos.view.procedure', {
         var sr = Ext.getCmp("strValue");
         var ar = Ext.getCmp("atrValue");
         var str = Ext.getCmp("storeTypeValue");
-        
+
         if (!Ext.isEmpty(sr.getValue())) {
             ret.push({
                 "name": "Sampling time resolution",
@@ -955,7 +963,7 @@ Ext.define('istsos.view.procedure', {
                 "value": ""+sr.getValue()
             });
         }
-        
+
         if (!Ext.isEmpty(ar.getValue())) {
             ret.push({
                 "name": "Acquisition time resolution",
@@ -970,7 +978,7 @@ Ext.define('istsos.view.procedure', {
                 "definition": "urn:x-ogc:def:classifier:x-istsos:1.0:storageType:" + str.getValue()
             });
         }
-        
+
         /*var sr = Ext.getCmp("tfSamplingResolution");
         var ar = Ext.getCmp("tfAcquisitionResolution");
         if (sr.isDirty()) {
@@ -995,7 +1003,7 @@ Ext.define('istsos.view.procedure', {
         var form = Ext.getCmp('classification').getForm();
         if (!form.isValid()) {
             throw {
-                message: 'Classification: mandatory params not filled.', 
+                message: 'Classification: mandatory params not filled.',
                 cmp: "classification"
             };
         }
@@ -1016,7 +1024,7 @@ Ext.define('istsos.view.procedure', {
         var form = Ext.getCmp('characteristics').getForm();
         if (!form.isValid()) {
             throw {
-                message: 'Characteristics: mandatory params not filled.', 
+                message: 'Characteristics: mandatory params not filled.',
                 cmp: "characteristics"
             };
         }
@@ -1039,23 +1047,23 @@ Ext.define('istsos.view.procedure', {
         return contacts;
     },
     getLocation: function(){
-        
+
         var form = Ext.getCmp('frmLocation').getForm();
         if (!form.isValid()) {
             throw {
-                message: 'Location: mandatory params not filled.', 
+                message: 'Location: mandatory params not filled.',
                 cmp: "frmLocation"
             };
         }
         var json = form.getValues();
         return {
-            "type": "Feature", 
+            "type": "Feature",
             "geometry": {
-                "type": "Point", 
+                "type": "Point",
                 "coordinates": [json['x'],json['y'],json['z']]
-            }, 
+            },
             "crs": {
-                "type": "name", 
+                "type": "name",
                 "properties": {
                     "name": json['epsg']
                 }
@@ -1069,7 +1077,7 @@ Ext.define('istsos.view.procedure', {
         var form = Ext.getCmp('frmInterfaces').getForm();
         if (!form.isValid()) {
             throw {
-                message: 'Interfaces: mandatory params not filled.', 
+                message: 'Interfaces: mandatory params not filled.',
                 cmp: "frmInterfaces"
             };
         }
@@ -1079,7 +1087,7 @@ Ext.define('istsos.view.procedure', {
         var store = Ext.getStore("gridoutputs");
         if (store.getCount()==0) {
             throw {
-                message: 'Outputs: at leas one oberved property must be added', 
+                message: 'Outputs: at leas one oberved property must be added',
                 cmp: "frmSmlOutputs"
             };
         }
@@ -1093,7 +1101,7 @@ Ext.define('istsos.view.procedure', {
         }];
         for (var i = 0; i < store.getCount(); i++) {
             var rec = store.getAt(i);
-            
+
             if (!Ext.isEmpty(rec.get('from')) && !Ext.isEmpty(rec.get('to'))){
                 // Between
                 ret.push({
@@ -1149,9 +1157,9 @@ Ext.define('istsos.view.procedure', {
                     "uom" : rec.get('uom'),
                     "description" : rec.get('description'),
                     "constraint" : {}
-                });         
+                });
             }
-            
+
             /*switch (rec.get('ctype')) {
                 case 1: // Greater then
                     ret.push({
@@ -1211,8 +1219,8 @@ Ext.define('istsos.view.procedure', {
                     });
                     break;
             }*/
-            
-            
+
+
         }
         return ret;
     },

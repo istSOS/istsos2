@@ -74,116 +74,58 @@ Ext.define('istsos.view.ProcedureChooser', {
     alias: 'widget.procedurechooser',
 
     initComponent: function() {
-        
+
         var me = this;
         this.color = new RColor;
-        
+
         this.addEvents({
             "procedureAdded" : true,
-            "procedureRemoved" : true
+            "procedureRemoved" : true,
+            "serviceSelected" : true,
+            "offeringSelected" : true,
+            "procedureSelected" : true
         });
-        
+
         Ext.create('istsos.store.Offerings');
         Ext.create('istsos.store.gridProceduresList');
         var ssrv = Ext.create('istsos.store.Services');
         ssrv.getProxy().url = Ext.String.format('{0}/istsos/services',wa.url);
-        
+
         this.procedures = {};
         this.configsections = {};
-        
+
         me.callParent(arguments);
-        
-        Ext.getCmp("cmbServices").on("select",function(combo, records, eOpts){
-            var pr = Ext.getCmp('oeCbProcedure');
-            pr.reset();
-            pr.disable();
-            
-            var o = Ext.getCmp('oeCbOffering');
-            o.reset();
-            o.getStore().removeAll();
-            o.disable();
-            Ext.Ajax.request({
-                url: Ext.String.format('{0}/istsos/services/{1}/offerings/operations/getlist',
-                    wa.url,combo.getValue()),
-                scope: o,
-                method: "GET",
-                success: function(response){
-                    var json = Ext.decode(response.responseText);
-                    if (json.data.length>0) {
-                        this.getStore().loadData(json.data);
-                        this.enable();
-                    }else{
-                        this.disable();
-                        Ext.Msg.alert("Server message", "\"" + json['message'] + "\"<br/><br/>" + 
-                                "<small>Status response: " + response.statusText + "</small>");
-                    }
-                }
-            });
-            
-            Ext.Ajax.request({
-                url: Ext.String.format('{0}/istsos/services/{1}/configsections',wa.url, combo.getValue()),
-                scope: this,
-                method: "GET",
-                success: function(response){
-                    var json = Ext.decode(response.responseText);
-                    if (json.success) {
-                        this.configsections = json.data;
-                    }
-                }
-            });
-            
+
+        Ext.getCmp("wResetObservedProperties").on("click", function(){
+          this._offeringSelected(Ext.getCmp('oeCbOffering'));
         },this);
-        
-        Ext.getCmp("oeCbOffering").on("select",function(combo, records, eOpts){
-            var pr = Ext.getCmp('oeCbProcedure');
-            pr.reset();
-            pr.getStore().removeAll();
-            pr.disable();
-            Ext.Ajax.request({
-                url: Ext.String.format('{0}/istsos/services/{1}/offerings/{2}/procedures/operations/memberslist',
-                    wa.url,Ext.getCmp('cmbServices').getValue(),combo.getValue()),
-                scope: pr,
-                method: "GET",
-                success: function(response){
-                    var json = Ext.decode(response.responseText);
-                    if (json.data.length>0) {
-                        this.getStore().loadData(json.data);
-                        this.enable();
-                    }else{
-                        this.disable();
-                        Ext.Msg.alert("Server message", "\"" + json['message'] + "\"<br/><br/>" + 
-                                "<small>Status response: " + response.statusText + "</small>");
-                    }
-                }
-            });
-            /*
-            pr.getStore().load({
-                url: Ext.String.format('{0}/istsos/services/{1}/offerings/{2}/procedures/operations/memberslist',
-                    wa.url,Ext.getCmp('cmbServices').getValue(),combo.getValue()),
-                callback: function(records, operation, success){
-                    this.enable();
-                },
-                scope: pr
-            });*/
-        });
-        
+
+        Ext.getCmp("cmbServices").on("select",this._serviceSelected,this);
+
+        Ext.getCmp("oeCbOffering").on("select",this._offeringSelected,this);
+
+        Ext.getCmp("oeCbProcedure").on("select",function(combo, records, eOpts){
+          this.fireEvent("procedureSelected", combo.getValue());
+        },this);
+
         Ext.getCmp("btnAdd").on("click",function(btn, e, eOpts){
-            
-            // Add an istsos.Procedure in the this.procedures array
-            // every row contains some describeSensor data
-            var service = Ext.getCmp("cmbServices").getValue();
-            var offering = Ext.getCmp("oeCbOffering").getValue();
-            var procedure = Ext.getCmp("oeCbProcedure").getValue();
-            
-            this.procedures[procedure] = Ext.create('istsos.Sensor', 
-                service, offering, procedure, {
-                    listeners: {
-                        metadataLoaded: this._getProcedureDetails,
-                        scope: this
-                    }
-                });
-            
+            this._addProcedure(
+              Ext.getCmp("cmbServices").getValue(),
+              Ext.getCmp("oeCbOffering").getValue(),
+              Ext.getCmp("oeCbProcedure").getValue()
+            );
         },this);
+    },
+    _addProcedure: function(service, offering, procedure){
+      // Add an istsos.Procedure in the this.procedures array
+      // every row contains some describeSensor data
+      this.procedures[procedure] = Ext.create('istsos.Sensor',
+        service, offering, procedure, {
+            listeners: {
+                metadataLoaded: this._getProcedureDetails,
+                scope: this
+            }
+        });
     },
     _getProcedureDetails: function(proc){
         var obsprop = [];
@@ -193,11 +135,11 @@ Ext.define('istsos.view.ProcedureChooser', {
             }
         }
         proc.color = this.color.get(true);
-        var idVisible = Ext.id(), idColor = Ext.id(), idRemove = Ext.id(), 
+        var idVisible = Ext.id(), idColor = Ext.id(), idRemove = Ext.id(),
                         idBtnAggregation = Ext.id(), idAggregation = Ext.id(), idToggleAggregation = Ext.id(),
                         idDetailsAggregation = Ext.id(), idBtnAggregationReset = Ext.id(), idDownload = Ext.id(),
                         idBtnAggregationAll = Ext.id();
-                        
+
         var cmp = Ext.getCmp('proceduresTree').add({
             xtype: 'panel',
             //id: 'fs-'+proc.getName(),
@@ -229,9 +171,9 @@ Ext.define('istsos.view.ProcedureChooser', {
                 },
                 "afterrender": {
                     fn: function(procedureDetailsPanel, layout, eOpts ){
-                        
+
                         //console.log("Afterrender: " + procedureDetailsPanel.istsos.procedure.getName());
-                        
+
                         var v = Ext.get(procedureDetailsPanel.istsos.idVisible);
                         v.on("click",function(){
                             if (this.istsos.procedure.getVisibility()) {
@@ -241,36 +183,36 @@ Ext.define('istsos.view.ProcedureChooser', {
                             }
                             this.istsos.procedure.setVisibility(!this.istsos.procedure.getVisibility());
                         },procedureDetailsPanel);
-                        
+
                         var c = Ext.get(procedureDetailsPanel.istsos.idDownload);
                         c.on("click",function(){
                             var from = Ext.getCmp('oeBegin').getValue();
                             var bt = Ext.getCmp('oeBeginTime').getValue();
                             from.setHours(bt.getHours());
                             from.setMinutes(bt.getMinutes());
-                            
+
                             var to = Ext.getCmp('oeEnd').getValue();
                             var et = Ext.getCmp('oeEndTime').getValue();
                             to.setHours(et.getHours());
                             to.setMinutes(et.getMinutes());
-                            
-                            var attachment = this.istsos.procedure.getName()+ "_" + Ext.Date.format(to, 'YmdHi') + ".csv";
-                            
+
+                            var attachment = this.istsos.procedure.getName()+ "_" + Ext.Date.format(to, 'YmdHi') + "00000.csv";
+
                             var ob = this.istsos.procedure.getObservedProperties();
-                            
+
                             var tz = Ext.getCmp('oeTZ').getValue();
                             var format = Ext.isEmpty(tz) ? "c": "Y-m-d\\TH:i:s";
-                            
+
                             from = Ext.Date.format(from,format);
                             if(!Ext.isEmpty(tz)){
                                 from = from + (Ext.isString(tz) ? tz: istsos.utils.minutesToTz(tz));
                             }
-                            
+
                             to = Ext.Date.format(to,format);
                             if(!Ext.isEmpty(tz)){
                                 to = to + (Ext.isString(tz) ? tz: istsos.utils.minutesToTz(tz));
                             }
-                        
+
                             var params = {
                                 "request": "GetObservation",
                                 "attachment": attachment,
@@ -283,7 +225,7 @@ Ext.define('istsos.view.ProcedureChooser', {
                                 "service": "SOS",
                                 "version": "1.0.0"
                             };
-                            
+
                             if (Ext.isObject(this.istsos.procedure.aggregation)){
                                 params = Ext.apply(params, {
                                     aggregatefunction: this.istsos.procedure.aggregation.f,
@@ -293,14 +235,14 @@ Ext.define('istsos.view.ProcedureChooser', {
                                 });
                             }
                             params = Ext.Object.toQueryString(params);
-                            
-                            window.open("../"+this.istsos.procedure.service+"?" + params);
-                            
+
+                            window.open(Ext.String.format('{0}{1}?{2}', wa.basepath, this.istsos.procedure.service, params));
+
                             //console.log(params);
-                            
-                            
+
+
                         },procedureDetailsPanel);
-                        
+
                         c = Ext.get(procedureDetailsPanel.istsos.idColor);
                         c.on("click",function(){
                             Ext.create('Ext.window.Window', {
@@ -322,8 +264,8 @@ Ext.define('istsos.view.ProcedureChooser', {
                                 })
                             }).show();
                         },procedureDetailsPanel);
-                        
-                    
+
+
                         c = Ext.get(procedureDetailsPanel.istsos.idRemove);
                         c.on("click",function(){
                             var pchoose = this.ownerCt.ownerCt;
@@ -332,10 +274,10 @@ Ext.define('istsos.view.ProcedureChooser', {
                         },procedureDetailsPanel,{
                             single: true
                         });
-                        
-                        
+
+
                         // AGGREGATION FUNCTIONALITIES <<<<<<<<<<<<<<<<<<<<<<<<<
-                        
+
                         procedureDetailsPanel.istsos.procedure.on('aggregationchanged',function(procedure, aggregation){
                             var det = Ext.get(this.istsos.idDetailsAggregation);
                             if (Ext.isObject(aggregation)){
@@ -348,20 +290,20 @@ Ext.define('istsos.view.ProcedureChooser', {
                             var form = Ext.getCmp(this.istsos.idAggregation);
                             form.form.setValues(aggregation);
                         },procedureDetailsPanel);
-                        
+
                         c = Ext.get(procedureDetailsPanel.istsos.idToggleAggregation);
                         c.on("click",function(){
                             this.istsos.toggleAggregation = !this.istsos.toggleAggregation;
                             Ext.getCmp(this.istsos.idAggregation).setVisible( this.istsos.toggleAggregation );
                         },procedureDetailsPanel);
-                        
+
                         c = Ext.getCmp(procedureDetailsPanel.istsos.idBtnAggregation);
                         c.on('click',function(btn){
                             var form = Ext.getCmp(this.istsos.idAggregation);
                             var values = form.getValues();
                             this.istsos.procedure.setAggregation(values);
                         },procedureDetailsPanel);
-                        
+
                         c = Ext.getCmp(procedureDetailsPanel.istsos.idBtnAggregationAll); // APPLY TO ALL
                         c.on('click',function(btn){
                             var form = Ext.getCmp(this.istsos.idAggregation);
@@ -370,7 +312,7 @@ Ext.define('istsos.view.ProcedureChooser', {
                               this.istsos.chooser.procedures[k].setAggregation(values);
                             }
                         },procedureDetailsPanel);
-                        
+
                         c = Ext.getCmp(procedureDetailsPanel.istsos.idBtnAggregationReset);
                         c.on('click',function(btn){
                             var form = Ext.getCmp(this.istsos.idAggregation);
@@ -389,7 +331,7 @@ Ext.define('istsos.view.ProcedureChooser', {
                 {
                     xtype: 'panel',
                     border: false,
-                    html: 
+                    html:
                         "<div>" +
                         "   <div style='border-bottom: thin solid white; padding: 2px; background-color: green; color: white; text-align: center;'>" +
                         "       <span style='font-weight: bold; font-size: 14px;'>" + proc.getName() + "</span>" +
@@ -485,9 +427,86 @@ Ext.define('istsos.view.ProcedureChooser', {
                     ]
                 }
             ]
-            
+
         });
-        
-        
+
+
+    },
+    _serviceSelected: function(combo, records, eOpts){
+        var pr = Ext.getCmp('oeCbProcedure');
+        pr.reset();
+        pr.disable();
+
+        var o = Ext.getCmp('oeCbOffering');
+        o.reset();
+        o.getStore().removeAll();
+        o.disable();
+
+        this.fireEvent("serviceSelected", combo.getValue());
+
+        Ext.Ajax.request({
+            url: Ext.String.format('{0}/istsos/services/{1}/offerings/operations/getlist',
+                wa.url,combo.getValue()),
+            scope: this,
+            method: "GET",
+            success: function(response){
+                var o = Ext.getCmp('oeCbOffering');
+                var json = Ext.decode(response.responseText);
+                if (json.data.length>0) {
+                    o.getStore().loadData(json.data);
+                    o.enable();
+                    if(json.data.length==1){
+                      o.select(o.getStore().getAt(0));
+                      this._offeringSelected(Ext.getCmp('oeCbOffering'));
+                    }
+                }else{
+                    o.disable();
+                    Ext.Msg.alert("Server message", "\"" + json['message'] + "\"<br/><br/>" +
+                            "<small>Status response: " + response.statusText + "</small>");
+                }
+            }
+        });
+
+        Ext.Ajax.request({
+            url: Ext.String.format('{0}/istsos/services/{1}/configsections',wa.url, combo.getValue()),
+            scope: this,
+            method: "GET",
+            success: function(response){
+                var json = Ext.decode(response.responseText);
+                if (json.success) {
+                    this.configsections = json.data;
+                }
+            }
+        });
+
+    },
+    _offeringSelected: function(combo, records, eOpts){
+        var pr = Ext.getCmp('oeCbProcedure');
+        pr.reset();
+        pr.getStore().removeAll();
+        pr.disable();
+
+        this.fireEvent("offeringSelected", combo.getValue());
+
+        Ext.Ajax.request({
+            url: Ext.String.format('{0}/istsos/services/{1}/offerings/{2}/procedures/operations/memberslist',
+                wa.url,Ext.getCmp('cmbServices').getValue(),combo.getValue()),
+            scope: pr,
+            method: "GET",
+            success: function(response){
+                var json = Ext.decode(response.responseText);
+                if (json.data.length>0) {
+                    this.getStore().loadData(json.data);
+                    this.enable();
+                    if(json.data.length==1){
+                      this.select(this.getStore().getAt(0));
+                    }
+                }else{
+                    this.disable();
+                    Ext.Msg.alert("Server message", "\"" + json['message'] + "\"<br/><br/>" +
+                            "<small>Status response: " + response.statusText + "</small>");
+                }
+            }
+        });
     }
 });

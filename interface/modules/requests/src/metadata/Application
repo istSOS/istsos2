@@ -15,8 +15,9 @@
         ],
         "name": "requests",
         "stores": [
-            "ServicesStore",
-            "MethodsStore"
+            "Requests",
+            "Services",
+            "Methods"
         ],
         "views": [
             "HomePanel"

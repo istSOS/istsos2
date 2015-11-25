@@ -25,7 +25,7 @@ body {
     font-family: 'Electrolize', sans-serif, tahoma, "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif, cursive;
     color: white;
     background-color: green;
-    background-image :url(../images/header.png); 
+    background-image :url(../images/header.png);
     background-repeat: no-repeat;
     background-position: top right;
 }
@@ -92,10 +92,10 @@ body {
 }
 
 .softLink:hover {
-    color: red; 
+    color: red;
     text-decoration: underline;
     cursor: pointer;
-    font-size: inherit; 
+    font-size: inherit;
 }
 
 .mainFooter {
@@ -219,7 +219,7 @@ body {
 .x-panel-header-default {
     font-size: 11px !important;
     line-height: 15px !important;
-    
+
     border-color: GREEN !important;
     border-width: 0px !important;
     border-style: solid !important;
@@ -227,14 +227,14 @@ body {
     background-color: GREEN !important;*/
 
     background: #008000 !important;
-    background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjN2Q3ZTdkIiBzdG9wLW9wYWNpdHk9IjEiLz4KICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzBlMGUwZSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgPC9saW5lYXJHcmFkaWVudD4KICA8cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSJ1cmwoI2dyYWQtdWNnZy1nZW5lcmF0ZWQpIiAvPgo8L3N2Zz4=) !important;
+    /*background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjN2Q3ZTdkIiBzdG9wLW9wYWNpdHk9IjEiLz4KICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzBlMGUwZSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgPC9saW5lYXJHcmFkaWVudD4KICA8cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSJ1cmwoI2dyYWQtdWNnZy1nZW5lcmF0ZWQpIiAvPgo8L3N2Zz4=) !important;
     background: -moz-linear-gradient(-45deg,  #008000 0%, #0e0e0e 100%) !important;
     background: -webkit-gradient(linear, left top, right bottom, color-stop(0%,#008000), color-stop(100%,#0e0e0e)) !important;
     background: -webkit-linear-gradient(-45deg,  #008000 0%,#0e0e0e 100%) !important;
     background: -o-linear-gradient(-45deg,  #008000 0%,#0e0e0e 100%) !important;
     background: -ms-linear-gradient(-45deg,  #008000 0%,#0e0e0e 100%) !important;
     background: linear-gradient(135deg,  #008000 0%,#0e0e0e 100%) !important;
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#008000', endColorstr='#0e0e0e',GradientType=1 ) !important;
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#008000', endColorstr='#0e0e0e',GradientType=1 ) !important;*/
 
 }
 
@@ -267,7 +267,7 @@ body {
     /*background-color: green !important;*/
 
     background: #008000 !important;
-    background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjN2Q3ZTdkIiBzdG9wLW9wYWNpdHk9IjEiLz4KICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzBlMGUwZSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgPC9saW5lYXJHcmFkaWVudD4KICA8cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSJ1cmwoI2dyYWQtdWNnZy1nZW5lcmF0ZWQpIiAvPgo8L3N2Zz4=) !important;
+    /*background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjN2Q3ZTdkIiBzdG9wLW9wYWNpdHk9IjEiLz4KICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzBlMGUwZSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgPC9saW5lYXJHcmFkaWVudD4KICA8cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSJ1cmwoI2dyYWQtdWNnZy1nZW5lcmF0ZWQpIiAvPgo8L3N2Zz4=) !important;
     background: -moz-linear-gradient(-45deg,  #008000 0%, #0e0e0e 100%) !important;
     background: -webkit-gradient(linear, left top, right bottom, color-stop(0%,#008000), color-stop(100%,#0e0e0e)) !important;
     background: -webkit-linear-gradient(-45deg,  #008000 0%,#0e0e0e 100%) !important;
@@ -275,19 +275,20 @@ body {
     background: -ms-linear-gradient(-45deg,  #008000 0%,#0e0e0e 100%) !important;
     background: linear-gradient(135deg,  #008000 0%,#0e0e0e 100%) !important;
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#008000', endColorstr='#0e0e0e',GradientType=1 ) !important;
-
+    */
 }
 
 .x-btn-default-toolbar-small-menu-active, .x-btn-default-toolbar-small-pressed {
     border-color: green !important;
     background-image: none !important;
-    background-color: green !important;
+    background: #008000 !important;
+    /*background-color: green !important;
     background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #19ab19), color-stop(48%, #20b320), color-stop(52%, #119511), color-stop(100%, #008000));
     background-image: -webkit-linear-gradient(top, #19ab19,#20b320 48%,#119511 52%,#008000);
     background-image: -moz-linear-gradient(top, #19ab19,#20b320 48%,#119511 52%,#008000);
     background-image: -o-linear-gradient(top, #19ab19,#20b320 48%,#119511 52%,#008000);
     background-image: -ms-linear-gradient(top, #19ab19,#20b320 48%,#119511 52%,#008000);
-    background-image: linear-gradient(top, #19ab19,#20b320 48%,#119511 52%,#008000);
+    background-image: linear-gradient(top, #19ab19,#20b320 48%,#119511 52%,#008000);*/
 }
 /*
 .x-btn-inner {
@@ -408,63 +409,66 @@ body {
 .x-btn-default-small {
     background-color: green !important;
     background-image: none !important;
-    border-radius: 5px 5px 5px 5px !important;
+    /*border-radius: 5px 5px 5px 5px !important;*/
+    border-style: none !important;
 }
 
 .x-btn-inner {
     font-family: 'Electrolize', sans-serif, tahoma, "Lucida Sans Unicode", "Lucida Grande", Verdana, sans-serif !important;
-    font-size: 16px !important;
+    font-size: 14px !important;
 }
 
 .x-btn-group-default-framed {
     background-color: white !important;
 }
 
-.x-btn-default-toolbar-small {
+/*.x-btn-default-toolbar-small {
     border-color: #cbcbcb !important;
     border-radius: 5px 5px 5px 5px !important;
-}
+}*/
 
 .x-btn-default-toolbar-small .x-btn-inner {
     color: white !important;
 }
 
 .x-btn-default-toolbar-small-over {
-    background-color: green !important;
     background-image:  none  !important;
-    border-color: white !important;
-    border-radius: 5px 5px 5px 5px !important;
+    background-color: green !important;
+    border-color: green !important;
+    /*background-color: green !important;
+    border-radius: 5px 5px 5px 5px !important;*/
+    border-bottom: thin solid #ccc;
 }
 .x-btn-default-toolbar-small-focus {
     background-color: green !important;
     background-image:  none  !important;
     border-color: white !important;
-    border-radius: 5px 5px 5px 5px !important;
+    /*border-radius: 5px 5px 5px 5px !important;*/
 }
 .x-btn-default-toolbar-small-menu-active, .x-btn-default-toolbar-small-pressed {
     background-color: grey !important;
     background-image:  none  !important;
     border-color: black !important;
-    border-radius: 5px 5px 5px 5px !important;
+    /*border-radius: 5px 5px 5px 5px !important;*/
 }
 
 .x-btn-default-small-over {
     background-color: grey !important;
     background-image:  none  !important;
     border-color: white !important;
-    border-radius: 5px 5px 5px 5px !important;
+    /*border-radius: 5px 5px 5px 5px !important;*/
 }
 .x-btn-default-small-focus {
     background-color: green !important;
     background-image: none  !important;
     border-color: white !important;
-    border-radius: 5px 5px 5px 5px !important;
+    /*border-radius: 5px 5px 5px 5px !important;*/
 }
 .x-btn-default-small-menu-active, .x-btn-default-small-pressed {
     background-color: black !important;
     background-image: none  !important;
     border-color: green !important;
-    border-radius: 5px 5px 5px 5px !important;
+    /*border-radius: 5px 5px 5px 5px !important;*/
 }
 
 .x-menu-body {
@@ -473,7 +477,7 @@ body {
 
 .x-menu-item-active .x-menu-item-link {
     background-color: lightgrey !important;
-    background-image: none !important;     
+    background-image: none !important;
     border: 1px solid green !important;
     /*background-image: -moz-linear-gradient(center top , #E7F0FC, #C7DDF9);
     border: 1px solid #A9CBF5;
@@ -561,9 +565,9 @@ table.x-datepicker-inner .x-datepicker-selected a {
     border-color: green !important;
 }
 
-/*.dygraph-ylabel { 
-    font-size: 18px; 
-    text-shadow: gray -2px 2px 2px; 
+/*.dygraph-ylabel {
+    font-size: 18px;
+    text-shadow: gray -2px 2px 2px;
     height: 40px;
 }*/
 
@@ -581,12 +585,12 @@ table.x-datepicker-inner .x-datepicker-selected a {
     background-repeat: no-repeat;
     background-position: center center;
     cursor: pointer;
-} 
+}
 .pchooserBtnNotVisible {
     background-image :url(../images/forbidden.png) !important;
     background-repeat: no-repeat;
     background-position: center center;
-} 
+}
 .pchooserBtnDownload {
     position: absolute;
     right: 46px;
@@ -596,7 +600,7 @@ table.x-datepicker-inner .x-datepicker-selected a {
     cursor: pointer;
     /*border: thin solid whitesmoke;*/
     background: transparent url(../images/menu/download.svg) no-repeat scroll center center;
-    background-size: contain; 
+    background-size: contain;
 }
 .pchooserBtnColor {
     position: absolute;
@@ -606,7 +610,7 @@ table.x-datepicker-inner .x-datepicker-selected a {
     height: 16px;
     cursor: pointer;
     border: thin solid whitesmoke;
-} 
+}
 .pchooserBtnRemove {
     position: absolute;
     right: 6px;
@@ -617,21 +621,21 @@ table.x-datepicker-inner .x-datepicker-selected a {
     font-weight: bolder;
     cursor: pointer;
     background: transparent url(../images/menu/close.svg) no-repeat scroll center center;
-    background-size: contain; 
-} 
+    background-size: contain;
+}
 
 .pchooser {
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
-    margin-bottom: 10px; 
-    border: thin solid green; 
+    margin-bottom: 10px;
+    border: thin solid green;
     width: 100%;
     font-family: monospace;
 }
 
 /*.pchooser td {
-    padding: 2px 4px 2px 4px;    
+    padding: 2px 4px 2px 4px;
 }*/
 
 .viewerChart {
@@ -646,4 +650,9 @@ table.x-datepicker-inner .x-datepicker-selected a {
     color: white !important;
 }
 
-
+.x-splitter-horizontal {
+    background-color: white;
+}
+.x-splitter-vertical {
+    background-color: white;
+}

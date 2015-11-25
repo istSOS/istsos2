@@ -24,7 +24,7 @@ Ext.define('requests.controller.HomeController', {
     ],
 
     onServiceSelected: function(combo, records, eOpts) {
-        this.getServiceUrl().setValue((window.location.origin + window.location.pathname).replace("requests/",combo.getValue()));
+        this.getServiceUrl().setValue((window.location.origin + window.location.pathname).replace("modules/requests/",combo.getValue()));
     },
 
     init: function(application) {

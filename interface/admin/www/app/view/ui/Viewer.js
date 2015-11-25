@@ -12,9 +12,7 @@
 Ext.define('istsos.view.ui.Viewer', {
     extend: 'Ext.container.Viewport',
     requires: [
-        'istsos.view.ProcedureChart',
-        'istsos.view.ProcedureGrid',
-        'istsos.view.ProcedureChooser'
+        'istsos.view.ViewerPanel'
     ],
 
     border: 0,
@@ -28,37 +26,8 @@ Ext.define('istsos.view.ui.Viewer', {
         Ext.applyIf(me, {
             items: [
                 {
-                    xtype: 'panel',
-                    border: 0,
-                    layout: {
-                        type: 'border'
-                    },
-                    title: '',
-                    region: 'center',
-                    items: [
-                        {
-                            xtype: 'procedurechart',
-                            region: 'center',
-                            id: 'chartpanel'
-                        },
-                        {
-                            xtype: 'panel',
-                            height: 250,
-                            layout: {
-                                type: 'fit'
-                            },
-                            collapsible: true,
-                            title: 'Grid',
-                            region: 'south',
-                            split: true,
-                            items: [
-                                {
-                                    xtype: 'proceduregrid',
-                                    id: 'gridpanel'
-                                }
-                            ]
-                        }
-                    ]
+                    xtype: 'viewerpanel',
+                    region: 'center'
                 },
                 {
                     xtype: 'panel',
@@ -70,22 +39,6 @@ Ext.define('istsos.view.ui.Viewer', {
                     bodyPadding: 8,
                     title: '',
                     region: 'south'
-                },
-                {
-                    xtype: 'panel',
-                    width: 300,
-                    layout: {
-                        type: 'fit'
-                    },
-                    title: '',
-                    region: 'west',
-                    items: [
-                        {
-                            xtype: 'procedurechooser',
-                            border: 0,
-                            id: 'pchoose'
-                        }
-                    ]
                 }
             ]
         });

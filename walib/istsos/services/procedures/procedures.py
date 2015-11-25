@@ -181,11 +181,14 @@ class waProcedures(waResourceService):
 
         #print >> sys.stderr, "\n\nSML: %s" % smlstring
         #print >> sys.stderr, "\n\nSML: %s" % pp.pprint(self.json)
-
+        
+        headers = {"Content-type": "text/xml"}
+        if 'HTTP_AUTHORIZATION' in self.waEnviron:
+            headers['Authorization'] = self.waEnviron['HTTP_AUTHORIZATION']
         response = requests.post(
             self.serviceconf.serviceurl["url"],
             data=smlstring,
-            headers={"Content-type": "text/xml"}
+            headers=headers
         )
 
         try:
@@ -524,6 +527,12 @@ class waProcedures(waResourceService):
 
         try:
             import lib.requests as requests
+            
+            headers = {}
+            if 'HTTP_AUTHORIZATION' in self.waEnviron:
+                headers['Authorization'] = self.waEnviron['HTTP_AUTHORIZATION']
+        
+            print >> sys.stderr, "Service url: %s" % self.serviceconf.serviceurl["url"]
             res = requests.get(
                 self.serviceconf.serviceurl["url"],
                 params={
@@ -532,13 +541,22 @@ class waProcedures(waResourceService):
                     "outputFormat": "text/xml;subtype=\"sensorML/1.0.1\"",
                     "service": "SOS",
                     "version": "1.0.0"
-                }
+                },
+                headers=headers
             )
+        except Exception as e:
+            #print >> sys.stderr, "\n\nSML: %s\n%s\n" % (self.procedurename,res.content)
+            raise Exception("Error loading DescribeSensor of '%s': %s" % (self.procedurename,e))
+        try:
+            res.raise_for_status()
+        except Exception as e:
+            raise Exception("Error loading DescribeSensor of '%s' [STATUS CODE: %s]: %s" % (self.procedurename,res.status_code,e))
+        try:
             smlobj = procedure.Procedure()
             smlobj.loadXML(res.content)
         except Exception as e:
             #print >> sys.stderr, "\n\nSML: %s\n%s\n" % (self.procedurename,res.content)
-            raise Exception("Error loading DescribeSensor of '%s' [STATUS CODE: %s]: %s" % (self.procedurename,res.status_code,e))
+            raise Exception("Error loading DescribeSensor of '%s': %s" % (self.procedurename,e))
 
         # Searching for the assignedSensorId from the database
         servicedb = databaseManager.PgDB(
@@ -616,15 +634,29 @@ class waGetGeoJson(waResourceService):
     def __init__(self,waEnviron):
         waResourceService.__init__(self,waEnviron)
 
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
-        #print >> sys.stderr, "\n\nENVIRON: %s" % pp.pprint(self.serviceconf.get("geo")['istsosepsg'])
+        #import pprint
+        #pp = pprint.PrettyPrinter(indent=4)
+        #print >> sys.stderr, "\n\nENVIRON: %s" % pp.pprint(self.waEnviron)
 
         if self.waEnviron['parameters'] and self.waEnviron['parameters']['epsg']:
             self.epsg = self.waEnviron['parameters']['epsg'][0]
         else:
             self.epsg = self.serviceconf.get("geo")['istsosepsg']
-
+            
+        self.offering = None
+        if self.waEnviron['parameters'] and 'offering' in self.waEnviron['parameters']:
+            self.offering = self.waEnviron['parameters']['offering'][0]
+            
+        self.observedProperty = None
+        if self.waEnviron['parameters'] and 'observedProperty' in self.waEnviron['parameters']:
+            self.observedProperty = self.waEnviron['parameters']['observedProperty'][0]
+            
+        self.procedure = None
+        if self.waEnviron['parameters'] and 'procedure' in self.waEnviron['parameters']:
+            self.procedure = self.waEnviron['parameters']['procedure'][0]
+            
+            
+            
     def executeGet(self):
         if self.service == "default":
             raise Exception("getlist operation can not be done for default service instance.")
@@ -636,19 +668,24 @@ class waGetGeoJson(waResourceService):
                 }
 
                 servicedb = databaseManager.PgDB(self.serviceconf.connection['user'],
-                                                self.serviceconf.connection['password'],
-                                                self.serviceconf.connection['dbname'],
-                                                self.serviceconf.connection['host'],
-                                                self.serviceconf.connection['port']
+                    self.serviceconf.connection['password'],
+                    self.serviceconf.connection['dbname'],
+                    self.serviceconf.connection['host'],
+                    self.serviceconf.connection['port']
                 )
 
-                proceduresList = utils.getProcedureNamesList(servicedb,self.service)
+                proceduresList = utils.getProcedureNamesList(servicedb,self.service, offering=self.offering, procedure=self.procedure)
+                
                 for proc in proceduresList:
 
-
                     if proc['samplingTime']['beginposition'] == '':
-                        print >> sys.stderr, proc['name']
+                        #print >> sys.stderr, proc['name']
                         import lib.requests as requests
+                        
+                        headers = {}
+                        if 'HTTP_AUTHORIZATION' in self.waEnviron:
+                            headers['Authorization'] = self.waEnviron['HTTP_AUTHORIZATION']
+                            
                         res = requests.get(
                             self.serviceconf.serviceurl["url"],
                             params={
@@ -657,7 +694,8 @@ class waGetGeoJson(waResourceService):
                                 "outputFormat": "text/xml;subtype=\"sensorML/1.0.1\"",
                                 "service": "SOS",
                                 "version": "1.0.0"
-                            }
+                            },
+                            headers=headers
                         )
 
                         smlobj = procedure.Procedure()
@@ -666,6 +704,7 @@ class waGetGeoJson(waResourceService):
                         except Exception as e:
                             print >> sys.stderr, "\n\nSML: %s\n\n" % res.content
                             raise Exception("Error loading DescribeSensor of '%s' [STATUS CODE: %s]: %s" % (proc['name'],res.status_code,e))
+                        
                         ret = {}
                         ret.update(smlobj.data)
 
@@ -678,7 +717,18 @@ class waGetGeoJson(waResourceService):
                     #elem["name"] = proc["name"]
                     ops = utils.getObservedPropertiesFromProcedure(servicedb,self.service,proc["name"])
                     if ops != None:
-                        elem["observedproperties"] = [ {"name" : op["name"], "def" : op["def"], "uom" : op["uom"]  } for op in ops ]
+                        if self.observedProperty:
+                            elem["observedproperties"] = []
+                            opPresent = False
+                            for op in ops:
+                                print >> sys.stderr, "'%s' == '%s'" % (self.observedProperty,op["def"])
+                                if self.observedProperty == op["def"]:
+                                    opPresent = True
+                                elem["observedproperties"].append({"name" : op["name"], "def" : op["def"], "uom" : op["uom"]  })
+                            if not opPresent:
+                                continue
+                        else:
+                            elem["observedproperties"] = [ {"name" : op["name"], "def" : op["def"], "uom" : op["uom"]  } for op in ops ]
                     else:
                         elem["observedproperties"] = []
                     offs = utils.getOfferingsFromProcedure(servicedb,self.service,proc["name"])
@@ -686,7 +736,6 @@ class waGetGeoJson(waResourceService):
                         elem["offerings"] = [ off["name"] for off in offs ]
                     else:
                         elem["offerings"] = []
-
 
                     geom = utils.getGeoJSONFromProcedure(servicedb, self.service,proc["name"], self.epsg)
                     if geom == None:

@@ -19,36 +19,36 @@
 Ext.define('istsos.view.ProcedureChart', {
     extend: 'istsos.view.ui.ProcedureChart',
     alias: 'widget.procedurechart',
-    
+
     initComponent: function() {
         var me = this;
-        
+
         Ext.create('istsos.store.ObservedProperties');
         Ext.create('istsos.store.AggregateFunctionStore').loadData([
             ['AVG'],['SUM'],['COUNT'],['MAX'],['MIN']
         ]);
         this.procedures = {};
-        
+
         me.callParent(arguments);
-        
+
         this.addEvents('queueLoaded','observedPropertyIsSet','clickCallback','pointClickCallback', 'seriesSelected', 'underlayCallback');
-        
+
         //var offset = (new Date()).getTimezoneOffset()/-60;
-        
+
         //var tz = (parseInt(offset)>=0?'+':'-') + this.pad(parseInt(offset)) + ':' + this.pad(Math.abs(((offset - parseInt(offset)) * 60 )));
-        
+
         //var tz = ((offset > 0) ? "+"+this.pad(offset) : this.pad(offset));
         //Ext.getCmp('oeBeginTime').format = 'H:i ['+tz+']';
-        
+
         Ext.getCmp('oeTZ').setValue(istsos.utils.minutesToTz());
-        
+
         Ext.getCmp('oeBeginTime').setValue(Ext.Date.parse("00:00", 'H:i'));
         //Ext.getCmp('oeEndTime').format = 'H:i ['+tz+']';
         Ext.getCmp('oeEndTime').setValue(Ext.Date.parse("00:00", 'H:i'));
-        
+
         Ext.getCmp("btnPlot").on("click",this.loadObservation, this);
         this.on("queueLoaded",this.rederChart, this);
-                
+
         Ext.getCmp("btnRangeDay").on("click",function(btn, e, eOpts){
             // 86400000 ms = 1 day
             var range = this.chart.xAxisRange();
@@ -63,7 +63,7 @@ Ext.define('istsos.view.ProcedureChart', {
                 'dateWindow': [range[0], range[1]]
             });
         },this);
-        
+
         Ext.getCmp("btnRangeWeek").on("click",function(btn, e, eOpts){
             var range = this.chart.xAxisRange();
             var extreme = this.chart.xAxisExtremes();
@@ -77,21 +77,21 @@ Ext.define('istsos.view.ProcedureChart', {
                 'dateWindow': [range[0], range[1]]
             } );
         },this);
-        
+
         Ext.getCmp("btnRangeAll").on("click",function(btn, e, eOpts){
             btn.toggle(true,true);
             this.chart.updateOptions( {
                 'dateWindow': this.chart.xAxisExtremes()
             } );
         },this);
-        
-        
+
+
         this.on("resize",function(panel, adjWidth, adjHeight, eOpts){
             if(this.chart){
                 this.chart.resize();
             }
         });
-        
+
         Ext.getCmp('oeCbObservedProperty').on("select",function(combo, records, eOpts){
             var op = null;
             if (records.length==1) {
@@ -99,7 +99,7 @@ Ext.define('istsos.view.ProcedureChart', {
             }
             this.fireEvent("observedPropertyIsSet", this, op);
         },this);
-    
+
     },
     pad: function(n){
         if (n>=0 && n<10) {
@@ -111,27 +111,27 @@ Ext.define('istsos.view.ProcedureChart', {
         // return n<10 ? '0'+n : n
     },
     rederChart: function(){
-        
+
         this.obsprop = Ext.getCmp("oeCbObservedProperty").getValue();
         var procs = [];
         // get the json rapresentation of the tree menu of procedures
         //var checked = Ext.getCmp('proceduresTree').getValues();
         var visibility = []; // Initialize the chart series visibility
-        
+
         this.labels = ["isodate"];
         this.colors = [];
         var template = [];
-        
+
         this.chartStore = {};
-        
+
         var valueFormatter = {
-        
+
         }
         var cc = 1;
-        
+
         var keys = Object.keys(this.procedures);
         keys = keys.sort();
-        
+
         //for (var key in this.procedures) {
         for (var c = 0; c < keys.length; c++) {
             var key = keys[c];
@@ -145,10 +145,10 @@ Ext.define('istsos.view.ProcedureChart', {
                 valueFormatter[cc == 1 ? 'y': 'y'+cc] = {
                     valueFormatter: function(ms, fn, p) {
                         return ' '+ ms + ' '+ Ext.getCmp('chartpanel').procedures[p].getUomCode(
-                            Ext.getCmp("oeCbObservedProperty").getValue()    
+                            Ext.getCmp("oeCbObservedProperty").getValue()
                             );
                     }
-                } 
+                }
             }
         }
         // merging data
@@ -156,10 +156,10 @@ Ext.define('istsos.view.ProcedureChart', {
         //for (var key in procs) {
         for (var c = 0; c < procs.length; c++) {
             var p = procs[c];
-            
+
             p.store.on("update",this._storeUpdated,this);
             p.store.on("seriesupdated",this._storeSeriesUpdated,this);
-            
+
             var recs = p.store.getRange();
             for (var j = 0, l = recs.length; j < l; j++) {
                 if (Ext.isEmpty(this.chartStore[recs[j].get("micro") ])) {
@@ -168,16 +168,16 @@ Ext.define('istsos.view.ProcedureChart', {
                 // Set the property choosen in the chart store in the right column
                 var v = parseFloat(recs[j].get(p.storeConvertFieldToId[this.obsprop]));
                 if (v<-900) {
-                    this.chartStore[recs[j].get("micro")][idx] = NaN;  
+                    this.chartStore[recs[j].get("micro")][idx] = NaN;
                 }else{
-                    this.chartStore[recs[j].get("micro")][idx] = v;          
+                    this.chartStore[recs[j].get("micro")][idx] = v;
                 }
             }
             idx++;
         }
-        
+
         // Sorting array by dates
-        var sorted = Ext.Array.sort(Ext.Object.getKeys(this.chartStore), 
+        var sorted = Ext.Array.sort(Ext.Object.getKeys(this.chartStore),
             function (d1, d2) {
                 d1 = parseInt(d1);
                 d2 = parseInt(d2);
@@ -234,24 +234,24 @@ Ext.define('istsos.view.ProcedureChart', {
                                 return istsos.utils.micro2iso(ms,istsos.utils.tzToMinutes(Ext.getCmp('oeTZ').getValue()));
                             },
                             axisLabelFormatter: function(ms, gran, b, chart){
-                                
+
                                 // Get unix time in seconds
                                 var unix = parseInt(ms/1000000);
                                 // Extract microseconds only
                                 var micro = ms-(unix*1000000);
                                 // Date object without considering microseconds
                                 var date = Ext.Date.parse(unix,'U');
-                                
+
                                 var range = chart.xAxisRange();
                                 var delta = range[1]-range[0];
-                                
+
                                 var clip = function(m){
                                     return (parseFloat('0.'+m)+"").substring(1);
                                 }
                                 if (delta<500000) { // less then a seconds range
                                     if (micro == 0) {
-                                        if (date.getHours()==0 
-                                            && date.getMinutes()==0  
+                                        if (date.getHours()==0
+                                            && date.getMinutes()==0
                                             && date.getSeconds()==0) {
                                             return Ext.Date.format(date,'Y-m-d');
                                         }else{
@@ -266,8 +266,8 @@ Ext.define('istsos.view.ProcedureChart', {
                                     }
                                 }else if (delta<1000000) { // less then a seconds range
                                     if (micro == 0) {
-                                        if (date.getHours()==0 
-                                            && date.getMinutes()==0  
+                                        if (date.getHours()==0
+                                            && date.getMinutes()==0
                                             && date.getSeconds()==0) {
                                             return Ext.Date.format(date,'Y-m-d');
                                         }else{
@@ -281,28 +281,28 @@ Ext.define('istsos.view.ProcedureChart', {
                                         }
                                     }
                                 }else if(delta<1000000*60) { // less the a minute
-                                    if (date.getHours()==0 
-                                        && date.getMinutes()==0  
+                                    if (date.getHours()==0
+                                        && date.getMinutes()==0
                                         && date.getSeconds()==0) {
                                         return Ext.Date.format(date,'Y-m-d');
                                     }else{
                                         return Ext.Date.format(date,'H:i:s')+clip(micro);
                                     }
                                 }else if(delta<1000000*60*60) { // less the an hour
-                                    if (date.getHours()==0 
-                                        && date.getMinutes()==0  
+                                    if (date.getHours()==0
+                                        && date.getMinutes()==0
                                         && date.getSeconds()==0) {
                                         return Ext.Date.format(date,'Y-m-d');
                                     }else{
                                         return Ext.Date.format(date,'H:i');
                                     }
                                 }else if(delta<1000000*60*60*24) { // less the a day
-                                    if (date.getHours()==0 
-                                        && date.getMinutes()==0  
+                                    if (date.getHours()==0
+                                        && date.getMinutes()==0
                                         && date.getSeconds()==0) {
                                         return Ext.Date.format(date,'Y-m-d');
-                                    }else if (date.getHours()==12 
-                                        && date.getMinutes()==0  
+                                    }else if (date.getHours()==12
+                                        && date.getMinutes()==0
                                         && date.getSeconds()==0) {
                                         return Ext.Date.format(date,'Y-m-d') + "T" +
                                         Ext.Date.format(date,'H:i');
@@ -310,8 +310,8 @@ Ext.define('istsos.view.ProcedureChart', {
                                         return Ext.Date.format(date,'H:i');
                                     }
                                 }else if(delta<1000000*60*60*24*4) { // less the a day
-                                    if (date.getHours()==0 
-                                        && date.getMinutes()==0  
+                                    if (date.getHours()==0
+                                        && date.getMinutes()==0
                                         && date.getSeconds()==0) {
                                         return Ext.Date.format(date,'Y-m-d');
                                     }else if (date.getHours()==12) {
@@ -323,30 +323,30 @@ Ext.define('istsos.view.ProcedureChart', {
                                 }else  { // less the a day
                                     return Ext.Date.format(date,'Y-m-d');
                                 }
-                            
+
                             }
                         }
                     },valueFormatter),
                     clickCallback: function(e, x, pts) {
-                        var chartpanel = Ext.getCmp('chartpanel');                        
+                        var chartpanel = Ext.getCmp('chartpanel');
                         // Series selectd
                         if (e.shiftKey && chartpanel.lastClick) {
                             Ext.callback(function(e, x, pts){
                                 this.fireEvent("seriesSelected", this, e, x, this.lastClick, pts);
                             }, chartpanel, [e, x, pts]);
-                            
+
                         }else{ // Single point selected
                             chartpanel.lastClick = x;
                             Ext.callback(function(e, x, pts){
                                 this.fireEvent("clickCallback", this, e, x, pts);
                             }, chartpanel, [e, x, pts]);
                         }
-                        
+
                     },
                     pointClickCallback: function(e, p) {
-                        
-                        
-                        
+
+
+
                         var chartpanel = Ext.getCmp('chartpanel');
                         Ext.callback(function(e, p){
                             this.fireEvent("clickCallback", this, e, p['xval']);
@@ -375,7 +375,7 @@ Ext.define('istsos.view.ProcedureChart', {
             if (startMicro==null && endMicro==null) {
                 this.chart.updateOptions({
                     "underlayCallback": function(canvas, area, chart) {
-                    
+
                     }
                 });
             }else if (endMicro==null) {
@@ -386,20 +386,20 @@ Ext.define('istsos.view.ProcedureChart', {
                         var canvas_left_x = chart.toDomXCoord(startMicro)-1;
                         var canvas_width = 3;
                         canvas.fillRect(canvas_left_x, area.y, canvas_width, area.h);
-                        
+
                         // Border left
                         canvas.fillStyle = "rgba(0, 0, 0, 1)";
                         canvas_left_x = chart.toDomXCoord(startMicro)-2;
                         canvas_width = 1;
                         canvas.fillRect(canvas_left_x, area.y, canvas_width, area.h);
-                        
+
                         // Border right
                         canvas_left_x = chart.toDomXCoord(startMicro)+2;
                         canvas_width = 1;
                         canvas.fillRect(canvas_left_x, area.y, canvas_width, area.h);
                     }
                 });
-            }else{ 
+            }else{
                 this.chart.updateOptions({
                     "underlayCallback": function(canvas, area, chart) {
                         //canvas.fillStyle = "rgba(194, 232, 184, 1)";
@@ -408,14 +408,14 @@ Ext.define('istsos.view.ProcedureChart', {
                         var canvas_right_x = chart.toDomXCoord(endMicro);
                         var canvas_width = canvas_right_x - canvas_left_x;
                         canvas.fillRect(canvas_left_x, area.y, canvas_width, area.h);
-                        
-                        
+
+
                         // Border left
                         canvas.fillStyle = "rgba(0, 0, 0, 1)";
                         canvas_left_x = chart.toDomXCoord(startMicro);
                         canvas_width = 1;
                         canvas.fillRect(canvas_left_x, area.y, canvas_width, area.h);
-                        
+
                         // Border right
                         canvas_left_x = chart.toDomXCoord(endMicro)-1;
                         canvas_width = 1;
@@ -455,9 +455,9 @@ Ext.define('istsos.view.ProcedureChart', {
      *  - observed property
      */
     loadObservation: function(){
-    
+
         // validation
-        
+
         if(!Ext.getCmp('plotdatafrm').form.isValid()){
             Ext.Msg.show({
                  title:'Warning',
@@ -467,22 +467,22 @@ Ext.define('istsos.view.ProcedureChart', {
             });
             return;
         }
-    
+
         // Mask the container with loading message
         Ext.get('chartCnt').mask("Initializing chart..");
-        
+
         var begin = Ext.getCmp('oeBegin').getValue();
         var bt = Ext.getCmp('oeBeginTime').getValue();
         begin.setHours(bt.getHours());
         begin.setMinutes(bt.getMinutes());
-        
+
         var end = Ext.getCmp('oeEnd').getValue();
         var et = Ext.getCmp('oeEndTime').getValue();
         end.setHours(et.getHours());
         end.setMinutes(et.getMinutes());
-        
+
         this.tz = Ext.getCmp('oeTZ').getValue();
-        
+
         // Load data based on the date-time fields
         this.loading = [];
         for (var key in this.procedures) {
@@ -540,7 +540,7 @@ Ext.define('istsos.view.ProcedureChart', {
         this.chart.updateOptions({
             file: this.chartdata
         });
-        
+
     },
     _storeSeriesUpdated: function( store, records){
         var obsprop = Ext.getCmp("oeCbObservedProperty").getValue();
@@ -582,14 +582,14 @@ Ext.define('istsos.view.ProcedureChart', {
         }
     },
     reconfigure: function(){
-        var oeBegin = Ext.getCmp('oeBegin'), 
-        oeEnd = Ext.getCmp('oeEnd'), 
+        var oeBegin = Ext.getCmp('oeBegin'),
+        oeEnd = Ext.getCmp('oeEnd'),
         os = Ext.getStore('observedproperties');
         os.removeAll();
-        oeBegin.setMaxValue(null); 
-        oeBegin.setMinValue(null); 
-        oeEnd.setMaxValue(null); 
-        oeEnd.setMinValue(null); 
+        oeBegin.setMaxValue(null);
+        oeBegin.setMinValue(null);
+        oeEnd.setMaxValue(null);
+        oeEnd.setMinValue(null);
         if (Ext.Object.getSize(this.procedures)==0) {
             Ext.getCmp('oeCbObservedProperty').reset();
             Ext.getCmp("btnPlot").disable();
@@ -597,10 +597,10 @@ Ext.define('istsos.view.ProcedureChart', {
             oeEnd.reset();
             return;
         }
-        
+
         for (var key in this.procedures) {
             var procedure = this.procedures[key], begin, end;
-            
+
             var meta = procedure.meta;
             for (var i = 0; i < meta.outputs.length; i++) {
                 if (meta.outputs[i]["definition"]==procedure.isodef) {
@@ -625,10 +625,10 @@ Ext.define('istsos.view.ProcedureChart', {
                     }
                 }else if (os.find('definition',meta.outputs[i]["definition"])==-1) {
                     var data = [[
-                    meta.outputs[i]["name"],
-                    meta.outputs[i]["description"],
-                    meta.outputs[i]["uom"],
-                    meta.outputs[i]["definition"]
+                      meta.outputs[i]["name"],
+                      meta.outputs[i]["description"],
+                      meta.outputs[i]["uom"],
+                      meta.outputs[i]["definition"]
                     ]];
                     os.loadData(data,true);
                 }
@@ -636,35 +636,35 @@ Ext.define('istsos.view.ProcedureChart', {
             if (!Ext.isEmpty(begin)) {
                 if (!Ext.isEmpty(oeBegin.minValue)) {
                     if (oeBegin.minValue.getTime()>begin.getTime()) {
-                        oeBegin.setMinValue(begin); 
-                        oeEnd.setMinValue(begin); 
+                        oeBegin.setMinValue(begin);
+                        oeEnd.setMinValue(begin);
                     }
                 }else{
-                    oeBegin.setMinValue(begin); 
-                    oeEnd.setMinValue(begin); 
+                    oeBegin.setMinValue(begin);
+                    oeEnd.setMinValue(begin);
                 }
             }
-            
-            
+
+
             if (!Ext.isEmpty(end)) {
-                
+
                 var endCopy = Ext.Date.clone(end);
                 var beginCopy = Ext.Date.add(Ext.Date.clone(end), Ext.Date.DAY,-7);
-                
+
                 if (!Ext.isEmpty(oeBegin.maxValue)) {
                     if (oeBegin.maxValue.getTime()<end.getTime()) {
-                        oeBegin.setMaxValue(endCopy); 
-                        oeEnd.setMaxValue(endCopy); 
-                        oeBegin.setValue(beginCopy); 
+                        oeBegin.setMaxValue(endCopy);
+                        oeEnd.setMaxValue(endCopy);
+                        oeBegin.setValue(beginCopy);
                         oeEnd.setValue(end);
                     }
                 }else{
-                    oeBegin.setMaxValue(endCopy); 
-                    oeEnd.setMaxValue(endCopy); 
-                    oeBegin.setValue(beginCopy); 
+                    oeBegin.setMaxValue(endCopy);
+                    oeEnd.setMaxValue(endCopy);
+                    oeBegin.setValue(beginCopy);
                     oeEnd.setValue(end);
                 }
-            
+
             }
         }
         if (os.data.length==1) {

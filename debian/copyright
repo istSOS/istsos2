@@ -1,0 +1,8 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: istSOS
+Upstream-Contact: Institute of Earth Science - SUPSI <geoservice@supsi.ch>
+Source: http://istsos.org
+
+Files: *
+Copyright: 2015 istSOS contributors
+License: GPL-2+

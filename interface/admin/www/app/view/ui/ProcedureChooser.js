@@ -60,17 +60,34 @@ Ext.define('istsos.view.ui.ProcedureChooser', {
                             anchor: '100%'
                         },
                         {
-                            xtype: 'combobox',
-                            disabled: true,
-                            id: 'oeCbProcedure',
-                            name: 'procedure',
-                            fieldLabel: 'Procedure',
-                            labelWidth: 70,
-                            displayField: 'name',
-                            queryMode: 'local',
-                            store: 'procedurelist',
-                            valueField: 'name',
-                            anchor: '100%'
+                            xtype: 'fieldcontainer',
+                            height: 22,
+                            layout: {
+                                align: 'stretch',
+                                type: 'hbox'
+                            },
+                            fieldLabel: '',
+                            items: [
+                                {
+                                    xtype: 'combobox',
+                                    disabled: true,
+                                    id: 'oeCbProcedure',
+                                    name: 'procedure',
+                                    fieldLabel: 'Procedure',
+                                    labelWidth: 70,
+                                    displayField: 'name',
+                                    queryMode: 'local',
+                                    store: 'procedurelist',
+                                    valueField: 'name',
+                                    flex: 1
+                                },
+                                {
+                                    xtype: 'button',
+                                    id: 'wResetObservedProperties',
+                                    margin: '0px 0px 0px 4px',
+                                    text: 'reset'
+                                }
+                            ]
                         },
                         {
                             xtype: 'button',
