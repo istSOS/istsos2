@@ -12,17 +12,6 @@ Ext.define('istsos.view.ui.CenterPage', {
     initComponent: function() {
         this.callParent(arguments);
 
-        /*if(this.istTitle){
-            this.setTitle(this.istTitle);
-        }
-        if(this.istBody) {
-            if (this.istService) {
-                this.setBody(this.istBody,this.istService);
-            }else{
-                this.setBody(this.istBody);
-            }
-        }*/
-
         if(this.istService){
             Ext.Ajax.request({
                 url: Ext.String.format('{0}/istsos/services/{1}/configsections',wa.url, this.istService),

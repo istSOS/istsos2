@@ -12147,7 +12147,7 @@
                                                         "margin": null,
                                                         "padding": null,
                                                         "width": 80,
-                                                        "text": "Login",
+                                                        "text": "Enter",
                                                         "designer|userClassName": "MyButton",
                                                         "layout|flex": null
                                                     }

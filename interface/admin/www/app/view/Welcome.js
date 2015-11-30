@@ -75,16 +75,29 @@ Ext.define('istsos.view.Welcome', {
                       istsos.engine.serviceConfig["Service Settings"] = {};
 
                       if(Ext.Array.contains(wa.user.groups, 'datamanager')){
-                        delete istsos.engine.serviceConfig["Wizards"]["Offerings"];
+                        istsos.engine.serviceConfig["Wizards"]={
+                          "Water Discharge": {
+                            istTitle: "Water Discharge parameters editor",
+                            icon: 'virtual.svg',
+                            istBody: ["istsos.view.VirtualDischargeEditor"],
+                            wapage: 'MainCenter',
+                            istFooter: istsos.EMPTY
+                          }
+                        };
+                        /*delete istsos.engine.serviceConfig["Wizards"]["Offerings"];
+                        delete istsos.engine.serviceConfig["Wizards"]["Procedures"];
                         delete istsos.engine.serviceConfig["Wizards"]["Virtual Procedures"];
                         delete istsos.engine.serviceConfig["Wizards"]["New procedure"];
+                        delete istsos.engine.serviceConfig["Wizards"]["Observed properties"];
+                        delete istsos.engine.serviceConfig["Wizards"]["Units of measures"];
+                        delete istsos.engine.serviceConfig["Wizards"]["Data quality"];
                         istsos.engine.serviceConfig["Wizards"]["Water Discharge"] = {
                             istTitle: "Water Discharge parameters editor",
                             icon: 'virtual.svg',
                             istBody: ["istsos.view.VirtualDischargeEditor"],
                             wapage: 'MainCenter',
                             istFooter: istsos.EMPTY
-                        };
+                        };*/
 
                       }else if(Ext.Array.contains(wa.user.groups, 'viewer')){
                         istsos.engine.serviceConfig["Wizards"] = {};

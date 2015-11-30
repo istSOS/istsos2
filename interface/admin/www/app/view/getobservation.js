@@ -17,7 +17,11 @@ Ext.define('istsos.view.getobservation', {
 
     initComponent: function() {
         var me = this;
-        
+        this.addEvents({
+            "ready2load" : true
+        });
+        this.remaining2load = 1;
+
         this.store = Ext.create('Ext.data.Store', {
             storeId: 'qistore',
             autoLoad: this.istService=='default'?false:true,
@@ -33,7 +37,7 @@ Ext.define('istsos.view.getobservation', {
             fields: [
             {
                 name: 'code'
-            },            
+            },
             {
                 name: 'name'
             },
@@ -46,11 +50,21 @@ Ext.define('istsos.view.getobservation', {
                     return record.get('code') + " - " + record.get('name') + " (" + record.get('description') + ")";
                 }
             }
-            ]
+            ],
+            "listeners": {
+              "load": {
+                fn: function(){
+                  console.log("qistore loaded");
+                  this.remaining2load--;
+                  this.checkRemaining();
+                },
+                scope: this
+              }
+            }
         });
-        
+
         me.callParent(arguments);
-        
+
         var items = [{
             xtype: 'checkboxfield',
             name: 'transactional_log',
@@ -60,7 +74,7 @@ Ext.define('istsos.view.getobservation', {
             uncheckedValue: 'False',
             anchor: '100%'
         }];
-        
+
         if (this.istService!='default') {
             items = items.concat([{
                 xtype: 'combobox',
@@ -143,5 +157,69 @@ Ext.define('istsos.view.getobservation', {
             anchor: '100%'
         }]);
         Ext.getCmp('getobsconfig').add(items);
+    },
+    checkRemaining: function(){
+      console.log("checkRemaining > " + this.remaining2load);
+      if(this.remaining2load==0){
+        this.fireEvent("ready2load");
+      }
+    },
+    executeGet: function(){
+      if(this.istForm.remaining2load>0){
+        this.istForm.on("ready2load",this.istForm.executeGet,this);
+      }else{
+        if (Ext.isEmpty(this.mask)) {
+          this.mask = new Ext.LoadMask(this.body, {
+            msg:"Please wait..."
+          });
+        }
+        this.mask.show();
+        Ext.Ajax.request({
+          url: Ext.String.format('{0}/istsos/services/{1}/configsections/getobservation', wa.url, this.istService),
+          scope: this,
+          method: "GET",
+          success: function(response){
+            try {
+                var json = Ext.decode(response.responseText);
+                this.istForm.loadRecord(json);
+            } catch (exception) {
+                console.error(exception);
+            }
+            this.fireEvent("operationGet",json);
+            this.mask.hide();
+          }
+        });
+      }
+    },
+    executePost: function(){
+        if (Ext.isEmpty(this.mask)) {
+          this.mask = new Ext.LoadMask(this.body, {
+            msg:"Saving..."
+          });
+        }
+        this.mask.show();
+
+        var json = this.istForm.getValues();
+
+        Ext.Ajax.request({
+            url: Ext.String.format('{0}/istsos/services/{1}/configsections/getobservation', wa.url, this.istService),
+            scope: this,
+            method: 'PUT',
+            jsonData: json,
+            success: function(response){
+                var json = Ext.decode(response.responseText);
+                if (Ext.getCmp('messageField') != undefined) {
+                    if (json.success && !Ext.isEmpty(json.message)) {
+                        Ext.getCmp('messageField').setVisible(true);
+                        json['data']['message']=json['message']
+                    }else{
+                        Ext.getCmp('messageField').setVisible(false);
+                    }
+                }
+                this.istForm.loadRecord(json);
+                this.fireEvent("operationPost",json);
+                this.mask.hide();
+            }
+        });
     }
 });

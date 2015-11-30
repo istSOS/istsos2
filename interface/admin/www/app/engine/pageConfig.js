@@ -55,7 +55,11 @@ istsos.engine.serviceConfig = {
             istTitle: "GetObservation Configuration",
             icon: 'getobs.svg',
             istBody: ["istsos.view.getobservation"],
-            istOperation: wa.url + "/istsos/services/@/configsections/getobservation",
+            istFunction: {
+                onLoad: "executeGet",
+                onSubmit: "executePost"
+            },
+            //istOperation: wa.url + "/istsos/services/@/configsections/getobservation",
             istFooter: istsos.SUBMIT
         },
         "Proxy Configuration": {

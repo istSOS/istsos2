@@ -358,7 +358,7 @@ To list registered users, execute:
   {   "admin": {   "password": "02ee22de9b071a7b0da3b6d732534ab5",
                    "roles": {   "admin": {   "*": ["*"]}}},
       "foobar": {  "password": "02ee22de9b071a7b0da3b6d732534ab5",
-                   "roles": {   "datamager": {   "demo": "*"}}}}
+                   "roles": {   "datamanager": {   "demo": "*"}}}}
 
 .. note::
 
@@ -373,19 +373,19 @@ To create a new user, execute:
 
 .. code-block:: bash
 
-  python scripts/user.py -user foobar -password 1234 -role datamager
+  python scripts/user.py -user foobar -password 1234 -role datamanager
   
 You can limit access to an instance adding the service name
 
 .. code-block:: bash
 
-  python scripts/user.py -user foo -password bar -role datamager -s demo
+  python scripts/user.py -user foo -password bar -role datamanager -s demo
   
 Add access to a service to an existing user
 
 .. code-block:: bash
 
-  python scripts/user.py -user foo -role datamager -s otherservice
+  python scripts/user.py -user foo -role datamanager -s otherservice
 
 ^^^^^^^^^^^^^^^^^^^^^
 Modify users password

@@ -103,7 +103,7 @@ Ext.define('istsos.view.ui.Welcome', {
                                                     xtype: 'button',
                                                     id: 'btnLogin',
                                                     width: 80,
-                                                    text: 'Login'
+                                                    text: 'Enter'
                                                 }
                                             ]
                                         }

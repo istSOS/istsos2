@@ -1,10 +1,24 @@
 Ext.define('istsos.view.procedure', {
     extend: 'istsos.view.ui.procedure',
+
     initComponent: function() {
 
         var me = this;
+        this.addEvents({
+            "ready2load" : true
+        });
 
-        var systy = Ext.create('istsos.store.cmbSystemType');
+        this.remaining2load = 2;
+        //this.remaining2load = 2;
+
+        var systy = Ext.create('istsos.store.cmbSystemType', {
+
+        });
+        systy.on('load',function(){
+          this.remaining2load--;
+          this.checkRemaining();
+        },this);
+
         systy.getProxy().url = Ext.String.format('{0}/istsos/services/{1}/systemtypes',
             wa.url, this.istService);
         Ext.create('istsos.store.cmbDocumentFormat');
@@ -142,6 +156,15 @@ Ext.define('istsos.view.procedure', {
                     "idProperty": 'name',
                     "root": 'data'
                 }
+            },
+            "listeners": {
+              "load": {
+                fn: function(){
+                  this.remaining2load--;
+                  this.checkRemaining();
+                },
+                scope: this
+              }
             }
         });
 
@@ -509,6 +532,12 @@ Ext.define('istsos.view.procedure', {
 
 
     },
+    checkRemaining: function(){
+      console.log("checkRemaining > " + this.remaining2load);
+      if(this.remaining2load==0){
+        this.fireEvent("ready2load");
+      }
+    },
     executeCopy: function(){
         // Load data from a /istsos/services/this.istService/procedures/{name} GET request
 
@@ -543,26 +572,28 @@ Ext.define('istsos.view.procedure', {
         });
     },
     executeGet: function(){
-        // Load data from a /istsos/services/this.istService/procedures/{name} GET request
-        if (Ext.isEmpty(this.mask)) {
+        if(this.istForm.remaining2load>0){
+          this.istForm.on("ready2load",this.istForm.executeGet,this);
+        }else{
+          if (Ext.isEmpty(this.mask)) {
             this.mask = new Ext.LoadMask(this.body, {
-                msg:"Please wait..."
+              msg:"Please wait..."
             });
-        }
-        this.mask.show();
-        Ext.Ajax.request({
+          }
+          this.mask.show();
+          Ext.Ajax.request({
             url: Ext.String.format('{0}/istsos/services/{1}/procedures/{2}', wa.url,this.istService, this.istProcedure),
-            //url: 'app/data/procedure.json',
             scope: this,
             method: "GET",
             success: function(response){
-                var json = Ext.decode(response.responseText);
-                if (json.success) {
-                    this.istForm.loadJSON(json);
-                }
-                this.mask.hide();
+              var json = Ext.decode(response.responseText);
+              if (json.success) {
+                this.istForm.loadJSON(json);
+              }
+              this.mask.hide();
             }
-        });
+          });
+        }
     },
     loadJSON: function(json, hidefield){
 
