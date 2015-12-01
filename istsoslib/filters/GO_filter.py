@@ -433,7 +433,7 @@ class sosGOfilter(f.sosFilter):
                         try:
                             val = e.firstChild
                             import sys
-                            print >> sys.stderr, "\n\nVAL: %s\n\n" % (val.data)
+                            #print >> sys.stderr, "\n\nVAL: %s\n\n" % (val.data)
                             if val.nodeType == val.TEXT_NODE:
                                 try:
                                     tempfois.append( get_name_from_urn(str(val.data),"feature",sosConfig) )

@@ -519,10 +519,10 @@ def verifyxmlservice(url, waEnviron):
     from lib.etree import et
     try:
         if 'HTTP_AUTHORIZATION' in waEnviron:
-            print >> sys.stderr, "Adding authentication"
+            #print >> sys.stderr, "Adding authentication"
             response = requests.get(url, headers={'Authorization': waEnviron['HTTP_AUTHORIZATION']})
         else:
-            print >> sys.stderr, "No authentication"
+            #print >> sys.stderr, "No authentication"
             response = requests.get(url)
         response.raise_for_status()
         root = et.fromstring(response.text)

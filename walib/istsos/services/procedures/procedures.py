@@ -303,7 +303,7 @@ class waProcedures(waResourceService):
 
             params = (foiX, foiY, foiZ, foiSrid, epsg, name)
 
-            print >> sys.stderr, servicedb.mogrify(sql,params)
+            #print >> sys.stderr, servicedb.mogrify(sql,params)
 
             servicedb.executeInTransaction(sql, params)
 
@@ -532,7 +532,7 @@ class waProcedures(waResourceService):
             if 'HTTP_AUTHORIZATION' in self.waEnviron:
                 headers['Authorization'] = self.waEnviron['HTTP_AUTHORIZATION']
         
-            print >> sys.stderr, "Service url: %s" % self.serviceconf.serviceurl["url"]
+            #print >> sys.stderr, "Service url: %s" % self.serviceconf.serviceurl["url"]
             res = requests.get(
                 self.serviceconf.serviceurl["url"],
                 params={
@@ -721,7 +721,7 @@ class waGetGeoJson(waResourceService):
                             elem["observedproperties"] = []
                             opPresent = False
                             for op in ops:
-                                print >> sys.stderr, "'%s' == '%s'" % (self.observedProperty,op["def"])
+                                #print >> sys.stderr, "'%s' == '%s'" % (self.observedProperty,op["def"])
                                 if self.observedProperty == op["def"]:
                                     opPresent = True
                                 elem["observedproperties"].append({"name" : op["name"], "def" : op["def"], "uom" : op["uom"]  })

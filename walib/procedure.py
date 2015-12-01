@@ -246,8 +246,7 @@ class Procedure():
                     item["web"] = ""
                 self.data["contacts"].append(item)
             except Exception as e:
-                print "ECCEZIONE: "
-                print str(e)
+                print >> sys.stderr, traceback.print_exc()
                 raise SyntaxError("Error in <swe:contact>: some <swe:contact> mandatory sub elements or attributes are missing")
             
         
@@ -697,7 +696,7 @@ class Procedure():
                 
                 # The constraint object is not mandatory
                 if "constraint" in o and o["constraint"]!={}: # and o["constraint"]["role"]!="" and o["constraint"]["role"]!=None:
-                    print >> sys.stderr, o['constraint']                    
+                    #print >> sys.stderr, o['constraint']                    
                     try:
                         ut.validateJsonConstraint(o['constraint'])
                     except Exception as ex:
