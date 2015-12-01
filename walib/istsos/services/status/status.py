@@ -165,8 +165,8 @@ class waStatus(waResourceService):
                 continue
             #else:
                 #raise Exception("Operation %s not permitted." % (param))
-            print procedure['name']
-            print status['status']
+            #print procedure['name']
+            #print status['status']
             if(status['status'] == 'NOT OK'):
                 # Require last exceptions
                 logEnviron = self.waEnviron.copy()
@@ -179,7 +179,7 @@ class waStatus(waResourceService):
 
                 log.executeGet()
 
-                print log.response['data']
+                #print log.response['data']
 
                 log_res = log.response['data']
 

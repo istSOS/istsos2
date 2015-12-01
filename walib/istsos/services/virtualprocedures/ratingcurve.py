@@ -81,7 +81,7 @@ class waRatingcurves(waResourceService):
             self.setMessage("Rating-curve parameters of procedure <%s> successfully saved" % self.procedurename)
 
         # log changes to db
-        print "flag: ", self.serviceconf.getobservation['transactional_log']
+        #print "flag: ", self.serviceconf.getobservation['transactional_log']
         if self.serviceconf.getobservation['transactional_log']:
             self.__logToDB(old_json)
 

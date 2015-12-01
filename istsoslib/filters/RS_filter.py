@@ -133,7 +133,7 @@ class sosRSfilter(f.sosFilter):
                     else:
                         raise sosException.SOSException("MissingParameterValue","SensorDescription","sml:capabilities, missing uom for Sampling time resolution")
 
-            print >> sys.stderr, self.time_sam_val
+            #print >> sys.stderr, self.time_sam_val
 
            #---System type
             # From istSOS 2.0 the system type became mandatory (insitu-fixed-point, insitu-mobile-point, ...)

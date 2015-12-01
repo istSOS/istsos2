@@ -40,7 +40,6 @@ class waServiceConfig():
     
     >>> Example of section attribute
         myconfig = waServiceConfig("/services","/services/myservice")
-        print myconfig.serviceurl
         {'default': True, 'post': 'http://localhost:8099', 'get': 'http://localhost:8099'}
     """
     

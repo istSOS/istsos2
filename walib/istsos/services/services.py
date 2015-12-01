@@ -486,8 +486,6 @@ class waGetobservation(waResourceService):
         if 'HTTP_AUTHORIZATION' in self.waEnviron:
             headers['Authorization'] = self.waEnviron['HTTP_AUTHORIZATION']
             
-        print headers
-            
         rparams = {
             "request": "GetObservation",
             "service": "SOS",
