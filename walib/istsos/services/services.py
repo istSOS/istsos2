@@ -424,7 +424,8 @@ class waServices(waResourceAdmin):
             self.setData({
                 "service": self.urlservicename,
                 "user" : connection['user'],
-                "password" : connection['password'],
+                #"password" : connection['password'],
+                "password" : "*************",
                 "dbname" : connection['dbname'],
                 "host" : connection['host'],
                 "port" : connection['port']
