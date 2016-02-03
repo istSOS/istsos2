@@ -299,10 +299,10 @@ class VirtualProcessHQ(VirtualProcess):
         #set requested period
         #================================================
         hqFile = os.path.join(
-                        self.filter.sosConfig.virtual_processes_folder,
-                        self.filter.procedure[0],
-                        self.filter.procedure[0]+".rcv"
-                )
+            self.filter.sosConfig.virtual_processes_folder,
+            self.observation.name,
+            "%s.rcv" % self.observation.name
+        )
         tp=[]
         if self.filter.eventTime == None:
             tp = [None,None]
