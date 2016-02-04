@@ -648,21 +648,24 @@ Ext.define('istsos.view.ProcedureChart', {
 
             if (!Ext.isEmpty(end)) {
 
-                var endCopy = Ext.Date.clone(end);
-                var beginCopy = Ext.Date.add(Ext.Date.clone(end), Ext.Date.DAY,-7);
+                var endCopy = Ext.Date.add(Ext.Date.clone(end), Ext.Date.DAY, +1); //Ext.Date.clone(end);
+                var beginCopy = Ext.Date.add(Ext.Date.clone(end), Ext.Date.DAY, -7);
+                if(beginCopy<begin){
+                  beginCopy = Ext.Date.clone(begin);
+                }
 
                 if (!Ext.isEmpty(oeBegin.maxValue)) {
                     if (oeBegin.maxValue.getTime()<end.getTime()) {
                         oeBegin.setMaxValue(endCopy);
                         oeEnd.setMaxValue(endCopy);
                         oeBegin.setValue(beginCopy);
-                        oeEnd.setValue(end);
+                        oeEnd.setValue(endCopy);//end);
                     }
                 }else{
                     oeBegin.setMaxValue(endCopy);
                     oeEnd.setMaxValue(endCopy);
                     oeBegin.setValue(beginCopy);
-                    oeEnd.setValue(end);
+                    oeEnd.setValue(endCopy);
                 }
 
             }
