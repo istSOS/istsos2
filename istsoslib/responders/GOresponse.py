@@ -135,6 +135,19 @@ class VirtualProcess():
             
             # removing duplicates
             procedures = list(set(procedures))
+            
+            pnf = [] # procedures_not_found
+            for procedure in procedures:
+                sql = """
+                  SELECT COUNT(*) FROM %s.procedures
+                """ % self.filter.sosConfig.schema
+                sql += " WHERE name_prc=%s"
+                result = self.pgdb.select(sql, (procedure,))
+                if result[0] == 0:
+                    pnf.append(procedure)
+            
+            if len(pnf)>0:
+                raise Exception("Virtual Procedure Error: procedure %s not found in the database" % (", ".join(pnf)) )
                 
             if len(procedures)>1: 
                 sql = """ 
@@ -160,8 +173,9 @@ class VirtualProcess():
             try:
                 result = self.pgdb.select(sql, param)
                 if len(result)==0:
-                    raise Exception("Virtual Procedure Error: procedure %s not found in the database" % (", ".join(param)) )
-                result = result[0]
+                    result = [None, None]
+                else:
+                    result = result[0]
             except Exception as e:
                 raise Exception("Database error: %s - %s" % (sql, e))    
                 
