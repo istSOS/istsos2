@@ -58,6 +58,11 @@ sched = Scheduler(daemonic=False)
 sched._threadpool = threadpool.ThreadPool(core_threads=10, max_threads=200, keepalive=10)
 
 sched.start()
+# reset jobs every 4h
+# (5 sec +) 12 + 60 * 4 = 2880
+# set -1 to disable reloading
+timer2reload = -1 # 2880
+timer = timer2reload
 
 #===========================
 #START THE ISTSOS SCHEDULER
@@ -65,15 +70,36 @@ sched.start()
 @sched.interval_schedule(seconds=5)
 def istsos_job():
     global schedmd5
+    global timer2reload
+    global timer
+    if timer == 0:
+        timer = timer2reload
+        for service,scheduler in recursive_glob(rootdir=services_path ,suffix=".aps"):
+            apsfile = open(scheduler)
+            md5_now = hashlib.md5(apsfile.read()).hexdigest()
+            apsfile.close()
+            schedmd5[service] = md5_now
+            jobs = sched.get_jobs()
+            for j in jobs[1:]:
+                print " job: %s" % j.name
+                if j.name.startswith(service):
+                    sched.unschedule_job(j)
+            execfile(scheduler)
+    if timer>0:
+      timer = timer - 1
     print "Checking changes"
     if not schedmd5:
         print " > Initialization.."
         for service,scheduler in recursive_glob(rootdir=services_path ,suffix=".aps"):
-            schedmd5[service]=hashlib.md5(open(scheduler).read()).hexdigest()
+            apsfile = open(scheduler)
+            schedmd5[service]=hashlib.md5(apsfile.read()).hexdigest()
+            apsfile.close()
             execfile(scheduler)
     else:
         for service,scheduler in recursive_glob(rootdir=services_path ,suffix=".aps"):
-            md5_now = hashlib.md5(open(scheduler).read()).hexdigest()
+            apsfile = open(scheduler)
+            md5_now = hashlib.md5(apsfile.read()).hexdigest()
+            apsfile.close()
             if not schedmd5[service] == md5_now:
                 print "  > Change detectd: %s" % service
                 schedmd5[service] = md5_now
@@ -84,4 +110,5 @@ def istsos_job():
                     if j.name.startswith(service):
                         sched.unschedule_job(j)
                 execfile(scheduler)
+
 

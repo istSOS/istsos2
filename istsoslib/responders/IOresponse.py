@@ -338,7 +338,7 @@ class InsertObservationResponse:
                 for ii,id_et in enumerate(ids_eti):
 
 
-                    if not filter.data[par]["vals"][ii] in ['NULL',u'NULL',None,-999,"-999",u"-999",filter.sosConfig.aggregate_nodata]:
+                    if not filter.data[par]["vals"][ii] in ['NULL',u'NULL',None,'None',u'None',filter.sosConfig.aggregate_nodata]:
                     #TODO: add a else statement to add the aggregate_nodata value OR delete the event time
                     #if not filter.data[par]["vals"][ii] in ['NULL',u'NULL',None]:
                         pqi = int(filter.data[par+":qualityIndex"]["vals"][ii])
@@ -380,7 +380,7 @@ class InsertObservationResponse:
                                     if float(filter.data[par]["vals"][ii]) in [float(p) for p in parsConsPro[i]['valueList']]:
                                         pqi = int(filter.sosConfig.stat_qi)
 
-                        params = (int(parsId[i]),int(id_et),pqi,float(filter.data[par]["vals"][ii]))
+                        params = (int(parsId[i]), int(id_et), pqi, float(filter.data[par]["vals"][ii]))
                         try:
                             nid_msr = pgdb.executeInTransaction(sql,params)
                             ids_msr.append(str(nid_msr[0]['id_msr']))

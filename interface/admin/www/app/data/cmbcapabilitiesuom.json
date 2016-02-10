@@ -16,7 +16,7 @@
         "name" : "Minutes",
         "uom" : "min"    
     },{
-        "name" : "Hoours",
+        "name" : "Hours",
         "uom" : "h"    
     },{
         "name" : "Days",

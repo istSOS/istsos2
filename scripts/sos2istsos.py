@@ -109,7 +109,7 @@ class Procedure():
         self.data["identification"][0]["value"] = "urn:ogc:def:procedure:x-istsos:1.0:%s" % (name)
     
     def __str__(self):
-        return "%s" % (self.data["system"])
+        return "%s, samplingTime: %s - %s" % (self.data["system"], self.begin, self.end)
     
     def setSystemType(self, systemType):
         if systemType in ['virtual','insitu-fixed-point']:
@@ -205,7 +205,7 @@ def execute (args):
         if 'dp' in args:
             dpassw = args['dp']
             
-        print "%s:%s" % (duser,dpassw)
+        #print "%s:%s" % (duser,'*'*len(dpassw))
             
         auth = None
         if duser and dpassw:
@@ -213,7 +213,8 @@ def execute (args):
             auth = HTTPBasicAuth(duser, dpassw)
         
         appendData = False
-        if 'a' in args:
+        if 'a' in args and args['a']:
+            print "Append data: enabled."
             appendData = True
         
         
@@ -250,6 +251,9 @@ def execute (args):
         
         for offering in elOfferings:
             offeringName = offering.find("{%s}name" % (gcNs['gml']) ).text.split(":")[-1]
+            
+            if offeringName != 'temporary':
+                continue
             
             # For each offering get the procedures
             elProcs = offering.findall("{%s}procedure" % (gcNs['sos']) )
@@ -317,16 +321,15 @@ def execute (args):
                         if definition.find('time:iso8601')<0:
                             observedProperties.append(definition)
                             
-                
-                print {
-                    'service': 'SOS', 
-                    'version': '1.0.0',
-                    'request': 'GetObservation',
-                    'offering': offeringName,
-                    'responseFormat': 'text/xml;subtype=\'sensorML/1.0.0\'',
-                    'procedure': pname,
-                    'observedProperty': ",".join(observedProperties)
-                }
+                #print {
+                #    'service': 'SOS', 
+                #    'version': '1.0.0',
+                #    'request': 'GetObservation',
+                #    'offering': offeringName,
+                #    'responseFormat': 'text/xml;subtype=\'sensorML/1.0.0\'',
+                #    'procedure': pname,
+                #    'observedProperty': ",".join(observedProperties)
+                #}
                 
                 res = req.get("%s" % (src), params={
                     'service': 'SOS', 
@@ -467,6 +470,8 @@ def execute (args):
                         pass
                         
                     else:
+                        print "Starting migration.."
+                        
                         # ~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
                         # PROCEDURE OBSERVATIONS MIGRATION
                         # ~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
@@ -581,6 +586,7 @@ def execute (args):
                                     u"ForceInsert": u"true",
                                     u"Observation": template
                                 }))
+                                
                                 iotime = timedelta(seconds=int(time.time() - looptime))
                                 lastPrint = "%s - IO: '%s'" % (lastPrint, iotime)
                                                     

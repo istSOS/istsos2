@@ -81,7 +81,7 @@ class Service(object):
         """
             Execute a getObservation and extract the begin and endPosition.
             
-            > Return an array of two dates.  
+            > Return an array of two dates.
         
         """        
         ret = self.extractSamplingFromGOJson(
@@ -105,8 +105,6 @@ class Service(object):
             ]
         
         else:
-        
-            print "%s: %s - %s" % (name, None, None) 
             return [None,None]
        
     def getSOSProceduresList(self): 
