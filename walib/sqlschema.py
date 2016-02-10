@@ -455,6 +455,7 @@ INSERT INTO uoms VALUES ('W/m2', 'Watt per square metre', 5);
 INSERT INTO uoms VALUES ('°F', 'Fahrenheit degree', 6);
 INSERT INTO uoms VALUES ('m', 'metre', 7);
 INSERT INTO uoms VALUES ('m3/s', 'cube meter per second', 8);
-SELECT pg_catalog.setval('uoms_id_uom_seq', 8, true);
+INSERT INTO uoms VALUES ('mm/h', 'evapotranspiration', 9);
+SELECT pg_catalog.setval('uoms_id_uom_seq', 9, true);
 
 """
