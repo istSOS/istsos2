@@ -636,11 +636,11 @@ Ext.define('istsos.view.ProcedureChart', {
             if (!Ext.isEmpty(begin)) {
                 if (!Ext.isEmpty(oeBegin.minValue)) {
                     if (oeBegin.minValue.getTime()>begin.getTime()) {
-                        oeBegin.setMinValue(begin);
+                        oeBegin.setMinValue(Ext.Date.add(Ext.Date.clone(begin), Ext.Date.DAY, -1));
                         oeEnd.setMinValue(begin);
                     }
                 }else{
-                    oeBegin.setMinValue(begin);
+                    oeBegin.setMinValue(Ext.Date.add(Ext.Date.clone(begin), Ext.Date.DAY, -1));
                     oeEnd.setMinValue(begin);
                 }
             }
