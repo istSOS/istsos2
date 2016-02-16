@@ -323,14 +323,14 @@ class VirtualProcessHQ(VirtualProcess):
         else:
             for t in self.filter.eventTime:
                 if len(t) == 2:
-                    if t[0].find('+')==-1:
+                    if t[0].find('+')==-1 and t[0][:-8].find('-')== -1:
                         t[0] += "+00:00"
-                    if t[1].find('+')==-1:
+                    if t[1].find('+')==-1 and t[0][:-8].find('-')== -1:
                         t[1] += "+00:00"    
                     tp.append(iso.parse_datetime(t[0]))
                     tp.append(iso.parse_datetime(t[1]))
                 if len(t)==1:
-                    if t[0].find('+')==-1:
+                    if t[0].find('+')==-1 and t[0][:-8].find('-')== -1:
                         t[0] += "+00:00"
                     tp.append(iso.parse_datetime(t[0]))
         period = (min(tp),max(tp))
