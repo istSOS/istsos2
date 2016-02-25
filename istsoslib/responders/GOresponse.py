@@ -3,7 +3,7 @@
 #
 # Authors: Massimiliano Cannata, Milan Antonovic
 #
-# Copyright (c) 2015 IST-SUPSI (www.supsi.ch/ist)
+# Copyright (c) 2016 IST-SUPSI (www.supsi.ch/ist)
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # ===============================================================================
+
 import os 
 import sys
 import copy
@@ -119,6 +120,7 @@ class VirtualProcess():
                     try:
                         if vpFolder not in sys.path:
                             sys.path.append(vpFolder)
+                            
                     except Exception as e:
                         raise Exception("error in loading virtual procedure path (%s):\n%s" % (vpFolder,e))
                         
@@ -160,6 +162,7 @@ class VirtualProcess():
                 sql += " OR ".join(["name_prc=%s"] * len(procedures))
                 sql += ") GROUP BY stime_prc, etime_prc"
                 param = tuple(procedures)
+                
             else:
                 sql = """ 
                     SELECT stime_prc, etime_prc
@@ -174,8 +177,10 @@ class VirtualProcess():
                 result = self.pgdb.select(sql, param)
                 if len(result)==0:
                     result = [None, None]
+                    
                 else:
                     result = result[0]
+                    
             except Exception as e:
                 raise Exception("Database error: %s - %s" % (sql, e))    
                 
@@ -195,7 +200,8 @@ class VirtualProcess():
         # If procedure is None, it is supposed that only one procedure has been added
         if procedure is None:
             if len(self.procedures)==0:
-                raise Exception("Virtual Procedure Error: no procedures added")    
+                raise Exception("Virtual Procedure Error: no procedures added")   
+                
             procedure = self.procedures.keys()[0]
             
         elif procedure not in self.procedures.keys():
@@ -225,7 +231,9 @@ class VirtualProcess():
             result = self.pgdb.select(sql, (procedure,))
             if len(result)==0:
                 raise Exception("Virtual Procedure Error: procedure %s not found in the database" % procedure)
+                
             result = result[0]
+            
         except Exception as e:
             raise Exception("Database error: %s - %s" % (sql, e))    
         
@@ -266,8 +274,10 @@ class VirtualProcess():
                         self.observation.data.pop(d)
                         for c in range(fields):
                             result[dt2][c].append(float(tmp[c+1]))
+                            
                     elif dt > tmp[0]:
                         self.observation.data.pop(d)
+                        
                     elif dt2 < tmp[0]:
                         break
                         
@@ -281,23 +291,32 @@ class VirtualProcess():
                     if self.observation.observedProperty[v].split(":")[-1]=="qualityIndex":
                         if len(result[r][v])==0:
                             record.append(self.filter.aggregate_nodata_qi)
+                            
                         else:
                             record.append(int(min(result[r][v])))
+                            
                     else:
                         val = None
                         if len(result[r][v])==0:
                             val = self.filter.aggregate_nodata
+                            
                         elif self.filter.aggregate_function.upper() == 'SUM':
                             val = sum(result[r][v])
+                            
                         elif self.filter.aggregate_function.upper() == 'MAX':
                             val = max(result[r][v])
+                            
                         elif self.filter.aggregate_function.upper() == 'MIN':
                             val = min(result[r][v])
+                            
                         elif self.filter.aggregate_function.upper() == 'AVG':
                             val = round(sum(result[r][v])/len(result[r][v]),4)
+                            
                         elif self.filter.aggregate_function.upper() == 'COUNT':
+                            
                             val = len(result[r][v])
                         record.append(val)
+                        
                 data.append(record)
                     
             self.observation.data = data
@@ -310,8 +329,7 @@ class VirtualProcessHQ(VirtualProcess):
     
     def setDischargeCurves(self):
         "method for setting h-q tranformation tables/curves"       
-        #set requested period
-        #================================================
+        # set requested period
         hqFile = os.path.join(
             self.filter.sosConfig.virtual_processes_folder,
             self.observation.name,
@@ -320,6 +338,7 @@ class VirtualProcessHQ(VirtualProcess):
         tp=[]
         if self.filter.eventTime == None:
             tp = [None,None]
+            
         else:
             for t in self.filter.eventTime:
                 if len(t) == 2:
@@ -329,13 +348,15 @@ class VirtualProcessHQ(VirtualProcess):
                         t[1] += "+00:00"    
                     tp.append(iso.parse_datetime(t[0]))
                     tp.append(iso.parse_datetime(t[1]))
+                    
                 if len(t)==1:
                     if t[0].find('+')==-1 and t[0][:-8].find('-')== -1:
                         t[0] += "+00:00"
+                        
                     tp.append(iso.parse_datetime(t[0]))
+                    
         period = (min(tp),max(tp))
-        #get required parameters
-        #==================================================
+        # get required parameters
         try:        
             hq_fh = open(hqFile,'r')
         except Exception as e:
@@ -353,6 +374,7 @@ class VirtualProcessHQ(VirtualProcess):
             B = head.index('B')         #use this B
             C = head.index('C')         #use this C
             K = head.index('K')         #use this K
+            
         except Exception as e:
             raise Exception("setDischargeCurves: FILE %s ,%s error in header.\n %s" %(hqFile,head,e))
         
@@ -369,6 +391,7 @@ class VirtualProcessHQ(VirtualProcess):
                     hqs['B'].append(float(line[B]))
                     hqs['C'].append(float(line[C]))
                     hqs['K'].append(float(line[K]))
+                    
         else:
             for l in [-1,-2]:
                 try:
@@ -381,9 +404,10 @@ class VirtualProcessHQ(VirtualProcess):
                     hqs['B'].append(float(line[B]))
                     hqs['C'].append(float(line[C]))
                     hqs['K'].append(float(line[K]))
+                    
                 except:
                     pass
-        #raise sosException.SOSException(3,"%s" %(hqs))
+                
         self.hqCurves = hqs
         
     def execute(self):
@@ -396,21 +420,25 @@ class VirtualProcessHQ(VirtualProcess):
             for rec in data:
                 if rec[1] is None or (float(rec[1])) < -999.0:
                     data_out.append([ rec[0], -999.9, 110 ])
+                    
                 else:
                     for o in range(len(self.hqCurves['from'])):
                         if rec[1] == None:
                             data_out.append([ rec[0], -999.9, 120 ])
                             break
+                        
                         elif (self.hqCurves['from'][o] < rec[0] <= self.hqCurves['to'][o]) and (self.hqCurves['low'][o] <= float(rec[1]) < self.hqCurves['up'][o]):
                             if (float(rec[1])-self.hqCurves['B'][o]) >=0:
                                 data_out.append([ rec[0], "%.3f" %(self.hqCurves['K'][o] + self.hqCurves['A'][o]*((float(rec[1])-self.hqCurves['B'][o])**self.hqCurves['C'][o])), rec[2] ])
+                                
                             else:
-                                #data not evaluable
                                 data_out.append([ rec[0], -999.9, 120 ])
+                                
                             break
+                        
                         if o == ( len(self.hqCurves['from']) -1):
-                            #data non in curves definition
-                            data_out.append([ rec[0], -999.9, 120 ])       
+                            data_out.append([ rec[0], -999.9, 120 ])  
+                            
         else:
             data_out=[]
             for rec in data:
@@ -418,12 +446,16 @@ class VirtualProcessHQ(VirtualProcess):
                     if rec[1] == None:
                         data_out.append([ rec[0], -999.9 ])
                         break
+                    
                     elif (self.hqCurves['from'][o] < rec[0] <= self.hqCurves['to'][o]) and (self.hqCurves['low'][o] <= float(rec[1]) < self.hqCurves['up'][o]):
                         if (float(rec[1])-self.hqCurves['B'][o]) >=0:
                             data_out.append([ rec[0], "%.3f" %(self.hqCurves['K'][o] + self.hqCurves['A'][o]*((float(rec[1])-self.hqCurves['B'][o])**self.hqCurves['C'][o])) ])
+                            
                         else:
                             data_out.append([ rec[0],-999.9 ])
+                            
                         break
+                    
                     if o == (len(self.hqCurves['from'])-1):
                         data_out.append([ rec[0], -999.9 ])
                         
@@ -443,6 +475,7 @@ def BuildobservedPropertyList(pgdb,offering,sosConfig):
     rows=pgdb.select(sql)
     for row in rows:
         list.append(row["nopr"])
+        
     return list
 
 def BuildfeatureOfInterestList(pgdb,offering,sosConfig):
@@ -456,8 +489,10 @@ def BuildfeatureOfInterestList(pgdb,offering,sosConfig):
         rows=pgdb.select(sql)
     except:
         raise Exception("sql: %s" %(sql))
+        
     for row in rows:
         list.append(row["nfoi"])
+        
     return list
     
 def BuildProcedureList(pgdb,offering,sosConfig):
@@ -467,7 +502,8 @@ def BuildProcedureList(pgdb,offering,sosConfig):
     sql += " ORDER BY name_prc"
     rows=pgdb.select(sql)
     for row in rows:
-        list.append(row["name_prc"])    
+        list.append(row["name_prc"]) 
+        
     return list
 
 def BuildOfferingList(pgdb,sosConfig):
@@ -476,6 +512,7 @@ def BuildOfferingList(pgdb,sosConfig):
     rows=pgdb.select(sql)
     for row in rows:
         list.append(row["name_off"])
+        
     return list
 
 
@@ -505,8 +542,10 @@ def applyFunction(ob, filter):
                     ob.data.pop(d)
                     for c in range(fields):
                         result[dt2][c].append(float(tmp[c+1]))
+                        
                 elif dt > tmp[0]:
                     ob.data.pop(d)
+                    
                 elif dt2 < tmp[0]:
                     break
                     
@@ -520,23 +559,32 @@ def applyFunction(ob, filter):
                 if ob.observedProperty[v].split(":")[-1]=="qualityIndex":
                     if len(result[r][v])==0:
                         record.append(filter.aggregate_nodata_qi)
+                        
                     else:
                         record.append(int(min(result[r][v])))
+                        
                 else:
                     val = None
                     if len(result[r][v])==0:
                         val = filter.aggregate_nodata
+                        
                     elif filter.aggregate_function.upper() == 'SUM':
                         val = sum(result[r][v])
+                        
                     elif filter.aggregate_function.upper() == 'MAX':
                         val = max(result[r][v])
+                        
                     elif filter.aggregate_function.upper() == 'MIN':
                         val = min(result[r][v])
+                        
                     elif filter.aggregate_function.upper() == 'AVG':
                         val = round(sum(result[r][v])/len(result[r][v]),4)
+                        
                     elif filter.aggregate_function.upper() == 'COUNT':
                         val = len(result[r][v])
+                        
                     record.append(val)
+                    
             data.append(record)
                 
         ob.data = data
@@ -546,14 +594,16 @@ def applyFunction(ob, filter):
     
 
 class offInfo:
-    def __init__(self,off_name,pgdb,sosConfig):
-        sql = "SELECT name_off, desc_off FROM %s.offerings WHERE name_off='%s'" %(sosConfig.schema,off_name)
+    def __init__(self, off_name, pgdb, sosConfig):
+        sql = "SELECT name_off, desc_off FROM %s.offerings WHERE name_off='%s'"  % (sosConfig.schema, off_name)
         try:
             off = pgdb.select(sql)[0]
             self.name=off["name_off"]
             self.desc=off["desc_off"]
+            
         except:
-            raise sosException.SOSException("InvalidParameterValue","offering","Parameter \"offering\" sent with invalid value: %s"%(off_name))
+            raise sosException.SOSException("InvalidParameterValue", "offering",
+                "Parameter \"offering\" sent with invalid value: %s" % (off_name))
 
 
 # @todo instantation with Builder pattern will be less confusing, observation class must be just a data container
@@ -604,38 +654,32 @@ class Observation:
         self.qualitydef = None
         self.data=[]
         
-    def baseInfo(self, pgdb, o, sosConfig):
+    def baseInfo(self, pgdb, row, sosConfig):
         """set base information of registered procedure"""
         
-        k = o.keys()
+        k = row.keys()
         if not ("id_prc" in k and "name_prc" in k and  "name_oty" in k and "stime_prc" in k and "etime_prc" in k and "time_res_prc" in k  ):
-            raise Exception("Error, baseInfo argument: %s"%(o))
+            raise Exception("Error, baseInfo argument: %s"%(row))
         
-        #SET PROCEDURE NAME AND ID
-        #===========================
-        self.id_prc=o["id_prc"]
-        self.name = o["name_prc"]
-        #self.procedure = sosConfig.urn["procedure"] + ":" + o["name_prc"]
-        self.procedure = sosConfig.urn["procedure"] + o["name_prc"]
+        # SET PROCEDURE NAME AND ID
+        self.id_prc=row["id_prc"]
+        self.name = row["name_prc"]
+        self.procedure = sosConfig.urn["procedure"] + row["name_prc"]
         
-        #SET PROCEDURE TYPE
-        #========================= --> ADD OTHER TYPES (IN CONFIG??)
-        if o["name_oty"].lower() in ["insitu-fixed-point","insitu-mobile-point","virtual"]:
-            self.procedureType=o["name_oty"]
-            #TO BE IMPLEMENTED FOR MORE OPTIONS
+        # SET PROCEDURE TYPE
+        if row["name_oty"].lower() in ["insitu-fixed-point","insitu-mobile-point","virtual"]:
+            self.procedureType=row["name_oty"]
+            
         else:
             raise Exception("error in procedure type setting")
         
-        #SET TIME: RESOLUTION VALUE AND UNIT
-        #===================================
-        self.timeResVal = o["time_res_prc"]
-        # Removed with tru table 
-        #self.timeResUnit = o["name_tru"]
+        # SET TIME: RESOLUTION VALUE AND UNIT
+        self.timeResVal = row["time_res_prc"]
         
-        #SET SAMPLING TIME
-        #===================================
-        if o["stime_prc"]!=None and o["etime_prc"]!=None:
-            self.samplingTime=[o["stime_prc"],o["etime_prc"]]
+        # SET SAMPLING TIME
+        if row["stime_prc"]!=None and row["etime_prc"]!=None:
+            self.samplingTime=[row["stime_prc"],row["etime_prc"]]
+            
         else:
             self.samplingTime = None
         
@@ -644,17 +688,16 @@ class Observation:
         self.qualitydef = None
         
         
-    def setData(self,pgdb,o,filter):
+    def setData(self, pgdb, row, filter):
         """get data according to request filters"""
-        # @todo mettere da qualche altra parte
-            
-        #SET FOI OF PROCEDURE
-        #=========================================
+        
+        # SET FOI OF PROCEDURE
         sqlFoi  = "SELECT name_fty, name_foi, ST_AsGml(ST_Transform(geom_foi,%s)) as gml, st_x(geom_foi) as x, st_y(geom_foi) as y " %(filter.srsName)
         sqlFoi += " FROM %s.procedures, %s.foi, %s.feature_type" %(filter.sosConfig.schema,filter.sosConfig.schema,filter.sosConfig.schema)
-        sqlFoi += " WHERE id_foi_fk=id_foi AND id_fty_fk=id_fty AND id_prc=%s" %(o["id_prc"])
+        sqlFoi += " WHERE id_foi_fk=id_foi AND id_fty_fk=id_fty AND id_prc=%s" %(row["id_prc"])
         try:
             resFoi = pgdb.select(sqlFoi)
+            
         except:
             raise Exception("SQL: %s"%(sqlFoi))
         
@@ -663,6 +706,7 @@ class Observation:
         srs = filter.srsName or filter.sosConfig.istsosepsg
         if resFoi[0]["gml"].find("srsName")<0:
             self.foiGml = resFoi[0]["gml"][:resFoi[0]["gml"].find(">")] + " srsName=\"EPSG:%s\"" % srs + resFoi[0]["gml"][resFoi[0]["gml"].find(">"):]
+            
         else:
             self.foiGml = resFoi[0]["gml"]
         
@@ -670,44 +714,45 @@ class Observation:
         self.x = resFoi[0]["x"]
         self.y = resFoi[0]["y"]
         
-        #SET INFORMATION ABOUT OBSERVED_PROPERTIES
-        #=========================================       
+        # SET INFORMATION ABOUT OBSERVED_PROPERTIES     
         sqlObsPro = "SELECT id_pro, id_opr, name_opr, def_opr, name_uom FROM %s.observed_properties, %s.proc_obs, %s.uoms" %(filter.sosConfig.schema,filter.sosConfig.schema,filter.sosConfig.schema)
-        sqlObsPro += " WHERE id_opr_fk=id_opr AND id_uom_fk=id_uom AND id_prc_fk=%s" %(o["id_prc"])
+        sqlObsPro += " WHERE id_opr_fk=id_opr AND id_uom_fk=id_uom AND id_prc_fk=%s" %(row["id_prc"])
         sqlObsPro += " AND ("
-        #sqlObsPro += " OR ".join(["def_opr='" + str(i) + "'" for i in filter.observedProperty])
         sqlObsPro += " OR ".join(["def_opr SIMILAR TO '%(:|)" + str(i) + "(:|)%'" for i in filter.observedProperty])
         sqlObsPro += " ) ORDER BY def_opr ASC"
         try:
             obspr_res = pgdb.select(sqlObsPro)
+            
         except:
             raise Exception("SQL: %s"%(sqlObsPro))
             
         self.observedProperty = []
+        self.observedPropertyId = []
         self.observedPropertyName = []
         self.opr_urn = []
         self.uom = []
         self.qualityIndex = filter.qualityIndex
         
-        for row in obspr_res:
-            self.observedProperty += [str(row["def_opr"])]
-            self.observedPropertyName +=[str(row["name_opr"])]
-            self.opr_urn += [str(row["def_opr"])]
+        for orRow in obspr_res:
+            self.observedProperty += [str(orRow["def_opr"])]
+            self.observedPropertyId += [str(orRow["id_opr"])]
+            self.observedPropertyName +=[str(orRow["name_opr"])]
+            self.opr_urn += [str(orRow["def_opr"])]
             try:
-                #self.uom += [str(row["name_uom"]).encode('utf-8')]
-                self.uom += [row["name_uom"]]
+                self.uom += [orRow["name_uom"]]
+                
             except:
                 self.uom += ["n/a"]
+                
             if self.qualityIndex==True:
-                self.observedProperty += [str(row["def_opr"])+":qualityIndex"]
-                self.observedPropertyName += [str(row["name_opr"])+":qualityIndex"]
-                self.opr_urn += [str(row["def_opr"] +":qualityIndex")]
+                self.observedProperty += [str(orRow["def_opr"])+":qualityIndex"]
+                self.observedPropertyId += [str(-orRow["id_opr"])]
+                self.observedPropertyName += [str(orRow["name_opr"])+":qualityIndex"]
+                self.opr_urn += [str(orRow["def_opr"] +":qualityIndex")]
                 self.uom += ["-"]
         
-        #SET DATA
-        #=========================================getSampligTime
-        #CASE "insitu-fixed-point" or "insitu-mobile-point"
-        #-----------------------------------------
+        # SET DATA
+        #  CASE "insitu-fixed-point" or "insitu-mobile-point"
         if self.procedureType in ["insitu-fixed-point","insitu-mobile-point"]:
             sqlSel = "SELECT et.time_eti as t," 
             joinar=[]
@@ -719,16 +764,15 @@ class Observation:
             valeFieldName = []
             for idx, obspr_row in enumerate(obspr_res):
                 if self.qualityIndex==True:
-                    #cols.append("C%s.val_msr as c%s_v, C%s.id_qi_fk as c%s_qi" %(idx,idx,idx,idx))
                     cols.append("C%s.val_msr as c%s_v, COALESCE(C%s.id_qi_fk,%s) as c%s_qi" %(idx,idx,idx,filter.aggregate_nodata_qi,idx))
                     valeFieldName.append("c%s_v" %(idx))
                     valeFieldName.append("c%s_qi" %(idx))
+                    
                 else:
                     cols.append("C%s.val_msr as c%s_v" %(idx,idx))
                     valeFieldName.append("c%s_v" %(idx))
 
                 # If Aggregatation funtion is set
-                #---------------------------------
                 if filter.aggregate_interval != None:
                     # This can be usefull with string values
                     '''aggrCols.append("CASE WHEN %s(dt.c%s_v) is NULL THEN '%s' ELSE '' || %s(dt.c%s_v) END as c%s_v\n" % ( 
@@ -737,65 +781,61 @@ class Observation:
                     # This accept only numeric results
                     aggrCols.append("COALESCE(%s(dt.c%s_v),'%s') as c%s_v\n" %(filter.aggregate_function,idx,filter.aggregate_nodata,idx))
                     if self.qualityIndex==True:
-                        #raise sosException.SOSException(3,"QI: %s"%(self.qualityIndex))
                         aggrCols.append("COALESCE(MIN(dt.c%s_qi),%s) as c%s_qi\n" %( idx, filter.aggregate_nodata_qi, idx ))
+                        
                     aggrNotNull.append(" c%s_v > -900 " %(idx))
                 
                 # Set SQL JOINS
-                #---------------
                 join_txt  = " left join (\n"
                 join_txt += " SELECT distinct A%s.id_msr, A%s.val_msr, A%s.id_eti_fk\n" %(idx,idx,idx)
 
                 if self.qualityIndex==True:
                     join_txt += ",A%s.id_qi_fk\n" %(idx)
-                join_txt += "   FROM %s.measures A%s, %s.event_time B%s\n" %(filter.sosConfig.schema,idx,filter.sosConfig.schema,idx)
-                join_txt += " WHERE A%s.id_eti_fk = B%s.id_eti\n" %(idx,idx)
-                join_txt += " AND A%s.id_pro_fk=%s\n" %(idx,obspr_row["id_pro"])
-                join_txt += " AND B%s.id_prc_fk=%s\n" %(idx,o["id_prc"])
+                    
+                join_txt += "   FROM %s.measures A%s, %s.event_time B%s\n" % (filter.sosConfig.schema, idx, filter.sosConfig.schema, idx)
+                join_txt += " WHERE A%s.id_eti_fk = B%s.id_eti\n" % (idx, idx)
+                join_txt += " AND A%s.id_pro_fk=%s\n" % (idx, obspr_row["id_pro"])
+                join_txt += " AND B%s.id_prc_fk=%s\n" % (idx, row["id_prc"])
                 
-                # if qualityIndex has filter
-                #------------------------------
-                #if filter.qualityIndex and filter.qualityIndex.__class__.__name__=='str':
-                #    join_txt += " AND %s\n" %(filter.qualityIndex)
-
                 # ATTENTION: HERE -999 VALUES ARE EXCLUDED WHEN ASKING AN AGGREAGATE FUNCTION
                 if filter.aggregate_interval != None: # >> Should be removed because measures data is not inserted if there is a nodata value
                     join_txt += " AND A%s.val_msr > -900 " % idx
                 
                 # If eventTime is set add to JOIN part
-                #--------------------------------------
                 if filter.eventTime:
                     join_txt += " AND ("
                     etf=[]
                     for ft in filter.eventTime:
                         if len(ft)==2:
                             etf.append("B%s.time_eti > timestamptz '%s' AND B%s.time_eti <= timestamptz '%s' \n" %(idx,ft[0],idx,ft[1]))
+                            
                         elif len(ft)==1:
                             etf.append("B%s.time_eti = timestamptz '%s' \n" %(idx,ft[0]))
+                            
                         else:
                             raise Exception("error in time filter")
+                            
                     join_txt += " OR ".join(etf)
                     join_txt +=  ")\n"
                 else:
-                    join_txt += " AND B%s.time_eti = (SELECT max(time_eti) FROM %s.event_time WHERE id_prc_fk=%s) \n" %(idx,filter.sosConfig.schema,o["id_prc"])
+                    join_txt += " AND B%s.time_eti = (SELECT max(time_eti) FROM %s.event_time WHERE id_prc_fk=%s) \n" %(idx,filter.sosConfig.schema,row["id_prc"])
                 
                 # close SQL JOINS
-                #-----------------
                 join_txt += " ) as C%s\n" %(idx)
                 join_txt += " on C%s.id_eti_fk = et.id_eti" %(idx)
                 joinar.append(join_txt)
             
             
-            #If MOBILE PROCEDURE
-            #--------------------
+            # If MOBILE PROCEDURE
             if self.procedureType=="insitu-mobile-point":
                 join_txt  = " left join (\n"
                 join_txt += " SELECT distinct Ax.id_pos, X(ST_Transform(Ax.geom_pos,%s)) as x,Y(ST_Transform(Ax.geom_pos,%s)) as y,Z(ST_Transform(Ax.geom_pos,%s)) as z, Ax.id_eti_fk\n" %(filter.srsName,filter.srsName,filter.srsName)
                 if self.qualityIndex==True:
                     join_txt += ", Ax.id_qi_fk as posqi\n"
+                    
                 join_txt += "   FROM %s.positions Ax, %s.event_time Bx\n" %(filter.sosConfig.schema,filter.sosConfig.schema)
                 join_txt += " WHERE Ax.id_eti_fk = Bx.id_eti"
-                join_txt += " AND Bx.id_prc_fk=%s" %(o["id_prc"])
+                join_txt += " AND Bx.id_prc_fk=%s" %(row["id_prc"])
                 
                 if filter.eventTime:
                     join_txt += " AND ("
@@ -803,72 +843,65 @@ class Observation:
                     for ft in filter.eventTime:
                         if len(ft)==2:
                             etf.append("Bx.time_eti > timestamptz '%s' AND Bx.time_eti <= timestamptz '%s' " %(ft[0],ft[1]))
+                            
                         elif len(ft)==1:
-                            etf.append("Bx.time_eti = timestamptz '%s' " %(ft[0]))                       
+                            etf.append("Bx.time_eti = timestamptz '%s' " %(ft[0]))  
+                            
                         else:
                             raise Exception("error in time filter")
+                            
                     join_txt += " OR ".join(etf)
                     join_txt +=  ")\n"
+                    
                 else:
-                    join_txt += " AND Bx.time_eti = (SELECT max(time_eti) FROM %s.event_time WHERE id_prc_fk=%s) " %(filter.sosConfig.schema,o["id_prc"])
+                    join_txt += " AND Bx.time_eti = (SELECT max(time_eti) FROM %s.event_time WHERE id_prc_fk=%s) " %(filter.sosConfig.schema,row["id_prc"])
                 
                 join_txt += " ) as Cx on Cx.id_eti_fk = et.id_eti\n"
                 sqlSel += " Cx.x as x, Cx.y as y, Cx.z as z, "
                 if self.qualityIndex==True:
-                    #sqlSel += "COALESCE(Cx.posqi,%s) as posqi, " % filter.aggregate_nodata_qi
                     sqlSel += "Cx.posqi, "
                 joinar.append(join_txt)
             
-            
             # Set FROM CLAUSE
-            #-----------------    
             sqlSel += ", ".join(cols)
             sqlSel += " FROM %s.event_time et\n" %(filter.sosConfig.schema)
-
-            #====================            
+      
             # Set WHERE CLAUSES
-            #====================
             sqlData = " ".join(joinar)
-            sqlData += " WHERE et.id_prc_fk=%s\n" %(o["id_prc"]) 
+            sqlData += " WHERE et.id_prc_fk=%s\n" %(row["id_prc"]) 
 
-            # Set FILTER ON RESULT (OGC:COMPARISON) -
-            #----------------------------------------
+            # Set FILTER ON RESULT (OGC:COMPARISON)
             if filter.result:
                 for ind, ov in enumerate(self.observedProperty):
                     if ov.find(filter.result[0])>0:
                         sqlData += " AND C%s.val_msr %s" %(ind,filter.result[1])
-                #sqlData += " AND C%s.val_msr %s" %(self.observedProperty.index(filter.result[0]),filter.result[1])
                 
-            # Set FILTER ON EVENT-TIME -
-            #---------------------------
+            # Set FILTER ON EVENT-TIME
             if filter.eventTime:
                 sqlData += " AND ("
                 etf=[]
                 for ft in filter.eventTime:
                     if len(ft)==2:
                         etf.append("et.time_eti > timestamptz '%s' AND et.time_eti <= timestamptz '%s' " %(ft[0],ft[1]))
+                        
                     elif len(ft)==1:
-                        etf.append("et.time_eti = timestamptz '%s' " %(ft[0]))                        
+                        etf.append("et.time_eti = timestamptz '%s' " %(ft[0]))  
+                        
                     else:
                         raise Exception("error in time filter")
+                        
                 sqlData += " OR ".join(etf)
                 sqlData +=  ")"
+                
             else:
-                sqlData += " AND et.time_eti = (SELECT max(time_eti) FROM %s.event_time WHERE id_prc_fk=%s) " %(filter.sosConfig.schema,o["id_prc"])
+                sqlData += " AND et.time_eti = (SELECT max(time_eti) FROM %s.event_time WHERE id_prc_fk=%s) " %(filter.sosConfig.schema,row["id_prc"])
 
             sqlData += " ORDER by et.time_eti"
 
             sql = sqlSel+sqlData
             
-            #
             if filter.aggregate_interval != None:
                 self.aggregate_function = filter.aggregate_function.upper()
-                '''
-                for i in range(0,len(self.observedProperty)):
-                    self.observedProperty[i] = "%s:%s" % (self.observedProperty[i], filter.aggregate_function)
-
-                for ob in self.observedProperty:
-                    ob = "%s:%s" % (ob, filter.aggregate_function)'''
                 
                 # Interval preparation
                 # Converting ISO 8601 duration
@@ -879,17 +912,21 @@ class Observation:
                 
                     if isoInt.days>0:
                         sqlInt += "%s days " % isoInt.days
+                        
                     if isoInt.seconds>0:
                         sqlInt += "%s seconds " % isoInt.seconds
                         
                 elif isinstance(isoInt, iso.Duration): 
                     if isoInt.years>0:
                         sqlInt += "%s years " % isoInt.years
+                        
                     if isoInt.months>0:
                         isoInt.months = int(isoInt.months)
                         sqlInt += "%s months " % isoInt.months
+                        
                     if isoInt.days>0:
                         sqlInt += "%s days " % isoInt.days
+                        
                     if isoInt.seconds>0:
                         sqlInt += "%s seconds " % isoInt.seconds
 
@@ -934,65 +971,57 @@ class Observation:
             else:
                 self.aggregate_function = None
                 
-            #print sql.replace('\n','')
-            
             try:
                 data_res = pgdb.select(sql)
+                
             except:
                 raise Exception("SQL: %s"%(sql))
-            
-
-            #------------------------------------            
-            #--------- APPEND DATA IN ARRAY -----
-            #------------------------------------            
-            #append data
+                   
+            # APPEND DATA IN ARRAY
             if filter.qualityFilter == False:
                 for line in data_res:
                     if self.procedureType=="insitu-fixed-point":
                         data_array = [line["t"]]
+                        
                     elif self.procedureType=="insitu-mobile-point":
                         if self.qualityIndex==True:
                             data_array = [line["t"],line["x"],line["y"],line["z"],line["posqi"]]
                         else:
                             data_array = [line["t"],line["x"],line["y"],line["z"]]
+                            
                     data_array.extend([line[field] for field in valeFieldName])
                     self.data.append(data_array)
+                    
             else:
-                #import sys
-                #print >> sys.stderr, "---------------------------------"
                 for line in data_res:
                     if self.procedureType=="insitu-fixed-point":
                         qis = line[2::2]
                         data_array = [line["t"]]
+                        
                     elif self.procedureType=="insitu-mobile-point":
                         if self.qualityIndex==True:
                             qis = line[4::2]
                             data_array = [line["t"],line["x"],line["y"],line["z"],line["posqi"]]
-                    #print >> sys.stderr, qis
+                            
                     if filter.qualityFilter[0]=='<' and not max(qis)<filter.qualityFilter[1]:
-                        #print >> sys.stderr, " not < %s" % max(qis)
                         continue
+                    
                     elif filter.qualityFilter[0]=='>' and not min(qis)>filter.qualityFilter[1]:
-                        #print >> sys.stderr, " not > %s" % min(qis)
                         continue
+                    
                     elif filter.qualityFilter[0]=='>=' and not min(qis)>=filter.qualityFilter[1]:
-                        #print >> sys.stderr, " not >= %s" % min(qis)
                         continue
+                    
                     elif filter.qualityFilter[0]=='<=' and not max(qis)<=filter.qualityFilter[1]:
-                        #print >> sys.stderr, " not <= %s" % max(qis)
                         continue
+                    
                     elif filter.qualityFilter[0]=='=' and not filter.qualityFilter[1] in qis:
-                        #print >> sys.stderr, " not = %s" % qis
                         continue
-                    #else:
-                    #    print >> sys.stderr, " ELSE"
 
                     data_array.extend([line[field] for field in valeFieldName])
                     self.data.append(data_array)
-            
-        #-----------------------------------------                
-        #CASE "virtual"
-        #-----------------------------------------       
+                      
+        # CASE "virtual"      
         elif self.procedureType in ["virtual"]:
             
             
@@ -1021,7 +1050,7 @@ class Observation:
             vp.calculateObservations(self)
                 
                 
-class observations:
+class GetObservationResponse:
     """The class that contain all the observations related to all the procedures
 
     Attributes:
@@ -1033,45 +1062,46 @@ class observations:
         obs (list): list of *Observation* objects
     """
 
-    def __init__(self,filter,pgdb):
-        self.offInfo = offInfo(filter.offering,pgdb,filter.sosConfig)
+    def __init__(self, filter, pgdb):
+        self.offInfo = offInfo(filter.offering, pgdb, filter.sosConfig)
         self.refsys = filter.sosConfig.urn["refsystem"] + filter.srsName
         self.filter = filter
         
-        #CHECK FILTER VALIDITY
-        #=========================================
+        # CHECK FILTER VALIDITY
         """        
         off_list = BuildOfferingList(pgdb,filter.sosConfig)
         if not filter.offering in off_list:
             raise sosException.SOSException("InvalidParameterValue","offering","Parameter \"offering\" sent with invalid value: %s -  available options for offering are %s" %(filter.offering,off_list))
         """    
         if filter.procedure:
-            pl = BuildProcedureList(pgdb,filter.offering,filter.sosConfig)
+            pl = BuildProcedureList(pgdb, filter.offering, filter.sosConfig)
             for p in filter.procedure:
                 if not p in pl:
                     raise sosException.SOSException("InvalidParameterValue","procedure","Parameter \"procedure\" sent with invalid value: %s -  available options for offering \"%s\": %s"%(p,filter.offering,pl))
         
         if filter.featureOfInterest:
-            fl = BuildfeatureOfInterestList(pgdb,filter.offering,filter.sosConfig)
+            fl = BuildfeatureOfInterestList(pgdb,filter.offering, filter.sosConfig)
             if not filter.featureOfInterest in fl:
                 raise sosException.SOSException("InvalidParameterValue","featureOfInterest","Parameter \"featureOfInterest\" sent with invalid value: %s - available options: %s"%(filter.featureOfInterest,fl))
         
         if filter.observedProperty:
-            opl = BuildobservedPropertyList(pgdb, filter.offering,filter.sosConfig)
+            opl = BuildobservedPropertyList(pgdb, filter.offering, filter.sosConfig)
             opr_sel = "SELECT def_opr FROM %s.observed_properties WHERE " %(filter.sosConfig.schema,)
             opr_sel_w = []
             for op in filter.observedProperty:
                 opr_sel_w += ["def_opr SIMILAR TO '%%(:|)%s(:|)%%'" %(op)]
+                
             opr_sel = opr_sel + " OR ".join(opr_sel_w)
             try:
                 opr_filtered = pgdb.select(opr_sel)
+                
             except:
                 raise Exception("SQL: %s"%(opr_sel))
+                
             if not len(opr_filtered)>0:
                 raise sosException.SOSException("InvalidParameterValue","observedProperty","Parameter \"observedProperty\" sent with invalid value: %s - available options: %s"%(filter.observedProperty,opl))
         
-        #SET TIME PERIOD
-        #=========================================
+        # SET TIME PERIOD
         tp=[]
         if filter.eventTime == None:
             tp = [None,None]
@@ -1080,15 +1110,15 @@ class observations:
                 if len(t) == 2:
                     tp.append(iso.parse_datetime(t[0]))
                     tp.append(iso.parse_datetime(t[1]))
+                    
                 if len(t)==1:
                     tp.append(iso.parse_datetime(t[0]))
-                #else: rise error ???
+                    
         self.period = [min(tp),max(tp)]
         
         self.obs=[]
         
         # SET REQUEST TIMEZONE
-        #===================================
         if filter.eventTime:
             if iso.parse_datetime(filter.eventTime[0][0]).tzinfo:
                 self.reqTZ = iso.parse_datetime(filter.eventTime[0][0]).tzinfo
@@ -1102,15 +1132,12 @@ class observations:
             
         
         
-        #BUILD PROCEDURES LIST
-        #=========================================
-        #---select part of query
+        # BUILD PROCEDURES LIST
+        #  select part of query
         sqlSel = "SELECT DISTINCT"
         sqlSel += " id_prc, name_prc, name_oty, stime_prc, etime_prc, time_res_prc"
-        #---from part of query
-        #################################
-        # Rimosso codice di time_res_unit
-        #################################
+        
+        #  from part of query
         sqlFrom = "FROM %s.procedures, %s.proc_obs p, %s.observed_properties, %s.uoms," %(filter.sosConfig.schema,filter.sosConfig.schema,filter.sosConfig.schema,filter.sosConfig.schema)
         sqlFrom += " %s.off_proc o, %s.offerings, %s.obs_type" %(filter.sosConfig.schema,filter.sosConfig.schema,filter.sosConfig.schema)
         if filter.featureOfInterest or filter.featureOfInterestSpatial:
@@ -1119,14 +1146,13 @@ class observations:
         sqlWhere = "WHERE id_prc=p.id_prc_fk AND id_opr_fk=id_opr AND o.id_prc_fk=id_prc AND id_off_fk=id_off AND id_uom=id_uom_fk AND id_oty=id_oty_fk"
         sqlWhere += " AND name_off='%s'" %(filter.offering) 
         
-        #---where condition based on featureOfInterest
+        #  where condition based on featureOfInterest
         if filter.featureOfInterest:
-            #sqlWhere += " AND id_foi=id_foi_fk AND id_fty=id_fty_fk AND (name_foi='%s')" %(filter.featureOfInterest)
             sqlWhere += " AND id_foi=id_foi_fk AND id_fty=id_fty_fk AND (name_foi IN (%s))" %(",".join( [ "'"+f+"'" for f in filter.featureOfInterest.split(",")]))
         if filter.featureOfInterestSpatial:
             sqlWhere += " AND id_foi_fk=id_foi AND %s" %(filter.featureOfInterestSpatial)
         
-        #---where condition based on procedures
+        #  where condition based on procedures
         if filter.procedure:
             sqlWhere += " AND ("
             procWhere = []
@@ -1135,7 +1161,7 @@ class observations:
             sqlWhere += " OR ".join(procWhere)
             sqlWhere += ")"
         
-        #---where condition based on observed properties
+        #  where condition based on observed properties
         sqlWhere += " AND ("
         obsprWhere = []
         for obs in opr_filtered:
@@ -1148,25 +1174,193 @@ class observations:
         except:
             raise Exception("SQL: %s"%(sqlSel + " " + sqlFrom + " " + sqlWhere))
         
-        #FOR EACH PROCEDURE
-        #=========================================
+        # FOR EACH PROCEDURE
         for o in res:
-            #id_prc, name_prc, name_oty, stime_prc, etime_prc, time_res_prc, name_tru
+            # id_prc, name_prc, name_oty, stime_prc, etime_prc, time_res_prc, name_tru
             
-            #CRETE OBSERVATION OBJECT
-            #=================================================
+            # CRETE OBSERVATION OBJECT
             ob = Observation()
             
-            #BUILD BASE INFOS FOR EACH PROCEDURE (Pi)
-            #=================================================
-            ob.baseInfo(pgdb,o,filter.sosConfig)
+            # BUILD BASE INFOS FOR EACH PROCEDURE (Pi)
+            ob.baseInfo(pgdb, o, filter.sosConfig)
             
-            #GET DATA FROM PROCEDURE ACCORDING TO THE FILTERS
-            #=================================================
-            ob.setData(pgdb,o,filter)
+            # GET DATA FROM PROCEDURE ACCORDING TO THE FILTERS
+            ob.setData(pgdb, o, filter)
             
-            #ADD OBSERVATIONS
-            #=================================================
+            # ADD OBSERVATIONS
+            self.obs.append(ob)
+
+
+class GetObservationResponse_2_0_0:
+    """
+    The class that contain all the observations related to all the procedures
+    
+    
+    Reference: http://www.opengis.net/doc/IS/SOS/2.0
+    
+    Requirement 35: http://www.opengis.net/spec/SOS/2.0/req/core/go-empty-response
+        An instance of GetObservationResponse type shall be empty if none of the
+        observations associated with the SOS fulfill the GetObservation parameters specified by the client.
+
+    Attributes:
+        offInfo (obj): the general information about offering name, connection object, and configuration options
+        refsys (str): the uri that refers to the EPSG refrence system
+        filter (obj): the filter object that contains all the parameters setting of the GetObservation request
+        period (list): a list of two values in *datetime*: the minimum and maximum instants of the requested time filters
+        reqTZ (obj): the timezone in *pytz.tzinfo*
+        obs (list): list of *Observation* objects
+    """
+
+    def __init__(self, filter, pgdb):
+        
+        #self.offInfo = offInfo(filter.offering, pgdb, filter.sosConfig)
+        self.refsys = filter.sosConfig.urn["refsystem"] + filter.srsName
+        self.filter = filter
+        
+        self.obs = []
+        
+        # check if requested offering/procedure exist
+        if isinstance(filter.procedure, list) and len(filter.procedure)>0:
+            clauses = []
+            params = []
+            
+            if len(filter.procedure)==1:
+                sql = """
+                    SELECT %s as name_prc, exists(
+                        select id_prc from """ + filter.sosConfig.schema + """.procedures where name_prc=%s
+                    ) as exist_prc
+                """
+                params = [
+                    filter.procedure[0],
+                    filter.procedure[0]
+                ]
+            else:
+                for p in filter.procedure:
+                    params.extend([p,p])
+                    clauses.append("""
+                        (
+                          SELECT %s as name_prc, exists(select id_prc from """ + 
+                              filter.sosConfig.schema + """.procedures where name_prc=%s) as exist_prc
+                        ) 
+                    """)
+                    
+                sql = " UNION ".join(clauses)
+            try:
+                result=pgdb.select(sql, tuple(params))
+                
+            except Exception as ex:
+                raise Exception("SQL: %s\n\n%s" %(pgdb.mogrify(sql, tuple(params)), ex))
+                
+            filter.procedure = []
+            for row in result:
+                if row["exist_prc"]:
+                    filter.procedure.append(row["name_prc"])
+                    
+            # REQ35 - http://www.opengis.net/spec/SOS/2.0/req/core/go-empty-response
+            #    if procedures requested not exists the GetObservationResponse type shall be empty
+            if len(filter.procedure)==0:
+                return        
+        
+        # REQ29: http://www.opengis.net/spec/SOS/2.0/req/core/go-parameters
+        #    The SOS returns all observations that match the specified parameter values. The
+        #    filter parameters (e.g., observedProperty , procedure , or temporalFilter ) shall be connected
+        #    with an implicit AND. The values of each of the parameters shall be connected with an implicit OR.
+        
+        params = []
+        
+        sql = """
+            SELECT DISTINCT
+              procedures.id_prc, 
+              procedures.name_prc, 
+              obs_type.name_oty, 
+              procedures.stime_prc, 
+              procedures.etime_prc, 
+              procedures.time_res_prc
+              
+            FROM 
+              """ + filter.sosConfig.schema + """.procedures, 
+              """ + filter.sosConfig.schema + """.foi, 
+              """ + filter.sosConfig.schema + """.proc_obs, 
+              """ + filter.sosConfig.schema + """.observed_properties,
+              """ + filter.sosConfig.schema + """.obs_type
+              
+            WHERE 
+              procedures.id_foi_fk = foi.id_foi 
+              
+            AND
+              proc_obs.id_prc_fk = procedures.id_prc
+              
+            AND
+              obs_type.id_oty = procedures.id_oty_fk
+              
+            AND
+              observed_properties.id_opr = proc_obs.id_opr_fk
+        """
+        
+            
+        # Adding offering and procedure filter
+        #  > in istSOS offerings are equals to procedures
+        if isinstance(filter.procedure, list) and len(filter.procedure)>0:
+            clauses = []
+            for c in range(0, len(filter.procedure)):
+                clauses.append("procedures.name_prc = %s")
+                params.append(filter.procedure[c])
+                
+            sql = "%s AND (%s)" % (sql, (' OR '.join(clauses)))
+        
+        # Adding feature of interest filter
+        if filter.featureOfInterest != None:
+            params.append(filter.featureOfInterest)
+            sql = "%s %s" % (sql, """
+                AND foi.name_foi = %s)
+            """)
+        
+        # Adding observed properties filter
+        if isinstance(filter.observedProperty, list) and len(filter.observedProperty)>0:
+            clauses = []
+            for c in range(0, len(filter.observedProperty)):
+                clauses.append("def_opr SIMILAR TO '%%(:|)'||%s||'(:|)%%'")
+                params.append(filter.observedProperty[c])
+                
+            sql = "%s AND (%s)" % (sql, (' OR '.join(clauses)))
+            
+        # Adding temporal filter
+        if isinstance(filter.eventTime, list) and len(filter.eventTime)>0:
+            clauses = []
+            for c in range(0, len(filter.eventTime)):
+                if len(filter.eventTime[c])==1: # time instant
+                    clauses.append("(stime_prc < timestamptz %s AND timestamptz %s <= etime_prc)")
+                    params.extend([filter.eventTime[c][0]]*2)
+                    
+                elif len(filter.eventTime[c])==2: # time period
+                    clauses.append("(timestamptz %s <= etime_prc AND timestamptz %s >= stime_prc)")
+                    params.extend(filter.eventTime[c])
+                    
+            sql = "%s AND (%s)" % (sql, (' OR '.join(clauses)))
+        
+        # Executing search query    
+        try:
+            result = pgdb.select(sql, tuple(params))
+            # If empty, the service will return an empty GetObservationResponse
+            if len(result)==0:
+                return
+                
+        except Exception as ex:
+            raise Exception("SQL: %s\n\n%s" %(pgdb.mogrify(sql,tuple(params)), ex))
+            
+        # Preparing Observation object
+        for row in result:
+            
+            # CRETE OBSERVATION OBJECT
+            ob = Observation()
+            
+            # BUILD BASE INFOS FOR EACH PROCEDURE
+            ob.baseInfo(pgdb, row, filter.sosConfig)
+            
+            # GET DATA FROM PROCEDURE ACCORDING TO THE FILTERS
+            ob.setData(pgdb, row, filter)
+            
+            # ADD OBSERVATIONS
             self.obs.append(ob)
             
             

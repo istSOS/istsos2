@@ -20,6 +20,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # ===============================================================================
+
 from istsoslib.filters import filter as f
 from istsoslib import sosException
 
@@ -35,25 +36,37 @@ class sosGCfilter(f.sosFilter):
         version (str): the version of the service
         sections (list): the requested sections names, if not provided the default value is *["all"]*
     """
+    
     def __init__(self,sosRequest,method,requestObject,sosConfig):
         f.sosFilter.__init__(self,sosRequest,method,requestObject,sosConfig)
-        #**************************
+        
         if method == "GET":
-            #-------SECTIONS-------------
+            
             if requestObject.has_key("section"):
+                #-------SECTIONS-------------
                 self.sections = requestObject["section"].lower().split( "," )
+                
                 for s in self.sections:
-                    if s not in sosConfig.parameters["GC_Section"]:
-                        err_txt = "Allowed parameter \"section\" values are: " + ",".join(sosConfig.parameters["GC_Section"])
-                        raise sosException.SOSException("InvalidParameterValue","sections",err_txt)
+                    if self.version == '2.0.0':
+                        if s not in sosConfig.parameters["GC_Section_2_0_0"]:
+                            err_txt = "Allowed parameter \"section\" values are: " + ",".join(sosConfig.parameters["GC_Section"])
+                            raise sosException.SOSException("InvalidParameterValue","sections",err_txt)
+                        
+                    else:
+                        if s not in sosConfig.parameters["GC_Section"]:
+                            err_txt = "Allowed parameter \"section\" values are: " + ",".join(sosConfig.parameters["GC_Section"])
+                            raise sosException.SOSException("InvalidParameterValue","sections",err_txt)
+                        
             else:
                 self.sections=["all"]
-        #**************************
+                
         if method == "POST":
+            
             if requestObject.nodeType == requestObject.ELEMENT_NODE:
                 #-------SECTIONS-------------
                 self.sections=[]
                 sects=requestObject.getElementsByTagName('section')
+                
                 if len(sects) > 0:
                     for sect in sects:
                         for val in sect.childNodes:
@@ -62,6 +75,7 @@ class sosGCfilter(f.sosFilter):
                             else:
                                 err_txt = "Allowed parameter \"section\" values are: " + ",".join(sosConfig.parameters["GC_Section"])
                                 raise sosException.SOSException("InvalidParameterValue","sections",err_txt)
+                                
                 else:
                     self.sections = ["all"]
             

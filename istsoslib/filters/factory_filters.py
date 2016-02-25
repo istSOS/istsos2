@@ -41,7 +41,7 @@ def sosFactoryFilter(environ,sosConfig):
     """
     content_type = environ.get('CONTENT_TYPE', '')
     
-    #---- set method, requestObject and sosRequest ----
+    # set method, requestObject and sosRequest
     method = str(environ['REQUEST_METHOD']).upper()
     
     if method=="GET":
@@ -88,7 +88,7 @@ def sosFactoryFilter(environ,sosConfig):
         err_txt = "Allowed \"http request\" are GET and POST: %s" %(method=="GET")
         raise sosException.SOSException("InvalidRequest",None,err_txt)
         
-    #--- if request is allowed instantiate the rigth filter ---
+    # if request is allowed instantiate the rigth filter
     if sosRequest in sosConfig.parameters["requests"]:
         if sosRequest == "getcapabilities":
             from istsoslib.filters import GC_filter

@@ -3,7 +3,7 @@
 #
 # Authors: Massimiliano Cannata, Milan Antonovic
 #
-# Copyright (c) 2015 IST-SUPSI (www.supsi.ch/ist)
+# Copyright (c) 2016 IST-SUPSI (www.supsi.ch/ist)
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,11 +20,10 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # ===============================================================================
+
 from walib import resource
 import walib.users as user
-import string
 import config
-import sys
 
 class istsosConfig():
     def __init__(self,environ):
@@ -70,6 +69,7 @@ class istsosConfig():
         self.authority =  serviceobj.serviceconf.identification["authority"]
         self.urnversion = serviceobj.serviceconf.identification["urnversion"]
         self.version = serviceobj.serviceconf.parameters["version"]
+        self.default_version = serviceobj.serviceconf.serviceType["default_version"]
         
         self.istsosepsg = serviceobj.serviceconf.geo["istsosepsg"]
         self.x_axis = serviceobj.serviceconf.geo["xAxisName"]
@@ -121,7 +121,6 @@ class istsosConfig():
             }
         }
         
-        
         self.urn={
             "phenomena" : serviceobj.serviceconf.urn["phenomena"],
             "dataType" : serviceobj.serviceconf.urn["dataType"],
@@ -140,130 +139,19 @@ class istsosConfig():
             "time" : serviceobj.serviceconf.urn["time"]
         }
         
-        """
-        #=========================================================================================
-        #== ADJUST URN DEPENDING ON identification["authority"] & identification["urnversion"] ===
-        #=========================================================================================
-        self.urn={
-            "phenomena" : serviceobj.serviceconf.urn["phenomena"].replace(
-                                        "@identification-authority@",
-                                        serviceobj.serviceconf.identification["authority"]
-                                        ).replace(
-                                        "@urnversion@",
-                                        serviceobj.serviceconf.identification["urnversion"]
-                                        ),
-            "dataType" : serviceobj.serviceconf.urn["dataType"].replace(
-                                        "@identification-authority@",
-                                        serviceobj.serviceconf.identification["authority"]
-                                        ).replace(
-                                        "@urnversion@",
-                                        serviceobj.serviceconf.identification["urnversion"]
-                                        ),
-            "parameter" : serviceobj.serviceconf.urn["parameter"].replace(
-                                        "@identification-authority@",
-                                        serviceobj.serviceconf.identification["authority"]
-                                        ).replace(
-                                        "@urnversion@",
-                                        serviceobj.serviceconf.identification["urnversion"]
-                                        ),
-            "process" : serviceobj.serviceconf.urn["process"].replace(
-                                        "@identification-authority@",
-                                        serviceobj.serviceconf.identification["authority"]
-                                        ).replace(
-                                        "@urnversion@",
-                                        serviceobj.serviceconf.identification["urnversion"]
-                                        ),
-            "identifier" : serviceobj.serviceconf.urn["identifier"].replace(
-                                        "@identification-authority@",
-                                        serviceobj.serviceconf.identification["authority"]
-                                        ).replace(
-                                        "@urnversion@",
-                                        serviceobj.serviceconf.identification["urnversion"]
-                                        ),
-            "keywords" : serviceobj.serviceconf.urn["keywords"].replace(
-                                        "@identification-authority@",
-                                        serviceobj.serviceconf.identification["authority"]
-                                        ).replace(
-                                        "@urnversion@",
-                                        serviceobj.serviceconf.identification["urnversion"]
-                                        ),
-            "sensor" : serviceobj.serviceconf.urn["sensor"].replace(
-                                        "@identification-authority@",
-                                        serviceobj.serviceconf.identification["authority"]
-                                        ).replace(
-                                        "@urnversion@",
-                                        serviceobj.serviceconf.identification["urnversion"]
-                                        ),
-            "procedure" : serviceobj.serviceconf.urn["procedure"].replace(
-                                        "@identification-authority@",
-                                        serviceobj.serviceconf.identification["authority"]
-                                        ).replace(
-                                        "@urnversion@",
-                                        serviceobj.serviceconf.identification["urnversion"]
-                                        ),
-            "sensorType" : string.replace(
-                                        serviceobj.serviceconf.urn["sensorType"],
-                                        "@identification-authority@",
-                                        serviceobj.serviceconf.identification["authority"]
-                                        ).replace(
-                                        "@urnversion@",
-                                        serviceobj.serviceconf.identification["urnversion"]
-                                        ),
-            "property" : string.replace(
-                                        serviceobj.serviceconf.urn["property"],
-                                        "@identification-authority@",
-                                        serviceobj.serviceconf.identification["authority"]
-                                        ).replace(
-                                        "@urnversion@",
-                                        serviceobj.serviceconf.identification["urnversion"]
-                                        ),
-            "feature" : serviceobj.serviceconf.urn["feature"].replace(
-                                        "@identification-authority@",
-                                        serviceobj.serviceconf.identification["authority"]
-                                        ).replace(
-                                        "@urnversion@",
-                                        serviceobj.serviceconf.identification["urnversion"]
-                                        ),
-            "role" : serviceobj.serviceconf.urn["role"].replace(
-                                        "@identification-authority@",
-                                        serviceobj.serviceconf.identification["authority"]
-                                        ).replace(
-                                        "@urnversion@",
-                                        serviceobj.serviceconf.identification["urnversion"]
-                                        ),
-            "offering": serviceobj.serviceconf.urn["offering"].replace(
-                                        "@identification-authority@",
-                                        serviceobj.serviceconf.identification["authority"]
-                                        ).replace(
-                                        "@urnversion@",
-                                        serviceobj.serviceconf.identification["urnversion"]
-                                        ),
-            "refsystem" : serviceobj.serviceconf.urn["refsystem"].replace(
-                                        "@identification-authority@",
-                                        serviceobj.serviceconf.identification["authority"]
-                                        ).replace(
-                                        "@urnversion@",
-                                        serviceobj.serviceconf.identification["urnversion"]
-                                        ),
-            "time" : serviceobj.serviceconf.urn["time"].replace(
-                                        "@identification-authority@",
-                                        serviceobj.serviceconf.identification["authority"]
-                                        ).replace(
-                                        "@urnversion@",
-                                        serviceobj.serviceconf.identification["urnversion"]
-                                        )
-        }
-        """
-        
         self.parameters={
            "service" : ["SOS"],
            "version" : serviceobj.serviceconf.serviceType["version"].split(","),
+           "default_version" : serviceobj.serviceconf.serviceType["default_version"],
            "requests" : serviceobj.serviceconf.parameters["requests"].split(","),
            "GC_Section" : serviceobj.serviceconf.parameters["GC_Section"].split(","),
+           "GC_Section_2_0_0" : serviceobj.serviceconf.parameters["GC_Section_2_0_0"].split(","),
            "DS_outputFormats" : serviceobj.serviceconf.parameters["DS_outputFormats"].split(","),
+           "DS_outputFormats_2_0_0" : serviceobj.serviceconf.parameters["DS_outputFormats_2_0_0"].split(","),
            "GO_srs" : self.sos_allowedEPSG,
            "GO_timeFormats" : serviceobj.serviceconf.parameters["GO_timeFormats"].split(","),
            "GO_responseFormat" : serviceobj.serviceconf.parameters["GO_responseFormat"].split(","),
+           "GO_responseFormat_2_0_0" : serviceobj.serviceconf.parameters["GO_responseFormat_2_0_0"].split(","),
            "GO_resultModel" : serviceobj.serviceconf.parameters["GO_resultModel"].split(","),
            "GO_responseMode" : serviceobj.serviceconf.parameters["GO_responseMode"].split(",")
         }

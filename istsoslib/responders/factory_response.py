@@ -3,7 +3,7 @@
 #
 # Authors: Massimiliano Cannata, Milan Antonovic
 #
-# Copyright (c) 2015 IST-SUPSI (www.supsi.ch/ist)
+# Copyright (c) 2016 IST-SUPSI (www.supsi.ch/ist)
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,41 +20,43 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # ===============================================================================
+
 from istsoslib import sosException
 
-def sosFactoryResponse(sosFilter,pgdb):
+def sosFactoryResponse(sosFilter, pgdb):
     
     if sosFilter.request == "getcapabilities":
         from istsoslib.responders import GCresponse
-        return GCresponse.GetCapabilitiesResponse(sosFilter,pgdb)
+        return GCresponse.GetCapabilitiesResponse(sosFilter, pgdb)
     
     elif sosFilter.request == "describesensor":
         from istsoslib.responders import DSresponse
-        return DSresponse.DescribeSensorResponse(sosFilter,pgdb)
+        return DSresponse.DescribeSensorResponse(sosFilter, pgdb)
     
     elif sosFilter.request == "getobservation":
         from istsoslib.responders import GOresponse
-        return GOresponse.observations(sosFilter,pgdb)
-    
+        if sosFilter.version == '2.0.0':
+            return GOresponse.GetObservationResponse_2_0_0(sosFilter, pgdb) 
+            
+        else:
+            return GOresponse.GetObservationResponse(sosFilter, pgdb) 
+            
     elif sosFilter.request == "getfeatureofinterest":
         from istsoslib.responders import GFresponse
-        return GFresponse.foi(sosFilter,pgdb)
+        return GFresponse.foi(sosFilter, pgdb)
     
     elif sosFilter.request == "insertobservation":
         from istsoslib.responders import IOresponse
-        return IOresponse.InsertObservationResponse(sosFilter,pgdb)
+        return IOresponse.InsertObservationResponse(sosFilter, pgdb)
     
     elif sosFilter.request == "registersensor":
         from istsoslib.responders import RSresponse
-        return RSresponse.RegisterSensorResponse(sosFilter,pgdb)
+        return RSresponse.RegisterSensorResponse(sosFilter, pgdb)
     
     elif sosFilter.request == "updatesensordescription":
         from istsoslib.responders import USDresponse
-        return USDresponse.UpdateSensorDescription(sosFilter,pgdb)
+        return USDresponse.UpdateSensorDescription(sosFilter, pgdb)
    
     else:
-        raise sosException.SOSException("InvalidRequest","request","\"request\": %s not supported" %(self.request))
-
-
-    
-
+        raise sosException.SOSException("InvalidRequest", "request",
+            "\"request\": %s not supported" % (sosFilter.request))

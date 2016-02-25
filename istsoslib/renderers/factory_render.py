@@ -28,34 +28,43 @@ def sosFactoryRender(response,sosConfig):
     
     if res_type == "GetCapabilitiesResponse":
         from istsoslib.renderers import GCresponseRender
-        return GCresponseRender.render(response,sosConfig)
+        if response.version == '2.0.0':
+            return GCresponseRender.render_2_0_0(response, sosConfig)
+            
+        else:
+            return GCresponseRender.render(response, sosConfig)
     
     elif res_type == "DescribeSensorResponse":
         from istsoslib.renderers import DSresponseRender
-        return DSresponseRender.render(response,sosConfig)
+        if response.version == '2.0.0':
+            return DSresponseRender.render_2_0_0(response, sosConfig)
+            
+        else:
+            return DSresponseRender.render(response,sosConfig)
     
-    elif res_type == "observations":
+    elif res_type in ["GetObservationResponse", "GetObservationResponse_2_0_0"]:
         from istsoslib.renderers import GOresponseRender
-        return GOresponseRender.render(response,sosConfig)
+        return GOresponseRender.render(response, sosConfig)
     
     elif res_type == "foi":
         from istsoslib.renderers import GFresponseRender
-        return GFresponseRender.render(response,sosConfig)
+        return GFresponseRender.render(response, sosConfig)
     
     elif res_type == "InsertObservationResponse":
         from istsoslib.renderers import IOresponseRender
-        return IOresponseRender.render(response,sosConfig)
+        return IOresponseRender.render(response, sosConfig)
     
     elif res_type == "RegisterSensorResponse":
         from istsoslib.renderers import RSresponseRender
-        return RSresponseRender.render(response,sosConfig)
+        return RSresponseRender.render(response, sosConfig)
     
     elif res_type == "UpdateSensorDescriptionResponse":
         from istsoslib.renderers import USDresponseRender
-        return USDresponseRender.render(response,sosConfig)
+        return USDresponseRender.render(response, sosConfig)
    
     else:
-        raise sosException.SOSException("InvalidRequest","request","\"request\": %s not supported" %(str(response.__class__.__name__)))
+        raise sosException.SOSException("InvalidRequest", "request", 
+            "\"request\": %s not supported" %(str(response.__class__.__name__)))
         
 
 

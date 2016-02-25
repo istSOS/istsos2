@@ -22,6 +22,9 @@
 # ===============================================================================
 from lib import isodate as iso
 from istsoslib import sosException
+from lib.etree import et
+import zlib, base64
+import sys
 
 def render(GO,sosConfig):
     if GO.filter.responseFormat in ['text/xml;subtype="om/1.0.0"',"text/xml"]:
@@ -32,6 +35,8 @@ def render(GO,sosConfig):
 #        return CHARTformat(GO)
     elif GO.filter.responseFormat in ["application/json","text/x-json"]:
         return JSONformat(GO)
+    elif GO.filter.responseFormat in ['text/xml;subtype="om/2.0"']:
+        return XMLformat_2_0_0(GO, sosConfig)
     else:
         raise Exception("not supported format: %s, try one of %s" % (GO.filter.responseFormat,"; ".join(sosConfig.parameters["GO_responseFormat"])))
 
@@ -47,8 +52,7 @@ def XMLformat(GO):
     
     if len(GO.obs)==0:
         raise sosException.SOSException("NoApplicableCode",None,"No matching observation was found according the request parameters!")
-                
-        r += "<om:member/>\n"
+        
     for ob in GO.obs:
         
         #OBSERVATION OBJ
@@ -352,4 +356,139 @@ def CSVformat(GO):
     return r
 
 
+def XMLformat_2_0_0(GO, sosConfig):
+    
+    res = et.XML("""<sos:GetObservationResponse 
+            xmlns:sos="http://www.opengis.net/sos/2.0" 
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+            xmlns:om="http://www.opengis.net/om/2.0" 
+            xmlns:gml="http://www.opengis.net/gml/3.2" 
+            xmlns:xlink="http://www.w3.org/1999/xlink" 
+            xsi:schemaLocation="http://www.opengis.net/sos/2.0 http://schemas.opengis.net/sos/2.0/sosGetObservation.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd http://www.opengis.net/om/2.0 http://schemas.opengis.net/om/2.0/observation.xsd">
+        </sos:GetObservationResponse>""")
+        
+    ns = {
+        'xsi': "http://www.w3.org/2001/XMLSchema-instance" ,
+        'sos': "http://www.opengis.net/sos/2.0" ,
+        'om': "http://www.opengis.net/om/2.0", 
+        'gml':'http://www.opengis.net/gml/3.2',
+        'xlink': "http://www.w3.org/1999/xlink"
+    }
+    
+    # map namespaces
+    try:
+        register_namespace = et.register_namespace
+        for key in ns:
+            register_namespace(key, ns[key])
+    except AttributeError:
+        try:
+            et._namespace_map.update(ns)
+            for key in ns:
+                et._namespace_map[ns[key]] = key
+        except AttributeError:
+            try:
+                from xml.etree.ElementTree import _namespace_map
+            except ImportError:
+                try:
+                    from elementtree.ElementTree import _namespace_map
+                except ImportError:
+                    print >> sys.stderr, ("Failed to import ElementTree from any known place")
+            for key in ns:
+                _namespace_map[ns[key]] = key
+        
+    if len(GO.obs)>0:    
+        data = et.SubElement(res, '{%s}observationData' % ns['sos'])
+        for observation in GO.obs:
+            cnt = 1
+            idx = 0
+            while idx < len(observation.observedProperty):
+                
+                observedProperty = observation.observedProperty[idx]
+                observedPropertyId = observation.observedPropertyId[idx]
+                uom = observation.uom[idx]
+                
+                for result in observation.data:
+                    
+                    uid = "%s_%s_%s" % (
+                        observation.id_prc, result[0].strftime("%s"), observedPropertyId)
+                    
+                    # Creating om:OM_Observation
+                    omobservation = et.SubElement(data, '{%s}OM_Observation' % ns['om'])
+                    
+                    omobservation.set("{%s}id" % ns['gml'], base64.b64encode(zlib.compress(uid, 9)))
+                    
+                    # Adding om:type with attribute
+                    et.SubElement(omobservation, '{%s}type' % ns['om']).set(
+                        "{%s}href" % ns['xlink'], 
+                        'http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Measurement'
+                    )
+                    
+                    # Adding om:phenomenonTime 
+                    phenomenonTime = et.SubElement(omobservation, '{%s}phenomenonTime' % ns['om'])
+                    
+                    # Generating TimeInstant id shared that will be linked from the phenomenonTime 
+                    timeInstantId = base64.b64encode(zlib.compress("p_%s" % uid, 9))
+                    
+                    # Adding gml:TimeInstant
+                    timeInstant = et.SubElement(phenomenonTime, '{%s}TimeInstant' % ns['gml'])
+                    timeInstant.set("{%s}id" % ns['gml'], timeInstantId)
+                    
+                    # Adding gml:timePosition ad date value as string (iso format)
+                    et.SubElement(timeInstant, '{%s}timePosition' % ns['gml']).text = result[0].isoformat()
+                    
+                    # Adding om:phenomenonTime 
+                    et.SubElement(omobservation, '{%s}resultTime' % ns['om']).set(
+                        "{%s}href" % ns['xlink'], '#%s' % timeInstantId
+                    )
+                    
+                    # Adding om:procedure
+                    et.SubElement(omobservation, '{%s}procedure' % ns['om']).set(
+                        "{%s}href" % ns['xlink'], "%s%s" % (sosConfig.urn["procedure"], observation.name)
+                    )
+                    
+                    # Add quality index as parameter
+                    if observation.qualityIndex:
+                        
+                        parameter = et.SubElement(omobservation, '{%s}parameter' % ns['om'])
+                        namedValue = et.SubElement(parameter, '{%s}NamedValue' % ns['om'])
+                        name = et.SubElement(namedValue, '{%s}name' % ns['om'])
+                        name.set("{%s}href" % ns['xlink'], observation.observedProperty[idx+1])
+                        value = et.SubElement(namedValue, '{%s}value' % ns['om'])                        
+                        value.text = str(result[cnt+1])
+                    
+                    # Adding om:observedProperty
+                    et.SubElement(omobservation, '{%s}observedProperty' % ns['om']).set(
+                        "{%s}href" % ns['xlink'], observedProperty
+                    )
+                    
+                    # Adding om:featureOfInterest
+                    et.SubElement(omobservation, '{%s}featureOfInterest' % ns['om']).set(
+                        "{%s}href" % ns['xlink'], observation.foi_urn
+                    )
+                    
+                    # Adding om:result
+                    omresult = et.SubElement(omobservation, '{%s}result' % ns['om'])
+                    omresult.set("uom", uom)
+                    omresult.set("{%s}type" % ns['xsi'], "gml:MeasureType")
+                    omresult.text = str(result[cnt])
+                    
+                if observation.qualityIndex:
+                    idx += 2
+                    cnt += 2
+                else:
+                    idx += 1
+                    cnt += 1
+                    
+                
+    """
+    http://sensorweb.demo.52north.org/sensorwebtestbed/client
+    
+    Examples: 
+    http://sensorweb.demo.52north.org/sensorwebtestbed/service?service=SOS&request=GetCapabilities&crs=4258
+    http://sensorweb.demo.52north.org/sensorwebtestbed/service?service=SOS&version=2.0.0&request=GetObservation&procedure=ws2500&temporalFilter=om:phenomenonTime,2016-02-24T00:00:00.000Z/2016-02-24T13:00:00.000Z
+    http://sensorweb.demo.52north.org/sensorwebtestbed/service?service=SOS&version=2.0.0&request=GetObservation&procedure=ws2500&temporalFilter=om:phenomenonTime,2016-02-24T00:00:00.000Z/2016-02-24T13:00:00.000Z&MergeObservationsIntoDataArray=true
+    
+    """
+    
+    return '<?xml version="1.0" encoding="UTF-8"?>\n%s' % et.tostring(res)
     

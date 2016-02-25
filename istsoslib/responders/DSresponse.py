@@ -46,6 +46,7 @@ class DescribeSensorResponse:
     def __init__(self, filter, pgdb):
         
         pgdb.setTimeTZ("UTC")
+        self.version = filter.version
     
         self.smlFile = ""
         sql = "SELECT id_prc, stime_prc, etime_prc, name_oty from %s.procedures, %s.obs_type" %(filter.sosConfig.schema,filter.sosConfig.schema)
@@ -121,7 +122,7 @@ class DescribeSensorResponse:
         self.smlFile = os.path.join(filter.sosConfig.sensorMLpath, filename)
         # check if file exist                
         if not os.path.isfile(self.smlFile):
-            raise Exception("SensorML file for procedure '%s' not found!"%(filter.procedure))
+            raise Exception("SensorML file for procedure '%s' not found!" % (filter.procedure))
         
         sqlProc  = "SELECT def_opr, name_opr, desc_opr, constr_pro, name_uom"
         sqlProc += " FROM %s.observed_properties opr, %s.proc_obs po," %(filter.sosConfig.schema,filter.sosConfig.schema)
@@ -130,8 +131,8 @@ class DescribeSensorResponse:
         sqlProc += " AND name_prc = %s" 
         params = (str(filter.procedure),)
         try:
-            self.observedProperties=pgdb.select(sqlProc,params)
+            self.observedProperties = pgdb.select(sqlProc, params)
         except Exception as exe:
-            raise Exception("Error! sql: %s." % pgdb.mogrify(sqlProc,params))
+            raise Exception("Error! %s\n > sql: %s." % (str(exe), pgdb.mogrify(sqlProc, params)))
         
         

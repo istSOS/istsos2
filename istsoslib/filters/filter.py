@@ -35,57 +35,73 @@ class sosFilter():
     #self.request = None
     #self.service = None
     #self.version = None
-    def __init__(self,sosRequest,method,requestObject,sosConfig):
+    
+    def __init__(self, sosRequest, method, requestObject, sosConfig):
         """Init sosFilter class"""
-        #--------REQUEST-----------
+        
         self.request = sosRequest
         self.sosConfig = sosConfig
-        #*****************
         if method == "GET":
-            #--------SERVICE------------
+            
+            # OGC 12-006/REQ 1: http://www.opengis.net/spec/SOS/2.0/req/core/request-service
             if requestObject.has_key("service"):
                 self.service = requestObject["service"]
                 if self.service not in sosConfig.parameters["service"]:
                     raise sosException.SOSException("InvalidParameterValue","service","\"service\": %s not supported" %(self.service))
+                    
             else:
                 raise sosException.SOSException("MissingParameterValue","service","\"service\" parameter is mandatory")
-            #---------VERSION NEGOTIATION -----------
+                
+            # OGC 12-006/REQ 5: http://www.opengis.net/spec/SOS/2.0/req/core/gc-version
             if self.request=="getcapabilities":
                 if requestObject.has_key("acceptversions"):
                     AcceptVersions = requestObject["acceptversions"].split(",")
                     AcceptVersions.sort()
                     self.version = None
+                    
                     for version in AcceptVersions:
                         if version in sosConfig.parameters["version"]:
                             self.version=version
                             break
+                        
                     if not self.version:
                         raise sosException.SOSException("VersionNegotiationFailed",None,"Any of the accepted versions are supported by this server")
+                        
                 else:
-                    self.version = sosConfig.parameters["version"][0]
+                    self.version = sosConfig.parameters["default_version"]
+                    
             else:
-                #---------VERSION-----------
+                
+                # OGC 12-006/REQ 2: http://www.opengis.net/spec/SOS/2.0/req/core/request-version
                 if requestObject.has_key("version"):
                     self.version = requestObject["version"]
+                    
                     if self.version not in sosConfig.parameters["version"]:
                         raise sosException.SOSException("InvalidParameterValue","version","\"version\": %s not supported" %(self.version))
+                        
                 else:
                     raise sosException.SOSException("MissingParameterValue","version","\"version\" parameter is mandatory")
-        #********************
+                    
         if method == "POST":
-            if not type(requestObject)==type("pp"):                            
-                #--------SERVICE------------
+            
+            if not type(requestObject)==type(""):     
+                       
+                # OGC 12-006/REQ 1: http://www.opengis.net/spec/SOS/2.0/req/core/request-service
                 if "service" in requestObject.attributes.keys():
                     self.service = str(requestObject.getAttribute("service"))
                     if self.service not in sosConfig.parameters["service"]:
                         raise sosException.SOSException("InvalidParameterValue","service","\"service\": %s not supported" %(self.service))
+                        
                 else:
                     raise sosException.SOSException("MissingParameterValue","service","\"service\" parameter is mandatory")
-                #---------VERSION NEGOTIATION -----------                        
+                            
+                # OGC 12-006/REQ 5: http://www.opengis.net/spec/SOS/2.0/req/core/gc-version
                 if self.request=="getcapabilities":
                     AcceptVersions = requestObject.getElementsByTagName('AcceptVersions')
+                    
                     if len(AcceptVersions)>1:
                         raise sosException.SOSException("InvalidParameterValue","AcceptVersions","AcceptVersions multiplicity is 1" %(self.version))
+                        
                     elif len(AcceptVersions)==1:
                         VersionsObj = requestObject.getElementsByTagName('Version')
                         versions = [ str(val.firstChild.data) for val in VersionsObj]
@@ -95,17 +111,20 @@ class sosFilter():
                             if version in sosConfig.parameters["version"]:
                                 self.version=version
                                 break
+                            
                         if not self.version:
                             raise sosException.SOSException("VersionNegotiationFailed",None,"Any of the accepted versions are supported by this server")
                     else:
                         self.version = sosConfig.parameters["version"][0]
+                        
                 else:
-                    #---------VERSION-----------
+                    
+                    # OGC 12-006/REQ 2: http://www.opengis.net/spec/SOS/2.0/req/core/request-version
                     if "version" in requestObject.attributes.keys():
                         self.version = str(requestObject.getAttribute("version"))
                         if self.version not in sosConfig.parameters["version"]:
                             raise sosException.SOSException("InvalidParameterValue","version","\"version\": %s not supported" %(self.version))
+                            
                     else:
-                        self.version = sosConfig.parameters["version"][0]
-
-            
+                        self.version = sosConfig.parameters["default_version"]
+                        
