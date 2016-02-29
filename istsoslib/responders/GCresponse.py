@@ -153,7 +153,7 @@ def BuildOfferingList(pgdb,sosConfig):
         raise Exception("sql: %s" %(pgdb.mogrify(sql)))
     #rows=pgdb.select(sql)
     for row in rows:
-        list.append(sosConfig.urn["offering"] +row["name_off"])
+        list.append(sosConfig.urn["offering"] + row["name_off"])
     return list
 
 
@@ -168,13 +168,13 @@ def BuildOfferingList_2_0_0(pgdb,sosConfig):
         sensorList (list): the list of sensor names
     """
     list=[]
-    sql = "SELECT name_prc FROM %s.procedures ORDER BY name_prc" %(sosConfig.schema)
+    sql = "SELECT name_prc FROM %s.procedures ORDER BY name_prc" % (sosConfig.schema)
     try:
         rows=pgdb.select(sql)
     except:
         raise Exception("sql: %s" %(pgdb.mogrify(sql)))
     for row in rows:
-        list.append(row["name_prc"])
+        list.append(sosConfig.urn["offering"] + row["name_prc"])
     return list
     
 def BuildEventTimeRange(pgdb,sosConfig):
@@ -530,7 +530,7 @@ class OperationsMetadata_2_0_0:
         GetCapabilities=Operation(name="GetCapabilities", get=sosConfig.serviceUrl["get"])
         GetCapabilities.addParameter(name="acceptformats", use = "optional", allowedValues=['application/xml']) 
         GetCapabilities.addParameter(name="acceptversions", use = "required", allowedValues=sosConfig.parameters["version"])
-        GetCapabilities.addParameter(name="section", use = "optional", allowedValues=sosConfig.parameters["GC_Section_2_0_0"])
+        GetCapabilities.addParameter(name="sections", use = "optional", allowedValues=sosConfig.parameters["GC_Section_2_0_0"])
         self.OP.append(GetCapabilities)
         
         # DescribeSensor
@@ -703,8 +703,8 @@ class ObservationOfferingList_2_0_0:
             self.offerings.append(off)
             
             off.description = row["desc_prc"]
-            off.identifier = row["name_prc"]
-            off.procedure = row["name_prc"]
+            off.identifier = sosConfig.urn["offering"] + row["name_prc"]
+            off.procedure = sosConfig.urn["procedure"] + row["name_prc"]
             
             off.systemType = row["name_oty"]
             
@@ -850,8 +850,12 @@ class GetCapabilitiesResponse():
             self.ServiceIdentifier = ServiceIdentification(fil.sosConfig)
             self.ServiceIdentifier.serviceTypeVersion = fil.version
             self.ServiceProvider = ServiceProvider(fil.sosConfig)
-            self.OperationsMetadata = OperationsMetadata(pgdb,fil.sosConfig)
-            
+            if self.version == '2.0.0':
+                self.OperationsMetadata = OperationsMetadata_2_0_0(pgdb,fil.sosConfig)
+                
+            else:
+                self.OperationsMetadata = OperationsMetadata(pgdb,fil.sosConfig)
+            self.FilterCapabilities = True
                 
         else:
             

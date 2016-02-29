@@ -111,7 +111,7 @@ def executeSos(environ, start_response):
         return [render.encode('utf-8')]
 
     except sosException.SOSException, e:
-        print >> sys.stderr, traceback.print_exc()
+        #print >> sys.stderr, traceback.print_exc()
         response_body = e.ToXML()
         status = '200 OK'
         response_headers = [

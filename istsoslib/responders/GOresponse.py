@@ -1219,6 +1219,74 @@ class GetObservationResponse_2_0_0:
         
         self.obs = []
         
+        
+        # check if requested foi exist
+        print >> sys.stderr, "# check if requested foi exist"
+        print >> sys.stderr, filter.featureOfInterest
+        if not filter.featureOfInterest in ['', None]:
+            params = [
+                filter.featureOfInterest,
+                filter.featureOfInterest
+            ]
+            sql = """
+                SELECT %s as name_foi, exists(
+                    select id_foi from """ + filter.sosConfig.schema + """.foi where name_foi=%s
+                ) as exist_foi
+            """
+            try:
+                print >> sys.stderr, pgdb.mogrify(sql, tuple(params))
+                result=pgdb.select(sql, tuple(params))
+                
+            except Exception as ex:
+                raise Exception("SQL: %s\n\n%s" %(pgdb.mogrify(sql, tuple(params)), ex))
+                
+            filter.featureOfInterest = ''
+            for row in result:
+                if row["exist_foi"]:
+                    filter.featureOfInterest = row["name_foi"]
+                else:
+                    raise sosException.SOSException("InvalidParameterValue", "featureOfInterest", "Invalid parameter value in 'featureOfInterest' parameter: %s" % row["name_foi"])
+                    
+        
+        # check if requested observed property exist
+        if isinstance(filter.observedProperty, list) and len(filter.observedProperty)>0:            
+            clauses = []
+            params = []
+            
+            if len(filter.observedProperty)==1:
+                sql = """
+                    SELECT %s as def_opr, exists(
+                        SELECT id_opr FROM """ + filter.sosConfig.schema + """.observed_properties WHERE def_opr SIMILAR TO '%%(:|)'||%s||'(:|)%%'
+                    ) as exist_opr
+                """
+                params = [
+                    filter.observedProperty[0],
+                    filter.observedProperty[0]
+                ]
+            else:
+                for p in filter.observedProperty:
+                    params.extend([p,p])
+                    clauses.append("""
+                        (
+                          SELECT %s as def_opr, exists(select id_opr from """ + 
+                              filter.sosConfig.schema + """.observed_properties WHERE def_opr SIMILAR TO '%%(:|)'||%s||'(:|)%%) as exist_opr
+                        )
+                    """)
+                    
+                sql = " UNION ".join(clauses)
+            try:
+                result=pgdb.select(sql, tuple(params))
+                
+            except Exception as ex:
+                raise Exception("SQL: %s\n\n%s" %(pgdb.mogrify(sql, tuple(params)), ex))
+                
+            filter.observedProperty = []
+            for row in result:
+                if row["exist_opr"]:
+                    filter.observedProperty.append(row["def_opr"])
+                else:
+                    raise sosException.SOSException("InvalidParameterValue", "observedProperty", "Invalid parameter value in 'observedProperty' parameter: %s" % row["def_opr"])
+        
         # check if requested offering/procedure exist
         if isinstance(filter.procedure, list) and len(filter.procedure)>0:
             clauses = []
@@ -1255,11 +1323,13 @@ class GetObservationResponse_2_0_0:
             for row in result:
                 if row["exist_prc"]:
                     filter.procedure.append(row["name_prc"])
+                else:
+                    raise sosException.SOSException("InvalidParameterValue", "procedure", "Invalid parameter value in 'procedure' parameter: %s" % row["name_prc"])
                     
             # REQ35 - http://www.opengis.net/spec/SOS/2.0/req/core/go-empty-response
             #    if procedures requested not exists the GetObservationResponse type shall be empty
             if len(filter.procedure)==0:
-                return        
+                return                
         
         # REQ29: http://www.opengis.net/spec/SOS/2.0/req/core/go-parameters
         #    The SOS returns all observations that match the specified parameter values. The
@@ -1312,7 +1382,7 @@ class GetObservationResponse_2_0_0:
         if filter.featureOfInterest != None:
             params.append(filter.featureOfInterest)
             sql = "%s %s" % (sql, """
-                AND foi.name_foi = %s)
+                AND foi.name_foi = %s
             """)
         
         # Adding observed properties filter

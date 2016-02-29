@@ -55,6 +55,9 @@ class sosDSfilter(f.sosFilter):
             if self.version == '2.0.0':
                 # OUTPUTFORMAT
                 if requestObject.has_key("proceduredescriptionformat"):
+                    if requestObject["proceduredescriptionformat"] == '':
+                        raise sosException.SOSException("MissingParameterValue", "proceduredescriptionformat", "Missing 'proceduredescriptionformat' parameter")
+                        
                     if requestObject["proceduredescriptionformat"] in sosConfig.parameters["DS_outputFormats_2_0_0"]:
                         self.outputFormat = requestObject["proceduredescriptionformat"]
                         
@@ -82,9 +85,11 @@ class sosDSfilter(f.sosFilter):
             
             # PROCEDURES
             if requestObject.has_key("procedure"):
+                if requestObject["procedure"] == '':
+                    raise sosException.SOSException("MissingParameterValue", "procedure", "Missing 'procedure' parameter")
+                    
                 prc = requestObject["procedure"].split(":")
                 self.procedure = prc[-1]
-                
                 if len(prc)>1:
                     prc[-1]=""
                     

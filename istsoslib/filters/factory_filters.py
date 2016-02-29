@@ -46,11 +46,11 @@ def sosFactoryFilter(environ,sosConfig):
     
     if method=="GET":
         # Returns a dictionary containing lists as values.
-        rect = parse_qs(environ['QUERY_STRING'])
+        #  > keep_blank_values used in version 2.0.0 to check null parameter exceptions
+        rect = parse_qs(environ['QUERY_STRING'], keep_blank_values = True)        
         requestObject = {}
         for key in rect.keys():
             requestObject[key.lower()] = rect[key][0]
-
         if requestObject.has_key("request"):
             sosRequest = requestObject["request"].lower()
         else:

@@ -23,7 +23,7 @@
 from lib import isodate as iso
 from istsoslib import sosException
 from lib.etree import et
-import zlib, base64
+import hashlib
 import sys
 
 def render(GO,sosConfig):
@@ -415,7 +415,7 @@ def XMLformat_2_0_0(GO, sosConfig):
                     # Creating om:OM_Observation
                     omobservation = et.SubElement(data, '{%s}OM_Observation' % ns['om'])
                     
-                    omobservation.set("{%s}id" % ns['gml'], base64.b64encode(zlib.compress(uid, 9)))
+                    omobservation.set("{%s}id" % ns['gml'], "o_%s" % hashlib.md5(uid).hexdigest())
                     
                     # Adding om:type with attribute
                     et.SubElement(omobservation, '{%s}type' % ns['om']).set(
@@ -427,7 +427,7 @@ def XMLformat_2_0_0(GO, sosConfig):
                     phenomenonTime = et.SubElement(omobservation, '{%s}phenomenonTime' % ns['om'])
                     
                     # Generating TimeInstant id shared that will be linked from the phenomenonTime 
-                    timeInstantId = base64.b64encode(zlib.compress("p_%s" % uid, 9))
+                    timeInstantId = "p_%s" % hashlib.md5(uid).hexdigest()
                     
                     # Adding gml:TimeInstant
                     timeInstant = et.SubElement(phenomenonTime, '{%s}TimeInstant' % ns['gml'])

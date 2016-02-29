@@ -61,7 +61,8 @@ class sosGOfilter(f.sosFilter):
             self.featureOfInterest = None
             self.featureOfInterestSpatial = None
             self.result = None #zero-one optional
-                    
+            self.observedProperty = [':']
+            
             # OBSERVED PROPERTY
             #   get_name_from_urn limit the ability to ask for an observedProperty with LIKE:
             #   eg: ask "water" to get all the water related data, "water:discharge", "water:temperature" ...
@@ -70,6 +71,9 @@ class sosGOfilter(f.sosFilter):
                 oprs = requestObject["observedproperty"].split(",")
                 
                 for opr in oprs:
+                    if opr == '':
+                        raise sosException.SOSException("MissingParameterValue", "observedProperty", "Missing 'observedProperty' parameter")
+                        
                     oprName = opr
                     self.observedProperty.append(oprName) # one-many ID
                     
@@ -79,6 +83,9 @@ class sosGOfilter(f.sosFilter):
                 prcs = requestObject["procedure"].split(",")
                 
                 for prc in prcs:
+                    if prc == '':
+                        raise sosException.SOSException("MissingParameterValue", "procedure", "Missing 'procedure' parameter")
+                        
                     try:
                         prcName = get_name_from_urn(prc, "procedure", sosConfig)
                         
@@ -95,13 +102,16 @@ class sosGOfilter(f.sosFilter):
                 # THE OFFERING
                 #  > in istSOS offerings are equals to procedures
                 #  > so offerings are inserted into the procedure array filter
+                
                 if requestObject.has_key("offering"):
                     prcs = requestObject["offering"].split(",") 
                     if self.procedure == None:
                         self.procedure = []
                     
                     for prc in prcs:
-                        try:
+                        if prc == '':
+                            raise sosException.SOSException("MissingParameterValue", "offering", "Missing 'offering' parameter")
+                        try:        
                             prcName = get_name_from_urn(prc, "offering", sosConfig)
                             
                         except Exception as e:
@@ -114,6 +124,8 @@ class sosGOfilter(f.sosFilter):
                 # RESPONSE FORMAT
                 self.responseFormat = 'text/xml;subtype="om/2.0"'
                 if requestObject.has_key("responseformat"):
+                    if requestObject["responseformat"] == '':
+                        raise sosException.SOSException("MissingParameterValue", "responseformat", "Missing 'responseformat' parameter")
                     if not requestObject["responseformat"] in sosConfig.parameters["GO_responseFormat_2_0_0"]:
                         raise sosException.SOSException("InvalidParameterValue", "responseFormat",
                             "Parameter \"responseFormat\" sent with invalid value : use one of %s" % "; ".join(sosConfig.parameters["GO_responseFormat_2_0_0"]))
@@ -181,16 +193,46 @@ class sosGOfilter(f.sosFilter):
                 
                 # FEATURES OF INTEREST FILTER
                 if requestObject.has_key("featureofinterest"):
-                    self.featureOfInterest = get_name_from_urn(requestObject["featureofinterest"], "feature", sosConfig)
+                    if requestObject["featureofinterest"] == '':
+                        raise sosException.SOSException("MissingParameterValue", "featureOfInterest", "Missing 'featureOfInterest' parameter")
+                    if sosConfig.urn["feature"] in requestObject["featureofinterest"]:
+                        self.featureOfInterest = get_name_from_urn(requestObject["featureofinterest"], "feature", sosConfig)
+                    else:
+                        self.featureOfInterest = requestObject["featureofinterest"]
                     
                 # SPATIAL FILTER
+                # example1: spatialFilter=om:featureOfInterest/*/sams:shape,0.0,0.0,60.0,60.0,http://www.opengis.net/def/crs/EPSG/0/4326
+                # example2: spatialFilter=om:featureOfInterest/*/sams:shape,0.0,0.0,60.0,60.0,urn:ogc:def:crs:EPSG::4326
                 if requestObject.has_key("spatialfilter"):
-                    if requestObject["spatialfilter"].find("<ogc:")>=0 and foi.find("<gml:")>=0:
-                        self.featureOfInterestSpatial = sosUtils.ogcSpatCons2PostgisSql(requestObject["spatialfilter"], 'geom_foi', sosConfig.istsosepsg)
+                    
+                    sfs = requestObject["spatialfilter"].split(",")
+                    
+                    if len(sfs)!=6:
+                        raise sosException.SOSException("InvalidParameterValue", "spatialfilter", 
+                            "Invalid spatial filter '%s'" % requestObject["spatialfilter"])
                         
-                    else:
-                        raise sosException.SOSException("InvalidParameterValue", "spatialfilter", "Invalid spatial filter '%s'" % requestObject["spatialfilter"])
-                            
+                    if sfs[0] != 'om:featureOfInterest/*/sams:shape':
+                        raise sosException.SOSException("InvalidParameterValue", "spatialfilter", 
+                            "Invalid spatial filter '%s'" % requestObject["spatialfilter"])
+                    
+                    srsName = None
+                    
+                    if sfs[5].index(':')>-1:
+                        srsName = sfs[5].split(':')[-1]
+                    
+                    if sfs[5].index('/')>-1:
+                        srsName = sfs[5].split('/')[-1]
+                    
+                    ogcfilter = (
+                        "<ogc:BBOX>" + 
+                          "<ogc:PropertyName>the_geom</ogc:PropertyName>"+
+                          ("<gml:Box srsName='EPSG:%s'>" % (srsName) )+
+                             ("<gml:coordinates>%s,%s %s,%s</gml:coordinates>" % (sfs[1], sfs[2], sfs[3], sfs[4])) +
+                          "</gml:Box>"+
+                        "</ogc:BBOX>")
+                        
+                    self.featureOfInterestSpatial = sosUtils.ogcSpatCons2PostgisSql(ogcfilter, 'geom_foi', sosConfig.istsosepsg)
+                        
                     
             else:
                 
@@ -204,6 +246,9 @@ class sosGOfilter(f.sosFilter):
                         
                 # RESPONSE FORMAT
                 if requestObject.has_key("responseformat"):
+                    if requestObject["responseformat"] == '':
+                        raise sosException.SOSException("MissingParameterValue", "responseFormat", "Missing 'responseFormat' parameter")
+                        
                     if not requestObject["responseformat"] in sosConfig.parameters["GO_responseFormat"]:
                         raise sosException.SOSException("InvalidParameterValue", "responseFormat",
                             "Parameter \"responseFormat\" sent with invalid value : use one of %s" % "; ".join(sosConfig.parameters["GO_responseFormat"]))
@@ -314,6 +359,19 @@ class sosGOfilter(f.sosFilter):
                         else:
                             raise sosException.SOSException("InvalidParameterValue", "eventTime",
                                 "You are requesting data for a period of [%s hours], but you are not permitted to ask for a period longer than: %s hours" % (userPeriod, maxhours))
+
+            elif (
+                    sosConfig.strictogc in ['True','true',1] 
+                    and self.version == '2.0.0' 
+                    and self.eventTime == None
+                    and self.featureOfInterest == None
+                    and self.featureOfInterestSpatial == None
+                    and self.procedure == None
+                ):
+                # ResponseExceedsSizeLimit fake exception
+                raise sosException.SOSException("ResponseExceedsSizeLimit", "",
+                    "Sorry but, You are requesting too many data")
+
 
             #####################################
             # NON STANDARD PARAMETERS by istSOS #

@@ -42,20 +42,25 @@ class sosGCfilter(f.sosFilter):
         
         if method == "GET":
             
+            self.sections = None
+            
             if requestObject.has_key("section"):
-                #-------SECTIONS-------------
                 self.sections = requestObject["section"].lower().split( "," )
                 
+            if requestObject.has_key("sections"):
+                self.sections = requestObject["sections"].lower().split( "," )
+                
+            if self.sections:                
                 for s in self.sections:
                     if self.version == '2.0.0':
                         if s not in sosConfig.parameters["GC_Section_2_0_0"]:
                             err_txt = "Allowed parameter \"section\" values are: " + ",".join(sosConfig.parameters["GC_Section"])
-                            raise sosException.SOSException("InvalidParameterValue","sections",err_txt)
+                            raise sosException.SOSException("InvalidParameterValue","section",err_txt)
                         
                     else:
                         if s not in sosConfig.parameters["GC_Section"]:
                             err_txt = "Allowed parameter \"section\" values are: " + ",".join(sosConfig.parameters["GC_Section"])
-                            raise sosException.SOSException("InvalidParameterValue","sections",err_txt)
+                            raise sosException.SOSException("InvalidParameterValue","section",err_txt)
                         
             else:
                 self.sections=["all"]

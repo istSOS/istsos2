@@ -124,9 +124,6 @@ def render(GC,sosConfig):
         r += "  </ows:OperationsMetadata>\n"
         
     if not GC.ObservationOfferingList==[]:
-        '''r += "  <!--~~~~~~~~~~~~~~~~~~-->\n"
-        r += "  <!-- Contents Section -->\n"
-        r += "  <!--~~~~~~~~~~~~~~~~~~-->\n"'''
         r += "  <Contents>\n"
         r += "    <ObservationOfferingList>\n"
         for ofl in GC.ObservationOfferingList.offerings:
@@ -181,7 +178,7 @@ def render(GC,sosConfig):
 
 def render_2_0_0(GC,sosConfig):
     r = '''<?xml version="1.0" encoding="UTF-8"?>
-    <Capabilities
+    <sos:Capabilities
       xsi:schemaLocation="http://www.opengis.net/sos/2.0 http://schemas.opengis.net/sos/2.0/sos.xsd" 
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
       xmlns:wsa="http://www.w3.org/2005/08/addressing" 
@@ -390,14 +387,14 @@ def render_2_0_0(GC,sosConfig):
 
     if not GC.ObservationOfferingList==[]:
         r += "  <sos:contents>\n"
-        r += "    <sos:contents>\n"
+        r += "    <sos:Contents>\n"
         
         for offering in GC.ObservationOfferingList.offerings:
             r += "      <swes:offering>\n"
             r += "        <sos:ObservationOffering xmlns:ns=\"http://www.opengis.net/sos/2.0\">\n"
             r += "          <swes:description>%s</swes:description>\n" % (offering.description)
-            r += "          <swes:identifier>%s%s</swes:identifier>\n" % (sosConfig.urn["procedure"],offering.identifier)
-            r += "          <swes:procedure>%s</swes:procedure>\n" % (offering.identifier)
+            r += "          <swes:identifier>%s</swes:identifier>\n" % (offering.identifier)
+            r += "          <swes:procedure>%s</swes:procedure>\n" % (offering.procedure)
             r += "          <swes:procedureDescriptionFormat>http://www.opengis.net/sensorML/1.0.1</swes:procedureDescriptionFormat>\n"
             #r += "          <swes:procedureDescriptionFormat>http://www.opengis.net/waterml/2.0/observationProcess</swes:procedureDescriptionFormat>\n"
             
@@ -419,17 +416,15 @@ def render_2_0_0(GC,sosConfig):
             r += "          </sos:phenomenonTime>\n"
             
             # This shall be modified to handle specimen
+            for rf in sosConfig.parameters['GO_responseFormat_2_0_0']:
+                r += "        <sos:responseFormat>" + rf + "</sos:responseFormat>\n"
+            r += "          <sos:observationType>http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Measurement</sos:observationType>  \n"   
             r += "          <sos:featureOfInterestType>http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingPoint</sos:featureOfInterestType>\n"
             r += "        </sos:ObservationOffering>\n"
             r += "      </swes:offering>\n"
         
-        
-        for rf in sosConfig.parameters['GO_responseFormat_2_0_0']:
-            r += "        <sos:responseFormat>" + rf + "</sos:responseFormat>\n"
-            
-        r += "        <sos:observationType>http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Measurement</sos:observationType>  \n"     
-        r += "      </sos:contents>\n"
+        r += "      </sos:Contents>\n"
         r += "    </sos:contents>\n" 
         
-    r += "    </Capabilities>"
+    r += "    </sos:Capabilities>"
     return r

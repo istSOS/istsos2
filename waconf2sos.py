@@ -83,6 +83,7 @@ class istsosConfig():
         
         self.aggregate_nodata = serviceobj.serviceconf.getobservation["aggregate_nodata"]
         self.maxGoPeriod = serviceobj.serviceconf.getobservation["maxGoPeriod"]        
+        self.strictogc = serviceobj.serviceconf.getobservation["strictOGC"]        
         self.aggregate_nodata_qi = serviceobj.serviceconf.getobservation["aggregate_nodata_qi"]
         self.default_qi = serviceobj.serviceconf.getobservation["default_qi"]
         self.correct_qi = serviceobj.serviceconf.getobservation["correct_qi"]

@@ -32,26 +32,17 @@ class sosFilter():
         service (str): the name of the service requested
         version (str): the version of the service
     """
-    #self.request = None
-    #self.service = None
-    #self.version = None
     
     def __init__(self, sosRequest, method, requestObject, sosConfig):
         """Init sosFilter class"""
         
         self.request = sosRequest
+        if self.request == '':
+            raise sosException.SOSException("MissingParameterValue", "request", "Missing 'request' parameter")
+            
         self.sosConfig = sosConfig
         if method == "GET":
             
-            # OGC 12-006/REQ 1: http://www.opengis.net/spec/SOS/2.0/req/core/request-service
-            if requestObject.has_key("service"):
-                self.service = requestObject["service"]
-                if self.service not in sosConfig.parameters["service"]:
-                    raise sosException.SOSException("InvalidParameterValue","service","\"service\": %s not supported" %(self.service))
-                    
-            else:
-                raise sosException.SOSException("MissingParameterValue","service","\"service\" parameter is mandatory")
-                
             # OGC 12-006/REQ 5: http://www.opengis.net/spec/SOS/2.0/req/core/gc-version
             if self.request=="getcapabilities":
                 if requestObject.has_key("acceptversions"):
@@ -75,12 +66,27 @@ class sosFilter():
                 # OGC 12-006/REQ 2: http://www.opengis.net/spec/SOS/2.0/req/core/request-version
                 if requestObject.has_key("version"):
                     self.version = requestObject["version"]
-                    
+                    if self.version == '':
+                        raise sosException.SOSException("MissingParameterValue", "version", "Missing 'version' parameter")
+                        
                     if self.version not in sosConfig.parameters["version"]:
                         raise sosException.SOSException("InvalidParameterValue","version","\"version\": %s not supported" %(self.version))
                         
                 else:
                     raise sosException.SOSException("MissingParameterValue","version","\"version\" parameter is mandatory")
+                    
+            # OGC 12-006/REQ 1: http://www.opengis.net/spec/SOS/2.0/req/core/request-service
+            if requestObject.has_key("service"):
+                self.service = requestObject["service"]
+                if self.service == '':
+                    raise sosException.SOSException("MissingParameterValue", "service", "Missing 'service' parameter")
+                    
+                if self.service not in sosConfig.parameters["service"]:
+                    raise sosException.SOSException("InvalidParameterValue","service","\"service\": %s not supported" %(self.service))
+                    
+            else:
+                raise sosException.SOSException("MissingParameterValue","service","\"service\" parameter is mandatory")
+                
                     
         if method == "POST":
             
