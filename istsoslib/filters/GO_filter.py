@@ -361,7 +361,7 @@ class sosGOfilter(f.sosFilter):
                                 "You are requesting data for a period of [%s hours], but you are not permitted to ask for a period longer than: %s hours" % (userPeriod, maxhours))
 
             elif (
-                    sosConfig.strictogc in ['True','true',1] 
+                    sosConfig.strictogc in ['True','true',1]
                     and self.version == '2.0.0' 
                     and self.eventTime == None
                     and self.featureOfInterest == None

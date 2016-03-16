@@ -20,7 +20,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # ===============================================================================
-from istsoslib import sosException
+
 import sys   
 from lib.etree import et
 import json
@@ -207,12 +207,16 @@ def render(DS,sosConfig):
                           '<', '=', '>', '?', '@', '[', '\\', ']', 
                           '^', '`', '{', '|', '}', '~']
                           
-    location = tree.find("{%s}member/{%s}System/{%s}location"
-                        %(ns['sml'],ns['sml'],ns['sml']) )
+    
+    location = tree.find("{%s}member/{%s}System/{%s}location" % (ns['sml'],ns['sml'],ns['sml']) )
+                        
     for feature in location:
         for ch in not_allowed_NCName:
             if ch in feature.attrib['{%s}id' %ns['gml']]:
                 feature.attrib['{%s}id' %ns['gml']] = feature.attrib['{%s}id' %ns['gml']].replace(ch,"_")
+                
+        if not sosConfig.urn["feature"] in feature.attrib['{%s}id' %ns['gml']]:
+            feature.attrib['{%s}id' %ns['gml']] = "loc_%s" % feature.attrib['{%s}id' %ns['gml']]
 
     # The unique identifier in the response document matches the procedure specified in the request
     system = tree.find("{%s}member/{%s}System" %(ns['sml'],ns['sml']))
@@ -225,8 +229,9 @@ def render(DS,sosConfig):
         term = et.SubElement(identifier,"{%s}Term" % ns["sml"])
         term.attrib['definition'] = "urn:ogc:def:identifier:OGC:uniqueID"
         value = et.SubElement(term,"{%s}value" % ns["sml"])
-        value.text = sosConfig.urn["procedure"]+system.attrib['{%s}id' %ns['gml']]
+        value.text = system.attrib['{%s}id' %ns['gml']]
         system.insert(1,identification)
+        
     else:
         identifierList = identification.find("{%s}IdentifierList" % ns["sml"])
         if not identifierList:
@@ -235,8 +240,8 @@ def render(DS,sosConfig):
             term = et.SubElement(identifier,"{%s}Term" % ns["sml"])
             term.attrib['definition'] = "urn:ogc:def:identifier:OGC:uniqueID"
             value = et.SubElement(term,"{%s}value" % ns["sml"])
-            value.text = sosConfig.urn["procedure"]+system.attrib['{%s}id' %ns['gml']]
-#            system.insert(1,identification)
+            value.text = system.attrib['{%s}id' %ns['gml']]
+            
         else:
             identifiers = identifierList.findall("{%s}identifier" % ns["sml"])
             unique = False
@@ -244,19 +249,17 @@ def render(DS,sosConfig):
                 if identifier.find("{%s}Term" % ns["sml"]).attrib['definition'] == "urn:ogc:def:identifier:OGC:uniqueID":
                     unique = True
                     break
+                
             if not unique:
                 identifier = et.SubElement(identifierList,"{%s}identifier" % ns["sml"])
                 term = et.SubElement(identifier,"{%s}Term" % ns["sml"])
                 term.attrib['definition'] = "urn:ogc:def:identifier:OGC:uniqueID"
                 value = et.SubElement(term,"{%s}value" % ns["sml"])
-                value.text = sosConfig.urn["procedure"]+system.attrib['{%s}id' %ns['gml']]
-#                system.insert(1,identification)
-    
-            
-    
-    
+                value.text = system.attrib['{%s}id' %ns['gml']]
+                
     root = tree.getroot()
     root.attrib["xmlns"]="http://www.opengis.net/sensorML/1.0.1"
+    root.attrib["version"]="1.0.1"
     return """<?xml version="1.0" encoding="UTF-8"?>\n%s""" % et.tostring(root)
     
     
