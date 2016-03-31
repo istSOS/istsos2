@@ -24,6 +24,7 @@ from walib import utils, databaseManager, configManager
 from walib.resource import waResourceAdmin, waResourceService
 import sys, os, shutil, errno
 import traceback
+import psycopg2
 
 class waServices(waResourceAdmin):
     """class to handle SOS service objects, support GET and POST method"""
@@ -757,3 +758,113 @@ class waInsertobservation(waResourceService):
         except Exception as e:
             self.setException("Insert observations failed - Communication: %s %s - Response: %s"  %(response.status_code, e, response.text))
         
+        
+
+class waFastInsert(waResourceService):
+    """class to handle fast insertion of observation, support only the POST method"""
+        
+    def __init__(self,waEnviron):
+        waResourceService.__init__(self,waEnviron)
+     
+    def executePost(self):
+        
+        import sys
+        
+        procedure = self.pathinfo[-1]
+        print >> sys.stderr, procedure
+        print >> sys.stderr, self.json
+        
+        if procedure == 'fastinsert' and self.pathinfo[-2] == 'operations':
+            self.setException("Request wrong: please, put the procedure name in the url")
+            
+        if not self.json or len(self.json)==0:
+            self.setException("Request wrong: body data empty")
+            
+        else:
+            conn = databaseManager.PgDB(
+                self.serviceconf.connection["user"],
+                self.serviceconf.connection["password"],
+                self.serviceconf.connection["dbname"],
+                self.serviceconf.connection["host"],
+                self.serviceconf.connection["port"]
+            )
+            
+            try:
+                sql = """
+                    SELECT 
+                      procedures.id_prc, 
+                      proc_obs.id_pro,
+                      proc_obs.constr_pro, 
+                      procedures.stime_prc, 
+                      procedures.etime_prc
+                    FROM 
+                      %s.procedures, 
+                      %s.proc_obs
+                    WHERE 
+                      proc_obs.id_prc_fk = procedures.id_prc
+                """ % (self.service, self.service)
+                sql += """
+                    AND 
+                      name_prc = %s
+                    ORDER BY
+                      proc_obs.id_pro ASC; 
+                """
+                rows = conn.select(sql, (procedure,))
+                
+                # check if procedure observations length is ok
+                if len(rows) != (len(self.json[0])-1):
+                    self.setException("Array length missmatch with procedures observation number")
+                    
+                else:
+                    insertEventTime = """
+                        INSERT INTO %s.event_time (id_prc_fk, time_eti)
+                    """ % (self.service)
+                    insertEventTime += """
+                        VALUES (%s, %s::TIMESTAMPTZ) RETURNING id_eti;
+                    """
+                    
+                    deleteEventTime = """
+                        DELETE FROM %s.event_time 
+                    """ % (self.service)
+                    deleteEventTime += """
+                        WHERE id_prc_fk = %s
+                        AND time_eti = %s::TIMESTAMPTZ
+                    """
+                    
+                    insertMeasure = """
+                        INSERT INTO %s.measures(id_eti_fk, id_qi_fk, id_pro_fk, val_msr)
+                    """ % (self.service)
+                    insertMeasure += """
+                        VALUES (%s, 100, %s, %s);
+                    """
+                    
+                    for observation in self.json:
+                        try:
+                            id_eti = conn.executeInTransaction(insertEventTime, (rows[0][0], observation[0]))
+                            
+                        except psycopg2.IntegrityError as ie:
+                            conn.rollbackTransaction()
+                            conn.executeInTransaction(deleteEventTime, (rows[0][0], observation[0]))
+                            id_eti = conn.executeInTransaction(insertEventTime, (rows[0][0], observation[0]))
+                            
+                        for idx in range(0, len(rows)):
+                            conn.executeInTransaction(
+                                insertMeasure, (int(id_eti[0][0]), int(rows[idx][1]), float(observation[(idx+1)])))
+                                
+                        conn.commitTransaction()
+                        
+                self.setMessage("Faster than light!")
+            
+            except Exception as e:
+                print >> sys.stderr, traceback.print_exc()
+                conn.rollbackTransaction()
+                self.setException("Error in fast insert (%s): %s" % (type(e),e))
+                
+        
+
+
+
+
+
+
+

@@ -20,6 +20,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 #
 # =============================================================================
+'''
+Import the MQTTMediator automatically.
+'''
+from istmqttlib.mediator import MQTTMediator
 
-__all__ = ["istsos", "admin", "configManager", "databaseManager",
-           "resourceFactory", "utils", "sqlschema", "wa_version"]
+__all__ = (MQTTMediator,)

@@ -190,6 +190,16 @@ class PgDB(Database):
         self.__conn.commit()
         return
 
+    def insertManyInTransaction(self,sql,dict):
+        """Insert many values at once"""
+        cur = self.__conn.cursor()
+        try:
+            cur.executemany(sql, dict)
+        except psycopg2.ProgrammingError as e:
+            raise e
+        self.__conn.commit()
+        return
+
     def mogrify(self,sql,par=None):
         """Mogrify an sql statement (print >> sys.stderr,  the actual sql query that will be executed)"""
         cur = self.__conn.cursor(cursor_factory=psycopg2.extras.DictCursor)

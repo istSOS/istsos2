@@ -44,6 +44,7 @@ class waResource(object):
         self.user = False
         if 'user' in waEnviron:
             self.user = waEnviron['user']
+            
         self.response = {
             "success": True,
             "message": ""
@@ -55,7 +56,6 @@ class waResource(object):
         self.postRequest = None
         if self.method in ["POST","PUT"] and loadjson==True:
             import json
-
             self.json = ut.encodeobject(json.loads(waEnviron['wsgi_input']))
 
     def checkAuthorization(self):

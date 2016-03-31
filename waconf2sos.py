@@ -45,7 +45,7 @@ class istsosConfig():
         self.user = user.getUser(environ)
                 
         serviceobj = resource.waResourceService(
-            waEnviron,waEnviron["pathinfo"][-1],loadjson=False)
+            waEnviron, waEnviron["pathinfo"][-1], loadjson=False)
         
         # Passing the basic authentication header in waEnviron
         #   shall be used in istSOS lib request from walib

@@ -209,17 +209,16 @@ ALTER SEQUENCE prc_obs_id_pro_seq OWNED BY proc_obs.id_pro;
 
 CREATE TABLE procedures (
     id_prc integer NOT NULL,
+    assignedid_prc character varying(32) NOT NULL,
     name_prc character varying(30) NOT NULL,
     desc_prc text,
     stime_prc timestamp with time zone,
     etime_prc timestamp with time zone,
-
-   -- id_tru_fk integer NOT NULL,
     time_res_prc integer,
     time_acq_prc integer,
     id_oty_fk integer,
     id_foi_fk integer,
-    assignedid_prc character varying(32) NOT NULL
+    mqtt_prc character varying
 );
 COMMENT ON TABLE procedures IS 'Stores the Procedures.';
 

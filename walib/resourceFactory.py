@@ -280,6 +280,10 @@ def initResource(waEnviron):
                         #print >> sys.stderr, resource     
                         from walib.istsos.services import services
                         return services.waInsertobservation(waEnviron)
+                    elif resource == "fastinsert":
+                        print >> sys.stderr, resource     
+                        from walib.istsos.services import services
+                        return services.waFastInsert(waEnviron)
                         
                 # ---------------------------------------
                 # Entering istsos.services.logs

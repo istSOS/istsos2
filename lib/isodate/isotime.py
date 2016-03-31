@@ -42,6 +42,12 @@ from lib.isodate.isotzinfo import TZ_REGEX, build_tzinfo
 TIME_REGEX_CACHE = []
 # used to cache regular expressions to parse ISO time strings.
 
+try:
+    unicode = unicode
+except NameError:
+    # 'unicode' is undefined, must be Python 3
+    long = int
+
 
 def build_time_regexps():
     '''
