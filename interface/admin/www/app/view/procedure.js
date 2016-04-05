@@ -535,7 +535,7 @@ Ext.define('istsos.view.procedure', {
     checkRemaining: function(){
       console.log("checkRemaining > " + this.remaining2load);
       if(this.remaining2load==0){
-        this.fireEvent("ready2load");
+          this.fireEvent("ready2load");
       }
     },
     executeCopy: function(){
@@ -611,7 +611,6 @@ Ext.define('istsos.view.procedure', {
 
         this.loadedJson = json;
 
-
         // IDENTIFICATION
         var store = Ext.getCmp("smlIdentification").getComponent('gridSml').getStore();
         var c = json["data"]["identification"];
@@ -623,7 +622,6 @@ Ext.define('istsos.view.procedure', {
         // GENERAL INFORMATION
         Ext.getCmp('generalInfo').loadRecord(json);
         Ext.getCmp('procedureNameRO').setValue(Ext.getCmp('procedurename').getValue());
-
 
         // CLASSIFICATION
         var data = {}
@@ -742,7 +740,6 @@ Ext.define('istsos.view.procedure', {
         }
 
         // CAPABILITIES
-
         store = Ext.getCmp("smlCapabilities").getComponent('gridSml').getStore();
         var c = json["data"]["capabilities"];
         for (var i in c) {
@@ -772,6 +769,11 @@ Ext.define('istsos.view.procedure', {
                 store.insert(0, Ext.create('smlfield', c[i]));
             }
         }
+
+        // MQTT Broker configuration
+        var form = Ext.getCmp('frmMqtt').loadRecord({
+            data: json.data['mqtt']
+        });
     },
     createJSON: function(){
         // Insert data from a /istsos/services/{name}/procedures POST request
@@ -811,6 +813,10 @@ Ext.define('istsos.view.procedure', {
 
         jsonData = Ext.apply(jsonData,{
             "outputs": me.getOutputs()
+        });
+
+        jsonData = Ext.apply(jsonData,{
+            "mqtt": me.getMqttBroker()
         });
 
         jsonData["history"] = [];
@@ -879,7 +885,6 @@ Ext.define('istsos.view.procedure', {
                 "identification": me.getSmlStore("smlIdentification")
             });
 
-
             jsonData['classification']=me.getClassification();
             jsonData = Ext.apply(jsonData,me.getCharacteristics());
 
@@ -907,7 +912,7 @@ Ext.define('istsos.view.procedure', {
 
             jsonData["history"] = [];
 
-            //console.dir(jsonData);
+            jsonData['mqtt']=me.getMqttBroker();
 
             this.loadedJson = {
                 data: jsonData
@@ -1113,6 +1118,23 @@ Ext.define('istsos.view.procedure', {
             };
         }
         return form.getValues();
+    },
+    getMqttBroker: function(){
+        console.log("getMqttBroker");
+        var form = Ext.getCmp('frmMqtt').getForm(),
+            ret = null;
+        if (form.isDirty() && !form.isValid()) {
+            throw {
+                type: 'MQTT Broker: URL and Topic are mandatory parameters.',
+                cmp: "frmMqtt"
+            };
+        }else{
+            var json = form.getValues();
+            if(!Ext.isEmpty(json["broker_url"]) && !Ext.isEmpty(json["broker_topic"])){
+                ret = json;
+            }
+        }
+        return ret;
     },
     getOutputs: function(){
         var store = Ext.getStore("gridoutputs");

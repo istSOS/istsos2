@@ -42,7 +42,7 @@ def parse_and_get_ns(file):
             ns[elem[0]] = "%s" % elem[1]
         elif event == "start":
             if root is None:
-                root = elem 
+                root = elem
     return et.ElementTree(root), ns
 
 
@@ -53,28 +53,28 @@ class Procedure():
         """
         self.data = {}
         self.serviceconf = serviceconf
-    
+
     def loadJSON(self, describeSensorObj):
         """
         Create the the self.data object representing the istSOS SensorML from a json elemet
-        
+
         @param json: a json describeSensor object
         """
         self.data = json.loads(describeSensorObj)
 
-    
+
     def loadDICT(self, describeSensorObj):
         """
         Create the the self.data object representing the istSOS SensorML from a json elemet
-        
+
         @param json: a json describeSensor object
         """
         self.data = describeSensorObj
-        
+
     def loadXML(self, xml):
         """
         Create the the self.data object representing the istSOS SensorML from an XML elemet
-        
+
         @param json: a json describeSensor object (xml string or xml file full path)
         """
         if type(xml)==type("ciao"):
@@ -87,7 +87,7 @@ class Procedure():
         else:
             raise TypeError("xml input must be a string representing the XML itself or the path to the file where the XML is stored")
             #tree, ns = parse_and_get_ns(xml)
-        
+
         # Workaround for rare xml parsing bug in etree
         ns = {
             'swe': 'http://www.opengis.net/swe/1.0.1',
@@ -96,35 +96,35 @@ class Procedure():
             'xlink': 'http://www.w3.org/1999/xlink',
             'xsi': 'http://www.w3.org/2001/XMLSchema-instance'
         }
-        
+
         #-----System name/identifier------
-        system = tree.find("{%s}member/{%s}System" %(ns['sml'],ns['sml']) )
+        system = tree.find("{%s}member/{%s}System" % (ns['sml'], ns['sml']))
         try:
-            self.data['system_id'] = system.attrib[ "{%s}id" % ns['gml'] ]
+            self.data['system_id'] = system.attrib["{%s}id" % ns['gml']]
         except Exception as e:
             raise SyntaxError("Error in <sml:member>: <sml:System> element or mandatory attribute are missing")
-        
+
         systemname = tree.find("{%s}member/{%s}System/{%s}name" %(ns['sml'],ns['sml'],ns['gml']) )
         try:
             self.data['system'] = systemname.text.strip()
         except:
             raise SyntaxError("Error in <sml:System>: <sml:name> element is missing")
-        
-        
+
+
         #-----System description------
         desc = tree.find("{%s}member/{%s}System/{%s}description" %(ns['sml'],ns['sml'],ns['gml']) )
         try:
             self.data['description'] = desc.text.strip()
         except:
             self.data['description'] = ""
-        
+
         #-----System Search Keywords------
         keys = tree.findall("{%s}member/{%s}System/{%s}keywords/{%s}KeywordList/{%s}keyword" %((ns['sml'],)*5))
         try:
             self.data['keywords'] = ",".join([key.text.strip() for key in keys])
         except:
             self.data['keywords'] = ""
-        
+
         #-----System Classifiers------
         self.data['identification'] = []
         idents = tree.findall("{%s}member/{%s}System/{%s}identification/{%s}IdentifierList/{%s}identifier" %((ns['sml'],)*5))
@@ -138,7 +138,7 @@ class Procedure():
                 self.data['identification'].append(item)
             except:
                 raise SyntaxError("Error in <swe:identification>: some <sml:identifier> mandatory sub elements or attributes are missing")
-        
+
         #-----System Identifiers------
         self.data["classification"] = []
         man=[False,False]
@@ -158,13 +158,13 @@ class Procedure():
                 raise SyntaxError("Error in <swe:classification>: some <sml:classifier> mandatory sub elements or attributes are missing")
         if not man==[True,True]:
             raise SyntaxError("Error in <sml:ClassifierList>: 'System Type' and 'Sensor Type' classifiers are both mandatory")
-        
+
         #-----System Characteristics------
         try:
             self.data["characteristics"] = tree.find("{%s}member/{%s}System/{%s}characteristics" %((ns['sml'],)*3)).attrib[ "{%s}href" % ns['xlink'] ]
         except:
             self.data["characteristics"] = ""
-        
+
         #-----System Capabilities------
         self.data["capabilities"] = []
         fields = tree.findall("{%s}member/{%s}System/{%s}capabilities/{%s}DataRecord/{%s}field" %(ns['sml'],ns['sml'],ns['sml'],ns['swe'],ns['swe']))
@@ -177,14 +177,14 @@ class Procedure():
                 if fieldchield == None:
                     fieldchield = field.find('{%s}Category' % ns['swe'])
                 item["definition"] = fieldchield.attrib['definition']
-                
+
                 uom = fieldchield.find('{%s}uom' % ns['swe'] )
                 value = fieldchield.find('{%s}value' % ns['swe'] )
-                
+
                 if uom != None and value != None:
                     item["uom"] = uom.attrib['code']
                     item["value"] = value.text.strip()
-                
+
                 self.data['capabilities'].append(item)
                 if item["name"] == 'Sampling time resolution':
                     man[0]=True
@@ -194,7 +194,7 @@ class Procedure():
                 raise SyntaxError("Error in <swe:capabilities>: some <swe:field> mandatory sub elements or attributes are missing")
         #if not man==[True,True]:
         #    raise SyntaxError("Error in <sml:capabilities>: 'Sampling time resolution' and 'Acquisition time resolution' fields are both mandatory")
-        
+
         #-----Relevant Contacts------
         self.data["contacts"] = []
         contacts = tree.findall("{%s}member/{%s}System/{%s}contact" %((ns['sml'],)*3))
@@ -211,11 +211,11 @@ class Procedure():
                 try:
                     item["voice"] = cont.find("{%s}contactInfo/{%s}phone/{%s}voice" %((ns['sml'],)*3)).text.strip()
                 except:
-                    item["voice"] = ""   
+                    item["voice"] = ""
                 try:
                     item["fax"] = cont.find("{%s}contactInfo/{%s}phone/{%s}facsimile" %((ns['sml'],)*3)).text.strip()
                 except:
-                    item["fax"] = "" 
+                    item["fax"] = ""
                 try:
                     item["deliveryPoint"] = cont.find("{%s}contactInfo/{%s}address/{%s}deliveryPoint" %((ns['sml'],)*3)).text.strip()
                 except:
@@ -248,9 +248,9 @@ class Procedure():
             except Exception as e:
                 print >> sys.stderr, traceback.print_exc()
                 raise SyntaxError("Error in <swe:contact>: some <swe:contact> mandatory sub elements or attributes are missing")
-            
-        
-        #-----System Documentation------            
+
+
+        #-----System Documentation------
         self.data["documentation"] = []
         documents = tree.findall("{%s}member/{%s}System/{%s}documentation/{%s}Document" %((ns['sml'],)*4))
         for doc in documents:
@@ -266,16 +266,16 @@ class Procedure():
                     item["format"] = doc.find("{%s}format" % ns['sml']).text.strip()
                 except:
                     item["format"] = ""
-                    
+
                 self.data["documentation"].append(item)
-                
+
             except:
                 raise SyntaxError("Error in <swe:documentation>: some <swe:Document> mandatory sub elements or attributes are missing")
-                
-        #-----System Location------            
+
+        #-----System Location------
         point = tree.find("{%s}member/{%s}System/{%s}location/{%s}Point" %(ns['sml'],ns['sml'],ns['sml'],ns['gml']) )
         coord = tree.find("{%s}member/{%s}System/{%s}location/{%s}Point/{%s}coordinates" %(ns['sml'],ns['sml'],ns['sml'],ns['gml'],ns['gml']))
-        
+
         try:
             coordlist = [ i for i in coord.text.strip().split(",")]
             self.data["location"] = {}
@@ -288,18 +288,21 @@ class Procedure():
             self.data["location"]["crs"]["properties"] = {}
             self.data["location"]["crs"]["properties"]["name"] = point.attrib["srsName"]
             self.data["location"]["properties"] = {}
-            self.data["location"]["properties"]["name"] = point.attrib["{%s}id" % ns['gml'] ]
+            if point.attrib["{%s}id" % ns['gml']].startswith('loc_'):
+                self.data["location"]["properties"]["name"] = point.attrib["{%s}id" % ns['gml']][4:]
+            else:
+                self.data["location"]["properties"]["name"] = point.attrib["{%s}id" % ns['gml']]
         except:
             raise SyntaxError("Error in <swe:location>: some mandatory <gml:Point> sub elements or attributes are missing")
-            
-        
+
+
         #-----System Interfaces------
         interfaces = tree.findall("{%s}member/{%s}System/{%s}interfaces/{%s}InterfaceList/{%s}interface" %((ns['sml'],)*5))
         try:
             self.data["interfaces"] = ",".join([ interface.attrib["name"] for interface in interfaces ])
         except:
             raise SyntaxError("Error in <swe:interfaces>: some mandatory sub elements or attributes are missing")
-        
+
         #-----System Inputs------
         inputs = tree.findall("{%s}member/{%s}System/{%s}inputs/{%s}InputList/{%s}input" %((ns['sml'],)*5))
         self.data["inputs"] = []
@@ -315,10 +318,10 @@ class Procedure():
                 self.data["inputs"].append(item)
             except:
                 raise SyntaxError("Error in <swe:inputs>: some <swe:input> mandatory sub elements or attributes are missing")
-                
-            
+
+
         #-----System Outputs------
-        outputs = tree.findall("{%s}member/{%s}System/{%s}outputs/{%s}OutputList/{%s}output/{%s}DataRecord/{%s}field" 
+        outputs = tree.findall("{%s}member/{%s}System/{%s}outputs/{%s}OutputList/{%s}output/{%s}DataRecord/{%s}field"
                                 %( (ns['sml'],)*5 + (ns['swe'],)*2) )
         self.data["outputs"] = []
         time = False
@@ -332,50 +335,50 @@ class Procedure():
                     allow = child.find("{%s}constraint/{%s}AllowedTimes" %(ns['swe'],ns['swe']))
                 else:
                     child =  out.find("{%s}Quantity" % ns['swe'] )
-                    allow = child.find("{%s}constraint/{%s}AllowedValues" %(ns['swe'],ns['swe']))  
+                    allow = child.find("{%s}constraint/{%s}AllowedValues" %(ns['swe'],ns['swe']))
                 item["definition"] = child.attrib["definition"]
                 try:
                     item["description"] = child.find("{%s}description" % ns['gml']).text.strip()
                 except:
                     item["description"] = ""
-                    
+
                 try:
                     item["uom"] = child.find("{%s}uom" % ns['swe']).attrib["code"]
                 except:
                     item["uom"] = ""
-                
-                
+
+
                 if allow:
-                
+
                     item["constraint"] = {}
-                     
+
                     try:
                         item["constraint"]["role"] = child.find("{%s}constraint" % ns['swe']).attrib["{%s}role" % ns['xlink']]
                     except:
                         pass
-    
+
                     try:
                         item["constraint"]["min"] = allow.find("{%s}min" % ns['swe']).text.strip()
                     except:
                         pass #item["constraint"]["min"] = ""
-    
+
                     try:
                         item["constraint"]["max"] = allow.find("{%s}max" % ns['swe']).text.strip()
                     except:
                         pass #item["constraint"]["max"] = ""
-    
+
                     try:
                         item["constraint"]["interval"] = allow.find("{%s}interval" % ns['swe']).text.strip().split(" ")
                     except:
                         pass #item["constraint"]["interval"] = ""
-                    
+
                     try:
                         item["constraint"]["valuelist"] = allow.find("{%s}valueList" % ns['swe']).text.strip().split(" ")
                     except:
                         pass #item["constraint"]["valuelist"] = ""
-                
+
                 self.data["outputs"].append(item)
-                
+
             except Exception as ex:
                 print >> sys.stderr, traceback.print_exc()
                 raise SyntaxError("Error in <sml:outputs>: some <swe:field> mandatory sub elements or attributes are missing")
@@ -400,14 +403,14 @@ class Procedure():
                 self.data["history"].append(item)
             except:
                 raise SyntaxError("Error in <sml:history>: some <sml:member> mandatory sub elements or attributes are missing")
-        
-        
+
+
     def toJSON(self):
         """
         Return the Json that represent the self.data object as L{string}
         """
         return json.dumps(self.data, ensure_ascii=False)
-        
+
     def toXML(self,indent=False):
         """
         Return the SensorML that represent the self.data object as L{string}
@@ -415,12 +418,12 @@ class Procedure():
         import sys
         ns = {
             'xsi': "http://www.w3.org/2001/XMLSchema-instance" ,
-            'sml': "http://www.opengis.net/sensorML/1.0.1", 
-            'swe': "http://www.opengis.net/swe/1.0.1", 
-            'xlink': "http://www.w3.org/1999/xlink", 
-            'gml': 'http://www.opengis.net/gml'            
+            'sml': "http://www.opengis.net/sensorML/1.0.1",
+            'swe': "http://www.opengis.net/swe/1.0.1",
+            'xlink': "http://www.w3.org/1999/xlink",
+            'gml': 'http://www.opengis.net/gml'
         }
-           
+
         #---map namespaces---
         try:
             register_namespace = et.register_namespace
@@ -441,26 +444,26 @@ class Procedure():
                         print >> sys.stderr, ("Failed to import ElementTree from any known place")
                 for key in ns:
                     _namespace_map[ns[key]] = key
-        
+
         root = et.Element("{%s}SensorML" % ns['sml'])
         root.attrib[ "{%s}schemaLocation" % ns['xsi'] ] = "http://www.opengis.net/sensorML/1.0.1 http://schemas.opengis.net/sensorML/1.0.1/sensorML.xsd"
         root.attrib["version"] = "1.0"
-                   
+
         member = et.SubElement(root, "{%s}member" % ns['sml'] )
-        
+
         system = et.SubElement(member, "{%s}System" % ns['sml'] )
         system.attrib["{%s}id" % ns['gml'] ] = self.data["system_id"]
 
         #--- System Description
-        system.append(et.Comment("System Description"))        
-        
+        system.append(et.Comment("System Description"))
+
         if ("keywords" in self.data) and (not self.data["description"]==""):
             desc = et.SubElement(system, "{%s}description" % ns['gml'] )
             desc.text = self.data["description"]
-        
+
         name = et.SubElement(system, "{%s}name" % ns['gml'] )
         name.text = self.data["system"]
-        
+
         #--- System Search Keywords
         if ("keywords" in self.data) and (not self.data["keywords"]==""):
             system.append(et.Comment("System Search Keywords"))
@@ -469,7 +472,7 @@ class Procedure():
             for k in self.data["keywords"].split(","):
                 key = et.SubElement(keylist, "{%s}keyword" % ns['sml'] )
                 key.text = k
-        
+
         #--- System Identifiers
         if ("identification" in self.data) and (not self.data["identification"]==[]):
             system.append(et.Comment("System Identifiers"))
@@ -487,7 +490,7 @@ class Procedure():
                 value.text = i["value"]
             if not uniqueidPresent:
                 raise Exception("self.data['identification']: 'uniqueID' is mandatory")
-        
+
         #--- System Classifiers
         system.append(et.Comment("System Classifiers"))
         classification = et.SubElement(system, "{%s}classification" % ns['sml'] )
@@ -505,14 +508,14 @@ class Procedure():
                 senstype = True
         if not systype == True and senstype == True:
             raise Exception("self.data['classification']: 'System Type' and 'Sensor Type' are mandatory")
-        
-        #--- System Characteristics 
+
+        #--- System Characteristics
         if ("characteristics" in self.data) and ( not self.data["characteristics"] == ""):
             system.append(et.Comment("System Characteristics"))
             characteristics = et.SubElement(system, "{%s}characteristics" % ns['sml'])
             characteristics.attrib[ "{%s}href" % ns['xlink'] ] = self.data["characteristics"]
-        
-        #--- System Capabilities 
+
+        #--- System Capabilities
         system.append(et.Comment("System Capabilities"))
         capabilities = et.SubElement(system, "{%s}capabilities" % ns['sml'])
         DataRecord = et.SubElement(capabilities, "{%s}DataRecord" % ns['swe'])
@@ -534,8 +537,8 @@ class Procedure():
                 atres = True
         if not stres == True and atres == True:
             raise Exception("self.data['capabilities']: 'Sampling time resolution' and 'Acquisition time resolution' are mandatory")
-        
-        #--- Relevant Contacts 
+
+        #--- Relevant Contacts
         if  ("contacts" in self.data) and (not self.data["contacts"] == []):
             system.append(et.Comment("Relevant Contacts"))
             for c in self.data["contacts"]:
@@ -583,8 +586,8 @@ class Procedure():
                     if not onlineResourcetag==False:
                         onlineResource = et.SubElement(contactInfo, "{%s}onlineResource" % ns['sml'])
                         onlineResource.attrib["{%s}href" % ns['xlink'] ] = c["web"]
-                        
-        #--- System Documentation 
+
+        #--- System Documentation
         if ("documentation" in self.data) and (not self.data["documentation"] == []):
             system.append(et.Comment("System Documentation"))
             for d in self.data["documentation"]:
@@ -597,10 +600,10 @@ class Procedure():
                     date.text = d["date"]
                 if not d["format"]=="":
                     format = et.SubElement(Document, "{%s}format" % ns['sml'])
-                    format.text = d["format"]    
+                    format.text = d["format"]
                 onlineResource = et.SubElement(Document, "{%s}onlineResource" % ns['sml'])
                 onlineResource.attrib["{%s}href" % ns['xlink'] ] = d["link"]
-        
+
         #--- System Location
         system.append(et.Comment("System Location"))
         location = et.SubElement(system, "{%s}location" % ns['sml'])
@@ -617,7 +620,7 @@ class Procedure():
         Point.attrib[ "srsName" ] = "EPSG:"+str(self.data["location"]["crs"]["properties"]["name"])
         coordinates = et.SubElement(Point, "{%s}coordinates" % ns['gml'])
         coordinates.text = ",".join([ str(a) for a in self.data["location"]["geometry"]["coordinates"] ])
-        
+
         #--- System Interfaces
         if ("interfaces" in self.data) and (not self.data["interfaces"]==""):
             system.append(et.Comment("System Interfaces"))
@@ -626,7 +629,7 @@ class Procedure():
             for i in self.data["interfaces"].split(","):
                 interface = et.SubElement(InterfaceList, "{%s}interface" % ns['sml'])
                 interface.attrib["name"] = i
-        
+
         #--- System Inputs # Not yet supported in waAdmin !!
         if ("inputs" in self.data) and (not self.data["inputs"]==[]):
             system.append(et.Comment("System Inputs"))
@@ -640,7 +643,7 @@ class Procedure():
                 if not inp["description"]=="":
                     description = et.SubElement(Quantity, "{%s}description" % ns['gml'])
                     description.text = inp["description"]
-        
+
         #--- System Outputs
         timetag = False
         system.append(et.Comment("System Outputs"))
@@ -655,83 +658,83 @@ class Procedure():
             oid += 1
             field = et.SubElement(DataRecord, "{%s}field" % ns['swe'])
             field.attrib["name"] = o["name"]
-            
+
             if o["name"] == "Time":
                 timetag = True
                 item = et.SubElement(field, "{%s}Time" % ns['swe'])
                 item.attrib["{%s}id" % ns['gml']] = "IDT_" + str(oid)
                 item.attrib["definition"] = o["definition"]
-                
+
                 if not o["description"]=="":
                     description = et.SubElement(item, "{%s}description" % ns['gml'])
                     description.text = o["description"]
-                    
+
                 uom = et.SubElement(item, "{%s}uom" % ns['swe'])
                 uom.attrib["code"] = o["uom"]
-                
+
                 # The constraint object is not mandatory
                 if "constraint" in o and o["constraint"]!={}: # and o["constraint"]["role"]!="" and o["constraint"]["role"]!=None:
-                    
+
                     constraint = et.SubElement(item, "{%s}constraint" % ns['swe'])
-                    
+
                     # Role attribute is not mandatory
                     if "role" in o["constraint"] and o["constraint"]["role"]!="" and o["constraint"]["role"]!=None:
                         constraint.attrib[ "{%s}role" % ns['xlink'] ] = o["constraint"]["role"]
-                        
+
                     AllowedTimes = et.SubElement(constraint, "{%s}AllowedTimes" % ns['swe'])
                     interval = et.SubElement(AllowedTimes, "{%s}interval" % ns['swe'])
                     interval.text = " ".join([ str(a) for a in o["constraint"]["interval"] ])
-                    
+
             else:
                 item = et.SubElement(field, "{%s}Quantity" % ns['swe'])
                 item.attrib["{%s}id" % ns['gml']] = "IDQ_" + str(oid)
                 item.attrib["definition"] = o["definition"]
-                
+
                 if not o["description"]=="":
                     description = et.SubElement(item, "{%s}description" % ns['gml'])
                     description.text = o["description"]
-                    
+
                 uom = et.SubElement(item, "{%s}uom" % ns['swe'])
                 uom.attrib["code"] = o["uom"]
-                
+
                 # The constraint object is not mandatory
                 if "constraint" in o and o["constraint"]!={}: # and o["constraint"]["role"]!="" and o["constraint"]["role"]!=None:
-                    #print >> sys.stderr, o['constraint']                    
+                    #print >> sys.stderr, o['constraint']
                     try:
                         ut.validateJsonConstraint(o['constraint'])
                     except Exception as ex:
                         raise Exception("Constraint for observed property '%s' is not valid: %s" % (o["definition"],ex))
-                    
+
                     constraint = et.SubElement(item, "{%s}constraint" % ns['swe'])
-                    
+
                     # Role attribute is not mandatory
                     if "role" in o["constraint"] and o["constraint"]["role"]!="" and o["constraint"]["role"]!=None:
                         constraint.attrib[ "{%s}role" % ns['xlink'] ]= o["constraint"]["role"]
-                        
+
                     AllowedValues = et.SubElement(constraint, "{%s}AllowedValues" % ns['swe'])
-                    
+
                     # Factory on constraint min/max/interval/valuelist
                     if "interval" in o["constraint"]:
                         interval = et.SubElement(AllowedValues, "{%s}interval" % ns['swe'])
                         interval.text = " ".join([ str(a) for a in o["constraint"]["interval"] ])
-                        
-                        
+
+
                     elif "valueList" in o["constraint"]:#.has_key("valueList"):
                         valueList = et.SubElement(AllowedValues, "{%s}valueList" % ns['swe'])
                         valueList.text = " ".join([ str(a) for a in o["constraint"]["valueList"] ])
-                        
+
                     elif "min" in o["constraint"]:#.has_key("min"):
                         amin = et.SubElement(AllowedValues, "{%s}min" % ns['swe'])
                         amin.text = str(o["constraint"]["min"])
-                        
+
                     elif "max" in o["constraint"]:#.has_key("max"):
                         amax = et.SubElement(AllowedValues, "{%s}max" % ns['swe'])
                         amax.text = str(o["constraint"]["max"])
-                        
-                        
+
+
         if timetag == False:
             raise Exception("self.data['outputs']: Time is mandatory")
-        
+
         #--- System History
         if ("history" in self.data) and (not self.data["history"]==[]):
             system.append(et.Comment("System History"))
@@ -749,10 +752,10 @@ class Procedure():
                 contact = et.SubElement(Event, "{%s}contact" % ns['sml'])
                 contact.attrib["{%s}href" % ns['xlink'] ] = h["reference"]["username"]
                 contact.attrib["{%s}arcrole" % ns['xlink'] ] = h["reference"]["role"]
-        
+
         return et.tostring(root, encoding="UTF-8")
-        
-        
+
+
     def toRegisterSensorDom(self,indent=False):
         """
         Create a SOS register sensor request DOM element from self.procedure object
@@ -760,15 +763,15 @@ class Procedure():
         import sys
         ns = {
             'xsi': 'http://www.w3.org/2001/XMLSchema-instance',
-            'sml': 'http://www.opengis.net/sensorML/1.0.1', 
-            'swe': "http://www.opengis.net/swe/1.0.1", 
-            'xlink': "http://www.w3.org/1999/xlink", 
-            'gml': 'http://www.opengis.net/gml',           
+            'sml': 'http://www.opengis.net/sensorML/1.0.1',
+            'swe': "http://www.opengis.net/swe/1.0.1",
+            'xlink': "http://www.w3.org/1999/xlink",
+            'gml': 'http://www.opengis.net/gml',
             'sos': "http://www.opengis.net/sos/1.0",
             'ogc': "http://www.opengis.net/ogc",
             'om': "http://www.opengis.net/om/1.0",
         }
-        
+
         #---map namespaces---
         try:
             register_namespace = et.register_namespace
@@ -789,28 +792,28 @@ class Procedure():
                         print >> sys.stderr, ("Failed to import ElementTree from any known place")
                 for key in ns:
                     _namespace_map[ns[key]] = key
-        
-        #---start creating XML ----        
+
+        #---start creating XML ----
         root = et.Element("{%s}RegisterSensor" % ns['sos'])
         root.attrib[ "{%s}schemaLocation" % ns['xsi'] ] = "http://www.opengis.net/sos/1.0 http://schemas.opengis.net/sos/1.0.0/sosAll.xsd"
         root.attrib["version"] = "1.0.0"
         root.attrib["service"] = "SOS"
-        
+
         SensorDescription = et.SubElement(root, "{%s}SensorDescription" % ns['sos'])
-        
+
         sml = self.toXML()
         #print >> sys.stderr, "SML:%s" % sml
         from StringIO import StringIO
         smltree, smlns = parse_and_get_ns(StringIO(sml))
         member = smltree.find("{%s}member" % ns['sml'] )
         SensorDescription.append(member)
-        
-        #---         
+
+        #---
         ObservationTemplate = et.SubElement(root, "{%s}ObservationTemplate" % ns['sos'])
         Observation = et.SubElement(ObservationTemplate, "{%s}Observation" % ns['om'])
         procedure = et.SubElement(Observation, "{%s}procedure" % ns['om'])
         procedure.attrib["{%s}href" % ns['xlink']] = "urn:ogc:object:procedure:x-istsos:1.0:"+self.data["system"]
-        
+
         samplingTime = et.SubElement(Observation, "{%s}samplingTime" % ns['om'])
         TimePeriod = et.SubElement(samplingTime, "{%s}TimePeriod" % ns['gml'])
         beginPosition = et.SubElement(TimePeriod, "{%s}beginPosition" % ns['gml'])
@@ -825,7 +828,7 @@ class Procedure():
         for o in self.data["outputs"]:
             component = et.SubElement(CompositePhenomenon, "{%s}component" % ns['swe'])
             component.attrib["{%s}href" % ns['xlink']] = o["definition"]
-        
+
         featureOfInterest = et.SubElement(Observation, "{%s}featureOfInterest" % ns['om'])
         featureOfInterest.attrib["{%s}href" % ns['xlink']] = self.data["location"]["properties"]["name"]
         FeatureCollection = et.SubElement(featureOfInterest, "{%s}FeatureCollection" % ns['gml'])
@@ -836,61 +839,38 @@ class Procedure():
         Point.attrib[ "srsName" ] = self.data["location"]["crs"]["properties"]["name"] if "EPSG:" in self.data["location"]["crs"]["properties"]["name"] else "EPSG:%s" % self.data["location"]["crs"]["properties"]["name"]
         coordinates = et.SubElement(Point, "{%s}coordinates" % ns['gml'])
         coordinates.text = ",".join([ str(a) for a in self.data["location"]["geometry"]["coordinates"] ])
-        
+
         result = et.SubElement(Observation, "{%s}result" % ns['om'])
         DataArray = et.SubElement(result, "{%s}DataArray" % ns['swe'])
-        
+
         elementCount = et.SubElement(DataArray, "{%s}elementCount" % ns['swe'])
-        count = et.SubElement(elementCount, "{%s}count" % ns['swe'])        
+        count = et.SubElement(elementCount, "{%s}count" % ns['swe'])
         value = et.SubElement(count, "{%s}value" % ns['swe'])
         value.text = str(len(self.data["outputs"]))
-        
+
         elementType = et.SubElement(DataArray, "{%s}elementType" % ns['swe'])
         elementType.attrib["name"] = "SimpleDataArray"
         elementType.attrib["{%s}href" % ns['xlink']] = "urn:ogc:def:dataType:x-istsos:1.0:timeSeriesDataRecord"
-        
-        DataRecord = smltree.find("{%s}member/{%s}System/{%s}outputs/{%s}OutputList/{%s}output/{%s}DataRecord" 
+
+        DataRecord = smltree.find("{%s}member/{%s}System/{%s}outputs/{%s}OutputList/{%s}output/{%s}DataRecord"
                             % (ns['sml'],  ns['sml'],  ns['sml'], ns['sml'],    ns['sml'],  ns['swe'] ) )
-        
+
         elementType.append(DataRecord)
-        
+
         encoding = et.SubElement(DataArray, "{%s}encoding" % ns['swe'])
         TextBlock = et.SubElement(encoding, "{%s}TextBlock" % ns['swe'])
-        TextBlock.attrib["tokenSeparator"] = "," 
+        TextBlock.attrib["tokenSeparator"] = ","
         TextBlock.attrib["blockSeparator"] = "@"
         TextBlock.attrib["decimalSeparator"] = "."
-        
+
         #values = et.SubElement(DataArray, "{%s}values" % ns['swe'])
-        
+
         return root
-        
-        
+
+
     def toRegisterSensor(self,indent=False):
         """
         Create a SOS register sensor request String from self.procedure object
         """
         dom = self.toRegisterSensorDom()
-        return et.tostring(dom, encoding="UTF-8")      
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-
-
-
-    
-
+        return et.tostring(dom, encoding="UTF-8")

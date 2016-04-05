@@ -4725,6 +4725,124 @@
                                     ]
                                 }
                             ]
+                        },
+                        {
+                            "id": "ExtBox1-ext-gen32470",
+                            "type": "fieldset",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "checkboxToggle": true,
+                                "collapsed": true,
+                                "collapsible": true,
+                                "title": "MQTT Broker (optional)",
+                                "designer|userClassName": "MyFieldSet49"
+                            },
+                            "cn": [
+                                {
+                                    "id": "ExtBox1-ext-gen32474",
+                                    "type": "form",
+                                    "reference": {
+                                        "name": "items",
+                                        "type": "array"
+                                    },
+                                    "codeClass": null,
+                                    "userConfig": {
+                                        "border": 0,
+                                        "id": "frmMqtt",
+                                        "bodyPadding": null,
+                                        "title": "",
+                                        "designer|userClassName": "MyForm22"
+                                    },
+                                    "cn": [
+                                        {
+                                            "id": "ExtBox1-ext-gen32478",
+                                            "type": "textfield",
+                                            "reference": {
+                                                "name": "items",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "name": "broker_url",
+                                                "fieldLabel": "URL",
+                                                "allowBlank": false,
+                                                "emptyText": null,
+                                                "designer|userClassName": "MyTextField187",
+                                                "layout|anchor": "100%"
+                                            }
+                                        },
+                                        {
+                                            "id": "ExtBox1-ext-gen34259",
+                                            "type": "textfield",
+                                            "reference": {
+                                                "name": "items",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "name": "borker_port",
+                                                "fieldLabel": "Port (1883)",
+                                                "emptyText": null,
+                                                "designer|userClassName": "MyTextField187",
+                                                "layout|anchor": "100%"
+                                            }
+                                        },
+                                        {
+                                            "id": "ExtBox1-ext-gen34963",
+                                            "type": "textfield",
+                                            "reference": {
+                                                "name": "items",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "name": "broker_topic",
+                                                "fieldLabel": "Topic",
+                                                "allowBlank": false,
+                                                "emptyText": null,
+                                                "designer|userClassName": "MyTextField187",
+                                                "layout|anchor": "100%"
+                                            }
+                                        },
+                                        {
+                                            "id": "ExtBox1-ext-gen36417",
+                                            "type": "textfield",
+                                            "reference": {
+                                                "name": "items",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "name": "broker_user",
+                                                "fieldLabel": "User",
+                                                "emptyText": null,
+                                                "designer|userClassName": "MyTextField187",
+                                                "layout|anchor": "100%"
+                                            }
+                                        },
+                                        {
+                                            "id": "ExtBox1-ext-gen36707",
+                                            "type": "textfield",
+                                            "reference": {
+                                                "name": "items",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "name": "broker_password",
+                                                "fieldLabel": "Password",
+                                                "emptyText": null,
+                                                "designer|userClassName": "MyTextField187",
+                                                "layout|anchor": "100%"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 }

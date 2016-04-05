@@ -1416,6 +1416,55 @@ Ext.define('istsos.view.ui.procedure', {
                                     ]
                                 }
                             ]
+                        },
+                        {
+                            xtype: 'fieldset',
+                            checkboxToggle: true,
+                            collapsed: true,
+                            collapsible: true,
+                            title: 'MQTT Broker (optional)',
+                            items: [
+                                {
+                                    xtype: 'form',
+                                    border: 0,
+                                    id: 'frmMqtt',
+                                    title: '',
+                                    items: [
+                                        {
+                                            xtype: 'textfield',
+                                            name: 'broker_url',
+                                            fieldLabel: 'URL',
+                                            allowBlank: false,
+                                            anchor: '100%'
+                                        },
+                                        {
+                                            xtype: 'textfield',
+                                            name: 'borker_port',
+                                            fieldLabel: 'Port (1883)',
+                                            anchor: '100%'
+                                        },
+                                        {
+                                            xtype: 'textfield',
+                                            name: 'broker_topic',
+                                            fieldLabel: 'Topic',
+                                            allowBlank: false,
+                                            anchor: '100%'
+                                        },
+                                        {
+                                            xtype: 'textfield',
+                                            name: 'broker_user',
+                                            fieldLabel: 'User',
+                                            anchor: '100%'
+                                        },
+                                        {
+                                            xtype: 'textfield',
+                                            name: 'broker_password',
+                                            fieldLabel: 'Password',
+                                            anchor: '100%'
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 }
