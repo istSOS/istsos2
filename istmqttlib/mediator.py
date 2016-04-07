@@ -40,6 +40,7 @@ sys.path.insert(0, os.path.abspath("."))
 import config
 from walib import utils, databaseManager, configManager
 from lib import isodate as iso
+import istmqttlib
 
 try:
     unicode = unicode
@@ -87,16 +88,18 @@ class MQTTMediator():
             for row in rows:
                 if row[1] is not None and row[1] != '':
                     mqttConf = json.loads(row[1])
-                    if 'port' in mqttConf:
+                    if 'broker_port' in mqttConf and (
+                            mqttConf['broker_port'] is not None
+                            and mqttConf['broker_port'] != ''):
                         broker_url = "%s:%s" % (
-                            mqttConf['url'],
-                            mqttConf['port'])
+                            mqttConf['broker_url'],
+                            mqttConf['broker_port'])
 
                     else:
                         broker_url = "%s:1883" % (
-                            mqttConf['url'])
+                            mqttConf['broker_url'])
 
-                    topic = mqttConf['topic']
+                    topic = mqttConf['broker_topic']
                     if broker_url not in self.broker:
                         self.broker[broker_url] = {}
 
@@ -231,6 +234,15 @@ class MQTTMediator():
                                 updateEndPosition, (ep.isoformat(), id_prc))
 
                         conn.commitTransaction()
+
+                        # Publish / broadcast new data
+                        if True:
+                            istmqttlib.PahoPublisher({
+                                "broker_url": "localhost",
+                                "broker_port": "9083",
+                                "broker_topic": "/istsos/ciao",
+                                "data": data
+                            }).start()
 
                 except Exception as e:
                     traceback.print_exc(file=sys.stderr)

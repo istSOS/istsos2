@@ -29,7 +29,7 @@ class ServiceNotFound(Exception):
     def __init__(self, message, service):
         Exception.__init__(self, message)
         self.service = service
-        
+
 class waResource(object):
     """
     Base class for istSOS Web Admin REST operations
@@ -44,7 +44,7 @@ class waResource(object):
         self.user = False
         if 'user' in waEnviron:
             self.user = waEnviron['user']
-            
+
         self.response = {
             "success": True,
             "message": ""
@@ -97,7 +97,7 @@ class waResource(object):
         import json
         #return json.dumps(self.response, ensure_ascii=False)
         return json.dumps(self.response)
-        
+
     def getMime(self):
         return "application/json"
 
@@ -137,21 +137,21 @@ class waResourceAdmin(waResource):
 
         #self.waconf = configManager.waConfig()
 
-class waResourceService(waResourceAdmin):
-    def __init__(self, waEnviron,service=None,loadjson=True):
-        waResourceAdmin.__init__(self,waEnviron,loadjson)
 
-        if service == None:
+class waResourceService(waResourceAdmin):
+    def __init__(self, waEnviron, service=None, loadjson=True):
+        waResourceAdmin.__init__(self, waEnviron, loadjson)
+        if service is None:
             i = self.pathinfo.index("services")
-            if i>0 and i<len(self.pathinfo)-1:
+            if i > 0 and i < len(self.pathinfo)-1:
                 self.service = self.pathinfo[i+1]
             else:
                 self.service = None
         else:
             self.service = service
-            
+
         self.checkAuthorization()
-        
+
         #set default config path
         if not os.path.isdir(self.waconf.paths["services"]):
             raise Exception("servicespath is not configured in the wa.cfg file [%s]." % self.waconf.paths["services"])
@@ -160,7 +160,7 @@ class waResourceService(waResourceAdmin):
         if not os.path.isfile(defaultCFGpath):
             raise Exception("istsos [default] configuration file not found in %s." % (defaultCFGpath))
 
-        if not (self.service == None or self.service == 'default'):
+        if not (self.service is None or self.service == 'default'):
             serviceCFGpath = os.path.join(self.waconf.paths["services"], "%s" % self.service, "%s.cfg" % self.service)
             if not os.path.isfile(serviceCFGpath):
                 raise ServiceNotFound("istsos [%s] configuration file not found in %s." % (self.service,serviceCFGpath),self.service)
@@ -180,7 +180,7 @@ class waResourceService(waResourceAdmin):
             self.serviceconf = configManager.waServiceConfig(defaultCFGpath)
         else:
             self.serviceconf = configManager.waServiceConfig(defaultCFGpath, serviceCFGpath)
-            
+
     def checkAuthorization(self):
         if self.service and self.user and not self.user.isAdmin():
             if self.service == 'default':
@@ -251,4 +251,3 @@ class waResourceConfigurator(waResourceService):
             self.serviceconf.delete(s)
         self.serviceconf.save()
         self.setMessage("Information successfully reset to default values!")
-

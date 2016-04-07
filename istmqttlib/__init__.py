@@ -24,5 +24,7 @@
 Import the MQTTMediator automatically.
 '''
 from istmqttlib.mediator import MQTTMediator
+from istmqttlib.broadcast import MQTTPublisher
+from istmqttlib.broadcast import PahoPublisher
 
-__all__ = (MQTTMediator,)
+__all__ = (MQTTMediator, MQTTPublisher, PahoPublisher)

@@ -114,3 +114,9 @@ oauth_token = ""
 oauth_secret = ""
 consumer_key = ""
 consumer_secret = ""
+
+[mqtt]
+broker_url = ""
+broker_port = ""
+broker_user = ""
+broker_password = ""
