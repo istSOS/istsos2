@@ -1055,6 +1055,134 @@
             ]
         },
         {
+            "id": "ExtBox1-ext-gen32463",
+            "type": "form",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "border": 0,
+                "height": null,
+                "width": null,
+                "bodyPadding": 10,
+                "title": "",
+                "designer|userClassName": "mqtt"
+            },
+            "cn": [
+                {
+                    "id": "ExtBox1-ext-gen32466",
+                    "type": "displayfield",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "hidden": true,
+                        "id": "messageField",
+                        "fieldStyle": "color: red;",
+                        "name": "message",
+                        "fieldLabel": "Message",
+                        "labelStyle": "color: red;",
+                        "designer|userClassName": "MyDisplayField2",
+                        "layout|anchor": "100%"
+                    }
+                },
+                {
+                    "id": "ExtBox1-ext-gen32473",
+                    "type": "fieldset",
+                    "reference": {
+                        "name": "items",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "title": "MQTT Broker",
+                        "designer|userClassName": "MyFieldSet"
+                    },
+                    "cn": [
+                        {
+                            "id": "ExtBox1-ext-gen32479",
+                            "type": "textfield",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "name": "broker_url",
+                                "fieldLabel": "URL",
+                                "designer|userClassName": "MyTextField12",
+                                "layout|anchor": "100%"
+                            }
+                        },
+                        {
+                            "id": "ExtBox1-ext-gen32484",
+                            "type": "textfield",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "name": "broker_port",
+                                "fieldLabel": "Port",
+                                "designer|userClassName": "MyTextField13",
+                                "layout|anchor": "100%"
+                            }
+                        },
+                        {
+                            "id": "ExtBox1-ext-gen32489",
+                            "type": "textfield",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "name": "broker_topic",
+                                "fieldLabel": "Topic Base",
+                                "designer|userClassName": "MyTextField21",
+                                "layout|anchor": "100%"
+                            }
+                        },
+                        {
+                            "id": "ExtBox1-ext-gen32494",
+                            "type": "textfield",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "name": "broker_user",
+                                "fieldLabel": "User",
+                                "designer|userClassName": "MyTextField22",
+                                "layout|anchor": "100%"
+                            }
+                        },
+                        {
+                            "id": "ExtBox1-ext-gen32499",
+                            "type": "textfield",
+                            "reference": {
+                                "name": "items",
+                                "type": "array"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "name": "broker_password",
+                                "fieldLabel": "Password",
+                                "designer|userClassName": "MyTextField23",
+                                "layout|anchor": "100%"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "id": "ExtBox1-ext-gen29943",
             "type": "form",
             "reference": {
@@ -4784,7 +4912,7 @@
                                             },
                                             "codeClass": null,
                                             "userConfig": {
-                                                "name": "borker_port",
+                                                "name": "broker_port",
                                                 "fieldLabel": "Port (1883)",
                                                 "emptyText": null,
                                                 "designer|userClassName": "MyTextField187",

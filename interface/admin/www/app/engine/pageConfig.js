@@ -51,6 +51,13 @@ istsos.engine.serviceConfig = {
             istOperation: wa.url + "/istsos/services/@/configsections/geo",
             istFooter: istsos.SUBMIT
         },
+        "MQTT Publisher": {
+            istTitle: "MQTT Publisher",
+            icon: 'mqtt.svg',
+            istBody: ["istsos.view.mqtt"],
+            istOperation: wa.url + "/istsos/services/@/configsections/mqtt",
+            istFooter: istsos.SUBMIT
+        },
         "GetObservation Configuration": {
             istTitle: "GetObservation Configuration",
             icon: 'getobs.svg',
@@ -187,6 +194,13 @@ istsos.engine.defaultConfig = {
             icon: 'coordinate.svg',
             istBody: ["istsos.view.geo"],
             istOperation: wa.url + "/istsos/services/default/configsections/geo",
+            istFooter: istsos.SUBMIT
+        },
+        "MQTT Publisher": {
+            istTitle: "MQTT Publisher",
+            icon: 'mqtt.svg',
+            istBody: ["istsos.view.mqtt"],
+            istOperation: wa.url + "/istsos/services/default/configsections/mqtt",
             istFooter: istsos.SUBMIT
         },
         "GetObservation Configuration": {

@@ -631,4 +631,3 @@ class InsertObservationResponse:
                         filter.sosConfig.mqtt["broker_topic"]),
                     "data": filter.dataArray
                 }).start()
-                print "thread lauched"

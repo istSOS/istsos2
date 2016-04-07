@@ -80,5 +80,3 @@ class PahoPublisher(MQTTPublisher):
                 retain=True,
                 hostname=self.get_url(),
                 port=self.get_port())
-
-        print ("Finished")

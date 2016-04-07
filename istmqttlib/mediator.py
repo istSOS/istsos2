@@ -55,6 +55,88 @@ else:
     bytes = str
     basestring = basestring
 
+"""
+Usage example with paho mqtt client (https://eclipse.org/paho):
+
+code::
+
+    import istmqttlib
+    m = istmqttlib.MQTTMediator()
+    import paho.mqtt.client as mqtt
+
+
+    def paho_client(url, port, istSos):
+
+        def on_message(client, userdata, msg):
+            istSos.insert_observation(url, port, msg.topic, msg.payload)
+
+        def on_connect(mqttc, obj, flags, rc):
+            client.subscribe("#")
+
+        client = mqtt.Client(clean_session=True)
+        client.on_message = on_message
+        client.on_connect = on_connect
+
+        client.connect(url, int(port), 60)
+        client.loop_forever()
+
+    m.start(paho_client)
+
+
+Usage example with HBMQTT mqtt client (https://github.com/beerfactory/hbmqtt)
+
+code::
+
+    from hbmqtt import client
+    import asyncio
+    import istmqttlib
+
+
+    def hbmqtt_client(url, port, istSos):
+        print ("Starting hbmqtt_client..")
+
+        C = client.MQTTClient()
+
+        @asyncio.coroutine
+        def uptime_coro():
+            print ("Starting uptime_coro..")
+            yield from C.connect('mqtt://%s:%s' % (url, port))
+            # Subscribe to 'istsos/t_lugano' with QOS=1
+            # Subscribe to 'istsos/p_lugano' with QOS=2
+            yield from C.subscribe([
+                ('istsos/t_lugano', 1),
+                ('istsos/p_lugano', 2),
+            ])
+            try:
+                while True:
+                    message = yield from C.deliver_message()
+                    packet = message.publish_packet
+                    istSos.insert_observation(
+                        url, port,
+                        packet.variable_header.topic_name,
+                        str(packet.payload.data.decode("utf-8")))
+
+                    print("%s => %s" % (
+                        packet.variable_header.topic_name,
+                        str(packet.payload.data)))
+
+                print ("unsubscribe..")
+                yield from C.unsubscribe(
+                    ['istsos/t_lugano', 'istsos/p_lugano'])
+                print ("disconnect..")
+                yield from C.disconnect()
+
+            except client.ClientException as ce:
+                print("Client exception: %s" % ce)
+
+        asyncio.get_event_loop().run_until_complete(uptime_coro())
+
+
+    m = istmqttlib.MQTTMediator()
+    m.start(hbmqtt_client)
+
+"""
+
 
 class MQTTMediator():
 
@@ -82,7 +164,7 @@ class MQTTMediator():
             }
             # Get mqtt configurations
             rows = conn.select("""
-                SELECT id_prc, mqtt_prc FROM %s.procedures""" % (
+                SELECT id_prc, mqtt_prc, name_prc FROM %s.procedures""" % (
                 instance['service']))
 
             for row in rows:
@@ -105,6 +187,7 @@ class MQTTMediator():
 
                     self.broker[broker_url][topic] = {
                         "id": row[0],
+                        "name": row[2],
                         "instance": instance['service']
                     }
 
@@ -115,6 +198,7 @@ class MQTTMediator():
             broker = "%s:%s" % (broker_url, port)
             if (broker in self.broker) and (topic in self.broker[broker]):
                 id_prc = self.broker[broker][topic]['id']
+                name_prc = self.broker[broker][topic]['name']
                 instance = self.broker[broker][topic]['instance']
                 conn = self.services[instance]['conn']
                 try:
@@ -140,7 +224,7 @@ class MQTTMediator():
                     rows = conn.select(sql, (int(id_prc),))
 
                     if not isinstance(data, list):
-                        print (type(data))
+                        #print (type(data))
                         if isinstance(data, str):
                             data = [data.split(",")]
                         else:
@@ -236,11 +320,16 @@ class MQTTMediator():
                         conn.commitTransaction()
 
                         # Publish / broadcast new data
-                        if True:
+                        mqttConf = self.services[instance]['config'].mqtt
+                        if mqttConf["broker_url"] != '' and (
+                                mqttConf["broker_port"] != ''):
+
                             istmqttlib.PahoPublisher({
-                                "broker_url": "localhost",
-                                "broker_port": "9083",
-                                "broker_topic": "/istsos/ciao",
+                                "broker_url": mqttConf["broker_url"],
+                                "broker_port": mqttConf["broker_port"],
+                                "broker_topic": "%s%s" % (
+                                    mqttConf["broker_topic"],
+                                    name_prc),
                                 "data": data
                             }).start()
 
@@ -257,9 +346,9 @@ class MQTTMediator():
     def start(self, target):
         self.threads = []
         for key in self.broker.keys():
-            print ("Adding: %s" % key)
+            #print ("Adding: %s" % key)
             urlPort = key.split(":")
-            print(urlPort)
+            #print(urlPort)
             self.threads.append(
                 threading.Thread(
                     target=target, args=(urlPort[0], urlPort[1], self)))

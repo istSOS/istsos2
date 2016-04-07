@@ -29,13 +29,13 @@ __version__ = '1.0'
 __maintainer__ = 'Massimiliano Cannata, Milan Antonovic'
 __email__ = 'geoservice@supsi.ch'
 
-from walib import procedure, utils, databaseManager
-from walib.resource import waResourceService
-import lib.requests as requests
 import os
 import sys
 import json
 import traceback
+from walib import procedure, utils, databaseManager
+from walib.resource import waResourceService
+import lib.requests as requests
 
 convertToSec = {
     'min': lambda x: x * 60,

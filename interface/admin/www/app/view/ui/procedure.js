@@ -1439,7 +1439,7 @@ Ext.define('istsos.view.ui.procedure', {
                                         },
                                         {
                                             xtype: 'textfield',
-                                            name: 'borker_port',
+                                            name: 'broker_port',
                                             fieldLabel: 'Port (1883)',
                                             anchor: '100%'
                                         },
