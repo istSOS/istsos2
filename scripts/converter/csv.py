@@ -162,6 +162,12 @@ class CsvImporter(raw2csv.Converter):
             
         """
         
+        if self.fndf:
+            dt = self.getDateFromFileName(fileName)
+            print dt
+            self.setEndPosition(dt)
+            
+        """
         if "filenamedate" in self.config:
             
             dt = fileName;
@@ -173,20 +179,33 @@ class CsvImporter(raw2csv.Converter):
             
             if "tz" in self.config["filenamedate"]:
                 offset = self.config["filenamedate"]["tz"].split(":")
-                dt = dt - timedelta(hours=int(offset[0]), minutes=int(offset[1]))
+                dt = dt - timedelta(hours=int(offset[0]), minutes=int(offset[1]))'''
             
             self.setEndPosition(dt)
+        """
             
         
 
     def parse(self, fileObj, fileName):
-        
+        print "Filename: %s" % fileName
         cnt = 0
         for line in fileObj.readlines():
             cnt = cnt+1
             # Skipping header rows if present in configuration
             if "headrows" in self.config and cnt <= self.config['headrows']:
                 continue
+
+            elif "stopat" in self.config:
+                if isinstance(self.config["stopat"], str) and (
+                        line.find(self.config["stopat"])>=0):
+                    break
+
+                elif isinstance(self.config["stopat"], int):
+                    pass
+
+                else:
+                    pass
+
             # Line splitting
             columns = line.split(self.config['separator'])
             try:

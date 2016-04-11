@@ -38,6 +38,7 @@ import decimal
 from inspect import stack
 import pprint
 import tempfile
+from operator import methodcaller
 pp = pprint.PrettyPrinter(indent=4)
 
 try:
@@ -245,6 +246,19 @@ class Converter():
     def parse(self, fileObj, name=None):
         raise Exception("This function must be overwritten")
     
+    def getDateFromFileName(self, name):
+        if not self.fndf: # Skip this filename check
+            raise Exception("File name date format not set")
+        n = name
+        if type(self.fnre) == type([]):
+            for rep in self.fnre:
+                n = n.replace(rep,'')
+        
+        return self.getDateTimeWithTimeZone(
+            datetime.strptime(n, self.fndf), self.fndtz
+        )
+        
+        
     def skipFile(self, name):
         """
         Usually the date of data transmission is inserted into the file name.
@@ -266,7 +280,7 @@ class Converter():
         if ep == None:
             return False
         
-        n = name
+        '''n = name
         if type(self.fnre) == type([]):
             for rep in self.fnre:
                 n = n.replace(rep,'')
@@ -274,10 +288,14 @@ class Converter():
         dt = self.getDateTimeWithTimeZone(
             datetime.strptime(n, self.fndf), self.fndtz
         )
+        '''
+        dt = self.getDateFromFileName(name)
+        print dt, ep
         if self.fntd:
             dt = dt + self.fntd
-        if not ep == None and ep < dt:
+        if ep is not None and ep < dt:
             return False
+        print " ok skip.."
         return True
     
     def getDateTimeWithTimeZone(self, dt, tz):
@@ -514,7 +532,22 @@ class Converter():
             raise FileReaderError (msg)
         
         files = filter(path.isfile, glob.glob(os.path.join(self.folderIn, "%s" % (self.pattern))))
-        files.sort()
+        
+        if not self.fndf: # Default sort
+            files.sort()
+        else:   
+            #print "Sorting by date in file name"
+            fs = {}
+            for f in files:
+                fs[self.getDateFromFileName(os.path.split(f)[1])] = f
+            fa = sorted(fs)
+            files = []
+            for f in fa:
+                files.append(fs[f])
+            
+        #print files
+        
+        
         
         self.log(" > %s %s found" % (len(files), "Files" if len(files)>1 else "File"))
             
@@ -580,6 +613,9 @@ class Converter():
                     self.name,
                     datetime.strftime(self.getIOEndPosition().astimezone(timezone('UTC')), "%Y%m%d%H%M%S%f"))), 'w')
             f.write("%s\n" % ",".join(self.obsindex))
+            #self.observations.sort(key=lambda x: x.__eventime, reverse=True)
+            #self.observations = sorted(self.observations, key=lambda observation: observation.__eventime)
+            self.observations = sorted(self.observations, key=methodcaller('getEventime'))
             for o in self.observations:
                 f.write("%s\n" % o.csv(",",self.obsindex))
         else:
@@ -616,6 +652,7 @@ class Observation:
     "Single Measure"
     fmt = '%Y-%m-%dT%H:%M:%S.%f%z'
     def __init__(self, eventime, values):
+        self.__eventime = None
         self.setEventime(eventime)
         self.setValue(values)
         pass

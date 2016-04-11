@@ -220,7 +220,6 @@ class istsosConfig():
             "version": serviceobj.serviceconf.serviceType["version"],
         }
 
-        print serviceobj.serviceconf.mqtt
         self.mqtt = {
             "broker_url": serviceobj.serviceconf.mqtt["broker_url"],
             "broker_port": serviceobj.serviceconf.mqtt["broker_port"],

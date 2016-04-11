@@ -619,7 +619,7 @@ class InsertObservationResponse:
 
         if com is True:
             pgdb.commitTransaction()
-            # broadcasting to mqtt broker is enabled
+            # broadcasting to mqtt broker if configured
             if filter.sosConfig.mqtt["broker_url"] != '' and (
                     filter.sosConfig.mqtt["broker_port"] != ''):
                 from istmqttlib import PahoPublisher
@@ -631,3 +631,5 @@ class InsertObservationResponse:
                         filter.sosConfig.mqtt["broker_topic"]),
                     "data": filter.dataArray
                 }).start()
+
+
