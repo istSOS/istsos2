@@ -47,7 +47,7 @@ def getUser(environ):
             #environ["user"] = User(username, users[username])
     #else:
     #    raise Exception("Authorization is enabled in config file but HTTP_AUTHORIZATION header not present. Check the security page in the documentation")
-            
+
     return User("admin", {
         "password": "",
         "roles": {
@@ -56,7 +56,7 @@ def getUser(environ):
             }
         }
     })
-    
+
 class User():
 
     def __init__(self, username, data):
@@ -65,34 +65,34 @@ class User():
         self.roles = data['roles']
         self.groups = data['roles'].keys()
         #print >> sys.stderr, "\n\nUser: %s" % pp.pprint(self)
-    
+
     def getJSON(self):
         return {
             "username": self.username,
             "roles": self.roles,
             "groups": self.groups
         }
-    
+
     def isAdmin(self):
         if "admin" in self.groups:
             return True
         return False
-    
+
     def isNetworkManager(self):
         if "networkmanager" in self.groups:
             return True
         return False
-    
+
     def isDataManager(self):
         if "datamanager" in self.groups:
             return True
         return False
-    
+
     def isViewer(self):
         if "viewer" in self.groups:
             return True
         return False
-    
+
     def allowedService(self, service):
         #print >> sys.stderr, "Checking service '%s' for user '%s'" % (service, self.username)
         for group in self.groups:
@@ -103,7 +103,7 @@ class User():
                 return True
         print >> sys.stderr, "NOT AUTHORIZED"
         return False
-        
+
     def allowedProcedure(self, service, procedure):
         if self.allowedService(service):
             special = False
@@ -117,15 +117,15 @@ class User():
                     else:
                         return False
         return False
-        
+
 
 class waUsers(resource.waResource):
 
-    def __init__(self, waEnviron,loadjson=True):
+    def __init__(self, waEnviron, loadjson=True):
         resource.waResource.__init__(self, waEnviron, loadjson)
         self.mime = "application/javascript"
         self.jsonResponse = False
-            
+
     def getResponse(self):
         if self.jsonResponse:
             import json
@@ -138,20 +138,23 @@ class waUsers(resource.waResource):
                 return "var user = %s;" % json.dumps(self.response['data'])
             else:
                 return "var user = false;"
-        
+
     def getMime(self):
-        return self.mime 
-        
+        return self.mime
+
     def executeGet(self):
         if "json" in self.waEnviron["parameters"]:
             self.mime = "application/json"
             self.jsonResponse = True
-            
+
         user = self.waEnviron['user']
         self.setData(user.getJSON())
-        self.setMessage("Authentication is not enabled. Since no one is the admin, you will do it")
-            
+        self.setMessage(
+            "Authentication is not enabled. Since no one is the admin, "
+            "you will do it")
+
+
 class waUserUnauthorized(resource.waResource):
     def executeGet(self):
-        self.setException("Sorry, you are not authorized to execute this request.")
-            
+        self.setException(
+            "Sorry, you are not authorized to execute this request.")

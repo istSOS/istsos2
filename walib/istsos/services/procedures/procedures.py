@@ -887,10 +887,15 @@ class waGetGeoJson(waResourceService):
                         ret = {}
                         ret.update(smlobj.data)
 
-                        proc['samplingTime']['beginposition'] = (
-                            ret['outputs'][0]['constraint']['interval'][0])
-                        proc['samplingTime']['endposition'] = (
-                            ret['outputs'][0]['constraint']['interval'][1])
+                        if 'constraint' in ret['outputs'][0]:
+                            proc['samplingTime']['beginposition'] = (
+                                ret['outputs'][0]['constraint']['interval'][0])
+
+                            proc['samplingTime']['endposition'] = (
+                                ret['outputs'][0]['constraint']['interval'][1])
+                        else:
+                            proc['samplingTime']['beginposition'] = ''
+                            proc['samplingTime']['endposition'] = ''
 
                     elem = {}
                     elem.update(proc)

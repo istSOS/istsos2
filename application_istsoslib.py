@@ -89,15 +89,15 @@ def executeSos(environ, start_response):
                     "In hybrid mode, you are not authorized to "
                     "execute %s requests on this server" % req_filter.request)
 
-        # Only Admin, Network Managers and Data Manager con execute
-        # insertobservation or registersensor
-        elif not sosConfig.user.isAdmin() and (
-                not sosConfig.user.isNetworkManager()) and (
-                not sosConfig.user.isDataManager()):
-            raise sosException.SOSException(
-                "NoApplicableCode", "",
-                "You are not authorized to execute %s "
-                "requests on this server" % req_filter.request)
+            # Only Admin, Network Managers and Data Manager con execute
+            # insertobservation or registersensor
+            elif not sosConfig.user.isAdmin() and (
+                    not sosConfig.user.isNetworkManager()) and (
+                    not sosConfig.user.isDataManager()):
+                raise sosException.SOSException(
+                    "NoApplicableCode", "",
+                    "You are not authorized to execute %s "
+                    "requests on this server" % req_filter.request)
 
         response = FR.sosFactoryResponse(req_filter, pgdb)
         render = FRe.sosFactoryRender(response, sosConfig)
