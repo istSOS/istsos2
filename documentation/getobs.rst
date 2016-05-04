@@ -14,11 +14,7 @@ Accessing the data is possible using:
 Using the SOS Standard requests
 ================================
 
-This is a quick view on the GetObservation request parameters using the GET method:
-
-.. image:: images/go_table.png
-
-And here some example of reuests:
+Here some example of request:
 
 
 .. rubric:: *Example 1 - filter on procedure, time, property*
@@ -35,11 +31,11 @@ Requesting rainfall observations from sensor P_LUGANO between 2013-01-01T00:00:0
         procedure=urn:ogc:def:procedure:x-istsos:1.0:P_LUGANO&
         eventTime=2014-06-01T00:00:00+0200/2014-06-03T00:00:00+0200&
         observedProperty=urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall&
-        responseFormat=text/xml;subtype=”sensorML/1.0.1”&
+        responseFormat=text/xml;subtype="om/1.0.0"&
         service=SOS&
         version=1.0.0 
 
-`[execute above request] <http://localhost/istsos/demo?service=SOS&version=1.0.0&request=GetObservation&offering=temporary&procedure=urn:ogc:def:procedure:x-istsos:1.0:P_LUGANO&eventTime=2014-06-01T00:00:00+0200/2014-06-03T00:00:00+0200&observedProperty=urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall&responseFormat=text/xml;subtype=”sensorML/1.0.1”&service=SOS&>`_
+`[execute above request] <http://localhost/istsos/demo?service=SOS&version=1.0.0&request=GetObservation&offering=temporary&procedure=urn:ogc:def:procedure:x-istsos:1.0:P_LUGANO&eventTime=2014-06-01T00:00:00+0200/2014-06-03T00:00:00+0200&observedProperty=urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall&responseFormat=text/xml;subtype="om/1.0.0"&service=SOS&>`_
     
 
 .. rubric:: *Example 2 - filter on time, property*
@@ -56,11 +52,11 @@ Requesting rainfall observations from all the stations between 2014-06-01T00:00:
         offering=temporary&
         eventTime=2014-06-01T00:00:00+0200/2014-06-03T00:00:00+0200&
         observedProperty=urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall&
-        responseFormat=text/xml;subtype=”sensorML/1.0.1”&
+        responseFormat=text/xml;subtype="om/1.0.0"&
         service=SOS&
         version=1.0.0 
 
-`[execute above request] <http://localhost/istsos/demo?service=SOS&version=1.0.0&request=GetObservation&offering=temporary&eventTime=2014-06-01T00:00:00+0200/2014-06-03T00:00:00+0200&observedProperty=urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall&responseFormat=text/xml;subtype=”sensorML/1.0.1”&service=SOS&>`_
+`[execute above request] <http://localhost/istsos/demo?service=SOS&version=1.0.0&request=GetObservation&offering=temporary&eventTime=2014-06-01T00:00:00+0200/2014-06-03T00:00:00+0200&observedProperty=urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall&responseFormat=text/xml;subtype="om/1.0.0"&service=SOS&>`_
 
 
 .. rubric:: *Example 3 - filter on time, property, area filters*
@@ -76,7 +72,7 @@ Requesting rainfall observations from all the stations between 2014-06-01T00:00:
         request=GetObservation&
         offering=temporary&
         observedProperty=meteo&
-        responseFormat=text/xml;subtype=”sensorML/1.0.1”&
+        responseFormat=text/xml;subtype="om/1.0.0"&
         service=SOS&
         version=1.0.0&
         featureOfInterest=<ogc:BBOX>
@@ -102,7 +98,7 @@ Requesting rainfall observations from all the stations between 2014-06-01T00:00:
         request=GetObservation&
         offering=temporary&
         observedProperty=temperature&
-        responseFormat=text/xml;subtype=”sensorML/1.0.1”&
+        responseFormat=text/xml;subtype="om/1.0.0"&
         service=SOS&
         version=1.0.0&
         featureOfInterest=<ogc:DWithin>
@@ -168,7 +164,7 @@ And now the same, but only for LUGANO station:
         procedure=P_LUGANO&
         eventTime=2014-06-01T00:00:00+0200/2014-06-03T00:00:00+0200&
         observedProperty=rainfall&
-        responseFormat=text/xml;subtype=”sensorML/1.0.1”
+        responseFormat=text/xml;subtype="om/1.0.0"
 `[execute above request] <http://localhost/istsos/demo?service=SOS&version=1.0.0&request=GetObservation&offering=temporary&procedure=P_LUGANO&eventTime=2014-06-01T00:00:00+0200/2014-06-03T00:00:00+0200&observedProperty=rainfall&responseFormat=text/xml;subtype=%E2%80%9DsensorML/1.0.0%E2%80%9D>`_
 
 
@@ -187,7 +183,7 @@ with a time zone (e.g.: +0700) the response will be returned with the same time 
         procedure=P_LUGANO&
         eventTime=2014-06-01T00:00:00+0500/2014-06-03T00:00:00+0500&
         observedProperty=rainfall&
-        responseFormat=text/xml;subtype=”sensorML/1.0.1”&
+        responseFormat=text/xml;subtype="om/1.0.0"&
 
 `[execute above request] <http://localhost/istsos/demo?service=SOS&version=1.0.0&request=GetObservation&offering=temporary&procedure=P_LUGANO&eventTime=2014-06-01T00:00:00+0500/2014-06-03T00:00:00+0500&observedProperty=rainfall&responseFormat=text/xml;subtype=%E2%80%9DsensorML/1.0.0%E2%80%9D>`_
 
