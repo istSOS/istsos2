@@ -829,7 +829,7 @@ class Observation:
             # If MOBILE PROCEDURE
             if self.procedureType=="insitu-mobile-point":
                 join_txt  = " left join (\n"
-                join_txt += " SELECT distinct Ax.id_pos, X(ST_Transform(Ax.geom_pos,%s)) as x,Y(ST_Transform(Ax.geom_pos,%s)) as y,Z(ST_Transform(Ax.geom_pos,%s)) as z, Ax.id_eti_fk\n" %(filter.srsName,filter.srsName,filter.srsName)
+                join_txt += " SELECT distinct Ax.id_pos, st_X(ST_Transform(Ax.geom_pos,%s)) as x,st_Y(ST_Transform(Ax.geom_pos,%s)) as y,st_Z(ST_Transform(Ax.geom_pos,%s)) as z, Ax.id_eti_fk\n" %(filter.srsName,filter.srsName,filter.srsName)
                 if self.qualityIndex==True:
                     join_txt += ", Ax.id_qi_fk as posqi\n"
                     
