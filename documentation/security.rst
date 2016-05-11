@@ -21,7 +21,7 @@ and viewer.
   * **datamanager**: can modify measures, update rating discharge parameters and 
     change procedures metadata
   
-  * **visitor**: can view measures
+  * **viewer**: can view measures
 
 To activate athentication there are a few changes to be made in an Apache Web Server 
 configuration file (/etc/apache2/sites-enabled/000-default.conf).
@@ -328,7 +328,7 @@ Existing roles:
   
   * **datamanager**: can modify measures and change procedures metadata
   
-  * **visitor**: can view measures
+  * **viewer**: can view measures
 
 
 First open a terminal and go to the istsos folder:

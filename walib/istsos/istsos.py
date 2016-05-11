@@ -37,7 +37,8 @@ class waStatus(waIstsos):
     """
     def __init__(self, waEnviron):
         waIstsos.__init__(self,waEnviron)
-        pass  
+        pass
+
     def executeGet(self):
         """
         Execute GET request investigating set-up services

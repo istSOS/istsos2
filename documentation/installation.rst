@@ -24,9 +24,6 @@ This part of the tutorial provides instruction on installing istSOS on a Linux O
 
 .. note:: Ctrl-D to exit from psql console
 
-.. warning:: the python code must be in the PYTHONPATH.
-
-.. seealso:: http://sphinx.pocoo.org/markup/desc.html
     
 **3) Install Apache2 and mod_wsgi**
 
