@@ -468,7 +468,7 @@ class VirtualProcessHQ(VirtualProcess):
 
 def BuildobservedPropertyList(pgdb,offering,sosConfig):
     list=[]
-    sql = "SELECT distinct(def_opr) as nopr FROM %s.procedures, %s.proc_obs p," %(sosConfig.schema,sosConfig.schema)
+    sql = "SELECT distinct(def_opr) as nopr, p.id_pro FROM %s.procedures, %s.proc_obs p," %(sosConfig.schema,sosConfig.schema)
     sql += " %s.observed_properties, %s.off_proc o, %s.offerings" %(sosConfig.schema,sosConfig.schema,sosConfig.schema)
     sql += " WHERE id_opr_fk=id_opr AND p.id_prc_fk=id_prc AND o.id_prc_fk=id_prc AND id_off=id_off_fk"
     sql += " AND name_off='%s' ORDER BY p.id_pro" %(offering)
