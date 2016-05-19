@@ -45,7 +45,7 @@
 *
 */
 
-(function() {
+
 
 function createShiftArr(step) {
 
@@ -352,7 +352,7 @@ vkbeautify.prototype.sqlmin = function(text) {
 	return text.replace(/\s{1,}/g," ").replace(/\s{1,}\(/,"(").replace(/\s{1,}\)/,")");
 }
 
-window.vkbeautify = new vkbeautify();
+window._vkbeautify = new vkbeautify();
 
-})();
+
 

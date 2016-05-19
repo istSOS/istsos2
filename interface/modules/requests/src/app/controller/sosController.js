@@ -104,9 +104,9 @@ Ext.define('requests.controller.sosController', {
                 var rh = response.getAllResponseHeaders();
 
                 if (rh['content-type']=='application/json'){
-                    text = vkbeautify.json(response.responseText);
-                }else if (rh['content-type'].indexOf('text/xml')>=0){
-                    text = vkbeautify.xml(response.responseText);
+                    text = _vkbeautify.json(response.responseText);
+                }else if (rh['content-type'].indexOf('text/xml')>=0 || rh['content-type'].indexOf('application/xml')>=0){
+                    text = _vkbeautify.xml(response.responseText);
                 }else{
                     text = response.responseText;
                 }
@@ -137,9 +137,9 @@ Ext.define('requests.controller.sosController', {
                 var rh = response.getAllResponseHeaders();
 
                 if (rh['content-type']=='application/json'){
-                    text = vkbeautify.json(response.responseText);
-                }else if (rh['content-type'].indexOf('text/xml')>=0){
-                    text = vkbeautify.xml(response.responseText);
+                    text = _vkbeautify.json(response.responseText);
+                }else if (rh['content-type'].indexOf('text/xml')>=0 || rh['content-type'].indexOf('application/xml')>=0){
+                    text = _vkbeautify.xml(response.responseText);
                 }else{
                     text = response.responseText;
                 }
