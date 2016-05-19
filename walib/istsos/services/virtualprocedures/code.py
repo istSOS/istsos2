@@ -43,6 +43,7 @@ class waCode(waResourceService):
     
     def __init__(self,waEnviron):
         waResourceService.__init__(self,waEnviron)
+        #self.demomsg = "Sorry but for security reasons virtual procedures cannot be deleted, updated or created"
         self.servicename = self.pathinfo[2]
         self.procedurename =  self.pathinfo[4]
         self.procedureFolder = os.path.join(self.servicepath, "virtual", self.procedurename)
@@ -61,6 +62,7 @@ class waCode(waResourceService):
             self.setMessage("Virtual procedure code secessfully loaded")
     
     def executeDelete(self):
+        #raise Exception(self.demomsg)
         if not os.path.exists(self.procedureFolder):
             raise Exception("Virtual procedure %s not available: please check!")
         if not os.path.exists(self.codefile):
@@ -68,6 +70,7 @@ class waCode(waResourceService):
         os.remove(self.codefile)
         
     def executePost(self):
+        #raise Exception(self.demomsg)
         if not os.path.exists(self.procedureFolder):
             raise Exception("Virtual procedure %s not available: please check!")
         if os.path.exists(self.codefile):
@@ -78,6 +81,7 @@ class waCode(waResourceService):
             f.write(self.json["code"])
       
     def executePut(self):
+        #raise Exception(self.demomsg)
         if not os.path.exists(self.procedureFolder):
             raise Exception("Virtual procedure %s not available: please check!")
         if not os.path.exists(self.codefile):

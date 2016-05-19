@@ -440,7 +440,8 @@ INSERT INTO observed_properties VALUES ('solar-radiation', 'urn:ogc:def:paramete
 INSERT INTO observed_properties VALUES ('river-height', 'urn:ogc:def:parameter:x-istsos:1.0:river:water:height', '', '{"interval": ["0", "10"], "role": "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0"}', 6);
 INSERT INTO observed_properties VALUES ('river-discharge', 'urn:ogc:def:parameter:x-istsos:1.0:river:water:discharge', '', NULL, 7);
 INSERT INTO observed_properties VALUES ('soil-evapotranspiration', 'urn:ogc:def:parameter:x-istsos:1.0:meteo:soil:evapotranspiration', '', NULL, 8);
-SELECT pg_catalog.setval('obs_pr_id_opr_seq', 8, true);
+INSERT INTO observed_properties VALUES ('air-heatindex', 'urn:ogc:def:parameter:x-istsos:1.0:meteo:air:heatindex', '', NULL, 9);
+SELECT pg_catalog.setval('obs_pr_id_opr_seq', 9, true);
 
 --=====================================
 -- ADDING UNIT OF MEASURES
