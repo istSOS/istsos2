@@ -627,9 +627,7 @@ class InsertObservationResponse:
                     "broker_url": filter.sosConfig.mqtt["broker_url"],
                     "broker_port": filter.sosConfig.mqtt["broker_port"],
                     "broker_topic": "%s%s" % (
-                        filter.procedure,
-                        filter.sosConfig.mqtt["broker_topic"]),
+                        filter.sosConfig.mqtt["broker_topic"],
+                        filter.procedure),
                     "data": filter.dataArray
                 }).start()
-
-
