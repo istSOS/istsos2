@@ -39,6 +39,7 @@ try:
     sys.path.insert(0, path.abspath("."))
     from lib.pytz import timezone
     import lib.requests as requests
+    from lib.requests.auth import HTTPBasicAuth
     import lib.isodate as iso
 except ImportError as e:
     print """Error loading internal libs:
@@ -134,6 +135,18 @@ def execute(args):
     dtconfig = False
     debug = False
     config = False
+    header = 0
+
+    user = None
+    if 'user' in args and args['user'] is not None:
+        user = args['user']
+    password = None
+    if 'password' in args and args['password'] is not None:
+        password = args['password']
+
+    auth = None
+    if user and password:
+        auth = HTTPBasicAuth(user, password)
 
     if 'c' in args and args['c'] is not None:
         with open(args['c'], 'r') as f:
@@ -145,6 +158,9 @@ def execute(args):
 
         if "datetime" in config:
             dtconfig = config["datetime"]
+
+        if "header" in config:
+            header = config["header"]
 
         s = serial.Serial(config['port'], config['baud'])
 
@@ -162,14 +178,14 @@ def execute(args):
 
     # Requesting service configuration info
     res = requests.get('%s/wa/istsos/services/%s/configsections' % (
-        url, service))
+        url, service), auth=auth)
     istConfig = res.json()['data']
     defaultNaN = istConfig["getobservation"]["aggregatenodata"]
 
     # Requesting a describe sensor mainly to store the assignedSensorId
     res = requests.get(
         '%s/wa/istsos/services/%s/procedures/%s' % (
-            url, service, procedure))
+            url, service, procedure), auth=auth)
 
     ds = res.json()['data']
     if debug:
@@ -182,7 +198,7 @@ def execute(args):
             url, service, procedure),
         params={
             "qualityIndex": "False"
-        })
+        }, auth=auth)
 
     io = {
         "AssignedSensorId": ds['assignedSensorId'],
@@ -218,86 +234,106 @@ def execute(args):
 
     skip = True
     sample = True
+    line = 0
 
     while True:
         if skip:
             # clear buffer (avoid bad read)
+            print "Wait for serial"
             s.flushInput()
+            s.readline()
             time.sleep(1)
             skip = False
             continue
 
-        message = s.readline().strip()
-        data = message.split(',')
+        elif line < header:
+            print "Skipping line: %s " % line
+            s.flushInput()
+            time.sleep(1)
+            line = line + 1
+            continue
 
-        if dtconfig:
-            if 'column' in dtconfig:
-                eventtime = datetime.strptime(
-                    data[int(dtconfig['column'])],
-                    dtconfig['format']
-                )
+        try:
+            message = s.readline().strip()
+            data = message.split(',')
 
-            elif 'date' in dtconfig and 'time' in dtconfig:
-                d = datetime.strptime(
-                    data[int(dtconfig['date']['column'])],
-                    dtconfig['date']['format']
-                )
-                t = datetime.strptime(
-                    data[int(dtconfig['time']['column'])],
-                    dtconfig['time']['format']
-                )
-                eventtime = datetime.combine(d, t.time())
+            print data
+
+            if dtconfig:
+                if 'column' in dtconfig:
+                    eventtime = datetime.strptime(
+                        data[int(dtconfig['column'])],
+                        dtconfig['format']
+                    )
+
+                elif 'date' in dtconfig and 'time' in dtconfig:
+                    d = datetime.strptime(
+                        data[int(dtconfig['date']['column'])],
+                        dtconfig['date']['format']
+                    )
+                    t = datetime.strptime(
+                        data[int(dtconfig['time']['column'])],
+                        dtconfig['time']['format']
+                    )
+                    eventtime = datetime.combine(d, t.time())
+
+                else:
+                    print "Warning: date time configuration wrong"
+                    s.close()
+                    exit()
+
+                if "tz" in dtconfig:
+                    eventtime = getDateTimeWithTimeZone(eventtime, dtconfig["tz"])
 
             else:
-                print "Warning: date time configuration wrong"
+                eventtime = datetime.now(tzlocal())
+
+            io["Observation"]['samplingTime'] = {
+                "beginPosition": eventtime.isoformat(),
+                "endPosition": eventtime.isoformat()
+            }
+            ob = [eventtime.isoformat()]
+            for idx in range(len(columns)):
+                column = columns[idx]
+                if nodata[idx] == data[column]:
+                    ob.append(defaultNaN)
+                else:
+                    ob.append(data[column])
+
+            io["Observation"]['result']['DataArray']['values'] = [ob]
+
+            if sample:
+                sample = False
+                print "\nData sample:"
+                for idx in range(len(observations)):
+                    print "%s = %s" % (
+                        observations[idx], data[columns[idx]]
+                    )
+                print "\n"
+
+            if debug:
+                print "Sending data: %s" % (", ".join(ob))
+
+            res = requests.post(
+                '%s/wa/istsos/services/%s/operations/insertobservation' % (
+                    url, service
+                ),
+                data=json.dumps(io), auth=auth)
+
+            line = line + 1
+
+            try:
+                res.raise_for_status()
+                if debug:
+                    print "  > Insert Ok!"
+            except requests.exceptions.HTTPError as ex:
+                print "Error: inserting data.."
                 s.close()
                 exit()
 
-            if "tz" in dtconfig:
-                eventtime = getDateTimeWithTimeZone(eventtime, dtconfig["tz"])
+        except Exception as rex:
+            print "Error: inserting data:\n%s" % rex
 
-        else:
-            eventtime = datetime.now(tzlocal())
-
-        io["Observation"]['samplingTime'] = {
-            "beginPosition": eventtime.isoformat(),
-            "endPosition": eventtime.isoformat()
-        }
-        ob = [eventtime.isoformat()]
-        for idx in range(len(columns)):
-            column = columns[idx]
-            if nodata[idx] == data[column]:
-                ob.append(defaultNaN)
-            else:
-                ob.append(data[column])
-
-        io["Observation"]['result']['DataArray']['values'] = [ob]
-
-        if sample:
-            sample = False
-            print "\nData sample:"
-            for idx in range(len(observations)):
-                print "%s = %s" % (
-                    observations[idx], data[columns[idx]]
-                )
-            print "\n"
-
-        if debug:
-            print "Sending data: %s" % (", ".join(ob))
-
-        res = requests.post(
-            '%s/wa/istsos/services/%s/operations/insertobservation' % (
-                url, service
-            ),
-            data=json.dumps(io))
-        try:
-            res.raise_for_status()
-            if debug:
-                print "  > Insert Ok!"
-        except requests.exceptions.HTTPError as ex:
-            print "Error: inserting data.."
-            s.close()
-            exit()
     s.close()
 
 if __name__ == "__main__":
