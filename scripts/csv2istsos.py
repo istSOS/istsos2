@@ -450,7 +450,6 @@ if __name__ == "__main__":
         metavar= 'password')
 
     args = parser.parse_args()
-    #print args.__dict__
     execute(args.__dict__)
 
 

@@ -20,4 +20,11 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # ===============================================================================
-__all__ = [ "csv2istsos","raw2csv","sos2istsos","sos_virtualHQ_importer", "wns"]
+__all__ = [
+    "csv2istsos",
+    "raw2csv",
+    "sos2istsos",
+    "sos_virtualHQ_importer",
+    "wns",
+    "serial2istsos"
+]

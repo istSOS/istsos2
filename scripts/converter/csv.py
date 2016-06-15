@@ -105,6 +105,8 @@ from datetime import datetime
 from datetime import timedelta
 from lib.pytz import timezone
 import traceback
+from types import FunctionType
+
 
 class CsvImporter(raw2csv.Converter):
     
@@ -136,16 +138,19 @@ class CsvImporter(raw2csv.Converter):
                 self.config["datetime"]['date']["format"],
                 self.config["datetime"]['time']["format"]
             )
-            d = datetime.strptime(dt,frm)
-            
-        #tz = timezone('UTC')
-        #d = d.replace(tzinfo=tz)
-        
+            d = datetime.strptime(dt, frm)
+
         if "tz" in self.config["datetime"]:
-            d = self.getDateTimeWithTimeZone(d,self.config["datetime"]["tz"])
+            d = self.getDateTimeWithTimeZone(d, self.config["datetime"]["tz"])
+        
+        # if then function added, execute the function on datetime object
+        if "then" in self.config["datetime"] and (
+                isinstance(self.config["datetime"]["then"], FunctionType)):
+            d = self.config["datetime"]["then"](d)
+            
         return d
         
-        
+
     def setEndPositionFromFilename(self, fileName):
         """
         Extract from file name the EndPosition Date, usefull with irregular 
