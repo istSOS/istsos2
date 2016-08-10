@@ -921,8 +921,8 @@ class Observation:
                         sqlInt += "%s years " % isoInt.years
 
                     if isoInt.months>0:
-                        isoInt.months = int(isoInt.months)
-                        sqlInt += "%s months " % isoInt.months
+                        #isoInt.months = int(isoInt.months)
+                        sqlInt += "%s months " % int(isoInt.months)
 
                     if isoInt.days>0:
                         sqlInt += "%s days " % isoInt.days
