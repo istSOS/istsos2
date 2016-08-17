@@ -21,6 +21,10 @@
 #
 # =============================================================================
 
+__copyright__ = 'Copyright (c) 2016 IST-SUPSI (www.supsi.ch/ist)'
+__license__ = 'GPL2'
+__version__ = '1.0'
+
 import serial
 from datetime import datetime
 from datetime import timedelta

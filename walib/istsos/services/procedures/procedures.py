@@ -190,7 +190,7 @@ class waProcedures(waResourceService):
                 self.setMessage("%s" % response.text)
 
                 # UPDATE MQTT Broker config
-                print proc.data
+                #print proc.data
                 if "mqtt" in proc.data:
                     try:
                         servicedb = databaseManager.PgDB(
@@ -207,18 +207,18 @@ class waProcedures(waResourceService):
                             WHERE
                                 name_prc = %s
                         """
-                        print proc.data['mqtt']
+                        #print proc.data['mqtt']
                         if proc.data['mqtt'] is not None and (
                                 proc.data['mqtt'] != ''):
-                            print " > Not null: updating"
-                            print sql % (
-                                json.dumps(proc.data['mqtt']),
-                                proc.data['system'])
+                            #print " > Not null: updating"
+                            #print sql % (
+                            #    json.dumps(proc.data['mqtt']),
+                            #    proc.data['system'])
                             servicedb.execute(sql, (
                                 json.dumps(proc.data['mqtt']),
                                 proc.data['system']))
                         else:
-                            print " > Null: removing"
+                            #print " > Null: removing"
                             servicedb.executeInTransaction(sql, (
                                 None, proc.data['system']))
 

@@ -21,14 +21,6 @@
 #
 # =============================================================================
 
-__author__ = 'Milan Antonovic'
-__copyright__ = 'Copyright (c) 2016 IST-SUPSI (www.supsi.ch/ist)'
-__credits__ = []
-__license__ = 'GPL2'
-__version__ = '1.0'
-__maintainer__ = 'Massimiliano Cannata, Milan Antonovic'
-__email__ = 'milan.antonovic@gmail.com'
-
 import sys
 from os import path
 import traceback

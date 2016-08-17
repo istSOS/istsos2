@@ -1,6 +1,7 @@
 [serviceType]
+default_version = 1.0.0
 version = 1.0.0,1.0.1,2.0.0
-default_version = 1.0.1
+default_version = 1.0.0
 value = OGC:SOS
 codespace = http://opengeospatial.net
 

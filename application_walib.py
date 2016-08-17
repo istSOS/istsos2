@@ -39,25 +39,25 @@ def executeWa(environ, start_response):
     handler = logging.handlers.RotatingFileHandler(filename=log_filename, maxBytes = 1024*1024, backupCount = 20)
     handler.setFormatter(formatter)
     logger = logging.getLogger('istsos')
-    
+
     if len(logger.handlers)==0:
         logger.addHandler(handler)
-        
+
     elif len(logger.handlers)==1 and type(logger.handlers[0])==type(handler):
         pass
-        
+
     else:
         for h in logger.handlers:
             logger.removeHandler(h)
-            
+
         logger.addHandler(handler)
 
     if config.errorlog_level == "INFO":
         logger.setLevel(logging.INFO)
-        
+
     elif config.errorlog_level == "ERROR":
         logger.setLevel(logging.ERROR)
-        
+
     else:
         logger.setLevel(logging.UNSET)'''
 
@@ -83,12 +83,12 @@ def executeWa(environ, start_response):
         "errorlog_path" : config.errorlog_path,
         "user": user.getUser(environ)
     }
-    
+
     # Passing the basic authentication header in waEnviron
     #   Shall be used in istSOS lib request from walib
     if 'HTTP_AUTHORIZATION' in environ:
         waEnviron['HTTP_AUTHORIZATION'] = environ['HTTP_AUTHORIZATION']
-    
+
     try:
 
         try:
@@ -98,7 +98,7 @@ def executeWa(environ, start_response):
             try:
                 if op.response['success']:
                     method = str(environ['REQUEST_METHOD']).upper()
-                    
+
                     if method == "GET": # Data RETRIEVAL
                         op.executeGet()
 
@@ -151,13 +151,13 @@ def executeWa(environ, start_response):
             from walib import resource
             op = resource.waResource(waEnviron)
             op.setException(str(exe))
-        
+
         wsgi_mime = "application/json"
-        
+
         try:
             wsgi_response = op.getResponse()
             wsgi_mime = op.getMime()
-            
+
         except Exception as exe:
             print >> sys.stderr, traceback.print_exc()
             '''logger.error(
@@ -167,7 +167,6 @@ def executeWa(environ, start_response):
                 )
             )'''
             op.setException("Error converting response to json")
-
 
     except Exception as e:
         print >> sys.stderr, traceback.print_exc()
@@ -187,4 +186,3 @@ def executeWa(environ, start_response):
     ]
     start_response(wsgi_status, wsgi_headers)
     return [wsgi_response]
-
