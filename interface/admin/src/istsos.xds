@@ -428,6 +428,7 @@
                             },
                             "codeClass": null,
                             "userConfig": {
+                                "hidden": true,
                                 "id": "updates",
                                 "name": "istsos_message",
                                 "fieldLabel": "Updates",
@@ -444,7 +445,6 @@
                             },
                             "codeClass": null,
                             "userConfig": {
-                                "hidden": true,
                                 "id": "download",
                                 "name": "download_url",
                                 "fieldLabel": "Download",
@@ -8710,6 +8710,7 @@
                                     },
                                     "codeClass": null,
                                     "userConfig": {
+                                        "hidden": true,
                                         "id": "btnStatus",
                                         "allowDepress": false,
                                         "text": "Status (beta)",

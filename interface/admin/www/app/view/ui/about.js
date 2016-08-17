@@ -33,6 +33,7 @@ Ext.define('istsos.view.ui.about', {
                         },
                         {
                             xtype: 'displayfield',
+                            hidden: true,
                             id: 'updates',
                             name: 'istsos_message',
                             fieldLabel: 'Updates',
@@ -40,7 +41,6 @@ Ext.define('istsos.view.ui.about', {
                         },
                         {
                             xtype: 'displayfield',
-                            hidden: true,
                             id: 'download',
                             name: 'download_url',
                             fieldLabel: 'Download',

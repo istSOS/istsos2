@@ -85,6 +85,7 @@ Ext.define('istsos.view.ui.MainMenu2', {
                                 },
                                 {
                                     xtype: 'button',
+                                    hidden: true,
                                     id: 'btnStatus',
                                     allowDepress: false,
                                     text: 'Status (beta)'
