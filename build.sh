@@ -21,7 +21,7 @@ mkdir _build/istsos/services
 
 rsync -a interface/admin/www/* _build/istsos/interface/admin
 rsync -a interface/modules/requests/build/requests/* _build/istsos/interface/modules/requests
-rsync -a interface/modules/status/www/istsosStatus/* _build/istsos/interface/modules/status
+# rsync -a interface/modules/status/www/istsosStatus/* _build/istsos/interface/modules/status
 rsync -a --exclude=*.pyc istsoslib/* _build/istsos/istsoslib
 rsync -a --exclude=*.pyc lib/* _build/istsos/lib
 rsync -a --exclude=*.pyc scripts/* _build/istsos/scripts

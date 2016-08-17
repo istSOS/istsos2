@@ -19,15 +19,18 @@ Ext.define('istsos.view.about', {
         me.callParent(arguments);
     },
     operationLoad: function() {
-        this.on("operationGet",function(json){
-            if (json["data"]["istsos_update"]){
+        this.on("operationGet", function(json){
+            Ext.getCmp("download").setValue("<a href='"+
+                json["data"]["download_url"]+"' target='_BLANK'>"+
+                json["data"]["download_url"]+"</a>");
+            /*if (json["data"]["istsos_update"]){
                 Ext.getCmp("changelog").setVisible(json["data"]["istsos_update"]);
                 Ext.getCmp("download").setVisible(json["data"]["istsos_update"]);
-                Ext.getCmp("download").setValue("<a href='"+ 
+                Ext.getCmp("download").setValue("<a href='"+
                     json["data"]["download_url"]+"' target='_BLANK'>"+
                     json["data"]["download_url"]+"</a>");
                 Ext.getCmp("updates").setFieldStyle("color: red;");
-            }
+            }*/
         },this);
     }
 });

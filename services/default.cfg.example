@@ -1,11 +1,11 @@
 [serviceType]
 default_version = 1.0.0
 version = 1.0.0,1.0.1,2.0.0
-default_version = 1.0.0
 value = OGC:SOS
 codespace = http://opengeospatial.net
 
 [getobservation]
+strictOGC = False
 correct_qi = 110
 stat_qi = 200
 aggregate_nodata_qi = -100
@@ -105,19 +105,19 @@ password = postgres
 port = 5432
 
 [mail]
-usermail = ""
-password = ""
-smtp = ""
-port = ""
+usermail = 
+password = 
+smtp = 
+port = 
 
 [twitter]
-oauth_token = ""
-oauth_secret = ""
-consumer_key = ""
-consumer_secret = ""
+oauth_token = 
+oauth_secret = 
+consumer_key = 
+consumer_secret = 
 
 [mqtt]
-broker_url = ""
-broker_port = ""
-broker_user = ""
-broker_password = ""
+broker_url = 
+broker_port = 
+broker_user = 
+broker_password = 
