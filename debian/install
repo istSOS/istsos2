@@ -1,4 +1,5 @@
 *.py /usr/share/istsos
+*.txt /usr/share/istsos
 interface /usr/share/istsos
 istsoslib /usr/share/istsos
 scripts /usr/share/istsos

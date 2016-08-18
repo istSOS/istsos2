@@ -1,0 +1,1 @@
+After compiling using sencha architect, don't forget to copy also the "xml" folder.

@@ -20,7 +20,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # ===============================================================================
-import psycopg2 # @TODO the right library
+import psycopg2
 import psycopg2.extras
 import os
 import sys
@@ -29,8 +29,6 @@ import sys
 from istsoslib import sosDatabase
 #from SOS.config import mimetype
 from istsoslib import sosException
-#from mx import DateTime
-import mx.DateTime.ISO
            
 class foi:
     """The Feature of interest object

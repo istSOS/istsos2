@@ -1,9 +1,6 @@
-chmod 755 /var/log/istsos
-chown -R www-data:www-data /var/logs/istsos/
-
 chown -R www-data:www-data /usr/share/istsos/logs
 chown -R www-data:www-data /usr/share/istsos/services
-chown -R www-data:www-data /usr/share/istsos/scripts/wns
+#chown -R www-data:www-data /usr/share/istsos/scripts/wns
 
 a2ensite istsos
 service apache2 reload
