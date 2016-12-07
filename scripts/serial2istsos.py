@@ -34,6 +34,7 @@ import argparse
 import time
 import sys
 from os import path
+import traceback
 
 #import requests
 #from pytz import timezone
@@ -45,6 +46,7 @@ try:
     import lib.requests as requests
     from lib.requests.auth import HTTPBasicAuth
     import lib.isodate as iso
+    from lib import isodate as iso
 except ImportError as e:
     print """Error loading internal libs:
  >> please run the script from the istSOS root folder.\n\n"""
@@ -166,6 +168,12 @@ def execute(args):
         if "header" in config:
             header = config["header"]
 
+        duration = None
+        aggregationFunction = None
+        if "aggregationInterval" in config:
+            duration = iso.parse_duration(config['aggregationInterval'])
+            aggregationFunction = []
+
         s = serial.Serial(config['port'], config['baud'])
 
     else:
@@ -215,13 +223,17 @@ def execute(args):
     observations = []
     columns = []
     nodata = []
+    aggregation = None
     for idx in range(
             1, len(io["Observation"]['result']['DataArray']['field'])):
         observation = io["Observation"]['result']['DataArray']['field'][idx]
         observations.append(observation['definition'])
         columns.append((idx-1))
         nodata.append(defaultNaN)
+        if aggregationFunction is not None:
+            aggregationFunction.append("")
 
+    print aggregationFunction
     if config:
         for observation in config["observations"]:
             if observation['name'] not in observations:
@@ -235,10 +247,15 @@ def execute(args):
                 columns[idx] = int(observation['column'])
                 if "nodata" in observation:
                     nodata[idx] = str(observation['nodata'])
+                if "aggregation" in observation:
+                    aggregationFunction[idx] = observation["aggregation"]
+
 
     skip = True
     sample = True
     line = 0
+
+    startDate = None
 
     while True:
         if skip:
@@ -287,55 +304,95 @@ def execute(args):
                     exit()
 
                 if "tz" in dtconfig:
-                    eventtime = getDateTimeWithTimeZone(eventtime, dtconfig["tz"])
+                    eventtime = getDateTimeWithTimeZone(
+                        eventtime, dtconfig["tz"])
 
             else:
                 eventtime = datetime.now(tzlocal())
+                if startDate is None:
+                    startDate = eventtime
 
-            io["Observation"]['samplingTime'] = {
-                "beginPosition": eventtime.isoformat(),
-                "endPosition": eventtime.isoformat()
-            }
-            ob = [eventtime.isoformat()]
-            for idx in range(len(columns)):
-                column = columns[idx]
-                if nodata[idx] == data[column]:
-                    ob.append(defaultNaN)
-                else:
-                    ob.append(data[column])
+            if aggregation is None:
+                aggregation = []
+                for idx in range(
+                        1, len(io["Observation"]['result']['DataArray']['field'])):
+                    aggregation.append([])
 
-            io["Observation"]['result']['DataArray']['values'] = [ob]
+            if aggregation and (startDate + duration) > eventtime:
+                for idx in range(len(data)):
+                    aggregation[idx].append(float(data[idx]))
 
-            if sample:
-                sample = False
-                print "\nData sample:"
-                for idx in range(len(observations)):
-                    print "%s = %s" % (
-                        observations[idx], data[columns[idx]]
-                    )
-                print "\n"
+            else:
+                if aggregation is not None:
+                    print "Preparing.."
+                    startDate = startDate + duration
+                    eventtime = startDate
+                    data = []
+                    for idx in range(len(aggregation)):
+                        if aggregationFunction:
+                            if aggregationFunction[idx] == 'sum':
+                                data.append(
+                                    str(sum(aggregation[idx]))
+                                )
+                            elif aggregationFunction[idx] == 'avg':
+                                data.append(
+                                    str(sum(aggregation[idx])/len(aggregation[idx]))
+                                )
+                            elif aggregationFunction[idx] == 'min':
+                                data.append(
+                                    str(min(aggregation[idx]))
+                                )
+                            elif aggregationFunction[idx] == 'max':
+                                data.append(
+                                    str(max(aggregation[idx]))
+                                )
+                    aggregation = None
 
-            if debug:
-                print "Sending data: %s" % (", ".join(ob))
+                io["Observation"]['samplingTime'] = {
+                    "beginPosition": eventtime.isoformat(),
+                    "endPosition": eventtime.isoformat()
+                }
+                ob = [eventtime.isoformat()]
+                for idx in range(len(columns)):
+                    column = columns[idx]
+                    if nodata[idx] == data[column]:
+                        ob.append(defaultNaN)
+                    else:
+                        ob.append(data[column])
 
-            res = requests.post(
-                '%s/wa/istsos/services/%s/operations/insertobservation' % (
-                    url, service
-                ),
-                data=json.dumps(io), auth=auth)
+                io["Observation"]['result']['DataArray']['values'] = [ob]
 
-            line = line + 1
+                if sample:
+                    sample = False
+                    print "\nData sample:"
+                    for idx in range(len(observations)):
+                        print "%s = %s" % (
+                            observations[idx], data[columns[idx]]
+                        )
+                    print "\n"
 
-            try:
-                res.raise_for_status()
                 if debug:
-                    print "  > Insert Ok!"
-            except requests.exceptions.HTTPError as ex:
-                print "Error: inserting data.."
-                s.close()
-                exit()
+                    print "Sending data: %s" % (", ".join(ob))
+
+                res = requests.post(
+                    '%s/wa/istsos/services/%s/operations/insertobservation' % (
+                        url, service
+                    ),
+                    data=json.dumps(io), auth=auth)
+
+                line = line + 1
+
+                try:
+                    res.raise_for_status()
+                    if debug:
+                        print "  > Insert Ok!"
+                except requests.exceptions.HTTPError as ex:
+                    print "Error: inserting data.."
+                    s.close()
+                    exit()
 
         except Exception as rex:
+            print traceback.print_exc()
             print "Error: inserting data:\n%s" % rex
 
     s.close()
