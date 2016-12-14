@@ -544,7 +544,7 @@ class OperationsMetadata_2_0_0:
         GetObservation=Operation(name="GetObservation", get = sosConfig.serviceUrl["get"])
         GetObservation.addParameter(name="offering", use = "required", allowedValues = BuildOfferingList_2_0_0(pgdb,sosConfig))
         GetObservation.addParameter(name="temporalFilter", use = "optional", allowedValues = [], range=BuildEventTimeRange(pgdb,sosConfig))
-        GetObservation.addParameter(name="spatialFilter", use = "optional", allowedValues = [], range=BuildEnvelopeMinMax(pgdb,sosConfig), referenceSystem='EPSG:4326')
+        GetObservation.addParameter(name="spatialFilter", use = "optional", allowedValues = [], range=BuildEnvelopeMinMax(pgdb,sosConfig), referenceSystem="http://www.opengis.net/def/crs/EPSG/0/"+sosConfig.istsosepsg)
         GetObservation.addParameter(name="procedure", use = "optional", allowedValues = BuildSensorIdList(pgdb,sosConfig))
         GetObservation.addParameter(name="observedProperty", use = "optional", allowedValues = BuildobservedPropertyList(pgdb,sosConfig))
         GetObservation.addParameter(name="featureOfInterest", use = "optional", allowedValues = BuildfeatureOfInterestList(pgdb,sosConfig))
