@@ -90,11 +90,12 @@ class Parameter:
         allowedValues (list): allowed values
         range (list): ranges
     """
-    def __init__(self,name,use = "optional",allowedValues=[],range=[]):
+    def __init__(self,name,use = "optional",allowedValues=[],range=[], referenceSystem=False):
         self.name=name
         self.use=use
         self.allowedValues=allowedValues
         self.range=range
+        self.referenceSystem=referenceSystem
 
 class Operation:
     """Operation object
@@ -111,8 +112,8 @@ class Operation:
         self.get=get
         self.post=post
         self.parameters=[]
-    def addParameter(self,name,use = "optional",allowedValues=[],range=[]):
-        self.parameters.append(Parameter(name,use,allowedValues,range))
+    def addParameter(self,name,use = "optional",allowedValues=[],range=[], referenceSystem=False):
+        self.parameters.append(Parameter(name,use,allowedValues,range,referenceSystem))
 
 def BuildSensorIdList(pgdb,sosConfig):
     """Generate the sensor list
@@ -205,10 +206,10 @@ def BuildEnvelopeMinMax(pgdb,sosConfig):
             st_YMax(envelope) as may
         FROM
         (
-        	select ST_ENVELOPE(ST_Collect(ST_Transform(envelope,3857))) as envelope 
+        	select ST_ENVELOPE(ST_Collect(ST_Transform(envelope,4326))) as envelope 
         	from (
         			select 
-        			  ST_ENVELOPE(ST_Collect(ST_Transform(geom_pos,3857))) as envelope 
+        			  ST_ENVELOPE(ST_Collect(ST_Transform(geom_pos,4326))) as envelope 
         			FROM 
         			  %s.positions, %s.event_time, %s.procedures
         			WHERE 
@@ -217,7 +218,7 @@ def BuildEnvelopeMinMax(pgdb,sosConfig):
         			  id_eti = id_eti_fk
         		union
         			select 
-        			  ST_ENVELOPE(ST_Collect(ST_Transform(geom_foi,3857))) as envelope 
+        			  ST_ENVELOPE(ST_Collect(ST_Transform(geom_foi,4326))) as envelope 
         			FROM 
         			  %s.foi
         	) as g
@@ -543,7 +544,7 @@ class OperationsMetadata_2_0_0:
         GetObservation=Operation(name="GetObservation", get = sosConfig.serviceUrl["get"])
         GetObservation.addParameter(name="offering", use = "required", allowedValues = BuildOfferingList_2_0_0(pgdb,sosConfig))
         GetObservation.addParameter(name="temporalFilter", use = "optional", allowedValues = [], range=BuildEventTimeRange(pgdb,sosConfig))
-        GetObservation.addParameter(name="spatialFilter", use = "optional", allowedValues = [], range=BuildEnvelopeMinMax(pgdb,sosConfig))
+        GetObservation.addParameter(name="spatialFilter", use = "optional", allowedValues = [], range=BuildEnvelopeMinMax(pgdb,sosConfig), referenceSystem='EPSG:4326')
         GetObservation.addParameter(name="procedure", use = "optional", allowedValues = BuildSensorIdList(pgdb,sosConfig))
         GetObservation.addParameter(name="observedProperty", use = "optional", allowedValues = BuildobservedPropertyList(pgdb,sosConfig))
         GetObservation.addParameter(name="featureOfInterest", use = "optional", allowedValues = BuildfeatureOfInterestList(pgdb,sosConfig))

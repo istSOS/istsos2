@@ -292,6 +292,9 @@ def render_2_0_0(GC,sosConfig):
                     r += "        </ows:Range>\n"
                     
                 r += "      </ows:AllowedValues>\n"
+                # add ReferenceSystem tag
+                if p.referenceSystem:
+                    r += "      <ows:ReferenceSystem reference='" + str(p.referenceSystem) + "' />\n"
                 r += "    </ows:Parameter>\n"
                 
             if o.name != 'GlobalOperations':
