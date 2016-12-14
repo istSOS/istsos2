@@ -198,6 +198,9 @@ def BuildEventTimeRange(pgdb,sosConfig):
     return [rows[0]["b"],rows[0]["e"]]
 
 def BuildEnvelopeMinMax(pgdb,sosConfig):
+    sosEpsgList = [sosConfig.istsosepsg,]*2
+    sosSchemaList = [sosConfig.schema,]*3
+    sqlParamsList = sosEpsgList+sosSchemaList+[sosConfig.istsosepsg, sosConfig.schema]
     sql = """
         SELECT 
             st_XMin(envelope) as mix,
@@ -206,10 +209,10 @@ def BuildEnvelopeMinMax(pgdb,sosConfig):
             st_YMax(envelope) as may
         FROM
         (
-        	select ST_ENVELOPE(ST_Collect(ST_Transform(envelope,4326))) as envelope 
+        	select ST_ENVELOPE(ST_Collect(ST_Transform(envelope,%s))) as envelope 
         	from (
         			select 
-        			  ST_ENVELOPE(ST_Collect(ST_Transform(geom_pos,4326))) as envelope 
+        			  ST_ENVELOPE(ST_Collect(ST_Transform(geom_pos,%s))) as envelope 
         			FROM 
         			  %s.positions, %s.event_time, %s.procedures
         			WHERE 
@@ -218,12 +221,12 @@ def BuildEnvelopeMinMax(pgdb,sosConfig):
         			  id_eti = id_eti_fk
         		union
         			select 
-        			  ST_ENVELOPE(ST_Collect(ST_Transform(geom_foi,4326))) as envelope 
+        			  ST_ENVELOPE(ST_Collect(ST_Transform(geom_foi,%s))) as envelope 
         			FROM 
         			  %s.foi
         	) as g
         ) as s
-    """ % ((sosConfig.schema,)*4)
+    """ % (tuple(sqlParamsList))
     result = [0,0,0,0]
     rows=pgdb.select(sql)
     if len(rows) == 1:
