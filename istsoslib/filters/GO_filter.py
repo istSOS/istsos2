@@ -158,7 +158,7 @@ class sosGOfilter(f.sosFilter):
                 #     - combination:  temporalFilter=om:phenomenonTime,2012-11-19T14:00:00+01:00/2012-11-19T14:15:00+01:00,2012-11-19T14:00:00.000+01:00
                 if requestObject.has_key('temporalfilter'):
                     self.eventTime = []
-                    temporalfilter = requestObject["temporalfilter"].split(",")
+                    temporalfilter = requestObject["temporalfilter"].replace(" ","+").split(",")
                     
                     #  > in istSOS om:phenomenonTime is equals to om:resultTime
                     if temporalfilter.pop(0) not in ['om:phenomenonTime','phenomenonTime','om:resultTime','resultTime']:
