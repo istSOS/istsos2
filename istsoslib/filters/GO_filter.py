@@ -216,13 +216,14 @@ class sosGOfilter(f.sosFilter):
                             "Invalid spatial filter '%s'" % requestObject["spatialfilter"])
                     
                     srsName = None
-                    
-                    if sfs[5].index(':')>-1:
-                        srsName = sfs[5].split(':')[-1]
-                    
-                    if sfs[5].index('/')>-1:
+
+                    if 'http' in sfs[5]:
                         srsName = sfs[5].split('/')[-1]
-                    
+                    elif '::' in sfs[5]:
+                        srsName = sfs[5].split('::')[-1]
+                    else:
+                        srsName = '4326'
+
                     ogcfilter = (
                         "<ogc:BBOX>" + 
                           "<ogc:PropertyName>the_geom</ogc:PropertyName>"+
