@@ -40,13 +40,19 @@ class waServiceConfig():
         self.sections = --> list of available sections
         self.* = {} --> dictionary of the options for the * section
 
-    @note: Each section is an attribute of the waServiceConfig object and is a dictionary of option names (key) and value.
-    Additionally each section dictionary has a special key "default" that is a boolean variable indicating if the section
+    @note: Each section is an attribute of the waServiceConfig object and
+    is a dictionary of option names (key) and value.
+    Additionally each section dictionary has a special key "default" that
+    is a boolean variable indicating if the section
     is set in the default or specific service configuration file.
 
     >>> Example of section attribute
         myconfig = waServiceConfig("/services","/services/myservice")
-        {'default': True, 'post': 'http://localhost:8099', 'get': 'http://localhost:8099'}
+        {
+            'default': True,
+            'post': 'http://localhost:8099',
+            'get': 'http://localhost:8099'
+        }
     """
 
     def __init__(self, defaultcfgpath, servicecfgpath=None):
@@ -71,7 +77,7 @@ class waServiceConfig():
         #read config from service
         serviceconf = ConfigParser.RawConfigParser()
         serviceconf.optionxform = str
-        if not servicecfgpath == None:
+        if not servicecfgpath is None:
             serviceconf.read(servicecfgpath)
 
         for section in self.sections:
@@ -114,44 +120,46 @@ class waServiceConfig():
         """
         tmpsection = getattr(self, "%s" % section)
         if option in tmpsection:
-            if not self.servicecfgpath==None:
+            if not self.servicecfgpath is None:
                 tmpsection["default"] = False
 
-            tmpsection[option]=value
+            tmpsection[option] = value
             setattr(self, section, tmpsection)
 
         else:
-            raise Exception("section <%s> has not option <%s>" %(section,option) )
+            raise Exception("section <%s> has not option <%s>" % (
+                section, option))
 
-
-    def delete(self,section):
+    def delete(self, section):
         """
         returns the requested section as a dictionary
 
         @param section: configuration section
         @type section: C{string}
         """
-        if self.get(section)['default'] == True:
-            raise Exception("Cannot remove sections from default configuration")
+        if self.get(section)['default'] is True:
+            raise Exception(
+                "Cannot remove sections from default configuration")
         self.sections.remove(section)
 
     def save(self):
         """
         save current configuration to appropriate files
         """
-        if not self.servicecfgpath==None:
+        if not self.servicecfgpath is None:
             serviceconf = ConfigParser.RawConfigParser()
             serviceconf.optionxform = str
 
             for sectionname in self.sections:
-                section = getattr(self,"%s" % sectionname)
-                if section["default"]==False:
+                section = getattr(self, "%s" % sectionname)
+                if section["default"] is False:
                     serviceconf.add_section(sectionname)
                     for option in section.keys():
-                        if not option=="default":
-                            serviceconf.set(sectionname, option, section[option])
+                        if not option == "default":
+                            serviceconf.set(
+                                sectionname, option, section[option])
 
-            cfgfile = open(self.servicecfgpath,'w')
+            cfgfile = open(self.servicecfgpath, 'w')
             serviceconf.write(cfgfile)
             cfgfile.close()
 
@@ -160,12 +168,12 @@ class waServiceConfig():
             defaultconf.optionxform = str
 
             for sectionname in self.sections:
-                section = getattr(self,"%s" % sectionname)
+                section = getattr(self, "%s" % sectionname)
                 defaultconf.add_section(sectionname)
                 for option in section.keys():
-                    if not option=="default":
+                    if not option == "default":
                         defaultconf.set(sectionname, option, section[option])
 
-            cfgfile = open(self.defaultcfgpath,'w')
+            cfgfile = open(self.defaultcfgpath, 'w')
             defaultconf.write(cfgfile)
             cfgfile.close()

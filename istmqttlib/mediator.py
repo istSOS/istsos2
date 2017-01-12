@@ -3,7 +3,7 @@
 #
 # Authors: Massimiliano Cannata, Milan Antonovic
 #
-# Copyright (c) 2016 IST-SUPSI (www.supsi.ch/ist)
+# Copyright (c) 2010 - 2017 IST-SUPSI (www.supsi.ch/ist)
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,14 +20,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 #
 # =============================================================================
-
-__author__ = 'Milan Antonovic'
-__copyright__ = 'Copyright (c) 2016 IST-SUPSI (www.supsi.ch/ist)'
-__credits__ = []
-__license__ = 'GPL2'
-__version__ = '1.0'
-__maintainer__ = 'Massimiliano Cannata, Milan Antonovic'
-__email__ = 'milan.antonovic@gmail.com'
 
 import threading
 import os
