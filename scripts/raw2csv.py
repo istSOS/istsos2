@@ -135,7 +135,6 @@ class Converter():
 
         self.addMessage("%s initialization" % name)
 
-
         self.req = requests.session()
 
         self.folderOut = folderOut if folderOut is not None else tempfile.mkdtemp()
@@ -144,7 +143,6 @@ class Converter():
         self.user = user
         self.password = password
         self.auth = (self.user, self.password) if (self.user != None and self.password != None) else None
-
 
         self.archivefolder = archivefolder
 
@@ -232,7 +230,7 @@ class Converter():
         if self.debugConverter:
             self.debugConverter.addWarning(m)
         else:
-          self.warnings.append(m)
+            self.warnings.append(m)
 
     def addException(self, message):
         m = {
@@ -254,7 +252,10 @@ class Converter():
         n = name
         if type(self.fnre) == type([]):
             for rep in self.fnre:
-                n = n.replace(rep,'')
+                if type(rep) == type([]):
+                    n = n.replace(rep[0],rep[1])
+                else:
+                    n = n.replace(rep,'')
 
         return self.getDateTimeWithTimeZone(
             datetime.strptime(n, self.fndf), self.fndtz
@@ -380,16 +381,17 @@ class Converter():
             self.executing = {
                 "file": fileObj
             }
-            dat = open(fileObj,'rU')
+            dat = open(fileObj, 'rU')
             try:
-                self.parse(dat,os.path.split(fileObj)[1])
+                self.parse(dat, os.path.split(fileObj)[1])
                 dat.close()
             except Exception as e:
-                self.log(" !! Error while parsing file: %s" % os.path.split(fileObj)[1])
+                self.addException(
+                    "Error while parsing file: %s" % os.path.split(fileObj)[1])
                 dat.close()
                 raise e
 
-        self.addMessage("Files (processed/total): %s/%s" % (proclen,falen))
+        self.addMessage("Files (processed/total): %s/%s" % (proclen, falen))
         self.addMessage("Parsed %s observations" % len(self.observations))
 
         if falen > 5000:
@@ -533,9 +535,11 @@ class Converter():
             self.addException(msg)
             raise FileReaderError (msg)
 
-        files = filter(path.isfile, glob.glob(os.path.join(self.folderIn, "%s" % (self.pattern))))
+        files = filter(
+            path.isfile,
+            glob.glob(os.path.join(self.folderIn, "%s" % (self.pattern))))
 
-        if not self.fndf: # Default sort
+        if not self.fndf:  # Default sort
             files.sort()
         else:
             #print "Sorting by date in file name"
@@ -547,11 +551,8 @@ class Converter():
             for f in fa:
                 files.append(fs[f])
 
-        #print files
-
-
-
-        self.log(" > %s %s found" % (len(files), "Files" if len(files)>1 else "File"))
+        self.log(" > %s %s found" % (
+            len(files), "Files" if len(files) > 1 else "File"))
 
         return files
 
@@ -575,7 +576,9 @@ class Converter():
         obs = observation.getObservedProperties()
         for o in obs:
             if not o in self.obsindex:
-                raise ObservationError("Observation (%s) is not observed by procedure %s." % (o,self.name))
+                raise ObservationError(
+                    "Observation (%s) is not observed by procedure %s." % (
+                        o, self.name))
 
         # Check if duplicate dates are present
         if observation.getEventime() in self.observationsCheck:
@@ -601,9 +604,9 @@ class Converter():
           - extension (.dat)
         """
         self.log("End position: %s" % self.getIOEndPosition())
-        if len(self.observations)>0:
-            if self.getIOEndPosition() == None:
-                f = open(os.path.join(self.folderOut,"%s_%s.dat" %(
+        if len(self.observations) > 0:
+            if self.getIOEndPosition() is None:
+                f = open(os.path.join(self.folderOut, "%s_%s.dat" % (
                     self.name,
 
                     datetime.strftime(self.observations[-1].getEventime().astimezone(timezone('UTC')), "%Y%m%d%H%M%S%f"))), 'w')
@@ -614,12 +617,14 @@ class Converter():
                 f = open(os.path.join(self.folderOut,"%s_%s.dat" %(
                     self.name,
                     datetime.strftime(self.getIOEndPosition().astimezone(timezone('UTC')), "%Y%m%d%H%M%S%f"))), 'w')
-            f.write("%s\n" % ",".join(self.obsindex))
+            #f.write("%s\n" % ",".join(self.obsindex))
+            self.log(",".join(self.obsindex))
             #self.observations.sort(key=lambda x: x.__eventime, reverse=True)
             #self.observations = sorted(self.observations, key=lambda observation: observation.__eventime)
             self.observations = sorted(self.observations, key=methodcaller('getEventime'))
             for o in self.observations:
-                f.write("%s\n" % o.csv(",",self.obsindex))
+                #self.log(o.csv(",", self.obsindex))
+                f.write("%s\n" % o.csv(",", self.obsindex))
         else:
             # End position is used to advance the sampling time in cases where
             # there is a "no data" observation (rain)

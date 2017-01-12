@@ -33,7 +33,7 @@ Q	3	23	0	0	Spannung
 =========================================================
 
 Single Observed property usage example:
-    
+
 sts = KernImporter('WT_LAV_RSV', {
         "tz": "+02:00",
         "observations": {
@@ -74,108 +74,124 @@ from datetime import timedelta
 from lib.pytz import timezone
 import traceback
 
+
 class KernImporter(raw2csv.Converter):
-    def __init__(self, procedureName, config, url, service, inputDir, 
-                 fileNamePattern, outputDir=None, qualityIndex=False, 
-                 exceptionBehaviour={}, user=None, password=None, debug=False, 
-                 csvlength=5000, filenamecheck=None, archivefolder = None):
-        self.config = config        
-        raw2csv.Converter.__init__(self, procedureName, url, service,
+    def __init__(self, procedureName, config, url, service, inputDir,
+                 fileNamePattern, outputDir=None, qualityIndex=False,
+                 exceptionBehaviour={}, user=None, password=None, debug=False,
+                 csvlength=5000, filenamecheck=None, archivefolder=None):
+        self.config = config
+        raw2csv.Converter.__init__(
+            self, procedureName, url, service,
             inputDir, fileNamePattern, outputDir,
-            qualityIndex, exceptionBehaviour, user, password, debug, csvlength, filenamecheck, archivefolder)
-        
-        '''d1 = self.getDSEndPosition() - timedelta(minutes=-10080)  # one week behind
-        d2 = datetime(year=dt.year,month=1,day=1)
-        
-        perfect_pattern = "%s_%s" % (str(d1.year)[-2:], ((d1-d2).total_seconds()/60))'''
-        
+            qualityIndex, exceptionBehaviour, user, password,
+            debug, csvlength, filenamecheck, archivefolder)
+
+        # this is used in the case the datalogger sends older data then the
+        # sending time
+        self.upDate = None
+
     def minutesdate(self, year, minutes):
-        d1 = datetime(year=int(year),month=1,day=1)
+        d1 = datetime(year=int(year), month=1, day=1)
         d1 = (d1 + timedelta(minutes=int(minutes)))
         if "tz" in self.config:
             d1 = self.getDateTimeWithTimeZone(d1, self.config["tz"])
         return d1
-    
+
     def skipFile(self, name):
-        upDate = name.split('.')[0].split('_') # HBTIa-14_12_183730_10
-        year = datetime.strptime(upDate[-3],'%y').year # 12 -> 2012
-        mins = upDate[-2] # 183730
-        
-        upDate = self.minutesdate(year,mins)
-        if self.getDSEndPosition() != None and (
-                isinstance(self.getDSEndPosition(), datetime) and  
-                upDate <= self.getDSEndPosition()):
+        self.upDate = name.split('.')[0].split('_')  # HBTIa-14_12_183730_10
+        year = datetime.strptime(self.upDate[-3], '%y').year  # 12 -> 2012
+        mins = self.upDate[-2]  # 183730
+
+        self.self.upDate = self.minutesdate(year, mins)
+        if self.getDSEndPosition() is not None and (
+                isinstance(self.getDSEndPosition(), datetime) and
+                self.upDate <= self.getDSEndPosition()):
             return True
         return False
-    
+
     def parse(self, fileObj, fileName):
-        
+
         isHead = False
         isData = False
         cnt = 0
         for line in fileObj.readlines():
             cnt = cnt+1
             try:
-                # Special characters https://it.wikipedia.org/wiki/Carattere_di_controllo#Tavole
-                
-                # SOH indica una riga di intestazione con la data di inizio dei dati
-                if line.find('\x01TI')>=0:
-                    line = line.replace('\x01','')
+                # Special characters
+                # https://it.wikipedia.org/wiki/Carattere_di_controllo#Tavole
+
+                # NUL file nullo
+                if line.find('\x00') >= 0:
+                    break
+
+                # SOH indica una riga di intestazione con la data
+                # di inizio dei dati
+                if line.find('\x01TI') >= 0:
+                    line = line.replace('\x01', '')
                     isHead = True
                 else:
                     isHead = False
-                    
+
                 # STX indica l'inizio di un blocco con i dati
-                if line.find('\x02')>=0:
-                    line = line.replace('\x02','')
+                if line.find('\x02') >= 0:
+                    line = line.replace('\x02', '')
                     isData = True
-                
-                # ETX indica la fine del blocco con i dati 
-                if line.find('\x03')>=0:
-                    line = line.replace('\x03','')
+
+                # ETX indica la fine del blocco con i dati
+                if line.find('\x03') >= 0:
+                    line = line.replace('\x03', '')
                     isData = False
-                    
+
                 # EOT indica la fine del file
-                if line.find('\x04')>=0:
-                    line = line.replace('\x04','')
+                if line.find('\x04') >= 0:
+                    line = line.replace('\x04', '')
                     break
-                
+
                 line = line.split()
-                
+
                 if isHead:
-                    # Estrazione dell'anno e i minuti dalla riga di intestazione
+                    # Estrazione dell'anno e i minuti dall'intestazione
                     #          \/       \/
-                    # ['TI', '2012', '183721', '000000', 'HBTIa', '14', 'KERN', 'TL-1', 'SN:557']
-                    year = datetime.strptime(line[1],'%Y').year
+                    # ['TI', '2012', '183721', '000000', 'HBTIa', '14', 'KERN',
+                    #  'TL-1', 'SN:557']
+                    year = datetime.strptime(line[1], '%Y').year
                     startMinutes = line[2]
-                
-                if isData and line[0] in ['D','d','o']:
+
+                if isData and line[0] in ['D', 'd', 'o']:
                     dataMinutes = line[1]
 
                     # Controllo del capodanno
-                    if int(startMinutes)>int(dataMinutes):
+                    if int(startMinutes) > int(dataMinutes):
                         year = year + 1
-                        
-                    d = self.minutesdate(year,dataMinutes)
-                    
-                    #d = datetime(d.year, d.month, d.day, d.hour, d.minute, d.second, 
-                    #    d.microsecond, tzinfo=timezone("CET"))
-                    
+
+                    d = self.minutesdate(year, dataMinutes)
+
+                    if self.getDSEndPosition() is not None and d < self.getDSEndPosition():
+                        self.addWarning(
+                            "File %s is inserting measurements "
+                            " prior to the EndPosition, skipping line." % (
+                                fileName
+                            )
+                        )
+
                     self.setEndPosition(d)
-                    
+
                     val = {}
-                    
-                    if type(self.config["observations"]) == type([]):
+
+                    if isinstance(self.config["observations"], list):
                         for obs in self.config["observations"]:
-                            val[obs['observedProperty']]=line[obs['column']]
+                            val[obs['observedProperty']] = line[obs['column']]
                     else:
-                        val[self.config["observations"]['observedProperty']]=line[self.config["observations"]['column']]
-                        
+                        val[
+                            self.config["observations"]['observedProperty']
+                        ] = line[self.config["observations"]['column']]
+
                     self.addObservation(
-                        raw2csv.Observation(d,val)
+                        raw2csv.Observation(d, val)
                     )
-                   
+
             except Exception as e:
-                self.log("%s:%s\n Line: %s" % (fileName,cnt,line))
+                self.log("%s:%s\n Line: %s" % (fileName, cnt, line))
                 self.log(traceback.print_exc())
                 raise e

@@ -258,11 +258,13 @@ class VirtualProcess():
             duration = iso.parse_duration(self.filter.aggregate_interval)
             result = {}
             dt = begin
-            fields = len(self.observation.observedProperty)# + 1 # +1 timestamp field not mentioned in the observedProperty array
+            # + 1 # +1 timestamp field not mentioned in the
+            # observedProperty array
+            fields = len(self.observation.observedProperty)
 
             while dt < end:
                 dt2 = dt + duration
-                result[dt2]=[]
+                result[dt2] = []
                 for c in range(fields):
                     result[dt2].append([])
 
