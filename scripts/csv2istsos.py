@@ -314,7 +314,7 @@ def execute(args, conf=None):
                     )
 
                 else:
-                    # otherwise this can be an irrebular procedure where just
+                    # otherwise this can be an irregular procedure where just
                     # the end position is moved forward
                     if ep > iso.parse_datetime(
                             data["samplingTime"]["endPosition"]):
@@ -333,7 +333,7 @@ def execute(args, conf=None):
                 log("   + End: %s" % ep.isoformat())
                 log(" > Values: %s" % len(
                     data['result']['DataArray']['values']))
-
+                    
                 if not test and len(files) > 0:  # send to wa
 
                     if len(data['result']['DataArray']['values']) > maxobs:
@@ -370,7 +370,7 @@ def execute(args, conf=None):
                                         'values'][0][jsonindex[isourn]],
                                     "endPosition":   ep.isoformat()
                                 }
-
+                            
                             res = req.post(
                                 "%s/wa/istsos/services/%s/"
                                 "operations/insertobservation" % (

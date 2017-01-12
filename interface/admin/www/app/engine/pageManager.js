@@ -6,7 +6,7 @@ istsos.engine.pageManager.getMenuHtml = function(){
     for (var h in istsos.engine.defaultConfig){
         htmlMenu += "<div class='menuHead'>"+h+"</div>";
         for (var l in istsos.engine.defaultConfig[h]){
-            htmlMenu += "<div class='menuLink' id='menuLink_"+ l + 
+            htmlMenu += "<div class='menuLink' id='menuLink_"+ l +
             "' onClick='istsos.engine.pageManager.menuClick(\"menuLink_"+l+"\",\"default\");'>"+l+"</div>";
         }
         htmlMenu += "<br>";
@@ -103,7 +103,7 @@ istsos.engine.pageManager.openPage = function (conf){
         if (!Ext.isEmpty(conf['wapage']) && conf['wapage'] == 'MainCenter') {
             page = Ext.create(conf.istBody[0],Ext.apply({
                 flex: 1 //,padding: 16
-            },conf)); 
+            },conf));
         }else{
             page = Ext.create('istsos.view.ui.CenterPage',Ext.apply({},conf));
         }
@@ -124,7 +124,7 @@ istsos.engine.pageManager.openWaPage = function (conf){
             page = Ext.create('istsos.view.ui.CenterPage',Ext.apply({},conf));
         } else if (conf['wapage'] == 'WizardPage') {
             page = Ext.create('istsos.view.ui.WizardPage',{
-                istConfig: istsos.engine.pageManager.getWizardConfig(conf['wizardName']) 
+                istConfig: istsos.engine.pageManager.getWizardConfig(conf['wizardName'])
             },{
                 istWizard: conf['wizardName'],
                 istService: conf['istService']
@@ -134,7 +134,7 @@ istsos.engine.pageManager.openWaPage = function (conf){
                 if(conf.istBody.length==1){
                     page = Ext.create(conf.istBody[0],{
                         flex: 1 //,padding: 16
-                    });  
+                    });
                 }
             }
         } else{
@@ -156,7 +156,7 @@ istsos.engine.pageManager.openWizard = function(wizardName, istService){
         var page = null;
         if (istService != undefined) {
             page = Ext.create('istsos.view.ui.WizardPage',{
-                istConfig: istsos.engine.pageManager.getWizardConfig(wizardName) 
+                istConfig: istsos.engine.pageManager.getWizardConfig(wizardName)
             },{
                 istWizard: wizardName,
                 istService: istService
@@ -164,7 +164,7 @@ istsos.engine.pageManager.openWizard = function(wizardName, istService){
         } else {
             page = Ext.create('istsos.view.ui.WizardPage',{
                 istWizard: wizardName,
-                istConfig: istsos.engine.pageManager.getWizardConfig(wizardName) 
+                istConfig: istsos.engine.pageManager.getWizardConfig(wizardName)
             });
         }
         mainCenter.add(page);
@@ -177,23 +177,23 @@ istsos.engine.pageManager.openWizard = function(wizardName, istService){
 
 
 istsos.engine.pageManager.initConfigForm = function (panel) {
-    
+
     var waUrl = wa.url;
     if (!Ext.isEmpty(panel.istService)) {
         waUrl += "/"+panel.istService;
     }
     waUrl += "/"+panel.istOperation;
     panel.waurl = waUrl;
-    
+
     panel.on("afterrender",function(cmp, eOpts){
-        
+
         if (Ext.isEmpty(cmp.mask)) {
             cmp.mask = new Ext.LoadMask(this.body, {
                 msg:"Please wait..."
             });
         }
         cmp.mask.show();
-        
+
         Ext.Ajax.request({
             url: cmp.waurl,
             scope: cmp,
@@ -212,6 +212,6 @@ istsos.engine.pageManager.initConfigForm = function (panel) {
                 this.mask.hide();
             }
         });
-        
+
     });
 };

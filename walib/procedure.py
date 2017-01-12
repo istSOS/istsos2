@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-# ===============================================================================
+# =============================================================================
 #
 # Authors: Massimiliano Cannata, Milan Antonovic
 #
-# Copyright (c) 2015 IST-SUPSI (www.supsi.ch/ist)
+# Copyright (c) 2010-2017 IST-SUPSI (www.supsi.ch/ist)
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or (at your option)
-# any later version.
+# the Free Software Foundation; either version 2 of the License, or (at your
+# option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,15 +17,16 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 #
-# ===============================================================================
-import sys, traceback
+# =============================================================================
+
+import sys
+import traceback
 import json
 from lib.etree import et
 from walib import utils as ut
 
-reurl = r'(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?'
 
 def parse_and_get_ns(file):
     events = "start", "start-ns"
@@ -56,16 +57,17 @@ class Procedure():
 
     def loadJSON(self, describeSensorObj):
         """
-        Create the the self.data object representing the istSOS SensorML from a json elemet
+        Create the the self.data object representing the istSOS SensorML
+        from a json elemet
 
         @param json: a json describeSensor object
         """
         self.data = json.loads(describeSensorObj)
 
-
     def loadDICT(self, describeSensorObj):
         """
-        Create the the self.data object representing the istSOS SensorML from a json elemet
+        Create the the self.data object representing the istSOS SensorML
+        from a json elemet
 
         @param json: a json describeSensor object
         """
@@ -73,11 +75,13 @@ class Procedure():
 
     def loadXML(self, xml):
         """
-        Create the the self.data object representing the istSOS SensorML from an XML elemet
+        Create the the self.data object representing the istSOS SensorML
+        from an XML elemet
 
-        @param json: a json describeSensor object (xml string or xml file full path)
+        @param json: a json describeSensor object (xml string or xml
+        file full path)
         """
-        if type(xml)==type("ciao"):
+        if isinstance(xml, basestring):
             from os import path
             if path.isfile(xml):
                 tree, ns = parse_and_get_ns(xml)
@@ -85,10 +89,11 @@ class Procedure():
                 from StringIO import StringIO
                 tree, ns = parse_and_get_ns(StringIO(xml))
         else:
-            raise TypeError("xml input must be a string representing the XML itself or the path to the file where the XML is stored")
-            #tree, ns = parse_and_get_ns(xml)
+            raise TypeError(
+                "xml input must be a string representing the XML itself "
+                "or the path to the file where the XML is stored"
+            )
 
-        # Workaround for rare xml parsing bug in etree
         ns = {
             'swe': 'http://www.opengis.net/swe/1.0.1',
             'gml': 'http://www.opengis.net/gml',
@@ -97,187 +102,254 @@ class Procedure():
             'xsi': 'http://www.w3.org/2001/XMLSchema-instance'
         }
 
-        #-----System name/identifier------
         system = tree.find("{%s}member/{%s}System" % (ns['sml'], ns['sml']))
         try:
             self.data['system_id'] = system.attrib["{%s}id" % ns['gml']]
         except Exception as e:
-            raise SyntaxError("Error in <sml:member>: <sml:System> element or mandatory attribute are missing")
+            raise SyntaxError(
+                "Error in <sml:member>: <sml:System> element or mandatory "
+                "attribute are missing"
+            )
 
-        systemname = tree.find("{%s}member/{%s}System/{%s}name" %(ns['sml'],ns['sml'],ns['gml']) )
+        systemname = tree.find(
+            "{%s}member/{%s}System/{%s}name" % (
+                ns['sml'], ns['sml'], ns['gml']))
         try:
             self.data['system'] = systemname.text.strip()
         except:
-            raise SyntaxError("Error in <sml:System>: <sml:name> element is missing")
+            raise SyntaxError(
+                "Error in <sml:System>: <sml:name> element is missing")
 
+        desc = tree.find(
+            "{%s}member/{%s}System/{%s}description" % (
+                ns['sml'], ns['sml'], ns['gml']))
 
-        #-----System description------
-        desc = tree.find("{%s}member/{%s}System/{%s}description" %(ns['sml'],ns['sml'],ns['gml']) )
         try:
             self.data['description'] = desc.text.strip()
         except:
             self.data['description'] = ""
 
-        #-----System Search Keywords------
-        keys = tree.findall("{%s}member/{%s}System/{%s}keywords/{%s}KeywordList/{%s}keyword" %((ns['sml'],)*5))
+        keys = tree.findall(
+            "{%s}member/{%s}System/{%s}keywords/"
+            "{%s}KeywordList/{%s}keyword" % ((ns['sml'],)*5))
+
         try:
-            self.data['keywords'] = ",".join([key.text.strip() for key in keys])
+            self.data['keywords'] = ",".join(
+                [key.text.strip() for key in keys])
         except:
             self.data['keywords'] = ""
 
-        #-----System Classifiers------
         self.data['identification'] = []
-        idents = tree.findall("{%s}member/{%s}System/{%s}identification/{%s}IdentifierList/{%s}identifier" %((ns['sml'],)*5))
+        idents = tree.findall(
+            "{%s}member/{%s}System/{%s}identification/"
+            "{%s}IdentifierList/{%s}identifier" % ((ns['sml'],)*5))
+
         for ident in idents:
             try:
                 defin = ident.find('{%s}Term' % ns['sml']).attrib['definition']
-                item={}
+                item = {}
                 item["name"] = defin.split(':')[-1]
                 item["definition"] = defin
-                item["value"] = ident.find('{%s}Term/{%s}value' %(ns['sml'],ns['sml'])).text.strip()
+                item["value"] = ident.find(
+                    '{%s}Term/{%s}value' % (ns['sml'], ns['sml'])).text.strip()
                 self.data['identification'].append(item)
             except:
-                raise SyntaxError("Error in <swe:identification>: some <sml:identifier> mandatory sub elements or attributes are missing")
+                raise SyntaxError(
+                    "Error in <swe:identification>: some <sml:identifier> "
+                    "mandatory sub elements or attributes are missing"
+                )
 
-        #-----System Identifiers------
         self.data["classification"] = []
-        man=[False,False]
-        classifiers = tree.findall("{%s}member/{%s}System/{%s}classification/{%s}ClassifierList/{%s}classifier" %((ns['sml'],)*5))
+        man = [False, False]
+        classifiers = tree.findall(
+            "{%s}member/{%s}System/{%s}classification/{%s}ClassifierList"
+            "/{%s}classifier" % ((ns['sml'],)*5))
+
         for classifier in classifiers:
             try:
-                item={}
+                item = {}
                 item["name"] = classifier.attrib['name']
-                item["definition"] = classifier.find('{%s}Term' % ns['sml']).attrib['definition']
-                item["value"] = classifier.find('{%s}Term/{%s}value' %(ns['sml'],ns['sml'])).text.strip()
+                item["definition"] = classifier.find(
+                    '{%s}Term' % ns['sml']).attrib['definition']
+                item["value"] = classifier.find('{%s}Term/{%s}value' % (
+                    ns['sml'], ns['sml'])).text.strip()
                 self.data['classification'].append(item)
                 if item["name"] == "System Type":
-                    man[0]=True
+                    man[0] = True
                 elif item["name"] == "Sensor Type":
-                    man[1]=True
+                    man[1] = True
             except:
-                raise SyntaxError("Error in <swe:classification>: some <sml:classifier> mandatory sub elements or attributes are missing")
-        if not man==[True,True]:
-            raise SyntaxError("Error in <sml:ClassifierList>: 'System Type' and 'Sensor Type' classifiers are both mandatory")
+                raise SyntaxError(
+                    "Error in <swe:classification>: some <sml:classifier> "
+                    "mandatory sub elements or attributes are missing"
+                )
+        if not man == [True, True]:
+            raise SyntaxError(
+                "Error in <sml:ClassifierList>: 'System Type' and 'Sensor "
+                "Type' classifiers are both mandatory")
 
-        #-----System Characteristics------
         try:
-            self.data["characteristics"] = tree.find("{%s}member/{%s}System/{%s}characteristics" %((ns['sml'],)*3)).attrib[ "{%s}href" % ns['xlink'] ]
+            self.data["characteristics"] = tree.find(
+                "{%s}member/{%s}System/{%s}characteristics" % (
+                    (ns['sml'],)*3)).attrib["{%s}href" % ns['xlink']]
+
         except:
             self.data["characteristics"] = ""
 
-        #-----System Capabilities------
         self.data["capabilities"] = []
-        fields = tree.findall("{%s}member/{%s}System/{%s}capabilities/{%s}DataRecord/{%s}field" %(ns['sml'],ns['sml'],ns['sml'],ns['swe'],ns['swe']))
-        man=[False,False]
+        fields = tree.findall(
+            "{%s}member/{%s}System/{%s}capabilities/{%s}DataRecord"
+            "/{%s}field" % (
+                ns['sml'], ns['sml'], ns['sml'], ns['swe'], ns['swe']))
+        man = [False, False]
         for field in fields:
             try:
-                item={}
+                item = {}
                 item["name"] = field.attrib['name']
                 fieldchield = field.find('{%s}Quantity' % ns['swe'])
-                if fieldchield == None:
+                if fieldchield is None:
                     fieldchield = field.find('{%s}Category' % ns['swe'])
                 item["definition"] = fieldchield.attrib['definition']
 
-                uom = fieldchield.find('{%s}uom' % ns['swe'] )
-                value = fieldchield.find('{%s}value' % ns['swe'] )
+                uom = fieldchield.find('{%s}uom' % ns['swe'])
+                value = fieldchield.find('{%s}value' % ns['swe'])
 
-                if uom != None and value != None:
+                if uom is not None and value is not None:
                     item["uom"] = uom.attrib['code']
                     item["value"] = value.text.strip()
 
                 self.data['capabilities'].append(item)
                 if item["name"] == 'Sampling time resolution':
-                    man[0]=True
+                    man[0] = True
                 elif item["name"] == 'Acquisition time resolution':
-                    man[1]=True
+                    man[1] = True
             except:
-                raise SyntaxError("Error in <swe:capabilities>: some <swe:field> mandatory sub elements or attributes are missing")
-        #if not man==[True,True]:
-        #    raise SyntaxError("Error in <sml:capabilities>: 'Sampling time resolution' and 'Acquisition time resolution' fields are both mandatory")
+                raise SyntaxError(
+                    "Error in <swe:capabilities>: some <swe:field> "
+                    "mandatory sub elements or attributes are missing"
+                )
 
-        #-----Relevant Contacts------
         self.data["contacts"] = []
-        contacts = tree.findall("{%s}member/{%s}System/{%s}contact" %((ns['sml'],)*3))
+        contacts = tree.findall(
+            "{%s}member/{%s}System/{%s}contact" % ((ns['sml'],)*3))
+
         for contact in contacts:
             try:
-                item={}
-                item["role"] = contact.attrib["{%s}role"  % ns['xlink']]
+                item = {}
+                item["role"] = contact.attrib["{%s}role" % ns['xlink']]
                 cont = contact.find("{%s}ResponsibleParty" % ns['sml'])
-                item["organizationName"] = cont.find("{%s}organizationName" % ns['sml']).text.strip()
+                item["organizationName"] = cont.find(
+                    "{%s}organizationName" % ns['sml']).text.strip()
                 try:
-                    item["individualName"] = cont.find("{%s}individualName" % ns['sml']).text.strip()
+                    item["individualName"] = cont.find(
+                        "{%s}individualName" % ns['sml']).text.strip()
                 except:
                     item["individualName"] = ""
                 try:
-                    item["voice"] = cont.find("{%s}contactInfo/{%s}phone/{%s}voice" %((ns['sml'],)*3)).text.strip()
+                    item["voice"] = cont.find(
+                        "{%s}contactInfo/{%s}phone/{%s}voice" % (
+                            (ns['sml'],)*3)).text.strip()
                 except:
                     item["voice"] = ""
                 try:
-                    item["fax"] = cont.find("{%s}contactInfo/{%s}phone/{%s}facsimile" %((ns['sml'],)*3)).text.strip()
+                    item["fax"] = cont.find(
+                        "{%s}contactInfo/{%s}phone/{%s}facsimile" % (
+                            (ns['sml'],)*3)).text.strip()
                 except:
                     item["fax"] = ""
                 try:
-                    item["deliveryPoint"] = cont.find("{%s}contactInfo/{%s}address/{%s}deliveryPoint" %((ns['sml'],)*3)).text.strip()
+                    item["deliveryPoint"] = cont.find(
+                        "{%s}contactInfo/{%s}address/{%s}deliveryPoint" % (
+                            (ns['sml'],)*3)).text.strip()
                 except:
                     item["deliveryPoint"] = ""
                 try:
-                    item["city"] = cont.find("{%s}contactInfo/{%s}address/{%s}city" %((ns['sml'],)*3)).text.strip()
+                    item["city"] = cont.find(
+                        "{%s}contactInfo/{%s}address/{%s}city" % (
+                            (ns['sml'],)*3)).text.strip()
                 except:
                     item["city"] = ""
                 try:
-                    item["administrativeArea"] = cont.find("{%s}contactInfo/{%s}address/{%s}administrativeArea" %((ns['sml'],)*3)).text.strip()
+                    item["administrativeArea"] = cont.find(
+                        "{%s}contactInfo/{%s}address/"
+                        "{%s}administrativeArea" % (
+                            (ns['sml'],)*3)).text.strip()
                 except:
                     item["administrativeArea"] = ""
                 try:
-                    item["postalcode"] = cont.find("{%s}contactInfo/{%s}address/{%s}postalCode" %((ns['sml'],)*3)).text.strip()
+                    item["postalcode"] = cont.find(
+                        "{%s}contactInfo/{%s}address/{%s}postalCode" % (
+                            (ns['sml'],)*3)).text.strip()
                 except:
                     item["postalcode"] = ""
                 try:
-                    item["country"] = cont.find("{%s}contactInfo/{%s}address/{%s}country" %((ns['sml'],)*3)).text.strip()
+                    item["country"] = cont.find(
+                        "{%s}contactInfo/{%s}address/{%s}country" % (
+                            (ns['sml'],)*3)).text.strip()
                 except:
                     item["country"] = ""
                 try:
-                    item["email"] = cont.find("{%s}contactInfo/{%s}address/{%s}electronicMailAddress" %((ns['sml'],)*3)).text.strip()
+                    item["email"] = cont.find(
+                        "{%s}contactInfo/{%s}address/"
+                        "{%s}electronicMailAddress" % (
+                            (ns['sml'],)*3)).text.strip()
                 except:
                     item["email"] = ""
                 try:
-                    item["web"] = cont.find("{%s}contactInfo/{%s}onlineResource" %((ns['sml'],)*2)).attrib["{%s}href" % ns['xlink']]
+                    item["web"] = cont.find(
+                        "{%s}contactInfo/{%s}onlineResource" % (
+                            (ns['sml'],)*2)).attrib["{%s}href" % ns['xlink']]
                 except:
                     item["web"] = ""
                 self.data["contacts"].append(item)
             except Exception as e:
                 print >> sys.stderr, traceback.print_exc()
-                raise SyntaxError("Error in <swe:contact>: some <swe:contact> mandatory sub elements or attributes are missing")
+                raise SyntaxError(
+                    "Error in <swe:contact>: some <swe:contact> mandatory "
+                    "sub elements or attributes are missing"
+                )
 
-
-        #-----System Documentation------
         self.data["documentation"] = []
-        documents = tree.findall("{%s}member/{%s}System/{%s}documentation/{%s}Document" %((ns['sml'],)*4))
+        documents = tree.findall(
+            "{%s}member/{%s}System/{%s}documentation/{%s}Document" % (
+                (ns['sml'],)*4))
         for doc in documents:
             try:
                 item = {}
-                item["description"] = doc.find("{%s}description" % ns['gml']).text.strip()
-                item["link"] = doc.find("{%s}onlineResource" % ns['sml']).attrib["{%s}href" % ns['xlink'] ]
+                item["description"] = doc.find(
+                    "{%s}description" % ns['gml']).text.strip()
+                item["link"] = doc.find(
+                    "{%s}onlineResource" % ns['sml']
+                ).attrib["{%s}href" % ns['xlink']]
                 try:
-                    item["date"] = doc.find("{%s}date" % ns['sml']).text.strip()
+                    item["date"] = doc.find(
+                        "{%s}date" % ns['sml']).text.strip()
                 except:
                     item["date"] = ""
                 try:
-                    item["format"] = doc.find("{%s}format" % ns['sml']).text.strip()
+                    item["format"] = doc.find(
+                        "{%s}format" % ns['sml']).text.strip()
                 except:
                     item["format"] = ""
 
                 self.data["documentation"].append(item)
 
             except:
-                raise SyntaxError("Error in <swe:documentation>: some <swe:Document> mandatory sub elements or attributes are missing")
+                raise SyntaxError(
+                    "Error in <swe:documentation>: some <swe:Document> "
+                    "mandatory sub elements or attributes are missing"
+                )
 
-        #-----System Location------
-        point = tree.find("{%s}member/{%s}System/{%s}location/{%s}Point" %(ns['sml'],ns['sml'],ns['sml'],ns['gml']) )
-        coord = tree.find("{%s}member/{%s}System/{%s}location/{%s}Point/{%s}coordinates" %(ns['sml'],ns['sml'],ns['sml'],ns['gml'],ns['gml']))
+        point = tree.find(
+            "{%s}member/{%s}System/{%s}location/{%s}Point" % (
+                ns['sml'], ns['sml'], ns['sml'], ns['gml']))
+
+        coord = tree.find(
+            "{%s}member/{%s}System/{%s}location/{%s}Point/{%s}coordinates" % (
+                ns['sml'], ns['sml'], ns['sml'], ns['gml'], ns['gml']))
 
         try:
-            coordlist = [ i for i in coord.text.strip().split(",")]
+            coordlist = [i for i in coord.text.strip().split(",")]
             self.data["location"] = {}
             self.data["location"]["type"] = "Feature"
             self.data["location"]["geometry"] = {}
@@ -286,48 +358,64 @@ class Procedure():
             self.data["location"]["crs"] = {}
             self.data["location"]["crs"]["type"] = "name"
             self.data["location"]["crs"]["properties"] = {}
-            self.data["location"]["crs"]["properties"]["name"] = point.attrib["srsName"]
+            self.data["location"]["crs"][
+                "properties"]["name"] = point.attrib["srsName"]
             self.data["location"]["properties"] = {}
             if point.attrib["{%s}id" % ns['gml']].startswith('loc_'):
-                self.data["location"]["properties"]["name"] = point.attrib["{%s}id" % ns['gml']][4:]
+                self.data["location"][
+                    "properties"]["name"] = point.attrib[
+                    "{%s}id" % ns['gml']][4:]
             else:
-                self.data["location"]["properties"]["name"] = point.attrib["{%s}id" % ns['gml']]
+                self.data["location"][
+                    "properties"]["name"] = point.attrib["{%s}id" % ns['gml']]
         except:
-            raise SyntaxError("Error in <swe:location>: some mandatory <gml:Point> sub elements or attributes are missing")
+            raise SyntaxError(
+                "Error in <swe:location>: some mandatory <gml:Point> "
+                "sub elements or attributes are missing")
 
-
-        #-----System Interfaces------
-        interfaces = tree.findall("{%s}member/{%s}System/{%s}interfaces/{%s}InterfaceList/{%s}interface" %((ns['sml'],)*5))
+        interfaces = tree.findall(
+            "{%s}member/{%s}System/{%s}interfaces/{%s}InterfaceList/"
+            "{%s}interface" % ((ns['sml'],)*5))
         try:
-            self.data["interfaces"] = ",".join([ interface.attrib["name"] for interface in interfaces ])
+            self.data["interfaces"] = ",".join(
+                [interface.attrib["name"] for interface in interfaces])
         except:
-            raise SyntaxError("Error in <swe:interfaces>: some mandatory sub elements or attributes are missing")
+            raise SyntaxError(
+                "Error in <swe:interfaces>: some mandatory sub elements "
+                "or attributes are missing")
 
-        #-----System Inputs------
-        inputs = tree.findall("{%s}member/{%s}System/{%s}inputs/{%s}InputList/{%s}input" %((ns['sml'],)*5))
+        inputs = tree.findall(
+            "{%s}member/{%s}System/{%s}inputs/{%s}InputList/{%s}input" % (
+                (ns['sml'],)*5))
         self.data["inputs"] = []
         for inp in inputs:
             try:
                 item = {}
                 item["name"] = inp.attrib["name"]
-                item["definition"] = inp.find("{%s}Quantity" % ns['swe']).attrib["definition"]
+                item["definition"] = inp.find(
+                    "{%s}Quantity" % ns['swe']).attrib["definition"]
                 try:
-                    item["description"] = inp.find("{%s}Quantity/{%s}description" %(ns['swe'],ns['gml'])).text.strip()
+                    item["description"] = inp.find(
+                        "{%s}Quantity/{%s}description" % (
+                            ns['swe'], ns['gml'])).text.strip()
                 except:
                     item["description"] = ""
                 self.data["inputs"].append(item)
             except:
-                raise SyntaxError("Error in <swe:inputs>: some <swe:input> mandatory sub elements or attributes are missing")
+                raise SyntaxError(
+                    "Error in <swe:inputs>: some <swe:input> mandatory "
+                    "sub elements or attributes are missing"
+                )
 
-
-        #-----System Outputs------
-        outputs = tree.findall("{%s}member/{%s}System/{%s}outputs/{%s}OutputList/{%s}output/{%s}DataRecord/{%s}field"
-                                %( (ns['sml'],)*5 + (ns['swe'],)*2) )
+        outputs = tree.findall(
+            "{%s}member/{%s}System/{%s}outputs/{%s}OutputList/{%s}output/"
+            "{%s}DataRecord/{%s}field" % (
+                (ns['sml'],)*5 + (ns['swe'],)*2))
         self.data["outputs"] = []
         time = False
         for out in outputs:
             try:
-                item={}
+                item = {}
                 item["name"] = out.attrib["name"]
                 if out.attrib["name"] == "Time":
                     time = True
