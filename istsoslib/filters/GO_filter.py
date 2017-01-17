@@ -219,8 +219,8 @@ class sosGOfilter(f.sosFilter):
 
                     if 'http' in sfs[5]:
                         srsName = sfs[5].split('/')[-1]
-                    elif '::' in sfs[5]:
-                        srsName = sfs[5].split('::')[-1]
+                    elif ':' in sfs[5]:
+                        srsName = sfs[5].split(':')[-1]
                     else:
                         srsName = '4326'
 
