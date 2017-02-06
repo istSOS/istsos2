@@ -39,11 +39,19 @@ python scripts/istsos2istsos.py -v -procedure P_BED \
 
 2. Copy applying an aggregate function SUM of 10 minutes
 
-python scripts/istsos2istsos.py -v -procedure P_BED \
-    -f SUM -r PT10M -val 0 -qi 100 \
-    -b 2014-01-10T00:00:00+01:00 -e 2014-01-11T00:00:00+01:00 \
-    --surl http://localhost/istsos --ssrv sosraw \
-    --dsrv sos
+python scripts/istsos2istsos.py -v \
+    -procedure A_TIC_BED \
+    -f AVG \
+    -r PT10M \
+    -nv -999.9 \
+    -b 20170107T00:00:00+01:00 \
+    --surl https://geoservice.ist.supsi.ch/psos \
+    --ssrv sosraw \
+    --dsrv sos \
+    --suser admin \
+    --spwd 1235 \
+    --duser admin
+    --dpwd 1234
 
     
 '''
@@ -80,7 +88,7 @@ def execute (args, logger=None):
     # =========================================================================
     
     # Activate and print verbose information
-    debug = args['v'] if args.has_key('v') else False
+    debug = args['v'] if 'v' in args else False
         
     # Procedure name
     procedure = args['procedure']

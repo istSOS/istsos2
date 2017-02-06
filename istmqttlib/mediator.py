@@ -143,6 +143,7 @@ class MQTTMediator():
         defaultCfg = os.path.join(config.services_path, "default.cfg")
         instances = utils.getServiceList(config.services_path, listonly=False)
         for instance in instances:
+            print (instance)
             sc = configManager.waServiceConfig(defaultCfg, instance['path'])
             conn = databaseManager.PgDB(
                 sc.connection["user"],
@@ -184,8 +185,8 @@ class MQTTMediator():
                     }
 
     def insert_observation(self, broker_url, port, topic, data):
-        #print("url: %s:%s, topic: %s, data: %s" % (
-        #    broker_url, port, topic, data))
+        print("url: %s:%s, topic: %s, data: %s" % (
+            broker_url, port, topic, data))
         with self.lock:
             broker = "%s:%s" % (broker_url, port)
             if (broker in self.broker) and (topic in self.broker[broker]):
@@ -313,9 +314,11 @@ class MQTTMediator():
 
                         # Publish / broadcast new data
                         mqttConf = self.services[instance]['config'].mqtt
+                        print ("mqttConf: ")
+                        print (mqttConf)
                         if mqttConf["broker_url"] != '' and (
                                 mqttConf["broker_port"] != ''):
-
+                            print ("Broadcasting new data!!")
                             istmqttlib.PahoPublisher({
                                 "broker_url": mqttConf["broker_url"],
                                 "broker_port": mqttConf["broker_port"],
@@ -337,16 +340,19 @@ class MQTTMediator():
 
     def start(self, target):
         self.threads = []
+        print ("Ciao")
+        print (self.broker)
         for key in self.broker.keys():
-            #print ("Adding: %s" % key)
             urlPort = key.split(":")
-            #print(urlPort)
             self.threads.append(
                 threading.Thread(
                     target=target, args=(urlPort[0], urlPort[1], self)))
 
         for thread in self.threads:
-            thread.run()
+            try:
+                thread.run()
+            except Exception as e:
+                print (str(e))
 
     def stop(self):
         while len(self.threads) > 0:
