@@ -872,6 +872,18 @@ class waFastInsert(waResourceService):
 
         Path example:
         http://localhost/istsos/wa/istsos/services/demo/operations/fastinsert
+
+        Regular Time series example body:
+        4759a210178a11e6a91c0800273cbaca;
+        2017-03-13T14:40:15+0100;PT10M;
+        0.2,18.30,69,4.3@0.4,18.80,73,4.1
+
+        Irregular Time series example body:
+        4759a210178a11e6a91c0800273cbaca;
+        2017-03-13T14:40:15+0100,0.2,18.30,69,4.3@
+        2017-03-13T14:40:15+0100,0.4,18.80,73,4.1
+
+        (without line breaks)
     """
 
     MODE_IRREGULAR = 1
@@ -886,20 +898,6 @@ class waFastInsert(waResourceService):
             self.procedurename = None
 
     def executePost(self, db=True):
-        """
-            Regular Time series example body:
-            4759a210178a11e6a91c0800273cbaca;
-            2017-03-13T14:40:15+0100;PT10M;
-            0.2,18.30,69,4.3@0.4,18.80,73,4.1
-
-            Irregular Time series example body:
-            4759a210178a11e6a91c0800273cbaca;
-            2017-03-13T14:40:15+0100,0.2,18.30,69,4.3@
-            2017-03-13T14:40:15+0100,0.4,18.80,73,4.1
-
-            (without line breaks)
-        """
-
         if self.procedurename is None:
             raise Exception(
                 "POST action without procedure name not allowed")
