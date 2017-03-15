@@ -1,0 +1,176 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Observation Offerings &mdash; istSOS 2.3.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.3.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="istSOS 2.3.1 documentation" href="index.html" />
+    <link rel="next" title="Insertion of new observations" href="insert.html" />
+    <link rel="prev" title="Registration of new sensors" href="register.html" />
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-42669175-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="insert.html" title="Insertion of new observations"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="register.html" title="Registration of new sensors"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">istSOS 2.3.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="observation-offerings">
+<span id="offering"></span><h1>Observation Offerings<a class="headerlink" href="#observation-offerings" title="Permalink to this headline">¶</a></h1>
+<p>In the Sensor Observation Service 1.0.0 the concept of an Observation Offering is equivalent to that of a sensor constellation. An Observation Offering is analogous to a “layer” in Web Map Service because each offering is typically a non-overlapping group of related observations.</p>
+<img alt="_images/offerings_constellation.png" src="_images/offerings_constellation.png" />
+<div class="section" id="creating-a-new-offering">
+<h2>Creating a new offering<a class="headerlink" href="#creating-a-new-offering" title="Permalink to this headline">¶</a></h2>
+<p>Open the “Offerings” panel.</p>
+<img alt="_images/offerings.png" src="_images/offerings.png" />
+<p class="rubric"><em>Example</em></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>Name: workshop</td>
+</tr>
+<tr class="row-even"><td>Description: demo dataset for FOSS4G meeting</td>
+</tr>
+<tr class="row-odd"><td>Expiration (optional): 2015-01-01T00:00:00+02:00</td>
+</tr>
+<tr class="row-even"><td>Validity: Enabled</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="associate-procedures-with-offering">
+<h2>Associate procedures with offering<a class="headerlink" href="#associate-procedures-with-offering" title="Permalink to this headline">¶</a></h2>
+<p>Activate the tab panel pressing “Offering-procedure memberships”.</p>
+<p>In the dropdown list select the newly created offering “workshop”.</p>
+<p>On the left side you will see all the procedure that will be assigned to that offering.</p>
+<p>On the right there are all the procedures not assigned to that offering.</p>
+<p>Use drag and drop functionality to move procedures from right to left.</p>
+</div>
+<div class="section" id="verify-that-procedures-are-associated-with-offering-as-desired">
+<h2>Verify that procedures are associated with offering as desired<a class="headerlink" href="#verify-that-procedures-are-associated-with-offering-as-desired" title="Permalink to this headline">¶</a></h2>
+<p>To verify execute a getCapabilities request.</p>
+<p class="rubric"><em>Example</em></p>
+<p><a class="reference external" href="http://localhost/istsos/demo?request=getCapabilities&amp;section=contents&amp;service=SOS&amp;version=1.0.0">http://localhost/istsos/demo?request=getCapabilities&amp;section=contents&amp;service=SOS&amp;version=1.0.0</a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">replace &#8220;demo&#8221; in the URL with your service of interest</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<a href="index.html"><img src="_static/logo.png" border="0" alt="istSOS" align="centre" width="200"/></a>
+<hr>
+<a href="https://sourceforge.net/projects/istsos/files/" align="centre">Download istSOS</a>
+<hr>
+
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Observation Offerings</a><ul>
+<li><a class="reference internal" href="#creating-a-new-offering">Creating a new offering</a></li>
+<li><a class="reference internal" href="#associate-procedures-with-offering">Associate procedures with offering</a></li>
+<li><a class="reference internal" href="#verify-that-procedures-are-associated-with-offering-as-desired">Verify that procedures are associated with offering as desired</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="register.html"
+                        title="previous chapter">Registration of new sensors</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="insert.html"
+                        title="next chapter">Insertion of new observations</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/offering.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="insert.html" title="Insertion of new observations"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="register.html" title="Registration of new sensors"
+             >previous</a> |</li>
+        <li><a href="index.html">istSOS 2.3.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010-2017, Massimiliano Cannata, Milan Antonovic This work is licensed under a Creative Commons Attribution 4.0 International License.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

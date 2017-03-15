@@ -1,0 +1,238 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Get Capabilities Classes &mdash; istSOS 2.3.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.3.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="istSOS 2.3.1 documentation" href="index.html" />
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-42669175-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="index.html">istSOS 2.3.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="get-capabilities-classes">
+<span id="gcclass"></span><h1>Get Capabilities Classes<a class="headerlink" href="#get-capabilities-classes" title="Permalink to this headline">¶</a></h1>
+<p>When a GetCapabilities is requested istSOS:</p>
+<ul class="simple">
+<li>creates a <em>filter</em> object</li>
+<li>passes the <em>filter</em> object to the <em>responder</em> that based on filters creates the <em>GetCapabilitiesResponse</em> object</li>
+<li>passes the <em>GetCapabilitiesResponse</em> object to the <em>renderer</em> to convert the information in appropriate requested outputFormat</li>
+</ul>
+<dl class="class">
+<dt id="sosGCfilter">
+<em class="property">class </em><tt class="descname">sosGCfilter</tt><a class="headerlink" href="#sosGCfilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>this class contain all the filters according to the GetObservation request performed</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>request</strong> (<em>str</em>) &#8211; &#8220;getobservation&#8221;</li>
+<li><strong>sosConfig</strong> (<em>obj</em>) &#8211; the configuration preference of istSOS instance</li>
+<li><strong>service</strong> (<em>str</em>) &#8211; the service name &#8220;SOS&#8221;</li>
+<li><strong>version</strong> (<em>str</em>) &#8211; the SOS version requested</li>
+<li><strong>offering</strong> (<em>str</em>) &#8211; the requeste offering name</li>
+<li><strong>observedProperty</strong> (<em>list</em>) &#8211; the list of observed properties names as string</li>
+<li><strong>responseFormat</strong> (<em>str</em>) &#8211; the name of the desired output format</li>
+<li><strong>srsName</strong> (<em>str</em>) &#8211; the name of the desired reference system</li>
+<li><strong>eventTime</strong> (<em>list</em>) &#8211; list of time intervals (list of two isodate) and/or time instants (list of one isodate), for example: <em>[ [2014-10-11T12:00:00+02:00, 2014-11-11T12:00:00+02:00], [2014-13-11T12:00:00+02:00] ]</em></li>
+<li><strong>procedure</strong> (<em>list</em>) &#8211; list of procedure names as string</li>
+<li><strong>featureOfInterest</strong> (<em>list</em>) &#8211; list of feature of interest names as string</li>
+<li><strong>featureOfInterestSpatial</strong> (<em>str</em>) &#8211; the SQL WHERE clause to apply the OGC filter expression in XML format specified in the request</li>
+<li><strong>result</strong> (<em>str</em>) &#8211; the SQL WHERE clause to apply the OGC property operator in XML format specified in the request</li>
+<li><strong>resultModel</strong> (<em>str</em>) &#8211; the model to represent the result (<em>om:Observation</em>)</li>
+<li><strong>responseMode</strong> (<em>str</em>) &#8211; the response mode (<em>inline</em>)</li>
+<li><strong>aggregate_interval</strong> (<em>str</em>) &#8211; the aggregation interval in ISO 8601 duration</li>
+<li><strong>aggregate_function</strong> (<em>str</em>) &#8211; the function to use for aggregation (one of: &#8220;AVG&#8221;,&#8221;COUNT&#8221;,&#8221;MAX&#8221;,&#8221;MIN&#8221;,&#8221;SUM&#8221;)</li>
+<li><strong>aggregate_nodata_qi</strong> (<em>str</em>) &#8211; the quality index value to use for representing no data in aggregated time serie</li>
+<li><strong>qualityIndex</strong> (<em>bool</em>) &#8211; if the quality index shall be returned (<em>True</em>) or not (<em>False</em>)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="observations">
+<em class="property">class </em><tt class="descname">observations</tt><a class="headerlink" href="#observations" title="Permalink to this definition">¶</a></dt>
+<dd><p>The class that contain all the observations related to all the procedures</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>offInfo</strong> (<em>obj</em>) &#8211; the general information about offering name, connection object, and configuration options</li>
+<li><strong>refsys</strong> (<em>str</em>) &#8211; the uri that refers to the EPSG refrence system</li>
+<li><strong>filter</strong> (<em>obj</em>) &#8211; the filter object that contains all the parameters setting of the GetObservation request</li>
+<li><strong>period</strong> (<em>list</em>) &#8211; a list of two values in <em>datetime</em>: the minimum and maximum instants of the requested time filters</li>
+<li><strong>reqTZ</strong> (<em>obj</em>) &#8211; the timezone in <em>pytz.tzinfo</em></li>
+<li><strong>obs</strong> (<em>list</em>) &#8211; list of <em>Observation</em> objects</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="Observation">
+<em class="property">class </em><tt class="descname">Observation</tt><a class="headerlink" href="#Observation" title="Permalink to this definition">¶</a></dt>
+<dd><p>The obsevation related to a single procedure</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>id_prc</strong> (<em>str</em>) &#8211; the internal id of the selected procedure</li>
+<li><strong>name</strong> (<em>str</em>) &#8211; the name of the procedure</li>
+<li><strong>procedure</strong> (<em>str</em>) &#8211; the URI name of the procedure</li>
+<li><strong>procedureType</strong> (<em>str</em>) &#8211; the type of procedure (one of &#8220;insitu-fixed-point&#8221;,&#8221;insitu-mobile-point&#8221;,&#8221;virtual&#8221;)</li>
+<li><strong>samplingTime</strong> (<em>list</em>) &#8211; the time interval for which this procedure has data [<em>from</em>, <em>to</em>]</li>
+<li><strong>timeResVal</strong> (<em>str</em>) &#8211; the time resolution setted for this procedure when registered in ISO 8601 duration</li>
+<li><strong>observedPropertyName</strong> (<em>list</em>) &#8211; list of observed properties names as string</li>
+<li><strong>observedProperty</strong> (<em>list</em>) &#8211; list of observed properties URI as string</li>
+<li><strong>uom</strong> (<em>list</em>) &#8211; list of unit of measure associated with the observed properties according to list index</li>
+<li><strong>featureOfInterest</strong> (<em>str</em>) &#8211; the feature of interest name</li>
+<li><strong>foi_urn</strong> (<em>str</em>) &#8211; the feature of interest URI</li>
+<li><strong>foiGml</strong> (<em>str</em>) &#8211; the GML representation of the feature of interest (in istSOS is only of type POINT)</li>
+<li><strong>srs</strong> (<em>str</em>) &#8211; the epsg code</li>
+<li><strong>refsys</strong> (<em>str</em>) &#8211; the URI of the reference system (srs)</li>
+<li><strong>x</strong> (<em>float</em>) &#8211; the X coordinate</li>
+<li><strong>y</strong> (<em>float</em>) &#8211; the Y coordinate</li>
+<li><strong>dataType</strong> (<em>str</em>) &#8211; the URN used for timeSeries data type</li>
+<li><strong>timedef</strong> (<em>str</em>) &#8211; URI of the time observed propertiy</li>
+<li><strong>data</strong> (<em>list</em>) &#8211; <p>the list of observations as list of values (it is basically a matrix with fields as columns and measurements as rows)</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>data get different columns depending on procedure type and qualityIndex parameter.</p>
+<p>The following rules appies:</p>
+<ul>
+<li>the first field is always the time</li>
+<li>if the procedure is mobile the second, third and fourth columns are the location</li>
+<li>the other columns are the values of the observed properties</li>
+<li>if the qualityIndex (qi) parameter is True then values of observed properties are alternated with the corresponding quality index</li>
+</ul>
+<p>so for example we could have different row type:</p>
+<ol class="last arabic">
+<li><dl class="first docutils">
+<dt>[2014-10-11T12:00:00+02:00, 0.2, 81.42] -&gt; [time, rain value, humidity value]</dt>
+<dd>(insitu-fixed-point measuring rain and humidity)</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>[2014-10-11T12:00:00+02:00, 0.2, 210, 81.42, 200] -&gt; [time, rain value, rain qi, humidity value, humidity qi]</dt>
+<dd>(insitu-fixed-point measuring rain and humidity with qualityIndex=True)</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>[2014-10-11T12:00:00+02:00, 8.96127, 46.02723, 344.1, 0.2, 81.42] -&gt; [time, x, y, z, rain value, humidity value]</dt>
+<dd>(insitu-mobile-point measuring rain and humidity)</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>[2014-10-11T12:00:00+02:00, 8.96127, 46.02723, 344.1, 0.2, 210, 81.42, 200] -&gt; [time, x, y, z, rain value, rain qi, humidity value, humidity qi]</dt>
+<dd>(insitu-mobile-point measuring rain and humidity)</dd>
+</dl>
+</li>
+</ol>
+</div>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<a href="index.html"><img src="_static/logo.png" border="0" alt="istSOS" align="centre" width="200"/></a>
+<hr>
+<a href="https://sourceforge.net/projects/istsos/files/" align="centre">Download istSOS</a>
+<hr>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/gcclass.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="index.html">istSOS 2.3.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010-2017, Massimiliano Cannata, Milan Antonovic This work is licensed under a Creative Commons Attribution 4.0 International License.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

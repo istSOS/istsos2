@@ -67,16 +67,18 @@ class DebugConverter(dict):
         raise Exception("addException must be overwritten")
 
     def addConverter(self, converter):
-        if not hasattr(self,'converters'):
+        if not hasattr(self, 'converters'):
             self.converters = {}
         self.converters[converter.name] = converter
 
+
 class Converter():
-    def __init__(self, name, url, service, folderIn, pattern, folderOut=None,
+    def __init__(
+            self, name, url, service, folderIn, pattern, folderOut=None,
             qualityIndex=False, exceptionBehaviour={},
             user=None, password=None, debug=False,
             csvlength=5000,
-            filenamecheck = None, archivefolder = None):
+            filenamecheck=None, archivefolder=None):
         """
         Info:
 
@@ -84,9 +86,11 @@ class Converter():
         url: url of the istSOS service
         service: service instance name
         folderIn: folder where raw data are stored (file:///home/pippo/rawdata)
-        pattern: name of the raw data file (can contains wildcard *, eg: "T_TRE_*.dat")
+        pattern: name of the raw data file (can contains wildcard *,
+                 eg: "T_TRE_*.dat")
         folderOut: folder where the formatted istSOS type files are created
-        qualityIndex: force a quality index value for all the observed properties
+        qualityIndex: force a quality index value for all the observed
+                      properties
         exceptionBehaviour: example {
             "RedundacyError": "overwrite",
             "StrictTimeSeriesError": "raise"
@@ -335,7 +339,7 @@ class Converter():
             'nodataQI': nodataQI if nodataQI is not None else None,
             'user': self.user,
             'pwd': self.password
-        },self)
+        }, self)
 
     def archive(self):
 
@@ -346,15 +350,14 @@ class Converter():
             os.path.join(self.archivefolder, "%s_%s.zip" % (
                 self.name,
                 datetime.utcnow().strftime("%Y%m%d%H%M%S"))
-            ), "w") # Open the zip file for writing
+            ), "w")  # Open the zip file for writing
 
         for root, dirs, files in os.walk(self.folderOut):
             for f in files:
                 # adding files to zip archive
-                archive.write(os.path.join(root, f),f)
+                archive.write(os.path.join(root, f), f)
 
         archive.close()
-
 
     def execute(self, fileArray=None):
 
@@ -363,11 +366,11 @@ class Converter():
         self.endPosition = None
 
         # Load and Check folderIn + pattern and sort alfabetically
-        if fileArray != None:
-          self.fileArray = fileArray
+        if fileArray is not None:
+            self.fileArray = fileArray
 
-        elif self.fileArray == None:
-          self.fileArray = self.prepareFiles()
+        elif self.fileArray is None:
+            self.fileArray = self.prepareFiles()
 
         falen = len(self.fileArray)
         proclen = falen
@@ -395,38 +398,50 @@ class Converter():
         self.addMessage("Parsed %s observations" % len(self.observations))
 
         if falen > 5000:
-            self.addWarning("Reading folder slow, the '(%s)' folder contains %s files" % (self.folderIn,falen))
+            self.addWarning(
+                "Reading folder slow, the '(%s)' folder contains %s files" % (
+                    self.folderIn, falen))
 
         # Validating array of observations
         self.validate()
 
         # Checking acquisition delay
         if self.isDelayExceeding():
-            self.addWarning("%s, acquisition Time Resolution (%s %s) exceeded by %s" % (
-              self.getName(), self.capability['value'], self.capability['uom'], str(self.getDelayExceeding())))
+            self.addWarning(
+                "%s, acquisition Time Resolution (%s %s) exceeded by %s" % (
+                    self.getName(),
+                    self.capability['value'],
+                    self.capability['uom'],
+                    str(self.getDelayExceeding())
+                )
+            )
 
         self.addMessage(" > Last observation; %s" % self.getIOEndPosition())
 
         # Save the CSV file in text/csv;subtype='istSOS/2.0.0'
-        if self.isEmpty(): # The procedure is registered but no observations are still inserted
+        if self.isEmpty():
+            # The procedure is registered but no observations are still
+            # inserted
             self.save()
             return True
-        elif isinstance(self.getIOEndPosition(), datetime) and self.getIOEndPosition() > self.getDSEndPosition():
+        elif isinstance(self.getIOEndPosition(), datetime) and (
+                self.getIOEndPosition() > self.getDSEndPosition()):
             self.save()
             return True
         else:
             self.log("Nothing to save")
             return False
 
-
     def loadSensorMetadata(self):
         """
         Uses WALib to get the DescribeSensor document
         """
-        # Loading the sensor description document using a DescribeSensor request
+        # Loading the sensor description document using a
+        # DescribeSensor request
         self.log(" > Loading Describe Sensor")
 
-        res = self.req.get("%s/wa/istsos/services/%s/procedures/%s" % (
+        res = self.req.get(
+            "%s/wa/istsos/services/%s/procedures/%s" % (
                 self.url,
                 self.service,
                 self.name
@@ -435,36 +450,51 @@ class Converter():
             verify=False
         )
         json = res.json()
-        if json['success']==False:
-            raise IstSOSError ("Description of procedure %s can not be loaded: %s" % (self.name, json['message']))
+        if json['success'] is False:
+            raise IstSOSError(
+                "Description of procedure %s can not be loaded: %s" % (
+                    self.name, json['message']))
+
         self.describe = json['data']
 
         self.obsindex = []
         for out in self.describe['outputs']:
-            if (out['definition'].find(":qualityIndex")>=0) and (self.qualityIndex==False):
+            if (out['definition'].find(":qualityIndex") >= 0) and (
+                    self.qualityIndex is False):
                 continue
             self.obsindex.append(out['definition'])
 
         self.acquisitionTimeResolution = None
         if 'capabilities' in self.describe:
             for capability in self.describe['capabilities']:
-                if capability['definition'] == 'urn:x-ogc:def:classifier:x-istsos:1.0:acquisitionTimeResolution':
+                if capability['definition'] == (
+                        'urn:x-ogc:def:classifier:x-istsos:1.0:'
+                        'acquisitionTimeResolution'):
                     self.capability = capability
                     if capability['uom'] == 'd':
-                        self.acquisitionTimeResolution = timedelta(days=float(capability['value']))
+                        self.acquisitionTimeResolution = timedelta(
+                            days=float(capability['value']))
                     elif capability['uom'] == 'h':
-                        self.acquisitionTimeResolution = timedelta(hours=float(capability['value']))
+                        self.acquisitionTimeResolution = timedelta(
+                            hours=float(capability['value']))
                     elif capability['uom'] == 'min':
-                        self.acquisitionTimeResolution = timedelta(minutes=float(capability['value']))
+                        self.acquisitionTimeResolution = timedelta(
+                            minutes=float(capability['value']))
                     elif capability['uom'] == 's':
-                        self.acquisitionTimeResolution = timedelta(seconds=float(capability['value']))
+                        self.acquisitionTimeResolution = timedelta(
+                            seconds=float(capability['value']))
                     elif capability['uom'] == 'ms':
-                        self.acquisitionTimeResolution = timedelta(milliseconds=float(capability['value']))
+                        self.acquisitionTimeResolution = timedelta(
+                            milliseconds=float(capability['value']))
                     elif capability['uom'] == 'µs':
-                        self.acquisitionTimeResolution = timedelta(microseconds=float(capability['value']))
+                        self.acquisitionTimeResolution = timedelta(
+                            microseconds=float(capability['value']))
                     break
 
-        self.addMessage("ST[%s-%s]" % (self.getDSBeginPosition(),self.getDSEndPosition()))
+        self.addMessage("ST[%s-%s]" % (
+            self.getDSBeginPosition(),
+            self.getDSEndPosition())
+        )
 
     def getAcquisitionTimeResolution(self):
         return self.acquisitionTimeResolution
@@ -474,35 +504,43 @@ class Converter():
         if not end:
             end = self.getDSEndPosition()
             if end:
-                return self.getDateTimeWithTimeZone(datetime.utcnow(),'00:00') - end
+                return self.getDateTimeWithTimeZone(
+                    datetime.utcnow(), '00:00') - end
         else:
-            return self.getDateTimeWithTimeZone(datetime.utcnow(),'00:00') - end
+            return self.getDateTimeWithTimeZone(
+                datetime.utcnow(), '00:00') - end
         return None
 
     def isDelayExceeding(self):
         delay = self.getDelay()
-        if delay!=None and self.getAcquisitionTimeResolution()!=None and delay > self.getAcquisitionTimeResolution():
+        if delay is not None and (
+                self.getAcquisitionTimeResolution() is not None) and (
+                delay > self.getAcquisitionTimeResolution()):
             return True
         return False
 
     def getDelayExceeding(self):
         delay = self.getDelay()
-        if delay!=None and self.getAcquisitionTimeResolution()!=None:
+        if delay is not None and (
+                self.getAcquisitionTimeResolution() is not None):
             return delay - self.getAcquisitionTimeResolution()
         return timedelta()
 
     def getDSBeginPosition(self):
         if u'constraint' in self.describe['outputs'][0]:
-            return iso.parse_datetime(self.describe['outputs'][0]['constraint']['interval'][0])
+            return iso.parse_datetime(
+                self.describe['outputs'][0]['constraint']['interval'][0])
         return None
 
     def getDSEndPosition(self):
         if u'constraint' in self.describe['outputs'][0]:
-            return iso.parse_datetime(self.describe['outputs'][0]['constraint']['interval'][1])
+            return iso.parse_datetime(
+                self.describe['outputs'][0]['constraint']['interval'][1])
         return None
 
     def isEmpty(self):
-        if self.getDSBeginPosition() == None and self.getDSEndPosition() == None:
+        if self.getDSBeginPosition() is None and (
+                self.getDSEndPosition() is None):
             return True
         elif self.getDSBeginPosition() == self.getDSEndPosition():
             return True
@@ -518,14 +556,18 @@ class Converter():
         return self.endPosition
 
     def setEndPosition(self, endPosition):
-        if isinstance(endPosition, datetime) and endPosition.tzinfo is not None:
+        if isinstance(endPosition, datetime) and (
+                endPosition.tzinfo is not None):
             self.endPosition = endPosition
         else:
-            raise IstSOSError("If you are setting the endPosition you shall use a datetime object with timezone")
+            raise IstSOSError(
+                "If you are setting the endPosition you shall use a "
+                "datetime object with timezone")
 
     def prepareFiles(self):
         """
-        Check if folder exist, and if file exist. And if there is at least one file. > Raise Exception
+            Check if folder exist, and if file exist. And if there is at least
+            one file. > Raise Exception
         """
 
         self.log(" > Checking folder input (%s)" % self.folderIn)
@@ -533,7 +575,7 @@ class Converter():
         if not os.path.isdir(self.folderIn):
             msg = "Input folder (%s) does not exist" % self.folderIn
             self.addException(msg)
-            raise FileReaderError (msg)
+            raise FileReaderError(msg)
 
         files = filter(
             path.isfile,
@@ -582,7 +624,8 @@ class Converter():
 
         # Check if duplicate dates are present
         if observation.getEventime() in self.observationsCheck:
-            # If the date is already present and the data added are different then it laounch an exception
+            # If the date is already present and the data added are different
+            # then it laounch an exception
             if str(self.observationsCheck[observation.getEventime()]) != str(observation):
                 msg = "Observation (%s: %s) is already present in the file (%s)." % (self.name, observation, self.executing['file'])
                 self.addException(msg)
@@ -608,20 +651,26 @@ class Converter():
             if self.getIOEndPosition() is None:
                 f = open(os.path.join(self.folderOut, "%s_%s.dat" % (
                     self.name,
-
-                    datetime.strftime(self.observations[-1].getEventime().astimezone(timezone('UTC')), "%Y%m%d%H%M%S%f"))), 'w')
+                    datetime.strftime(
+                        self.observations[-1].getEventime().astimezone(
+                            timezone('UTC')), "%Y%m%d%H%M%S%f"))), 'w')
             else:
                 if self.getIOEndPosition() < self.observations[-1].getEventime():
-                    raise IstSOSError("End position (%s) cannot be before the last observation event time (%s)" % (
-                        self.getIOEndPosition(), self.observations[-1].getEventime()))
-                f = open(os.path.join(self.folderOut,"%s_%s.dat" %(
+                    raise IstSOSError(
+                        "End position (%s) cannot be before the last "
+                        "observation event time (%s)" % (
+                            self.getIOEndPosition(),
+                            self.observations[-1].getEventime()))
+                f = open(os.path.join(self.folderOut, "%s_%s.dat" % (
                     self.name,
-                    datetime.strftime(self.getIOEndPosition().astimezone(timezone('UTC')), "%Y%m%d%H%M%S%f"))), 'w')
-            #f.write("%s\n" % ",".join(self.obsindex))
+                    datetime.strftime(
+                        self.getIOEndPosition().astimezone(
+                            timezone('UTC')), "%Y%m%d%H%M%S%f"))), 'w')
+            f.write("%s\n" % ",".join(self.obsindex))
             self.log(",".join(self.obsindex))
-            #self.observations.sort(key=lambda x: x.__eventime, reverse=True)
-            #self.observations = sorted(self.observations, key=lambda observation: observation.__eventime)
-            self.observations = sorted(self.observations, key=methodcaller('getEventime'))
+
+            self.observations = sorted(
+                self.observations, key=methodcaller('getEventime'))
             for o in self.observations:
                 #self.log(o.csv(",", self.obsindex))
                 f.write("%s\n" % o.csv(",", self.obsindex))

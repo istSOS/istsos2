@@ -37,8 +37,13 @@ containing the followings columns:
 10. foi-name
 11. observed property
 12. uom
-13. beginPosition
-14. endPosition
+13. begin position
+14. end position
+15. resolution
+16. acquisition interval
+17. quality index - lower bound
+18. quality index - upper bound
+
 
 separated with a semicolumn symbol ";"
 
@@ -60,6 +65,8 @@ sys.path.insert(0, path.abspath("."))
 try:
     import lib.argparse as argparse
     from scripts import istsosutils as iu
+    import lib.requests as requests
+    from lib.requests.auth import HTTPBasicAuth
 
 except ImportError as e:
     print """
@@ -74,8 +81,22 @@ def execute(args, logger=None):
         # Service instance name
         csv = args['csv']
 
+        user = None
+        if 'user' in args and args['user'] is not None:
+            user = args['user']
+
+        password = None
+        if 'password' in args and args['password'] is not None:
+            password = args['password']
+
+        auth = None
+        bauth = None
+        if user and password:
+            auth = [user, password]
+            bauth = HTTPBasicAuth(user, password)
+
         # Initializing URLs
-        service = iu.Service(args['u'], args['s'])
+        service = iu.Service(args['u'], args['s'], auth)
 
         file = open(csv, 'rU')
 
@@ -95,28 +116,82 @@ def execute(args, logger=None):
             proc.setManufacturer(line[5])
             proc.setSensorType(line[6])
             coords = line[8].split(',')
-            print coords
             proc.setFoi(line[9], line[7], coords[0], coords[1], coords[2])
+
+            proc.setResolution(line[16])
+            proc.setAcquisitionInterval(line[17])
 
             o1 = line[10].split(',')
             o2 = line[11].split(',')
             o3 = line[12].split(',')
             uom = line[13].split(',')
+            cLower = []
+            if line[18]:
+                cLower = line[18].split(',')
+            cUpper = []
+            if line[19]:
+                cUpper = line[19].split(',')
 
-            if (len(o1) + len(o2) + len(o3)) != (len(o1)*3):
-                raise Exception("observed property lenght missmatch")
+            if len(cLower) + len(cUpper) > 0:
 
-            for idx in range(0, len(o1)):
-                proc.addObservedProperty(
-                    o3[idx],
-                    'urn:ogc:def:parameter:x-istsos:1.0:%s:%s:%s' % (
-                        o1[idx],
-                        o2[idx],
-                        o3[idx]
-                    ),
-                    uom[idx])
+                if (len(o1) + len(o2) +
+                        len(o3) + len(cLower) + len(cUpper)) != (len(o1)*5):
+                    raise Exception("observed property lenght missmatch")
 
+                for idx in range(0, len(o1)):
+                    proc.addObservedProperty(
+                        o3[idx],
+                        'urn:ogc:def:parameter:x-istsos:1.0:%s:%s:%s' % (
+                            o1[idx],
+                            o2[idx],
+                            o3[idx]
+                        ),
+                        uom[idx],
+                        upper=cUpper[idx], lower=cLower[idx])
+            else:
+                if (len(o1) + len(o2) + len(o3)) != (len(o1)*3):
+                    raise Exception("observed property lenght missmatch")
+
+                for idx in range(0, len(o1)):
+                    proc.addObservedProperty(
+                        o3[idx],
+                        'urn:ogc:def:parameter:x-istsos:1.0:%s:%s:%s' % (
+                            o1[idx],
+                            o2[idx],
+                            o3[idx]
+                        ),
+                        uom[idx])
+
+            # print proc.toJson()
             service.registerProcedure(proc)
+
+            # Setting the begin position
+            if line[14]:
+                # Getting the Sensor id
+                aid = service.getProcedure(
+                    proc.name).description['assignedSensorId']
+
+                # Getting observation template
+                tmpl = service.getSOSProcedure(proc.name)
+                tmpl['AssignedSensorId'] = aid
+                tmpl["samplingTime"] = {
+                    "beginPosition": line[14],
+                    "endPosition":  line[14]
+                }
+                res = requests.post(
+                    "%s/wa/istsos/services/%s/"
+                    "operations/insertobservation" % (
+                        args['u'], args['s']),
+                    auth=bauth,
+                    verify=False,
+                    data=json.dumps({
+                        "ForceInsert": "true",
+                        "AssignedSensorId": aid,
+                        "Observation": tmpl
+                    })
+                )
+                res.raise_for_status()
+                print " > Sampling time configured: %s" % line[14]
 
     except Exception as e:
         print "ERROR: %s\n\n" % e
@@ -154,6 +229,18 @@ if __name__ == "__main__":
         dest='s',
         metavar='service',
         help='The name of the service instance.')
+
+    parser.add_argument(
+        '-user',
+        action='store',
+        dest='user',
+        metavar='user name')
+
+    parser.add_argument(
+        '-password',
+        action='store',
+        dest='password',
+        metavar='password')
 
     args = parser.parse_args()
     execute(args.__dict__)

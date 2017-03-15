@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Status page &mdash; istSOS 2.3.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.3.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="istSOS 2.3.1 documentation" href="index.html" />
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-42669175-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="index.html">istSOS 2.3.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="status-page">
+<span id="status"></span><h1>Status page<a class="headerlink" href="#status-page" title="Permalink to this headline">¶</a></h1>
+<p>The aim of this page is to quickly see the status of the system. With this page it&#8217;s possible to see if a procedure is loading correctly data or if it&#8217;s late.
+Every procedure must have the Acqusition time defined, which is used to control the status. every procedure is represented by a rectangle, and is inside another
+rectangle that represent the status of the procedure.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/Result.png"><img alt="_images/Result.png" src="_images/Result.png" style="width: 840.0px; height: 513.0px;" /></a>
+</div>
+<p>the procedure status is divide into 3 main category:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>OK: In this case there is no problem, the procedure is loading data correctly and it&#8217;s in time</li>
+<li>Pending: In this case the procedure is not in time, he hasn&#8217;t uploaded data in time, check the exception to find a solution</li>
+<li>Verified: In this case there is a verified exception, and the system is waiting new data to confirm that the procedure is OK</li>
+</ol>
+</div></blockquote>
+<p>All the pending procedure have a different color. The color rappresent the amount of delay.
+This color can change from orange to red. A procedure with orange color is delayed a few minutes, on the other hand a procedure with a red color is very late.</p>
+</div>
+<div class="section" id="delay-rappresentation">
+<h1>Delay rappresentation<a class="headerlink" href="#delay-rappresentation" title="Permalink to this headline">¶</a></h1>
+<p>The system can represent the status delay in two different ways:</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/delay-selector.png"><img alt="_images/delay-selector.png" src="_images/delay-selector.png" style="width: 221.0px; height: 71.0px;" /></a>
+</div>
+<p>The first rappresentation the delay is expressed in time.</p>
+<p>Whit the second rappresentation the delay is represented in cycle.</p>
+<p>i.e. a procedure A is loading data every 10 min, and a procedure B load data every 2 hours. If A doesn&#8217;t load data from 30 minutes, A is delayed by 3 cycles.
+If B doesn&#8217;t load data from 3 hours is delayed by 1.5 cycles.</p>
+</div>
+<div class="section" id="exception">
+<h1>Exception<a class="headerlink" href="#exception" title="Permalink to this headline">¶</a></h1>
+<p>Every procedure that have the pending status should have a exception in the detail view.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/Exception-min.png"><img alt="_images/Exception-min.png" src="_images/Exception-min.png" style="width: 553.5px; height: 360.0px;" /></a>
+</div>
+<p>With the exception description you could find a solution to the problem. Once the problem is solved, it&#8217;s possible to change the exception status, from pending to verified, and wait until the procedure load new data.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/Exception_status-min2.png"><img alt="_images/Exception_status-min2.png" src="_images/Exception_status-min2.png" style="width: 510.4px; height: 272.0px;" /></a>
+</div>
+</div>
+<div class="section" id="timer">
+<h1>Timer<a class="headerlink" href="#timer" title="Permalink to this headline">¶</a></h1>
+<p>It&#8217;s possible to set a timer to automatically refresh the page and control the situation.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/Timer.png"><img alt="_images/Timer.png" src="_images/Timer.png" style="width: 309.0px; height: 169.0px;" /></a>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<a href="index.html"><img src="_static/logo.png" border="0" alt="istSOS" align="centre" width="200"/></a>
+<hr>
+<a href="https://sourceforge.net/projects/istsos/files/" align="centre">Download istSOS</a>
+<hr>
+
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Status page</a></li>
+<li><a class="reference internal" href="#delay-rappresentation">Delay rappresentation</a></li>
+<li><a class="reference internal" href="#exception">Exception</a></li>
+<li><a class="reference internal" href="#timer">Timer</a></li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/status.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="index.html">istSOS 2.3.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010-2017, Massimiliano Cannata, Milan Antonovic This work is licensed under a Creative Commons Attribution 4.0 International License.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

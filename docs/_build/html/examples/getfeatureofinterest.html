@@ -1,0 +1,218 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>GetFeatureOfInterest &mdash; istSOS 2.3.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.3.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="istSOS 2.3.1 documentation" href="../index.html" />
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-42669175-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">istSOS 2.3.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="getfeatureofinterest">
+<h1>GetFeatureOfInterest<a class="headerlink" href="#getfeatureofinterest" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>GetFeatureOfInterest returns a featureOfInterest that was advertised in one of the observation offerings of the SOS capabilities document. This could be a Station for in-situ sensors, for example.(SOS-Spec, OGC 06-009r6)</p>
+<ul>
+<li><p class="first"><strong>DescribeSensor parameters:</strong></p>
+<blockquote>
+<div><table border="1" class="docutils">
+<caption><em>Table-1: GetFeatuatureOfInterest operation request URL parameters [OGC 06-009r6]</em>
+    :header: &#8220;Parameter&#8221;, &#8220;Description&#8221;, &#8220;Definition&#8221;, &#8220;Multiplicity and Use&#8221;
+    :widths: 20, 40, 20, 20</caption>
+<colgroup>
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>request</td>
+<td>returns a featureOfInterest that was advertised in one of the observation offerings of the SOS capabilities document</td>
+<td>getFeatureOfInterest</td>
+<td>One (mandatory)</td>
+</tr>
+<tr class="row-even"><td>service</td>
+<td>Service type identifier</td>
+<td>SOS</td>
+<td>One (mandatory)</td>
+</tr>
+<tr class="row-odd"><td>version</td>
+<td>Specification version for operation</td>
+<td>1.0.0</td>
+<td>One (mandatory)</td>
+</tr>
+<tr class="row-even"><td>featureOfInterestId</td>
+<td>Specifies the identifier of the feature of interest being returned, for which detailed information is requested. These identifiers must be listed in the Contents section of the service metadata (GetCapabilities) document</td>
+<td>featureId from GetCapabilities</td>
+<td>One (mandatory) Choice1</td>
+</tr>
+<tr class="row-odd"><td>bbox</td>
+<td>geographical boundingbox in comma-separeted values</td>
+<td>lon1,lat1,lon2,lat2</td>
+<td>One (mandatory) Choice2 with srs</td>
+</tr>
+<tr class="row-even"><td>srs</td>
+<td>srs of the bbox enveloppe : only EPSG:4326</td>
+<td>EPSG:4326</td>
+<td>One (mandatory) Choice2 with bbox</td>
+</tr>
+<tr class="row-odd"><td>eventTime</td>
+<td>Specifies the time for which the feature of interest is to be queried. This uses a modified version of filter.xsd and allows a client to request targets from a specific instance, multiple instances or periods of time in the past, present and future. This is useful for dynamic sensors for which the properties of the feature of interest are time-dependent. Multiple time parameters may be indicated so that the client may request details of the observation target at multiple times. The supported range is listed in the contents section of the service metadata.</td>
+<td>srs of the bbox enveloppe : only EPSG:4326</td>
+<td>Zero or more (optional)</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</li>
+</ul>
+</div>
+<div class="section" id="get-request">
+<h2>GET request<a class="headerlink" href="#get-request" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><strong>GetFeatureOfInterest GET request:</strong></li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre>http://localhost/istsos/demo/?request=getFeatureOfInterest&amp;featureOfInterestId=LUGANO&amp;srsName=21781&amp;service=SOS&amp;version=1.0.0
+</pre></div>
+</div>
+</div>
+<div class="section" id="post-request">
+<h2>POST request<a class="headerlink" href="#post-request" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre>http://localhost/istsos/demo/
+</pre></div>
+</div>
+<ul class="simple">
+<li><strong>GetFeatureOfInterest with ID :</strong></li>
+</ul>
+<p>GetFeatureOfInterestFeatureId.xml</p>
+<ul class="simple">
+<li><a class="reference download internal" href="../_downloads/getFeatureOfInterest.xml"><tt class="xref download docutils literal"><span class="pre">getFeatureOfInterest.xml</span></tt></a></li>
+</ul>
+<div class="highlight-xml"><div class="highlight"><pre><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+  <span class="nt">&lt;sos:getfeatureOfinterest</span>
+     <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+     <span class="na">xsi:schemaLocation=</span><span class="s">&quot;http://schemas.opengis.net/sos/1.0.0/sosAll.xsd&quot;</span>
+     <span class="na">xmlns:sos=</span><span class="s">&quot;http://www.opengis.net/sos/1.0&quot;</span>
+     <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml/3.2&quot;</span>
+     <span class="na">xmlns:ogc=</span><span class="s">&quot;http://www.opengis.net/ogc&quot;</span>
+     <span class="na">xmlns:om=</span><span class="s">&quot;http://www.opengis.net/om/1.0&quot;</span> <span class="na">service=</span><span class="s">&quot;SOS&quot;</span> <span class="na">outputFormat=</span><span class="s">&quot;text/xml;subtype=&#39;sensorML/1.0.0&#39;&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;FeatureOfInterestId&gt;</span>urn:ogc:def:feature:x-istsos:1.0:Point:LUGANO<span class="nt">&lt;/FeatureOfInterestId&gt;</span>
+  <span class="nt">&lt;srsName&gt;</span>4326<span class="nt">&lt;/srsName&gt;</span>
+
+  <span class="c">&lt;!-- See GetFeatureOfInterest operation description</span>
+<span class="c">  in the getCapabilities response to see available projection --&gt;</span>
+
+  <span class="c">&lt;!-- Examples</span>
+<span class="c">  &lt;srsName&gt;urn:ogc:crs:EPSG:21781&lt;/srsName&gt;</span>
+<span class="c">  &lt;srsName&gt;urn:ogc:crs:EPSG:4326&lt;/srsName&gt;</span>
+<span class="c">  &lt;srsName&gt;urn:ogc:crs:EPSG:8001&lt;/srsName&gt;</span>
+<span class="c">  --&gt;</span>
+
+  <span class="nt">&lt;/sos:getfeatureOfinterest&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<a href="../index.html"><img src="../_static/logo.png" border="0" alt="istSOS" align="centre" width="200"/></a>
+<hr>
+<a href="https://sourceforge.net/projects/istsos/files/" align="centre">Download istSOS</a>
+<hr>
+
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">GetFeatureOfInterest</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#get-request">GET request</a></li>
+<li><a class="reference internal" href="#post-request">POST request</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/examples/getfeatureofinterest.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="../index.html">istSOS 2.3.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010-2017, Massimiliano Cannata, Milan Antonovic This work is licensed under a Creative Commons Attribution 4.0 International License.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

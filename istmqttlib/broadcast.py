@@ -35,7 +35,7 @@ class MQTTPublisher(threading.Thread):
         return self.conf['broker_url']
 
     def get_port(self):
-        return self.conf['broker_port']
+        return int(self.conf['broker_port'])
 
     def get_topic(self):
         return self.conf['broker_topic']

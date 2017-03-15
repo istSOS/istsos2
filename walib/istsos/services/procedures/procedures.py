@@ -296,8 +296,6 @@ class waProcedures(waResourceService):
         proc = procedure.Procedure()
         proc.loadDICT(self.json)
 
-        print >> sys.stderr, self.json
-
         if not "system" in proc.data:
             raise Exception("system parameter is mandatory for PUT request")
 

@@ -1269,10 +1269,10 @@ class GetObservationResponse_2_0_0:
                 for p in filter.observedProperty:
                     params.extend([p,p])
                     clauses.append("""
-                        (
+                        
                           SELECT %s as def_opr, exists(select id_opr from """ +
                               filter.sosConfig.schema + """.observed_properties WHERE def_opr SIMILAR TO '%%(:|)'||%s||'(:|)%%) as exist_opr
-                        )
+
                     """)
 
                 sql = " UNION ".join(clauses)
@@ -1308,10 +1308,10 @@ class GetObservationResponse_2_0_0:
                 for p in filter.procedure:
                     params.extend([p,p])
                     clauses.append("""
-                        (
+
                           SELECT %s as name_prc, exists(select id_prc from """ +
                               filter.sosConfig.schema + """.procedures where name_prc=%s) as exist_prc
-                        )
+
                     """)
 
                 sql = " UNION ".join(clauses)
