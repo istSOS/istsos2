@@ -1,0 +1,752 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Accessing data &mdash; istSOS 2.3.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.3.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="istSOS 2.3.1 documentation" href="index.html" />
+    <link rel="next" title="Creating Virtual Procedures" href="ws_virtualprocedures.html" />
+    <link rel="prev" title="Data validation with quality index" href="ws_datavalidation.html" />
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-42669175-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ws_virtualprocedures.html" title="Creating Virtual Procedures"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ws_datavalidation.html" title="Data validation with quality index"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">istSOS 2.3.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="accessing-data">
+<span id="ws-dataaccess"></span><h1>Accessing data<a class="headerlink" href="#accessing-data" title="Permalink to this headline">¶</a></h1>
+<p>Accessing the data is possible using the SOS Standard requests, WA REST
+requests or directly using the Data Viewer or Data Editor.</p>
+<div class="figure">
+<img alt="_images/data_access.png" src="_images/data_access.png" />
+</div>
+<p>Let’s try to request data using the different interfaces...</p>
+<div class="section" id="getting-observations-in-the-sos-1-0-0-way">
+<h2>Getting observations in the SOS 1.0.0 way<a class="headerlink" href="#getting-observations-in-the-sos-1-0-0-way" title="Permalink to this headline">¶</a></h2>
+<p>Quick view on the GetObservation request using the GET method:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="27%" />
+<col width="27%" />
+<col width="27%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>Parameter</td>
+<td>Description</td>
+<td>Definition</td>
+<td>Multiplicity and Use</td>
+</tr>
+<tr class="row-even"><td>request</td>
+<td>getObservation is designed
+to request detailed sensor
+metadata</td>
+<td>getObservation</td>
+<td>One (mandatory)</td>
+</tr>
+<tr class="row-odd"><td>service</td>
+<td>Service type identifier</td>
+<td>SOS</td>
+<td>One (mandatory)</td>
+</tr>
+<tr class="row-even"><td>version</td>
+<td>Specification version for
+operation</td>
+<td>1.0.0</td>
+<td>One (mandatory)</td>
+</tr>
+<tr class="row-odd"><td>srsName</td>
+<td>Defines the spatial
+reference system that
+should be used for any
+geometries that are
+returned in the
+response.</td>
+<td>This must be one of the
+advertised values in the
+offering specified in
+gml:srsName elements.</td>
+<td>One (Optional)</td>
+</tr>
+<tr class="row-even"><td>offering</td>
+<td>Specifies the offering
+URI advertised in the
+GetCapabilities document.
+All of the following
+parameters are dependent
+on the selected offering.</td>
+<td>This must match the
+gml:name of the offering
+or be constructed as a
+URL with a fragment
+identifier resolving to
+the offering gml:id.</td>
+<td>One (mandatory)</td>
+</tr>
+<tr class="row-odd"><td>eventTime</td>
+<td>Specifies the time
+period(s) for which
+observations are
+requested. This allows
+a client to request
+observations from a
+specific instant,
+multiple instances
+or periods of time in
+the past, present and
+future. The supported
+range is listed in
+the selected offering
+capabilities</td>
+<td>ISO 8601
+Examples:
+Time instant:
+2015-06-11T17:30:00+0200
+Time period
+2015-06-11T14:30:00+0200/
+2015-06-11T17:30:00+0200</td>
+<td>Zero or many
+(Optional)</td>
+</tr>
+<tr class="row-even"><td>procedure</td>
+<td>The procedure parameter
+specifies the sensor
+system(s) for which
+observations are
+requested. It defines
+a filter for the
+procedure property
+of the observations.</td>
+<td>comma separated valid
+sensors from the
+GetCapabilities</td>
+<td>Zero or many
+(Optional</td>
+</tr>
+<tr class="row-odd"><td>observedProperty</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>One or many
+(mandatory)</td>
+</tr>
+<tr class="row-even"><td>featureOfInterest</td>
+<td>Specifies the feature
+for which observations
+are requested. This
+can either be
+represented by a
+reference to a feature
+ID advertised in the
+capabilities document
+or can be a spatial
+constraint.</td>
+<td>&nbsp;</td>
+<td>Zero or many
+(Optional)</td>
+</tr>
+<tr class="row-odd"><td>responseFormat</td>
+<td>Specifies the desired
+resultFormat MIME
+content type for
+transport of the
+results (e.g. TML,
+O&amp;M native format,
+or MPEG stream
+out-of-band).
+The supported
+output formats are
+listed in the selected
+offering capabilities.
+Desired output format
+of the getObservation
+operation. This can
+be a MimeType or
+QName for example.</td>
+<td>text/xml;subtype=&#8221;sensor
+ML/1.0.0&#8221;</td>
+<td>One (mandatory)</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="procedure-time-property-filters">
+<h3>Procedure-time-property filters<a class="headerlink" href="#procedure-time-property-filters" title="Permalink to this headline">¶</a></h3>
+<p>Requesting rainfall observations from sensor P_LUGANO between
+2015-01-01T00:00:00+01 and 2015-02-4T17:00:00+01:</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">http://localhost/istsos/demo?</span></tt></div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">service=SOS&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">request=GetObservation&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">offering=temporary&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">procedure=urn:ogc:def:procedure:x-istsos:1.0:P_LUGANO&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">eventTime=2015-06-01T00:00:00+0200/2015-06-03T00:00:00+0200&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">observedProperty=urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">responseFormat=text/xml;subtype=&quot;sensorML/1.0.1&quot;&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">service=SOS&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">version=1.0.0</span></tt></div>
+</div>
+</div>
+<p><a class="reference external" href="http://localhost/istsos/demo?service=SOS&amp;request=GetObservation&amp;offering=temporary&amp;procedure=urn:ogc:def:procedure:x-istsos:1.0:P_LUGANO&amp;eventTime=2015-06-01T00:00:00+0200/2015-06-03T00:00:00+0200&amp;observedProperty=urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall&amp;responseFormat=text/xml;subtype=&quot;sensorML/1.0.1&quot;&amp;service=SOS&amp;version=1.0.0">Execute request</a></p>
+</div>
+<div class="section" id="time-property-filters">
+<h3>Time-property filters<a class="headerlink" href="#time-property-filters" title="Permalink to this headline">¶</a></h3>
+<p>Requesting rainfall observations from all the stations between
+2014-06-01T00:00:00+02 and 2014-06-03T00:00:00+02:</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">http://localhost/istsos/demo?</span></tt></div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">service=SOS&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">request=GetObservation&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">offering=temporary&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">eventTime=2015-06-01T00:00:00+0200/2015-06-03T00:00:00+0200&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">observedProperty=urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">responseFormat=text/xml;subtype=&quot;sensorML/1.0.0&quot;&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">service=SOS&amp;version=1.0.0</span></tt></div>
+</div>
+</div>
+<p><a class="reference external" href="http://localhost/istsos/demo?service=SOS&amp;request=GetObservation&amp;offering=temporary&amp;eventTime=2015-06-01T00:00:00+0200/2015-06-03T00:00:00+0200&amp;observedProperty=urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall&amp;responseFormat=text/xml;subtype=&quot;sensorML/1.0.0&quot;&amp;service=SOS&amp;version=1.0.0">Execute request</a></p>
+</div>
+<div class="section" id="time-property-area-filters">
+<h3>Time-property-area filters<a class="headerlink" href="#time-property-area-filters" title="Permalink to this headline">¶</a></h3>
+<p>Requesting the last meteo observations applying a spatial intersection
+with a BBOX:</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">http://localhost/istsos/demo?</span></tt></div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">service=SOS&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">request=GetObservation&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">offering=temporary&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">observedProperty=meteo&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">responseFormat=text/xml;subtype=&quot;sensorML/1.0.1&quot;&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">service=SOS&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">version=1.0.0&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">featureOfInterest=&lt;ogc:BBOX&gt;&lt;ogc:PropertyName&gt;the_geom&lt;/ogc:PropertyName&gt;&lt;gml:Box</span> <span class="pre">srsName='EPSG:4326'&gt;&lt;gml:coordinates&gt;18,45</span> <span class="pre">30,55&lt;/gml:coordinates&gt;&lt;/gml:Box&gt;&lt;/ogc:BBOX&gt;</span></tt></div>
+</div>
+</div>
+<p><a class="reference external" href="http://localhost/istsos/demo?service=SOS&amp;request=GetObservation&amp;offering=temporary&amp;observedProperty=meteo&amp;responseFormat=text/xml;subtype=%E2%80%9DsensorML/1.0.1%E2%80%9D&amp;service=SOS&amp;version=1.0.0&amp;featureOfInterest=%3Cogc:BBOX%3E%3Cogc:PropertyName%3Ethe_geom%3C/ogc:PropertyName%3E%3Cgml:Box%20srsName=%27EPSG:4326%27%3E%3Cgml:coordinates%3E18,45%2030,55%3C/gml:coordinates%3E%3C/gml:Box%3E%3C/ogc:BBOX%3E">Execute request</a></p>
+</div>
+<div class="section" id="time-property-distance-filters">
+<h3>Time-property-distance filters<a class="headerlink" href="#time-property-distance-filters" title="Permalink to this headline">¶</a></h3>
+<p>Requesting the last meteo observations applying a distance filter:</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">http://localhost/istsos/demo?</span></tt></div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">service=SOS&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">request=GetObservation&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">offering=temporary&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">observedProperty=temperature&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">responseFormat=text/xml;subtype=&quot;sensorML/1.0.1&quot;&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">service=SOS&amp;version=1.0.0&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">featureOfInterest=&lt;ogc:DWithin&gt;&lt;ogc:PropertyName&gt;SHAPE&lt;/ogc:PropertyName&gt;&lt;gml:Point</span> <span class="pre">srsName=&quot;EPSG:4326&quot;&gt;&lt;gml:coordinates</span> <span class="pre">decimal=&quot;.&quot;</span> <span class="pre">cs=&quot;,&quot;</span> <span class="pre">ts=&quot;</span> <span class="pre">&quot;&gt;8.961,46.027&lt;/gml:coordinates&gt;&lt;/gml:Point&gt;&lt;ogc:Distance&gt;10&lt;/ogc:Distance&gt;&lt;/ogc:DWithin&gt;</span></tt></div>
+</div>
+</div>
+<p><a class="reference external" href="http://localhost/istsos/demo?service=SOS&amp;request=GetObservation&amp;offering=temporary&amp;observedProperty=temperature&amp;responseFormat=text/xml;subtype=%E2%80%9DsensorML/1.0.1%E2%80%9D&amp;service=SOS&amp;version=1.0.0&amp;featureOfInterest=%3Cogc:DWithin%3E%3Cogc:PropertyName%3ESHAPE%3C/ogc:PropertyName%3E%3Cgml:Point%20srsName=%22EPSG:4326%22%3E%3Cgml:coordinates%20decimal=%22.%22%20cs=%22,%22%20ts=%22%20%22%3E8.961,46.027%3C/gml:coordinates%3E%3C/gml:Point%3E%3Cogc:Distance%3E10%3C/ogc:Distance%3E%3C/ogc:DWithin%3E">Execute request</a></p>
+<p><em>Now try to change the distance from 10 to 100.</em></p>
+</div>
+<div class="section" id="time-property-filters-and-result-values">
+<h3>Time-property filters and result values<a class="headerlink" href="#time-property-filters-and-result-values" title="Permalink to this headline">¶</a></h3>
+<p>Requesting rainfall observations from all the stations between
+2014-06-01T00:00:00+02 and  2014-06-03T00:00:00+02 and where the rain value
+is greater than 0:</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">http://localhost/istsos/demo?</span></tt></div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">service=SOS&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">request=GetObservation&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">offering=temporary&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">eventTime=2015-06-01T00:00:00+0200/2015-06-03T00:00:00+0200&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">observedProperty=urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">responseFormat=text/plain&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">result=&quot;&lt;ogc:PropertyIsGreaterThan&gt;&lt;ogc:PropertyName&gt;rainfall&lt;/ogc:PropertyName&gt;&lt;ogc:Literal&gt;0&lt;/ogc:Literal&gt;&lt;/ogc:PropertyIsGreaterThan&gt;&quot;</span></tt></div>
+</div>
+</div>
+<p><a class="reference external" href="http://localhost/istsos/demo?service=SOS&amp;version=1.0.0&amp;request=GetObservation&amp;offering=temporary&amp;eventTime=2015-06-01T00:00:00+0200/2015-06-03T00:00:00+0200&amp;observedProperty=urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall&amp;responseFormat=text/plain&amp;result=%22%3Cogc:PropertyIsGreaterThan%3E%3Cogc:PropertyName%3Erainfall%3C/ogc:PropertyName%3E%3Cogc:Literal%3E0%3C/ogc:Literal%3E%3C/ogc:PropertyIsGreaterThan%3E%22">Execute request</a></p>
+</div>
+</div>
+<div class="section" id="getting-observations-using-the-istsos-extending-features">
+<h2>Getting observations using the istSOS extending features<a class="headerlink" href="#getting-observations-using-the-istsos-extending-features" title="Permalink to this headline">¶</a></h2>
+<p>In this part of the tutorial we will explore the extending features of istSOS,
+developed for making user life easier and to fulfill data experts requirements.</p>
+<div class="section" id="getobservation-with-simple-names">
+<h3>GetObservation with simple names<a class="headerlink" href="#getobservation-with-simple-names" title="Permalink to this headline">¶</a></h3>
+<p>According to the standard observedProperties and procedures are accessible
+using a Unique Resource Identifier (URI). This is those used when the
+observed property and the procedure was created.</p>
+<p>In this tutorial we used for example:</p>
+<ul class="simple">
+<li><a class="reference external" href="urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall">urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall</a></li>
+<li><a class="reference external" href="urn:ogc:def:procedure:x-istsos:1.0:P_LUGANO">urn:ogc:def:procedure:x-istsos:1.0:P_LUGANO</a></li>
+</ul>
+<p>istSOS is not strict and allows to specify in a GetObservation request just
+the or procedure name and/or observed property in the request: as a result
+for the desired procedures all the observed properties with that words will
+be selected (LIKE ‘%XXX%’ SQL query).</p>
+<p>In a suggested hierarchical usage of URIs, this allows to quickly access to
+all the subdomain properties, so for example using
+<tt class="docutils literal"><span class="pre">observedProperty=urn:ogc:def:parameter:x-istsos:1.0:meteo</span></tt> in a getObservation
+request in istSOS will return all the available observations which measure
+meteo parameters (rainfall, windspeed, humidity, etc..).</p>
+<p>Let’s try:</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">http://localhost/istsos/demo?</span></tt></div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">service=SOS&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">request=GetObservation&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">offering=temporary&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">procedure=P_LUGANO&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">eventTime=2015-06-01T00:00:00+0200/2015-06-03T00:00:00+0200&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">observedProperty=rainfall&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">responseFormat=text/xml;subtype=&quot;sensorML/1.0.1&quot;&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">service=SOS&amp;version=1.0.0</span></tt></div>
+</div>
+</div>
+<p><a class="reference external" href="http://localhost/istsos/demo?service=SOS&amp;request=GetObservation&amp;offering=temporary&amp;procedure=P_LUGANO&amp;eventTime=2015-06-01T00:00:00+0200/2015-06-03T00:00:00+0200&amp;observedProperty=rainfall&amp;responseFormat=text/xml;subtype=&quot;sensorML/1.0.1&quot;&amp;service=SOS&amp;version=1.0.0">Execute request</a></p>
+<p>Requesting all the rainfall observations between 2015-06-01T00:00:00+02 and
+2015-06-03T00:00:00+02:</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">http://localhost/istsos/demo?</span></tt></div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">service=SOS&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">request=GetObservation&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">offering=temporary&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">eventTime=2015-06-01T00:00:00+0200/2015-06-03T00:00:00+0200&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">observedProperty=rainfall&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">responseFormat=text/xml;subtype=&quot;sensorML/1.0.1&quot;&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">service=SOS&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">version=1.0.0</span></tt></div>
+</div>
+</div>
+<p><a class="reference external" href="http://localhost/istsos/demo?service=SOS&amp;request=GetObservation&amp;offering=temporary&amp;eventTime=2015-06-01T00:00:00+0200/2015-06-03T00:00:00+0200&amp;observedProperty=rainfall&amp;responseFormat=text/xml;subtype=%E2%80%9DsensorML/1.0.0%E2%80%9D&amp;service=SOS&amp;version=1.0.0">Execute request</a></p>
+</div>
+<div class="section" id="getobservation-with-specific-time-zone">
+<h3>GetObservation with specific time zone<a class="headerlink" href="#getobservation-with-specific-time-zone" title="Permalink to this headline">¶</a></h3>
+<p>istSOS support time zones. Whenever in getObservation request the eventTime
+is specified with a time zone (e.g.: +0700) the response will be returned with
+the same time zone.</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">http://localhost/istsos/demo?</span></tt></div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">service=SOS&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">request=GetObservation&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">offering=temporary&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">procedure=P_LUGANO&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">eventTime=2015-06-01T00:00:00+0500/2015-06-03T00:00:00+0500&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">observedProperty=rainfall&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">responseFormat=text/xml;subtype=&quot;sensorML/1.0.1&quot;&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">service=SOS&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">version=1.0.0</span></tt></div>
+</div>
+</div>
+<p><a class="reference external" href="http://localhost/istsos/demo?service=SOS&amp;request=GetObservation&amp;offering=temporary&amp;procedure=P_LUGANO&amp;eventTime=2015-06-01T00:00:00+0500/2015-06-03T00:00:00+0500&amp;observedProperty=rainfall&amp;responseFormat=text/xml;subtype=&quot;sensorML/1.0.1&quot;&amp;service=SOS&amp;version=1.0.0">Execute request</a></p>
+</div>
+<div class="section" id="getobservation-in-csv-or-json">
+<h3>GetObservation in CSV or JSON<a class="headerlink" href="#getobservation-in-csv-or-json" title="Permalink to this headline">¶</a></h3>
+<p>In addition to the mandatory text/xml;subtype=&#8221;sensorML/1.0.0&#8221; istSOS support
+also application/json and text/csv (for simplification also text or json )</p>
+<p>Data in CSV:</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">http://localhost/istsos/demo?</span></tt></div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">service=SOS&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">request=GetObservation&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">offering=temporary&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">eventTime=2015-06-01T00:00:00+0200/2015-06-03T00:00:00+0200&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">observedProperty=rainfall&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">responseFormat=text/plain&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">service=SOS&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">version=1.0.0</span></tt></div>
+</div>
+</div>
+<p><a class="reference external" href="http://localhost/istsos/demo?service=SOS&amp;request=GetObservation&amp;offering=temporary&amp;eventTime=2015-06-01T00:00:00+0200/2015-06-03T00:00:00+0200&amp;observedProperty=rainfall&amp;responseFormat=text/plain&amp;service=SOS&amp;version=1.0.0">Execute request</a></p>
+<p>Data in JSON:</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">http://localhost/istsos/demo?</span></tt></div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">service=SOS&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">request=GetObservation&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">offering=temporary&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">eventTime=2015-06-01T00:00:00+0200/2015-06-03T00:00:00+0200&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">observedProperty=rainfall&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">responseFormat=text/json&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">service=SOS&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">version=1.0.0</span></tt></div>
+</div>
+</div>
+<p><a class="reference external" href="http://localhost/istsos/demo?service=SOS&amp;request=GetObservation&amp;offering=temporary&amp;eventTime=2015-06-01T00:00:00+0200/2015-06-03T00:00:00+0200&amp;observedProperty=rainfall&amp;responseFormat=text/json&amp;service=SOS&amp;version=1.0.0">Execute request</a></p>
+</div>
+<div class="section" id="getobservation-with-data-aggregation-on-the-fly">
+<h3>GetObservation with data aggregation on the fly<a class="headerlink" href="#getobservation-with-data-aggregation-on-the-fly" title="Permalink to this headline">¶</a></h3>
+<p>When executing a getObservation request istSOS offer an extra feature. Adding
+vendor specific parameters aggregateInterval, aggregateFunction,
+aggregatenodata and aggregatenodataqi you can request data already aggregated
+by istSOS.</p>
+<ul class="simple">
+<li>aggregateInterval: ISO 8601 Durations (P1DT = 1 Day, PT12H = 12 hours)</li>
+<li>aggregateFunction: AVG, SUM, MAX, MIN</li>
+</ul>
+<p>For example we can Request maximal daily temperature observation:</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">http://localhost/istsos/demo?</span></tt></div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">service=SOS&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">request=GetObservation&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">offering=temporary&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">procedure=T_LUGANO&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">eventTime=2015-05-04T00:00:00+01/2015-05-14T00:00:00+01&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">observedProperty=temperature&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">aggregateInterval=PT24H&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">aggregateFunction=MAX&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">responseFormat=text/plain&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">service=SOS&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">version=1.0.0</span></tt></div>
+</div>
+</div>
+<p><a class="reference external" href="http://localhost/istsos/demo?service=SOS&amp;request=GetObservation&amp;offering=temporary&amp;procedure=T_LUGANO&amp;eventTime=2015-05-04T00:00:00+01/2015-05-14T00:00:00+01&amp;observedProperty=temperature&amp;aggregateInterval=PT24H&amp;aggregateFunction=MAX&amp;responseFormat=text/plain&amp;service=SOS&amp;version=1.0.0">Execute request</a></p>
+</div>
+<div class="section" id="getobservation-in-csv-with-qualityindex">
+<h3>GetObservation in CSV with qualityIndex<a class="headerlink" href="#getobservation-in-csv-with-qualityindex" title="Permalink to this headline">¶</a></h3>
+<p>in addition to the mandatory text/xml;subtype=&#8221;sensorML/1.0.0&#8221; istSOS support
+also application/json and text/csv (for simplification also text or json)</p>
+<p>Data in CSV with <strong>qualityIndex</strong>:</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">http://localhost/istsos/demo?</span></tt></div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">service=SOS&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">request=GetObservation&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">offering=temporary&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">eventTime=2015-06-01T00:00:00+0200/2015-06-03T00:00:00+0200&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">observedProperty=rainfall&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">responseFormat=text/plain&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">service=SOS&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">version=1.0.0&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">qualityIndex=True</span></tt></div>
+</div>
+</div>
+<p><a class="reference external" href="http://localhost/istsos/demo?service=SOS&amp;request=GetObservation&amp;offering=temporary&amp;eventTime=2015-06-01T00:00:00+0200/2015-06-03T00:00:00+0200&amp;observedProperty=rainfall&amp;responseFormat=text/plain&amp;service=SOS&amp;version=1.0.0&amp;qualityIndex=True">Execute request</a></p>
+<p><strong>Data in CSV with qualityFilter:</strong></p>
+<p>Note that when applying a qualityFilter istSOS returns only the observations
+that has all the observedProperties values with associated qualityIndex
+satisfying the criteria.</p>
+<p>e.g.: suppose you have a procedure observing rainfall, temperature and
+humidity. Your single observation will have the triplet of values and quality
+index:</p>
+<div class="highlight-csv"><div class="highlight"><pre>time1, rain value, rain qi, temperature val, emperature  qi, humidity val, humidity qi
+time2, rain value, rain qi, temperature val, emperature  qi, humidity val, humidity qi
+time3, rain value, rain qi, temperature val, emperature  qi, humidity val, humidity qi
+time4, rain value, rain qi, temperature val, emperature  qi, humidity val, humidity qi
+</pre></div>
+</div>
+<table border="1" class="docutils">
+<colgroup>
+<col width="22%" />
+<col width="78%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>Operator</strong></td>
+<td><strong>istSOS behaviour</strong></td>
+</tr>
+<tr class="row-even"><td>&gt;</td>
+<td>only records where all qi are &gt; of the filter value are
+returned</td>
+</tr>
+<tr class="row-odd"><td>&gt;=</td>
+<td>only records where all qi are &gt;= of the filter value are
+returned</td>
+</tr>
+<tr class="row-even"><td>&lt;</td>
+<td>only records where all qi are &lt; of the filter value are
+returned</td>
+</tr>
+<tr class="row-odd"><td>&lt;=</td>
+<td>only records where all qi are &lt;= of the filter value are
+returned</td>
+</tr>
+<tr class="row-even"><td>=</td>
+<td>all the records that has at least one qi equal to the
+filter value</td>
+</tr>
+</tbody>
+</table>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">http://localhost/istsos/demo?</span></tt></div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">service=SOS&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">request=GetObservation&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">offering=temporary&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">eventTime=2015-06-03T15:00:00+01:00/2015-06-03T16:00:00+01:00&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">observedProperty=temperature&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">responseFormat=text/plain&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">service=SOS&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">version=1.0.0&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">procedure=T_LUGANO&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">qualityIndex=True&amp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">qualityfilter=&gt;110</span></tt></div>
+</div>
+</div>
+<p><a class="reference external" href="http://localhost/istsos/demo?service=SOS&amp;request=GetObservation&amp;offering=temporary&amp;eventTime=2015-06-03T15:00:00+01:00/2015-06-03T16:00:00+01:00&amp;observedProperty=temperature&amp;procedure=T_LUGANO&amp;responseFormat=text/plain&amp;service=SOS&amp;version=1.0.0&amp;qualityIndex=True&amp;qualityfilter=%3E110">Execute request</a></p>
+</div>
+</div>
+<div class="section" id="getting-observations-using-the-wa-rest">
+<h2>Getting observations using the WA REST<a class="headerlink" href="#getting-observations-using-the-wa-rest" title="Permalink to this headline">¶</a></h2>
+<p>Composing a WA REST request is all about building the correct path url.</p>
+<p><a class="reference external" href="http://localhost/istsos/wa/istsos/services/demo/operations/getobservation/offerings/temporary/procedures/T_LUGANO/observedproperties/temperature/eventtime/2015-05-21T00:00:00+02:00/2015-05-28T00:00:00+02:00">http://localhost/istsos/wa/istsos/services/demo/operations/getobservation/offerings/temporary/procedures/T_LUGANO/observedproperties/temperature/eventtime/2015-05-21T00:00:00+02:00/2015-05-28T00:00:00+02:00</a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Executing a service request, you will receive a list of istSOS service
+instances: <a class="reference external" href="http://localhost/istsos/wa/istsos/services">http://localhost/istsos/wa/istsos/services</a></p>
+<p>Executing a procedures get list operation, you will receive a list of
+procedures belonging to a specific service:</p>
+<p class="last"><a class="reference external" href="http://localhost/istsos/wa/istsos/services/demo/procedures/operations/getlist">http://localhost/istsos/wa/istsos/services/demo/procedures/operations/getlist</a></p>
+</div>
+<div class="section" id="getting-observations-with-the-data-viewer">
+<h3>Getting observations with the Data Viewer<a class="headerlink" href="#getting-observations-with-the-data-viewer" title="Permalink to this headline">¶</a></h3>
+<p>The istSOS web administration pages interact with the service making use of
+WA REST. The Data Viewer panel is implemented as an example of data
+visualization.</p>
+<p><strong>View observation</strong></p>
+<p>To open your Web Viewer follow this link: <a class="reference external" href="http://localhost/istsos/admin">http://localhost/istsos/admin</a></p>
+<p>And then in the &#8220;Data Management&#8221; tab press the &#8220;Data Viewer&#8221; button.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Up to now the viewer permit to display data of a single
+observationProperties only, you can select and display multiple procedures
+but with the same observed property.</p>
+</div>
+<p>Go ahead and take some confidence with the Data Viewer.</p>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/dataviewer.png"><img alt="_images/dataviewer.png" src="_images/dataviewer.png" style="width: 1024.0px; height: 768.0px;" /></a>
+</div>
+</div>
+<div class="section" id="editing-observations-with-the-data-editor">
+<h3>Editing observations with the Data Editor<a class="headerlink" href="#editing-observations-with-the-data-editor" title="Permalink to this headline">¶</a></h3>
+<p>Hey! The procedure T_LUGANO has some problems.. let&#8217;s fix it!</p>
+<p>From 2015-06-02T02:40:00 to 2015-06-02T07:20:00 there are no data values:</p>
+<div class="highlight-csv"><div class="highlight"><pre>urn:ogc:def:parameter:x-istsos:1.0:time:iso8601,urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature
+2015-06-02T02:30:00.000000+0200,12.150000
+2015-06-02T02:40:00.000000+0200,-999.9
+2015-06-02T02:50:00.000000+0200,-999.9
+2015-06-02T03:00:00.000000+0200,-999.9
+</pre></div>
+</div>
+<p>We can correct them using the Data Editor!</p>
+<p><strong>Load the data</strong></p>
+<p>From the Web <a class="reference external" href="http://localhost/istsos/admin">Admin</a>:</p>
+<ul>
+<li><p class="first">Go to Data Management</p>
+</li>
+<li><p class="first">Press the Data Editor button</p>
+</li>
+<li><dl class="first docutils">
+<dt>Like in the Data Viewer sequentially choose</dt>
+<dd><ul class="first last simple">
+<li>the service demo,</li>
+<li>the offering temporary</li>
+<li>and then &#8220;Add&#8221; BELLINZONA, LOCARNO and T_LUGANO</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/load_data.png"><img alt="_images/load_data.png" src="_images/load_data.png" style="width: 1061.0px; height: 360.0px;" /></a>
+</div>
+<ul class="simple">
+<li>On the right panel choose the Property: air-temperature</li>
+<li>Press &#8220;<strong>Plot</strong>&#8221;, the last week of measurements is loaded and displayed</li>
+</ul>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/data_loaded.png"><img alt="_images/data_loaded.png" src="_images/data_loaded.png" style="width: 1251.0px; height: 706.0px;" /></a>
+</div>
+<p><strong>Editing with the &#8220;Calculator&#8221;</strong></p>
+<p>On the left panel there is the &#8220;<strong>Editor</strong>&#8221; tab:</p>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/editor_tab.png"><img alt="_images/editor_tab.png" src="_images/editor_tab.png" style="width: 622.0px; height: 214.0px;" /></a>
+</div>
+<ul>
+<li><p class="first">Select <strong>T_LUGANO</strong> from the combo list</p>
+</li>
+<li><p class="first">The press &#8220;<strong>Start editing</strong>&#8221;, the grid is now displayed</p>
+</li>
+<li><dl class="first docutils">
+<dt>At the bottom-right corner of the chart there are 3 buttons &#8220;Day&#8221;, &#8220;Week&#8221; and &#8220;All&#8221;</dt>
+<dd><ul class="first last simple">
+<li>Click on &#8220;Day&#8221;, the chart is zoomed to contain only one day of data</li>
+<li>Drag the timeline bar on the right where you will see that T_LUGANO has no data</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/no_data.png"><img alt="_images/no_data.png" src="_images/no_data.png" style="width: 557.0px; height: 367.0px;" /></a>
+</div>
+<ul>
+<li><p class="first">Click on the chart to select the last observation before the &#8220;<strong>nodata</strong>&#8221; hole,
+a green line is displayed and in the <strong>Editing Grid</strong> the corresponding row is
+selected.</p>
+</li>
+<li><dl class="first docutils">
+<dt>Now go to the <strong>Editing Grid</strong> panel</dt>
+<dd><ul class="first last simple">
+<li>Click the first row where data are <strong>NaN</strong>,</li>
+<li>Scroll to the last <strong>NaN</strong> record and holding the <cite>SHIFT</cite> Key click on it</li>
+<li>The press the &#8220;<strong>Calculator</strong>&#8221; button</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/data_editing.png"><img alt="_images/data_editing.png" src="_images/data_editing.png" style="width: 1034.0px; height: 762.0px;" /></a>
+</div>
+<p>With the Calculator we are able to correct an interval of data in a single
+action. It is possible to set a numeric value or also use a function using
+data from the other loaded procedures.</p>
+<p>Let’s build a function that make the average of the data from BELLINZONA
+and LOCARNO and then removes to units:</p>
+<div class="code highlight-python"><div class="highlight"><pre><span class="p">((</span><span class="n">BELLINZONA</span><span class="o">+</span><span class="n">LOCARNO</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span>
+</pre></div>
+</div>
+<p>Select the quality index. In this case we can choose a QI 500 (manually
+adjusted).</p>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/calculator.png"><img alt="_images/calculator.png" src="_images/calculator.png" style="width: 662.0px; height: 178.0px;" /></a>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<a href="index.html"><img src="_static/logo.png" border="0" alt="istSOS" align="centre" width="200"/></a>
+<hr>
+<a href="https://sourceforge.net/projects/istsos/files/" align="centre">Download istSOS</a>
+<hr>
+
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Accessing data</a><ul>
+<li><a class="reference internal" href="#getting-observations-in-the-sos-1-0-0-way">Getting observations in the SOS 1.0.0 way</a><ul>
+<li><a class="reference internal" href="#procedure-time-property-filters">Procedure-time-property filters</a></li>
+<li><a class="reference internal" href="#time-property-filters">Time-property filters</a></li>
+<li><a class="reference internal" href="#time-property-area-filters">Time-property-area filters</a></li>
+<li><a class="reference internal" href="#time-property-distance-filters">Time-property-distance filters</a></li>
+<li><a class="reference internal" href="#time-property-filters-and-result-values">Time-property filters and result values</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#getting-observations-using-the-istsos-extending-features">Getting observations using the istSOS extending features</a><ul>
+<li><a class="reference internal" href="#getobservation-with-simple-names">GetObservation with simple names</a></li>
+<li><a class="reference internal" href="#getobservation-with-specific-time-zone">GetObservation with specific time zone</a></li>
+<li><a class="reference internal" href="#getobservation-in-csv-or-json">GetObservation in CSV or JSON</a></li>
+<li><a class="reference internal" href="#getobservation-with-data-aggregation-on-the-fly">GetObservation with data aggregation on the fly</a></li>
+<li><a class="reference internal" href="#getobservation-in-csv-with-qualityindex">GetObservation in CSV with qualityIndex</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#getting-observations-using-the-wa-rest">Getting observations using the WA REST</a><ul>
+<li><a class="reference internal" href="#getting-observations-with-the-data-viewer">Getting observations with the Data Viewer</a></li>
+<li><a class="reference internal" href="#editing-observations-with-the-data-editor">Editing observations with the Data Editor</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ws_datavalidation.html"
+                        title="previous chapter">Data validation with quality index</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ws_virtualprocedures.html"
+                        title="next chapter">Creating Virtual Procedures</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/ws_dataaccess.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ws_virtualprocedures.html" title="Creating Virtual Procedures"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="ws_datavalidation.html" title="Data validation with quality index"
+             >previous</a> |</li>
+        <li><a href="index.html">istSOS 2.3.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010-2017, Massimiliano Cannata, Milan Antonovic This work is licensed under a Creative Commons Attribution 4.0 International License.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

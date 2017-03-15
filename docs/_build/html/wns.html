@@ -1,0 +1,516 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>istSOS-WNS: Notification Service &mdash; istSOS 2.3.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.3.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="istSOS 2.3.1 documentation" href="index.html" />
+    <link rel="next" title="Introduction to the SOS standard" href="intro.html" />
+    <link rel="prev" title="Mapping the stations" href="mapping.html" />
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-42669175-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="intro.html" title="Introduction to the SOS standard"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="mapping.html" title="Mapping the stations"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">istSOS 2.3.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="istsos-wns-notification-service">
+<span id="notification"></span><h1>istSOS-WNS: Notification Service<a class="headerlink" href="#istsos-wns-notification-service" title="Permalink to this headline">¶</a></h1>
+<p>the istSOS-WNS is a service gathering data from an istSOS database and sending a notification to the users after testing the retrieved data to meet some conditions. The systems is divided in three parts: a database for storing the information about the notifications, the users and the registrations of the users to the notifications; a database of the istSOS service storing the actual data received from external sensors; and a scheduler that periodically runs the functions to retrieve the data, test it and send the notifications to the registered users. The system also do a notification on a twitter account.</p>
+<dl class="docutils">
+<dt>The following features are supported:</dt>
+<dd><ul class="first last simple">
+<li>creation/deletion of notifications</li>
+<li>creation/deletion of users</li>
+<li>subscription/unsubscription of user to notification</li>
+<li>request old notification</li>
+</ul>
+</dd>
+</dl>
+<div class="section" id="istsos-wns-database-schema">
+<h2>istSOS-WNS database schema<a class="headerlink" href="#istsos-wns-database-schema" title="Permalink to this headline">¶</a></h2>
+<p>The wns schema is represented below.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/WNSschema.png"><img alt="_images/WNSschema.png" src="_images/WNSschema.png" style="width: 700.0px; height: 424.2px;" /></a>
+</div>
+</div>
+<div class="section" id="activation-of-istsos-wns">
+<h2>Activation of istSOS-WNS<a class="headerlink" href="#activation-of-istsos-wns" title="Permalink to this headline">¶</a></h2>
+<p>By default the istWNS use the database connection of the default service but you could specify a different db setting connection parameters editing the default.cfg file.</p>
+<div class="highlight-python"><div class="highlight"><pre>[connectionWns]
+dbname = istsos
+host = 127.0.0.1
+user = postgres
+password = postgres
+port = 5432
+</pre></div>
+</div>
+<p>The other parameter reported below are used to send notification via email or twitter</p>
+<div class="highlight-python"><div class="highlight"><pre>[mail]
+usermail = mail@notifier.com
+password = &quot;&quot;
+smtp = &quot;&quot;
+port = &quot;&quot;
+
+[twitter]
+oauth_token = &quot;&quot;
+oauth_secret = &quot;&quot;
+consumer_key = &quot;&quot;
+consumer_secret = &quot;&quot;
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Actually the system update the status on twitter and can send notification via email.</p>
+</div>
+<p>To setup the Web Service do this GET request:</p>
+<div class="highlight-python"><div class="highlight"><pre>http://localhost/istsos/wns/setup
+</pre></div>
+</div>
+<p>This will create a notification.asp file under the wns/ folder, where the notification function are stored and create a schema in the istSOS-WNS database.</p>
+</div>
+<div class="section" id="create-a-notification">
+<h2>Create a notification<a class="headerlink" href="#create-a-notification" title="Permalink to this headline">¶</a></h2>
+<p>It’s possible to create two type of notification,</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>Simple notification</strong>, that execute a getObservation and compare the results with a condition</li>
+<li><strong>Complex observation</strong>, the user write a specific requests and validation function in python</li>
+</ul>
+</div></blockquote>
+<div class="section" id="method-1-simple-notification">
+<h3>Method 1: simple notification<a class="headerlink" href="#method-1-simple-notification" title="Permalink to this headline">¶</a></h3>
+<p>Do a POST request to:</p>
+<div class="highlight-python"><div class="highlight"><pre>http://localhost/istsos/wns/notification
+</pre></div>
+</div>
+<p>with the following parameter</p>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li>name: the function name [mandatory]</li>
+<li>description: the description indicates what the function does [mandatory]</li>
+<li>period: expressed in ISO period format, is the interval over witch the getObservation will be performed, starting from now i.e. the last 2 hours. [optional]</li>
+<li>interval: expressed in minutes [mandatory]</li>
+<li>service: the service name [mandatory]</li>
+<li>condition: the condition describes in which case the notification will be performed. Every element retrived with the getObservation is tested again this contion, and as soon one element satisfies it the notification is triggered [mandatory]</li>
+<li>params: this is used to build a getObservation request. The offering, observedPropertiy and procedure are mandatory [mandatory]</li>
+<li>store: if true, store the result into the DB [optional]</li>
+</ol>
+</div></blockquote>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;arduino_heat&quot;</span><span class="p">,</span>
+    <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;check arduino DHT11 heat­index&quot;</span><span class="p">,</span>
+    <span class="s">&quot;interval&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+    <span class="s">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&quot;offering&quot;</span><span class="p">:</span><span class="s">&quot;temporary&quot;</span><span class="p">,</span>
+        <span class="s">&quot;observedProperty&quot;</span><span class="p">:</span><span class="s">&quot;air:heat:index&quot;</span><span class="p">,</span>
+        <span class="s">&quot;procedure&quot;</span><span class="p">:</span><span class="s">&quot;ARDUINO&quot;</span>
+    <span class="p">},</span>
+    <span class="s">&quot;condition&quot;</span><span class="p">:</span> <span class="s">&quot;&gt; 26&quot;</span><span class="p">,</span>
+    <span class="s">&quot;service&quot;</span><span class="p">:</span> <span class="s">&quot;demo&quot;</span><span class="p">,</span>
+    <span class="s">&quot;period&quot;</span><span class="p">:</span> <span class="s">&quot;PT1H&quot;</span><span class="p">,</span>
+    <span class="s">&quot;store&quot;</span><span class="p">:</span> <span class="n">true</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="method-2-complex-notification">
+<h3>Method 2: complex notification<a class="headerlink" href="#method-2-complex-notification" title="Permalink to this headline">¶</a></h3>
+<p>create a python function with the following constraint:</p>
+<blockquote>
+<div><ol class="loweralpha">
+<li><p class="first">The content of the function must have the structure of the extract below, retrieving the data, handling it and checking a condition to send out notifications.</p>
+</li>
+<li><p class="first">Pay attention to the function name you choose, because the exact name has to be used in the next step. The name also has to be unique, to avoid potential overriding.</p>
+</li>
+<li><p class="first">Every function must implement the notify() method, be sure to import the correct file (wns.notificationScheduler). The two lines specified in the extract should be copied in your method, to make sure you import the correct file.</p>
+</li>
+<li><dl class="first docutils">
+<dt>The ns.notify() method takes three arguments:</dt>
+<dd><ol class="first last lowerroman simple">
+<li>functionName of the method you defined [mandatory]</li>
+<li>a python dict containing the message to send via twitter or mail [mandatory]</li>
+<li>Status: the last parameter is a flag, if True, the Notifier update the status of the twitter account [Optional, default True].</li>
+</ol>
+</dd>
+</dl>
+</li>
+<li><p class="first">A notify dict with the twitter and mail message to send. The two message cold be differnt because whit twitter you ave the constraint of 140 character.</p>
+</li>
+</ol>
+</div></blockquote>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">meanTemp</span><span class="p">():</span>
+    <span class="kn">import</span> <span class="nn">datetime</span>
+    <span class="kn">import</span> <span class="nn">time</span>
+    <span class="kn">from</span> <span class="nn">lib.pytz</span> <span class="kn">import</span> <span class="n">timezone</span>
+    <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">tzname</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="n">endDate</span> <span class="o">=</span> <span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&#39;%Y-%m-</span><span class="si">%d</span><span class="s">T%H:%M:%S%z&#39;</span><span class="p">)</span>
+    <span class="n">eventTime</span> <span class="o">=</span> <span class="n">now</span> <span class="o">-</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">startDate</span> <span class="o">=</span> <span class="n">eventTime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&#39;%Y-%m-</span><span class="si">%d</span><span class="s">T%H:%M:%S%z&#39;</span><span class="p">)</span>
+
+    <span class="n">startDate</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2015</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mo">00</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">tzname</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&#39;%Y-%m-</span><span class="si">%d</span><span class="s">T%H:%M:%S%z&#39;</span><span class="p">)</span>
+    <span class="n">endDate</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2015</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mo">00</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">tzname</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&#39;%Y-%m-</span><span class="si">%d</span><span class="s">T%H:%M:%S%z&#39;</span><span class="p">)</span>
+
+    <span class="n">rparams</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;service&quot;</span><span class="p">:</span> <span class="s">&quot;SOS&quot;</span><span class="p">,</span> <span class="s">&quot;offering&quot;</span><span class="p">:</span> <span class="s">&quot;temporary&quot;</span><span class="p">,</span> <span class="s">&quot;request&quot;</span><span class="p">:</span> <span class="s">&quot;GetObservation&quot;</span><span class="p">,</span>
+                <span class="s">&quot;version&quot;</span><span class="p">:</span> <span class="s">&quot;1.0.0&quot;</span><span class="p">,</span> <span class="s">&quot;responseFormat&quot;</span><span class="p">:</span> <span class="s">&quot;application/json&quot;</span><span class="p">,</span>
+                <span class="s">&quot;observedProperty&quot;</span><span class="p">:</span> <span class="s">&quot;air:temperature&quot;</span><span class="p">,</span> <span class="s">&quot;procedure&quot;</span><span class="p">:</span> <span class="s">&quot;T_BELLINZONA&quot;</span><span class="p">}</span>
+    <span class="n">rparams</span><span class="p">[</span><span class="s">&#39;eventTime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">startDate</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;/&quot;</span> <span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">endDate</span><span class="p">)</span>
+
+    <span class="kn">import</span> <span class="nn">lib.requests</span> <span class="kn">as</span> <span class="nn">requests</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;http://localhost/istsos/demo&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">rparams</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s">&#39;ObservationCollection&#39;</span><span class="p">][</span><span class="s">&#39;member&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;result&#39;</span><span class="p">][</span><span class="s">&#39;DataArray&#39;</span><span class="p">][</span><span class="s">&#39;values&#39;</span><span class="p">]</span>
+
+    <span class="n">mean</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">float</span><span class="p">(</span><span class="n">el</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">!=</span> <span class="o">-</span><span class="mf">999.9</span><span class="p">:</span>
+            <span class="n">mean</span> <span class="o">+=</span> <span class="nb">float</span><span class="p">(</span><span class="n">el</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s">&quot;Cannot make mean with no data&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="n">mean</span> <span class="o">/</span> <span class="n">count</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s">&quot;The mean temp in Bellinzona in the last hour: &quot;</span>  <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">mean</span><span class="p">)</span>
+
+
+    <span class="c"># this structure is mandatory to send notification</span>
+    <span class="n">notify</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&quot;twitter&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&quot;public&quot;</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span>
+            <span class="s">&quot;private&quot;</span><span class="p">:</span> <span class="n">message</span>
+        <span class="p">},</span>
+        <span class="s">&quot;mail&quot;</span><span class="p">:{</span>
+            <span class="s">&quot;subject&quot;</span><span class="p">:</span> <span class="s">&quot;mean temp from T_BELLINZONA&quot;</span><span class="p">,</span>
+            <span class="s">&quot;message&quot;</span><span class="p">:</span> <span class="n">message</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="c"># these line are mandatory</span>
+    <span class="kn">import</span> <span class="nn">wnslib.notificationScheduler</span> <span class="kn">as</span> <span class="nn">nS</span>
+    <span class="n">nS</span><span class="o">.</span><span class="n">notify</span><span class="p">(</span><span class="s">&#39;meanTemp&#39;</span><span class="p">,</span><span class="n">notify</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>do this POST request:</p>
+<div class="highlight-python"><div class="highlight"><pre>http://localhost/istsos/wns/notification
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>with the following params:</dt>
+<dd><ul class="first last simple">
+<li>name: function name [mandatory]</li>
+<li>description: a little function description [mandatory]</li>
+<li>interval: interval [mandatory]</li>
+<li>function: path to function file, plese note that the file must be on the server [mandatory]</li>
+<li>store: if true, store the result into the DB [optional]</li>
+</ul>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+        <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;meanTemp&quot;</span><span class="p">,</span>
+        <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;last hour temp in Bellinzona&quot;</span><span class="p">,</span>
+        <span class="s">&quot;interval&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
+        <span class="s">&quot;function&quot;</span><span class="p">:</span> <span class="s">&quot;path/to/function.py&quot;</span><span class="p">,</span>
+        <span class="s">&quot;store&quot;</span><span class="p">:</span> <span class="n">true</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="delete-notification">
+<h3>Delete notification<a class="headerlink" href="#delete-notification" title="Permalink to this headline">¶</a></h3>
+<p>It&#8217;s possible delete a notification with this DELETE request:</p>
+<div class="highlight-python"><div class="highlight"><pre>http://localhost/istsos/wns/notification/&lt;notification_id&gt;
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">You can delete a notification only if no user are subscribed</p>
+</div>
+</div>
+<div class="section" id="list-of-available-notification">
+<h3>List of available notification<a class="headerlink" href="#list-of-available-notification" title="Permalink to this headline">¶</a></h3>
+<p>To see all available notification function do this GET request:</p>
+<div class="highlight-python"><div class="highlight"><pre>http://localhost/istsos/wns/notification
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="register-a-user">
+<h2>Register a user<a class="headerlink" href="#register-a-user" title="Permalink to this headline">¶</a></h2>
+<p>to subscribe to a notification and receive update you must create a user and provide some information to contact you.
+do this POST request:</p>
+<div class="highlight-python"><div class="highlight"><pre>http://localhost/istsos/wns/user
+</pre></div>
+</div>
+<p>with the following params:</p>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li>username: is the name that will be used to recognise the user [mandatory]</li>
+<li>email: a user email [mandatory]</li>
+<li>twitter: twitter id, mandatory if you will recieve notification via twitter private message [optional]</li>
+<li>tel: mobile phone number, mandatory if you will recieve notification via mobile phone (actually not supported) [optional]</li>
+<li>fax, address, zip, city, state, country: additional info about the user [optional]</li>
+<li>name, surname: additional info about the user [mandatory]</li>
+</ol>
+</div></blockquote>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+        <span class="s">&quot;username&quot;</span><span class="p">:</span> <span class="s">&quot;userName&quot;</span><span class="p">,</span>
+        <span class="s">&quot;email&quot;</span><span class="p">:</span> <span class="s">&quot;user.name@provider.com&quot;</span><span class="p">,</span>
+        <span class="s">&quot;twitter&quot;</span><span class="p">:</span> <span class="s">&quot;userTwitter&quot;</span><span class="p">,</span>
+        <span class="s">&quot;tel&quot;</span><span class="p">:</span> <span class="s">&quot;+41123456789&quot;</span><span class="p">,</span>
+        <span class="s">&quot;fax&quot;</span><span class="p">:</span> <span class="s">&quot;+41123456080&quot;</span><span class="p">,</span>
+        <span class="s">&quot;address&quot;</span><span class="p">:</span> <span class="s">&quot;via test&quot;</span><span class="p">,</span>
+        <span class="s">&quot;zip&quot;</span><span class="p">:</span> <span class="s">&quot;1234&quot;</span><span class="p">,</span>
+        <span class="s">&quot;city&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+        <span class="s">&quot;state&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+        <span class="s">&quot;country&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+        <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;Pinco&quot;</span><span class="p">,</span>
+        <span class="s">&quot;lastname&quot;</span><span class="p">:</span> <span class="s">&quot;Pallino&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="delete-a-user">
+<h3>Delete a user<a class="headerlink" href="#delete-a-user" title="Permalink to this headline">¶</a></h3>
+<p>It&#8217;s possible to remove user with this DELETE request:</p>
+<div class="highlight-python"><div class="highlight"><pre>http://localhost/istsos/wns/user/&lt;user_id&gt;
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">When you delete a user it automatically unsubscribe from notifications</p>
+</div>
+</div>
+</div>
+<div class="section" id="subscribe-to-a-notification">
+<h2>Subscribe to a notification<a class="headerlink" href="#subscribe-to-a-notification" title="Permalink to this headline">¶</a></h2>
+<p>To receive notification you must subscribe to an existing notification, do this POST request</p>
+<div class="highlight-python"><div class="highlight"><pre>http://localhost/istsos/wns/user/&lt;user_id&gt;/notification/&lt;notification_id&gt;
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>with the following params</dt>
+<dd><ol class="first last arabic simple">
+<li>data: array of how would you like to receive the notification [mandatory]</li>
+</ol>
+</dd>
+</dl>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s">&quot;data&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s">&quot;mail&quot;</span><span class="p">,</span> <span class="s">&quot;twitter&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="unsubscribe-to-a-notification">
+<h3>Unsubscribe to a notification<a class="headerlink" href="#unsubscribe-to-a-notification" title="Permalink to this headline">¶</a></h3>
+<p>Unsubscribe a user from notification with this DELETE request</p>
+<div class="highlight-python"><div class="highlight"><pre>http://localhost/istsos/wns/user/&lt;user_id&gt;/notification/&lt;notification_id&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="check-user-subscription">
+<h3>Check user subscription<a class="headerlink" href="#check-user-subscription" title="Permalink to this headline">¶</a></h3>
+<p>Check a user subscription to notification with this GET request</p>
+<div class="highlight-python"><div class="highlight"><pre>http://localhost/istsos/wns/user/&lt;user_id&gt;/notification
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="activate-the-scheduler">
+<h2>Activate the scheduler<a class="headerlink" href="#activate-the-scheduler" title="Permalink to this headline">¶</a></h2>
+<p>To activate the scheduler move to istsos root filder and run the scheduler script</p>
+<div class="highlight-python"><div class="highlight"><pre>cd /usr/local/istsos
+python scheduler_notification.py
+</pre></div>
+</div>
+</div>
+<div class="section" id="store-the-notification">
+<h2>Store the notification<a class="headerlink" href="#store-the-notification" title="Permalink to this headline">¶</a></h2>
+<p>If you want to store every notification result, set the store flag when you create a new notification.</p>
+<p>If you add a new complex notification the function must return the message to save.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">notFunction</span><span class="p">():</span>
+
+    <span class="c"># get your data</span>
+
+    <span class="c"># check condition</span>
+
+    <span class="n">message</span> <span class="o">=</span> <span class="s">&quot;your message to notify&quot;</span>
+
+    <span class="n">notify</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&quot;twitter&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&quot;public&quot;</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span>
+            <span class="s">&quot;private&quot;</span><span class="p">:</span> <span class="n">message</span>
+        <span class="p">},</span>
+        <span class="s">&quot;mail&quot;</span><span class="p">:{</span>
+           <span class="s">&quot;subject&quot;</span><span class="p">:</span> <span class="s">&quot;mean temp&quot;</span><span class="p">,</span>
+           <span class="s">&quot;message&quot;</span><span class="p">:</span> <span class="n">message</span>
+       <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="kn">import</span> <span class="nn">wnslib.notificationScheduler</span> <span class="kn">as</span> <span class="nn">nS</span>
+    <span class="n">nS</span><span class="o">.</span><span class="n">notify</span><span class="p">(</span><span class="s">&#39;notFunction&#39;</span><span class="p">,</span><span class="n">notify</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+
+    <span class="c"># return the message to save it could be a python dict or a string</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s">&quot;message&quot;</span><span class="p">:</span> <span class="n">message</span><span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="request-old-notification">
+<h3>Request old notification<a class="headerlink" href="#request-old-notification" title="Permalink to this headline">¶</a></h3>
+<p>To request old notification do this GET request:</p>
+<div class="highlight-python"><div class="highlight"><pre>http://localhost/istsos/wns/response/&lt;notification_id&gt;
+</pre></div>
+</div>
+<p>by default the system return only the last notification, if you want more notification, or you want to search in a specific period, it&#8217;s possible to add some params to the request</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>limit</strong>: number, how many response return, if &#8216;all&#8217; return all notification</li>
+<li><strong>stime</strong>: start date in isoformat (2015-10-01T0:00:00+02:00)</li>
+<li><strong>etime</strong>: end date in isoformat (2015-10-07T16:30:00+02:00)</li>
+</ul>
+</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre>http://localhost/istsos/wns/response/&lt;notification_id&gt;?limit=all&amp;stime=2015-10-01T0:00:00+02:00&amp;etime=2015-10-07T16:30:00+02:00
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<a href="index.html"><img src="_static/logo.png" border="0" alt="istSOS" align="centre" width="200"/></a>
+<hr>
+<a href="https://sourceforge.net/projects/istsos/files/" align="centre">Download istSOS</a>
+<hr>
+
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">istSOS-WNS: Notification Service</a><ul>
+<li><a class="reference internal" href="#istsos-wns-database-schema">istSOS-WNS database schema</a></li>
+<li><a class="reference internal" href="#activation-of-istsos-wns">Activation of istSOS-WNS</a></li>
+<li><a class="reference internal" href="#create-a-notification">Create a notification</a><ul>
+<li><a class="reference internal" href="#method-1-simple-notification">Method 1: simple notification</a></li>
+<li><a class="reference internal" href="#method-2-complex-notification">Method 2: complex notification</a></li>
+<li><a class="reference internal" href="#delete-notification">Delete notification</a></li>
+<li><a class="reference internal" href="#list-of-available-notification">List of available notification</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#register-a-user">Register a user</a><ul>
+<li><a class="reference internal" href="#delete-a-user">Delete a user</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#subscribe-to-a-notification">Subscribe to a notification</a><ul>
+<li><a class="reference internal" href="#unsubscribe-to-a-notification">Unsubscribe to a notification</a></li>
+<li><a class="reference internal" href="#check-user-subscription">Check user subscription</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#activate-the-scheduler">Activate the scheduler</a></li>
+<li><a class="reference internal" href="#store-the-notification">Store the notification</a><ul>
+<li><a class="reference internal" href="#request-old-notification">Request old notification</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="mapping.html"
+                        title="previous chapter">Mapping the stations</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="intro.html"
+                        title="next chapter">Introduction to the SOS standard</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/wns.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="intro.html" title="Introduction to the SOS standard"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="mapping.html" title="Mapping the stations"
+             >previous</a> |</li>
+        <li><a href="index.html">istSOS 2.3.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010-2017, Massimiliano Cannata, Milan Antonovic This work is licensed under a Creative Commons Attribution 4.0 International License.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

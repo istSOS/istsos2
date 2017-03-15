@@ -61,7 +61,7 @@ master_doc = 'index'
 project = u'istSOS'
 authors = u'Massimiliano Cannata, Milan Antonovic'
 license = u'This work is licensed under a Creative Commons Attribution 4.0 International License'
-copyright = u'2010-2015, ' + authors + ' ' + license
+copyright = u'2010-2017, ' + authors + ' ' + license
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -268,7 +268,7 @@ texinfo_documents = [
 epub_title = u'istSOS'
 epub_author = u'Massimiliano Cannata, Milan Antonovic'
 epub_publisher = u'Massimiliano Cannata, Milan Antonovic'
-epub_copyright = u'2012, Massimiliano Cannata, Milan Antonovic'
+epub_copyright = u'2017, Massimiliano Cannata, Milan Antonovic'
 
 # The language of the text. It defaults to the language option
 # or en if the language is not set.

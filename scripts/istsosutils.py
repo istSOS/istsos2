@@ -207,92 +207,23 @@ class Service(object):
         return jsonRes
 
     def registerProcedure(self, procedure):
-        request = {
-            "system_id": procedure.name,
-            "system": procedure.name,
-            "classification": [
-                {
-                    "name": "System Type",
-                    "definition": (
-                        "urn:ogc:def:classifier:"
-                        "x-istsos:1.0:systemType"),
-                    "value": procedure.systemType
-                },
-                {
-                    "name": "Sensor Type",
-                    "definition": (
-                        "urn:ogc:def:classifier:"
-                        "x-istsos:1.0:sensorType"),
-                    "value": procedure.sensorType
-                }
-            ],
-            "outputs": [{
-                "name": "Time",
-                "definition": (
-                    "urn:ogc:def:parameter:"
-                    "x-istsos:1.0:time:iso8601"),
-                "uom": "iso8601",
-                "description": "",
-                "constraint": {}
-            }],
-            "description": procedure.description,
-            "keywords": procedure.keywords,
-            "identification": [{
-                "definition": 'urn:ogc:def:identifier:OGC:uniqueID',
-                "name": "uniqueID",
-                "value": (
-                    "urn:ogc:def:procedure:"
-                    "x-istsos:1.0:%s") % procedure.name
-            }],
-            "location": {
-                "type": "Feature",
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": procedure.xyz
-                },
-                "crs": {
-                    "type": "name",
-                    "properties": {"name": procedure.epsg}
-                },
-                "properties": {"name": procedure.foiname}
-            },
-            "characteristics": "",
-            "contacts": [],
-            "documentation": [],
-            "interfaces": "",
-            "inputs": [],
-            "history": [],
-            "capabilities": []
-        }
-        for obs in procedure.observedProperty:
-            request["outputs"].append({
-                "name": procedure.observedProperty[obs][0],
-                "definition": procedure.observedProperty[obs][1],
-                "uom": procedure.observedProperty[obs][2],
-                "description": procedure.observedProperty[obs][3],
-                "constraint": {}
-            })
+        request = procedure.toJson()
         res = req.post(
             "%s/wa/istsos/services/%s/procedures" % (
                 self.host, self.service),
             data=json.dumps(request), auth=self.auth
         )
-        print res.text
+        # print res.text
         jsonRes = res.json()
         if not jsonRes["success"]:
             #print json.dumps(procedures[pname].data)
             raise Exception("Registering procedure %s failed: \n%s" % (
                 procedure.name, jsonRes["message"]))
         else:
-            print jsonRes["message"]
+            print "Sensor '%s' registered successfully" % procedure.name
+            # jsonRes["message"]
 
-    def getSOSProcedureObservations(self, name, begin, end, qi=False):
-        """
-            Execute a getObservation
-
-            > Return an array observations.
-
-        """
+    def getObservation(self, name, begin=None, end=None, qi=False):
         begin1 = ""
         end1 = ""
 
@@ -325,8 +256,7 @@ class Service(object):
                     "Time Zone (tzinfo) is mandatory in datetime objects")
             end1 = tmp.isoformat()
 
-        # Executing request
-        res = req.get("%s/%s" % (self.host, self.service), params={
+        params = {
             'service': 'SOS',
             'version': '1.0.0',
             'request': 'GetObservation',
@@ -334,12 +264,25 @@ class Service(object):
             'responseFormat': 'application/json',
             'procedure': name,
             'qualityIndex': qi,
-            'eventTime': "%s/%s" % (begin1, end1),
             'observedProperty': ":"
-        }, auth=self.auth)
-
+        }
+        if begin:
+            params['eventTime'] = "%s/%s" % (begin1, end1)
+        # Executing request
+        res = req.get("%s/%s" % (
+            self.host, self.service), params=params, auth=self.auth)
         jsonRes = res.json()
+        return jsonRes
 
+    def getSOSProcedureObservations(
+            self, name, begin=None, end=None, qi=False):
+        """
+            Execute a getObservation
+
+            > Return an array observations.
+
+        """
+        jsonRes = self.getObservation(name, begin, end, qi)
         return jsonRes[
             'ObservationCollection'][
             'member'][0]['result']['DataArray']['values']
@@ -430,6 +373,8 @@ class Procedure(dict):
         self.name = name
         self.outputs = []
         self.observedProperty = {}
+        self.resolution = None
+        self.acquisition_interval = None
 
     def merge(self, data):
         for key in data:
@@ -473,5 +418,126 @@ class Procedure(dict):
     def setManufacturer(self, manufacturer):
         self.manufacturer = manufacturer
 
-    def addObservedProperty(self, name, definition, uom, description=""):
-        self.observedProperty[name] = [name, definition, uom, description]
+    def addObservedProperty(
+            self, name, definition, uom, description="",
+            lower=None, upper=None):
+        self.observedProperty[name] = [
+            name, definition, uom, description, lower, upper]
+
+    def setResolution(self, resolution):
+        duration = iso.parse_duration(resolution)
+        self.resolution = int(duration.total_seconds())
+        if 'days' in dir(duration):
+            self.resolution += int(duration.days) * 86400
+        if 'months' in dir(duration):
+            self.resolution += int(duration.months) * 2592000
+
+    def setAcquisitionInterval(self, acquisition_interval):
+        duration = iso.parse_duration(acquisition_interval)
+        self.acquisition_interval = int(duration.total_seconds())
+        if 'days' in dir(duration):
+            self.acquisition_interval += int(duration.days) * 86400
+        if 'months' in dir(duration):
+            self.acquisition_interval += int(duration.months) * 2592000
+
+    def toJson(self):
+        request = {
+            "system_id": self.name,
+            "system": self.name,
+            "classification": [
+                {
+                    "name": "System Type",
+                    "definition": (
+                        "urn:ogc:def:classifier:"
+                        "x-istsos:1.0:systemType"),
+                    "value": self.systemType
+                },
+                {
+                    "name": "Sensor Type",
+                    "definition": (
+                        "urn:ogc:def:classifier:"
+                        "x-istsos:1.0:sensorType"),
+                    "value": self.sensorType
+                }
+            ],
+            "outputs": [{
+                "name": "Time",
+                "definition": (
+                    "urn:ogc:def:parameter:"
+                    "x-istsos:1.0:time:iso8601"),
+                "uom": "iso8601",
+                "description": "",
+                "constraint": {}
+            }],
+            "description": self.description,
+            "keywords": self.keywords,
+            "identification": [{
+                "definition": 'urn:ogc:def:identifier:OGC:uniqueID',
+                "name": "uniqueID",
+                "value": (
+                    "urn:ogc:def:procedure:"
+                    "x-istsos:1.0:%s") % self.name
+            }],
+            "location": {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": self.xyz
+                },
+                "crs": {
+                    "type": "name",
+                    "properties": {"name": self.epsg}
+                },
+                "properties": {"name": self.foiname}
+            },
+            "characteristics": "",
+            "contacts": [],
+            "documentation": [],
+            "interfaces": "",
+            "inputs": [],
+            "history": [],
+            "capabilities": []
+        }
+        if self.resolution:
+            request["capabilities"].append({
+                "name": "Sampling time resolution",
+                "definition": (
+                    "urn:x-ogc:def:classifier:x-istsos:1.0:"
+                    "samplingTimeResolution"
+                ),
+                "uom": "s",
+                "value": "%s" % self.resolution
+            })
+
+        if self.acquisition_interval:
+            request["capabilities"].append({
+                "name": "Acquisition time resolution",
+                "definition": (
+                    "urn:x-ogc:def:classifier:x-istsos:1.0:"
+                    "acquisitionTimeResolution"
+                ),
+                "uom": "s",
+                "value": "%s" % self.acquisition_interval
+            })
+
+        for obs in self.observedProperty:
+            constraint = {}
+            if self.observedProperty[obs][4] is not None and (
+                    self.observedProperty[obs][5] is not None):
+                constraint = {
+                    "role": (
+                        "urn:ogc:def:classifiers:x-istsos:1.0:"
+                        "qualityIndex:check:reasonable"),
+                    "interval": [
+                        "%s" % self.observedProperty[obs][4],
+                        "%s" % self.observedProperty[obs][5]
+                    ]
+                }
+            request["outputs"].append({
+                "name": self.observedProperty[obs][0],
+                "definition": self.observedProperty[obs][1],
+                "uom": self.observedProperty[obs][2],
+                "description": self.observedProperty[obs][3],
+                "constraint": constraint
+            })
+        return request

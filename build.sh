@@ -53,7 +53,7 @@ mv python-istsos_$version-1_all.deb python-istsos_$version.deb
 mv istsos_$version.orig.tar.gz istsos-$version.tar.gz
 rm -rf istsos
 
-cd ../documentation
+cd ../docs
 
 make html
 cd _build

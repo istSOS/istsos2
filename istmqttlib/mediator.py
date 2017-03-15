@@ -143,7 +143,6 @@ class MQTTMediator():
         defaultCfg = os.path.join(config.services_path, "default.cfg")
         instances = utils.getServiceList(config.services_path, listonly=False)
         for instance in instances:
-            print (instance)
             sc = configManager.waServiceConfig(defaultCfg, instance['path'])
             conn = databaseManager.PgDB(
                 sc.connection["user"],

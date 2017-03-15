@@ -235,7 +235,9 @@ def execute(args, conf=None):
 
                     # Check if all the observedProperties of the procedure are
                     # included in the CSV file (quality index is optional)
+                    # print ("Observations: %s" % obsindex)
                     for k, v in jsonindex.iteritems():
+                        # print ("Checking: %s" % k)
                         if k in obsindex:
                             continue
                         elif ':qualityIndex' in k:
@@ -333,7 +335,7 @@ def execute(args, conf=None):
                 log("   + End: %s" % ep.isoformat())
                 log(" > Values: %s" % len(
                     data['result']['DataArray']['values']))
-                    
+
                 if not test and len(files) > 0:  # send to wa
 
                     if len(data['result']['DataArray']['values']) > maxobs:
@@ -370,7 +372,7 @@ def execute(args, conf=None):
                                         'values'][0][jsonindex[isourn]],
                                     "endPosition":   ep.isoformat()
                                 }
-                            
+
                             res = req.post(
                                 "%s/wa/istsos/services/%s/"
                                 "operations/insertobservation" % (

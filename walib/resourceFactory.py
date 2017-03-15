@@ -146,13 +146,10 @@ def initResource(waEnviron):
                         return procedures.waProcedures(waEnviron)
 
                     else:
-
                         resource = pathinfo.pop(0)
-                        #print >> sys.stderr, resource
 
                         if resource == 'operations':
                             resource = pathinfo.pop(0)
-                            #print >> sys.stderr, resource
 
                             if resource == "getlist":
                                 from walib.istsos.services.procedures import procedures
@@ -282,7 +279,7 @@ def initResource(waEnviron):
                         from walib.istsos.services import services
                         return services.waInsertobservation(waEnviron)
                     elif resource == "fastinsert":
-                        print >> sys.stderr, resource
+                        # print >> sys.stderr, resource
                         from walib.istsos.services import services
                         return services.waFastInsert(waEnviron)
 

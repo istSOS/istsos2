@@ -1,0 +1,294 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Insert observations &mdash; istSOS 2.3.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.3.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="istSOS 2.3.1 documentation" href="index.html" />
+    <link rel="next" title="Data validation with quality index" href="ws_datavalidation.html" />
+    <link rel="prev" title="Observation Offerings" href="ws_offerings.html" />
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-42669175-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ws_datavalidation.html" title="Data validation with quality index"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ws_offerings.html" title="Observation Offerings"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">istSOS 2.3.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="insert-observations">
+<span id="ws-insertobservation"></span><h1>Insert observations<a class="headerlink" href="#insert-observations" title="Permalink to this headline">¶</a></h1>
+<p>For this part of the tutorial you should use ASCII files with sensor data
+formatted according to <strong>text/csv;subtype=istSOS</strong>. This format is a CSV
+represented by a header as the first line containing the URI names of
+the observed properties, the following lines contains the data.</p>
+<p><strong>Example: T_LUGANO_20141231234000000.dat</strong></p>
+<div class="highlight-csv"><div class="highlight"><pre>urn:ogc:def:parameter:x-istsos:1.0:time:iso8601,urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature
+2015-01-01T00:10:00.000000+0100,0.446000
+2015-01-01T00:20:00.000000+0100,0.862000
+2015-01-01T00:30:00.000000+0100,0.932000
+2015-01-01T00:40:00.000000+0100,0.384000
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Pay attention to the file name: there is a timestamp (YYYYMMDDhhmmssfff in
+GMT+0:00). This parameter is used as the endPosition in the sampling time
+of a procedure. This is particularly important when the procedure is
+an irregular time series.</p>
+<p class="last">Think about tipping bucket rain gauge, when there isn’t rain no data are
+sent. But updating the endPosition we will be able to know that the sensor
+is working and that there is no rain, instead of thinking that the sensor
+is not transmitting or that it is broken.</p>
+</div>
+<div class="section" id="uploading-csv-files">
+<h2>Uploading CSV files<a class="headerlink" href="#uploading-csv-files" title="Permalink to this headline">¶</a></h2>
+<p>In the data directory of this workshop there is folder named “dataset”.
+There are some examples of CSV datafiles in the &#8220;<strong>text/csv;subtype=istSOS</strong>&#8221;
+format:</p>
+<ul class="simple">
+<li>BELLINZONA_20150603125000.dat</li>
+<li>GRABOW_201505272100000.dat</li>
+<li>LOCARNO_201506031200000.dat</li>
+<li>P_LUGANO_20150603142000000.dat</li>
+<li>RH_GNOSCA_20150603142000000.dat</li>
+<li>T_LUGANO_20150603142000000.dat</li>
+</ul>
+<p><strong>Loading CSV data</strong></p>
+<p>Open a Shell and execute the followings commands:</p>
+<p>If installed from source:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nb">cd</span> /usr/local/istsos
+</pre></div>
+</div>
+<p>If installed from debian package</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nb">cd</span> /usr/share/istsos
+</pre></div>
+</div>
+<p>Then launch the import script:</p>
+<div class="highlight-bash"><div class="highlight"><pre>python scripts/csv2istsos.py -p BELLINZONA LOCARNO P_LUGANO T_LUGANO GRABOW RH_GNOSCA <span class="se">\</span>
+-u http://localhost/istsos -s demo <span class="se">\</span>
+-w ~/Desktop/Tutorial/dataset
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>The “csv2istsos.py“ file, is a python script that makes use of the WA-REST
+eatures of istSOS to insert observations.</p>
+<div class="last highlight-bash"><div class="highlight"><pre>python scripts/csv2istsos.py --help
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="loading-data-with-ogc-sos-insertobservation-request">
+<h2>Loading data with OGC-SOS InsertObservation request<a class="headerlink" href="#loading-data-with-ogc-sos-insertobservation-request" title="Permalink to this headline">¶</a></h2>
+<p>Even if we have used the csv2istsos script to facilitate the data loading,
+users may also use the SOS insertObservation request directly. For example,
+a valid request for loading a single observation to the service is:</p>
+<div class="highlight-xml"><div class="highlight"><pre><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;sos:InsertObservation</span>
+    <span class="na">xmlns:gml=</span><span class="s">&quot;http://www.opengis.net/gml&quot;</span>
+    <span class="na">xmlns:om=</span><span class="s">&quot;http://www.opengis.net/om/1.0&quot;</span>
+    <span class="na">xmlns:sos=</span><span class="s">&quot;http://www.opengis.net/sos/1.0&quot;</span>
+    <span class="na">xmlns:swe=</span><span class="s">&quot;http://www.opengis.net/swe&quot;</span>
+    <span class="na">xmlns:xlink=</span><span class="s">&quot;http://www.w3.org/1999/xlink&quot;</span>
+    <span class="na">xmlns:xsi=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+    <span class="na">service=</span><span class="s">&quot;SOS&quot;</span>
+    <span class="na">version=</span><span class="s">&quot;1.0.0&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;sos:AssignedSensorId&gt;</span>f10b70b2561111e5a35e0800278295cb<span class="nt">&lt;/sos:AssignedSensorId&gt;</span>
+    <span class="nt">&lt;sos:ForceInsert&gt;</span>true<span class="nt">&lt;/sos:ForceInsert&gt;</span>
+    <span class="nt">&lt;om:Observation&gt;</span>
+        <span class="nt">&lt;om:procedure</span> <span class="na">xlink:href=</span><span class="s">&quot;urn:ogc:def:procedure:x-istsos:1.0:LOCARNO&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;om:samplingTime&gt;</span>
+            <span class="nt">&lt;gml:TimePeriod&gt;</span>
+                <span class="nt">&lt;gml:beginPosition&gt;</span>2015-06-03T14:10:00+02<span class="nt">&lt;/gml:beginPosition&gt;</span>
+                <span class="nt">&lt;gml:endPosition&gt;</span>2015-06-03T14:50:00+02<span class="nt">&lt;/gml:endPosition&gt;</span>
+            <span class="nt">&lt;/gml:TimePeriod&gt;</span>
+        <span class="nt">&lt;/om:samplingTime&gt;</span>
+        <span class="nt">&lt;om:observedProperty&gt;</span>
+            <span class="nt">&lt;swe:CompositePhenomenon</span> <span class="na">dimension=</span><span class="s">&quot;5&quot;</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;swe:component</span> <span class="na">xlink:href=</span><span class="s">&quot;urn:ogc:def:parameter:x-istsos:1.0:time:iso8601&quot;</span><span class="nt">/&gt;</span>
+                <span class="nt">&lt;swe:component</span> <span class="na">xlink:href=</span><span class="s">&quot;urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall&quot;</span><span class="nt">/&gt;</span>
+                <span class="nt">&lt;swe:component</span> <span class="na">xlink:href=</span><span class="s">&quot;urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall:qualityIndex&quot;</span><span class="nt">/&gt;</span>
+                <span class="nt">&lt;swe:component</span> <span class="na">xlink:href=</span><span class="s">&quot;urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature&quot;</span><span class="nt">/&gt;</span>
+                <span class="nt">&lt;swe:component</span> <span class="na">xlink:href=</span><span class="s">&quot;urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature:qualityIndex&quot;</span><span class="nt">/&gt;</span>
+            <span class="nt">&lt;/swe:CompositePhenomenon&gt;</span>
+        <span class="nt">&lt;/om:observedProperty&gt;</span>
+        <span class="nt">&lt;om:featureOfInterest</span> <span class="na">xlink:href=</span><span class="s">&quot;urn:ogc:def:feature:x-istsos:1.0:Point:LOCARNO&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;om:result&gt;</span>
+            <span class="nt">&lt;swe:DataArray&gt;</span>
+                <span class="nt">&lt;swe:elementCount&gt;</span>
+                    <span class="nt">&lt;swe:value&gt;</span>5<span class="nt">&lt;/swe:value&gt;</span>
+                <span class="nt">&lt;/swe:elementCount&gt;</span>
+                <span class="nt">&lt;swe:elementType</span> <span class="na">name=</span><span class="s">&quot;SimpleDataArray&quot;</span><span class="nt">&gt;</span>
+                    <span class="nt">&lt;swe:DataRecord</span> <span class="na">definition=</span><span class="s">&quot;urn:ogc:def:dataType:x-istsos:1.0:timeSeries&quot;</span><span class="nt">&gt;</span>
+                        <span class="nt">&lt;swe:field</span> <span class="na">name=</span><span class="s">&quot;Time&quot;</span><span class="nt">&gt;</span>
+                            <span class="nt">&lt;swe:Time</span> <span class="na">definition=</span><span class="s">&quot;urn:ogc:def:parameter:x-istsos:1.0:time:iso8601&quot;</span><span class="nt">/&gt;</span>
+                        <span class="nt">&lt;/swe:field&gt;</span>
+                        <span class="nt">&lt;swe:field</span> <span class="na">name=</span><span class="s">&quot;air-rainfall&quot;</span><span class="nt">&gt;</span>
+                            <span class="nt">&lt;swe:Quantity</span> <span class="na">definition=</span><span class="s">&quot;urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall&quot;</span><span class="nt">&gt;</span>
+                                <span class="nt">&lt;swe:uom</span> <span class="na">code=</span><span class="s">&quot;mm&quot;</span><span class="nt">/&gt;</span>
+                            <span class="nt">&lt;/swe:Quantity&gt;</span>
+                        <span class="nt">&lt;/swe:field&gt;</span>
+                        <span class="nt">&lt;swe:field</span> <span class="na">name=</span><span class="s">&quot;air-rainfall:qualityIndex&quot;</span><span class="nt">&gt;</span>
+                            <span class="nt">&lt;swe:Quantity</span> <span class="na">definition=</span><span class="s">&quot;urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall:qualityIndex&quot;</span><span class="nt">&gt;</span>
+                                <span class="nt">&lt;swe:uom</span> <span class="na">code=</span><span class="s">&quot;-&quot;</span><span class="nt">/&gt;</span>
+                            <span class="nt">&lt;/swe:Quantity&gt;</span>
+                        <span class="nt">&lt;/swe:field&gt;</span>
+                        <span class="nt">&lt;swe:field</span> <span class="na">name=</span><span class="s">&quot;air-temperature&quot;</span><span class="nt">&gt;</span>
+                            <span class="nt">&lt;swe:Quantity</span> <span class="na">definition=</span><span class="s">&quot;urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature&quot;</span><span class="nt">&gt;</span>
+                                <span class="nt">&lt;swe:uom</span> <span class="na">code=</span><span class="s">&quot;°C&quot;</span><span class="nt">/&gt;</span>
+                            <span class="nt">&lt;/swe:Quantity&gt;</span>
+                        <span class="nt">&lt;/swe:field&gt;</span>
+                        <span class="nt">&lt;swe:field</span> <span class="na">name=</span><span class="s">&quot;air-temperature:qualityIndex&quot;</span><span class="nt">&gt;</span>
+                            <span class="nt">&lt;swe:Quantity</span> <span class="na">definition=</span><span class="s">&quot;urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature:qualityIndex&quot;</span><span class="nt">&gt;</span>
+                                <span class="nt">&lt;swe:uom</span> <span class="na">code=</span><span class="s">&quot;-&quot;</span><span class="nt">/&gt;</span>
+                            <span class="nt">&lt;/swe:Quantity&gt;</span>
+                        <span class="nt">&lt;/swe:field&gt;</span>
+                    <span class="nt">&lt;/swe:DataRecord&gt;</span>
+                <span class="nt">&lt;/swe:elementType&gt;</span>
+                <span class="nt">&lt;swe:encoding&gt;</span>
+                    <span class="nt">&lt;swe:TextBlock</span> <span class="na">blockSeparator=</span><span class="s">&quot;@&quot;</span> <span class="na">decimalSeparator=</span><span class="s">&quot;.&quot;</span> <span class="na">tokenSeparator=</span><span class="s">&quot;,&quot;</span><span class="nt">/&gt;</span>
+                <span class="nt">&lt;/swe:encoding&gt;</span>
+                <span class="nt">&lt;swe:values&gt;</span>
+                    2015-06-03T14:10:00+02,0,200,20.4,200@2015-06-03T14:20:00+02,0.1,200,19.5,200@
+                    2015-06-03T14:30:00+02,0.1,200,19.1,200@2015-06-03T14:40:00+02,0,200,19.5,200@
+                    2015-06-03T14:50:00+02,0,200,20.6,200
+                <span class="nt">&lt;/swe:values&gt;</span>
+            <span class="nt">&lt;/swe:DataArray&gt;</span>
+        <span class="nt">&lt;/om:result&gt;</span>
+    <span class="nt">&lt;/om:Observation&gt;</span>
+<span class="nt">&lt;/sos:InsertObservation&gt;</span>
+</pre></div>
+</div>
+<p><strong>Let’s insert observations using the XML format:</strong></p>
+<ol class="arabic simple">
+<li>Open the requests test page: <a class="reference external" href="http://localhost/istsos/modules/requests/">http://localhost/istsos/modules/requests/</a></li>
+<li>Select the “demo” service instance</li>
+<li>Choose the “POST” option</li>
+<li>Paste into the field the InsertObservation xml</li>
+</ol>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Pay attention to the AssignedSensorId parameter: this according to the
+standard is returned by the system only when the sensor is registered.
+To access it, you can use administration interface, looking at the
+procedure metadata details.</p>
+</div>
+<ol class="arabic simple" start="5">
+<li>Press “Send”</li>
+</ol>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<a href="index.html"><img src="_static/logo.png" border="0" alt="istSOS" align="centre" width="200"/></a>
+<hr>
+<a href="https://sourceforge.net/projects/istsos/files/" align="centre">Download istSOS</a>
+<hr>
+
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Insert observations</a><ul>
+<li><a class="reference internal" href="#uploading-csv-files">Uploading CSV files</a></li>
+<li><a class="reference internal" href="#loading-data-with-ogc-sos-insertobservation-request">Loading data with OGC-SOS InsertObservation request</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ws_offerings.html"
+                        title="previous chapter">Observation Offerings</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ws_datavalidation.html"
+                        title="next chapter">Data validation with quality index</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/ws_insertobservation.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ws_datavalidation.html" title="Data validation with quality index"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="ws_offerings.html" title="Observation Offerings"
+             >previous</a> |</li>
+        <li><a href="index.html">istSOS 2.3.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010-2017, Massimiliano Cannata, Milan Antonovic This work is licensed under a Creative Commons Attribution 4.0 International License.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

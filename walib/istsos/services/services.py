@@ -39,6 +39,7 @@ import traceback
 import psycopg2
 from lib.etree import et
 import lib.requests as requests
+from lib import isodate as iso
 
 reurl = (r'(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+'
          '([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?')
@@ -865,103 +866,190 @@ class waInsertobservation(waResourceService):
 
 
 class waFastInsert(waResourceService):
-    """class to handle fast insertion of observation, support only the
-    POST method"""
+    """
+        class to handle fast insertion of observation, support only the
+        POST method.
+
+        Path example:
+        http://localhost/istsos/wa/istsos/services/demo/operations/fastinsert
+    """
+
+    MODE_IRREGULAR = 1
+    MODE_REGULAR = 2
+
     def __init__(self, waEnviron):
-        waResourceService.__init__(self, waEnviron)
+        waResourceService.__init__(self, waEnviron, None, False)
+        self.servicename = self.pathinfo[2]
+        if not self.pathinfo[-1] == "procedures" and len(self.pathinfo) > 4:
+            self.procedurename = self.pathinfo[4]
+        else:
+            self.procedurename = None
 
-    def executePost(self):
-        procedure = self.pathinfo[-1]
-        if procedure == 'fastinsert' and self.pathinfo[-2] == 'operations':
-            self.setException("Request wrong: please, put the procedure"
-                              "name in the url")
+    def executePost(self, db=True):
+        """
+            Regular Time series example body:
+            4759a210178a11e6a91c0800273cbaca;
+            2017-03-13T14:40:15+0100;PT10M;
+            0.2,18.30,69,4.3@0.4,18.80,73,4.1
 
-        if not self.json or len(self.json) == 0:
-            self.setException("Request wrong: body data empty")
+            Irregular Time series example body:
+            4759a210178a11e6a91c0800273cbaca;
+            2017-03-13T14:40:15+0100,0.2,18.30,69,4.3@
+            2017-03-13T14:40:15+0100,0.4,18.80,73,4.1
+
+            (without line breaks)
+        """
+
+        if self.procedurename is None:
+            raise Exception(
+                "POST action without procedure name not allowed")
+
+        # Create data array
+        data = self.waEnviron['wsgi_input'].split(";")
+
+        # Assigned id always in the first position
+        assignedid = data[0]
+
+        if len(data) == 4:  # regular time series
+            mode = self.MODE_REGULAR
+            start = iso.parse_datetime(data[1])
+            step = iso.parse_duration(data[2])
+            tmp_data = []
+            data = data[3].split("@")
+            for idx in range(0, len(data)):
+                tmp_data.append([
+                    (start + (step * idx)).isoformat()
+                ] + data[idx].split(","))
+            data = tmp_data
+
+        elif len(data) == 2:  # irregular time series
+            mode = self.MODE_IRREGULAR
+            data = [i.split(",") for i in data[1].split("@")]
 
         else:
+            raise Exception(
+                "Body content wrongly formatted. Please read the docs.")
+
+        try:
             conn = databaseManager.PgDB(
-                self.serviceconf.connection["user"],
-                self.serviceconf.connection["password"],
-                self.serviceconf.connection["dbname"],
-                self.serviceconf.connection["host"],
-                self.serviceconf.connection["port"]
+                self.serviceconf.connection['user'],
+                self.serviceconf.connection['password'],
+                self.serviceconf.connection['dbname'],
+                self.serviceconf.connection['host'],
+                self.serviceconf.connection['port']
             )
-            try:
-                sql = """
-                    SELECT
-                      procedures.id_prc,
-                      proc_obs.id_pro,
-                      proc_obs.constr_pro,
-                      procedures.stime_prc,
-                      procedures.etime_prc
-                    FROM
-                      %s.procedures,
-                      %s.proc_obs
-                    WHERE
-                      proc_obs.id_prc_fk = procedures.id_prc
-                """ % (self.service, self.service)
-                sql += """
-                    AND
-                      name_prc = %s
-                    ORDER BY
-                      proc_obs.id_pro ASC;
-                """
-                rows = conn.select(sql, (procedure,))
+            sql = """
+                SELECT
+                    procedures.id_prc,
+                    proc_obs.id_pro,
+                    proc_obs.constr_pro,
+                    procedures.stime_prc,
+                    procedures.etime_prc
+                FROM
+                    %s.procedures,
+                    %s.proc_obs
+                WHERE
+                    proc_obs.id_prc_fk = procedures.id_prc
+            """ % (self.servicename, self.servicename)
+            sql += """
+              AND
+                assignedid_prc = %s
+              ORDER BY
+                proc_obs.id_pro ASC;
+            """
+            rows = conn.select(sql, (assignedid,))
 
-                # check if procedure observations length is ok
-                if len(rows) != (len(self.json[0])-1):
-                    self.setException("Array length missmatch with procedures "
-                                      "observation number")
+            if len(rows) == 0:
+                raise Exception(
+                    "Procedure with aid %s not found." % assignedid)
 
-                else:
-                    insertEventTime = """
-                        INSERT INTO %s.event_time (id_prc_fk, time_eti)
-                    """ % (self.service)
-                    insertEventTime += """
-                        VALUES (%s, %s::TIMESTAMPTZ) RETURNING id_eti;
-                    """
+            # check if procedure observations length is ok
+            if len(rows) != (len(data[0])-1):
+                raise Exception(
+                    "Array length missmatch with procedures "
+                    "observation number")
 
-                    deleteEventTime = """
-                        DELETE FROM %s.event_time
-                    """ % (self.service)
-                    deleteEventTime += """
-                        WHERE id_prc_fk = %s
-                        AND time_eti = %s::TIMESTAMPTZ
-                    """
+            insertEventTime = """
+                INSERT INTO %s.event_time (id_prc_fk, time_eti)
+            """ % (self.servicename)
+            insertEventTime += """
+                VALUES (%s, %s::TIMESTAMPTZ) RETURNING id_eti;
+            """
 
-                    insertMeasure = """
-                        INSERT INTO %s.measures(
-                            id_eti_fk, id_qi_fk, id_pro_fk, val_msr)
-                    """ % (self.service)
-                    insertMeasure += """
-                        VALUES (%s, 100, %s, %s);
-                    """
+            deleteEventTime = """
+                DELETE FROM %s.event_time
+            """ % (self.servicename)
+            deleteEventTime += """
+                WHERE id_prc_fk = %s
+                AND time_eti = %s::TIMESTAMPTZ
+            """
 
-                    for observation in self.json:
-                        try:
-                            id_eti = conn.executeInTransaction(
-                                insertEventTime, (rows[0][0], observation[0]))
+            insertMeasure = """
+                INSERT INTO %s.measures(
+                    id_eti_fk,
+                    id_qi_fk,
+                    id_pro_fk,
+                    val_msr
+                )
+            """ % (self.servicename)
+            insertMeasure += """
+                VALUES (%s, 100, %s, %s);
+            """
 
-                        except psycopg2.IntegrityError as ie:
-                            conn.rollbackTransaction()
-                            conn.executeInTransaction(
-                                deleteEventTime, (rows[0][0], observation[0]))
-                            id_eti = conn.executeInTransaction(
-                                insertEventTime, (rows[0][0], observation[0]))
+            updateBeginPosition = """
+                UPDATE %s.procedures""" % (self.servicename)
+            updateBeginPosition += """
+                SET stime_prc=%s::TIMESTAMPTZ WHERE id_prc=%s
+            """
+            updateEndPosition = """
+                UPDATE %s.procedures""" % (self.servicename)
+            updateEndPosition += """
+                SET etime_prc=%s::TIMESTAMPTZ WHERE id_prc=%s
+            """
 
-                        for idx in range(0, len(rows)):
-                            conn.executeInTransaction(
-                                insertMeasure, (int(id_eti[0][0]),
-                                                int(rows[idx][1]),
-                                                float(observation[(idx+1)])))
+            id_prc = rows[0][0]
+            bp = rows[0][3]
+            bpu = False
+            ep = rows[0][4]
+            epu = False
 
-                        conn.commitTransaction()
+            for observation in data:
+                id_eti = conn.executeInTransaction(
+                    insertEventTime, (
+                        id_prc, observation[0]))
 
-                self.setMessage("Faster than light!")
+                for idx in range(0, len(rows)):
+                    conn.executeInTransaction(
+                        insertMeasure, (
+                            int(id_eti[0][0]),  # id_eti
+                            int(rows[idx][1]),  # id_pro
+                            float(observation[(idx+1)])))
 
-            except Exception as e:
-                print >> sys.stderr, traceback.print_exc()
-                conn.rollbackTransaction()
-                self.setException(
-                    "Error in fast insert (%s): %s" % (type(e), e))
+                if (bp is None) or (bp == '') or (
+                        iso.parse_datetime(observation[0]) < bp):
+                    bp = iso.parse_datetime(observation[0])
+                    bpu = True
+
+                if (ep is None) or (ep == '') or (
+                        iso.parse_datetime(observation[0]) > ep):
+                    ep = iso.parse_datetime(observation[0])
+                    epu = True
+
+            if bpu:
+                conn.executeInTransaction(
+                    updateBeginPosition, (bp.isoformat(), id_prc))
+
+            if epu:
+                conn.executeInTransaction(
+                    updateEndPosition, (ep.isoformat(), id_prc))
+
+            conn.commitTransaction()
+
+            # self.setData(ret)
+            self.setMessage("Thanks for data")
+
+        except Exception as e:
+            traceback.print_exc(file=sys.stderr)
+            conn.rollbackTransaction()
+            raise Exception(
+                "Error in fast insert (%s): %s" % (type(e), e))
