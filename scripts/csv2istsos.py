@@ -95,6 +95,9 @@ def execute(args, conf=None):
         if 'q' in args:
             quality = args['q']
 
+        # Offerings
+        off = args['o']
+
         # Procedures
         procs = args['p']
 
@@ -138,9 +141,11 @@ def execute(args, conf=None):
         #req = requests.session()
         req = requests
 
+        log("\nOffering: %s" % off)
+
         for proc in procs:
 
-            log("\nProcedure: %s" % proc)
+            log("Procedure: %s" % proc)
 
             if conf is not None and 'description' in conf:
                 data = conf['description']
@@ -176,7 +181,7 @@ def execute(args, conf=None):
                 "%s/wa/istsos/services/%s/operations/getobservation/"
                 "offerings/%s/procedures/%s/observedproperties/%s/ev"
                 "enttime/last" % (
-                    url, service, 'temporary', proc, ','.join(op)),
+                    url, service, off, proc, ','.join(op)),
                 auth=auth,
                 verify=False)
 
@@ -458,6 +463,14 @@ if __name__ == "__main__":
         dest='t',
         help='Test the script, deactivating the insert observation operations.'
     )
+
+    parser.add_argument(
+        '-o',
+        action='store',
+        dest='o',
+        metavar='offering',
+        default='temporary',
+        help='The name of the offering')
 
     parser.add_argument(
         '-p',
