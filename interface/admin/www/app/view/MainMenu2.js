@@ -156,6 +156,75 @@ Ext.define('istsos.view.MainMenu2', {
             }
         },this);
 
+        Ext.getCmp('btnAnalysis').on("click",function(){
+
+            var mainCenter = Ext.getCmp("mainCenter");
+            mainCenter.removeAll(true);
+
+            var items = []
+            for (var h in istsos.engine.analysisConfig){
+                for (var l in istsos.engine.analysisConfig[h]){
+                    items.push(this.createSubButton({
+                        "name": l,
+                        "icon": istsos.engine.analysisConfig[h][l]['icon'],
+                        "istConfig": istsos.engine.analysisConfig[h][l]
+                    }));
+                }
+            }
+
+            var sub = Ext.getCmp("submenu");
+            sub.removeAll();
+            if (items.length==1) {
+                items[0]['flex']=null;
+                items.push({
+                    xtype: 'container',
+                    id: 'imnotabutton',
+                    margin: '4 4 0 4',
+                    html: "",
+                    flex: 1,
+                    style: 'opacity: 0;'
+                });
+            }
+            var cmps = sub.add(items);
+
+            var time = 250;
+
+            for (var i = 0; i < cmps.length; i++) {
+                //console.dir(cmps[i]);
+                if (cmps[i].getId()!='imnotabutton') {
+                    var el = cmps[i].getEl();
+                    el.fadeIn({
+                        duration: time,
+                        easing: null
+
+                    });
+                    el.on("click",function(e, t, eOpts){
+                        for (var c = 0; c < cmps.length; c++) {
+                            cmps[c].removeCls('submenuSelect');
+                        }
+                        this.addClass('submenuSelect');
+                        var conf = Ext.apply({
+                            istService: "default"
+                        },this.istConfig);
+                        var url;
+                        if (Ext.isObject(conf.istOperation)) {
+                            url = conf.istOperation.restUrl;
+                            if (url.indexOf("@")>0) {
+                                conf.istOperation.restUrl = url.replace("@", istService);
+                            }
+                        }else if (Ext.isString(conf.istOperation)) {
+                            url = conf.istOperation;
+                            if (url.indexOf("@")>0) {
+                                conf.istOperation = url.replace("@", istService);
+                            }
+                        }
+                        istsos.engine.pageManager.openWaPage(conf);
+                    },cmps[i]);
+                    time += 250;
+                }
+            }
+        },this);
+
 
         Ext.getCmp('btnStatus').on("click",function(){
             if (this.status && !this.status.closed){

@@ -257,6 +257,39 @@ istsos.engine.observationConfig = {
     }
 }
 
+istsos.engine.analysisConfig = {
+    "Data Analysis": {
+        "Add Sensor Name": {
+            istTitle: "Add Sensor Name",
+            icon: 'process_time_series.png',
+            istBody: ["istsos.view.addSensor"],
+            wapage: 'MainCenter',
+            istFooter: istsos.EMPTY
+        },
+        "Process Time Series": {
+            istTitle: "Process Time Series",
+            icon: 'process_time_series.png',
+            istBody: ["istsos.view.ProcessTimeSeries"],
+            wapage: 'MainCenter',
+            istFooter: istsos.EMPTY
+        },
+        "Manage Sensor": {
+            istTitle: "Manage Sensor",
+            icon: 'process_time_series.png',
+            istBody: ["istsos.view.Editor1"],
+            wapage: 'MainCenter',
+            istFooter: istsos.EMPTY
+        },
+        "Compare Sensor": {
+            istTitle: "Compare Sensor",
+            icon: 'process_time_series.png',
+            istBody: ["istsos.view.ViewerPanel"],
+            wapage: 'MainCenter',
+            istFooter: istsos.EMPTY
+        }
+    }
+}
+
 istsos.engine.pageWizard = {
     /*"initialization": {
         "Welcome": {

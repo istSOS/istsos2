@@ -85,6 +85,13 @@ Ext.define('istsos.view.ui.MainMenu2', {
                                 },
                                 {
                                     xtype: 'button',
+                                    id: 'btnAnalysis',
+                                    enableToggle: true,
+                                    text: 'Data Analysis and Statistics',
+                                    toggleGroup: 'mainmenu'
+                                },
+                                {
+                                    xtype: 'button',
                                     hidden: true,
                                     id: 'btnStatus',
                                     allowDepress: false,

@@ -57,6 +57,57 @@ def initResource(waEnviron):
             elif resource == "validatedb":
                 from walib.istsos import istsos
                 return istsos.waValidatedb(waEnviron)
+                
+
+            # ---------------------------------------
+            # Entering istsos.operation.oat
+            # ---------------------------------------
+            elif resource == "oat":
+                resource = pathinfo.pop(0)
+
+                if resource == "resample":
+                    from walib.OAT import ProcessThread
+                    return ProcessThread.resamplingData(waEnviron)
+                elif resource == "digitalfilter":
+                    from walib.OAT import ProcessThread
+                    return ProcessThread.DigitalThread(waEnviron)
+                elif resource == "exceedance":
+                    from walib.OAT import ProcessThread
+                    return ProcessThread.ExceedanceData(waEnviron)
+                elif resource == "he":
+                    from walib.OAT import ProcessThread
+                    return ProcessThread.HydroEventsTh(waEnviron)
+                elif resource == "hi":
+                    from walib.OAT import ProcessThread
+                    return ProcessThread.HydroIndices(waEnviron)
+                elif resource == "qualitymethod":
+                    from walib.OAT import ProcessThread
+                    return ProcessThread.QualityMethod(waEnviron)
+                elif resource == "datavalue":
+                    from walib.OAT import ProcessThread
+                    return ProcessThread.DataValuesMethod(waEnviron)
+                elif resource == "hysap":
+                    from walib.OAT import ProcessThread
+                    return ProcessThread.HydroSeparationTh(waEnviron)
+                elif resource == "intgrate":
+                    from walib.OAT import ProcessThread
+                    return ProcessThread.IntegrateMethod(waEnviron)
+                elif resource == "compare":
+                    from walib.OAT import ProcessThread
+                    return ProcessThread.regularization(waEnviron)
+                elif resource == "subtract":
+                    from walib.OAT import ProcessThread
+                    return ProcessThread.regularization(waEnviron)
+                elif resource == "fill":
+                    from walib.OAT import ProcessThread
+                    return ProcessThread.fillMethod(waEnviron)
+                elif resource == "statistics":
+                    from walib.OAT import ProcessThread
+                    return ProcessThread.Statisticsmethod(waEnviron)
+                elif resource == "hargreaves":
+                    from walib.OAT import ProcessThread
+                    return ProcessThread.Hargreaves(waEnviron)
+
             ''' checking if not need any more
             elif resource == "initialization":
                 from walib.istsos import istsos

@@ -28,6 +28,7 @@ Ext.define('istsos.view.ProcedureChart', {
             ['AVG'],['SUM'],['COUNT'],['MAX'],['MIN']
         ]);
         this.procedures = {};
+        pro={}
 
         me.callParent(arguments);
 
@@ -369,6 +370,7 @@ Ext.define('istsos.view.ProcedureChart', {
         }
         Ext.get('chartCnt-body').removeCls("viewerChart");
         Ext.get('chartCnt').unmask();
+        pro=this.procedures;
     },
     highlightRegion: function(startMicro, endMicro){
         if (this.chart) {
