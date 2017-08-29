@@ -36,11 +36,29 @@
         a:hover {
           text-decoration: underline;
         }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            overflow-x: scroll; 
+            margin-bottom: 12px;
+        }
+        th{
+            padding: 8px;
+            text-align: left;
+            background-color: #A9A9A9;
+            border-bottom: 1px solid #ddd;
+        }
+        td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
     </style>
 
     <script type="text/javascript" src="ext/ext-all-debug.js"></script>
 
     <script type="text/javascript" src="dygraphs/dygraph-combined.js"></script>
+    <script type="text/javascript" src="d3/d3.min.js"></script>
     <script type="text/javascript" src="codemirror/lib/codemirror.js"></script>
     <link rel="stylesheet" type="text/css" href="codemirror/lib/codemirror.css"/>
     <script type="text/javascript" src="codemirror/mode/javascript/javascript.js"></script>
