@@ -15266,6 +15266,74 @@
                     }
                 }
             ]
+        },
+        {
+            "id": "ExtBox1-ext-gen32933",
+            "type": "jsonstore",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "storeId": "chartStyles",
+                "data": "[\n    {\"id\": 1, \"name\": \"Line\"},\n    {\"id\": 2, \"name\": \"Dotted\"},\n    {\"id\": 3, \"name\": \"Line and Dots\"}\n]",
+                "designer|userClassName": "ChartStyles"
+            },
+            "cn": [
+                {
+                    "id": "ExtBox1-ext-gen32937",
+                    "type": "ajaxproxy",
+                    "reference": {
+                        "name": "proxy",
+                        "type": "object"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "designer|userClassName": "Ajax Proxy27"
+                    },
+                    "cn": [
+                        {
+                            "id": "ExtBox1-ext-gen32943",
+                            "type": "jsonreader",
+                            "reference": {
+                                "name": "reader",
+                                "type": "object"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "designer|userClassName": "Json Reader25"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ExtBox1-ext-gen34635",
+                    "type": "datafield",
+                    "reference": {
+                        "name": "fields",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "name": "id",
+                        "designer|userClassName": "MyField92"
+                    }
+                },
+                {
+                    "id": "ExtBox1-ext-gen34628",
+                    "type": "datafield",
+                    "reference": {
+                        "name": "fields",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "name": "name",
+                        "designer|userClassName": "MyField91"
+                    }
+                }
+            ]
         }
     ],
     "framework": "ext40"
