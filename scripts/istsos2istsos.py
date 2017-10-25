@@ -75,7 +75,7 @@ except ImportError as e:
 fmt = '%Y-%m-%dT%H:%M:%S.%f%z'
 pp = pprint.PrettyPrinter(indent=4)
 
-def execute (args, logger=None):
+def execute(args, logger=None):
 
     def log(message):
         if debug:
@@ -84,25 +84,21 @@ def execute (args, logger=None):
             else:
                 print message
 
-
-    # SCRIPT CONFIGURATION
-    # =========================================================================
-
     # Activate and print verbose information
     debug = args['v'] if 'v' in args else False
 
     # Procedure name
     procedure = args['procedure']
     # Begin date
-    begin = args['begin'] if args.has_key('begin') else "*"
+    begin = args['begin'] if 'begin' in args else "*"
     # End date
-    end = args['end'] if args.has_key('end') else "*"
+    end = args['end'] if 'end' in args else "*"
     # Global User and password valid for all connections
-    suser = duser = auser = args['user'] if args.has_key('user') else None
-    spwd = dpwd = apwd = args['pwd'] if args.has_key('pwd') else None
+    suser = duser = auser = args['user'] if 'user' in args else None
+    spwd = dpwd = apwd = args['pwd'] if 'pwd' in args else None
 
     # Activate this will copy also the quality index from source to destination
-    cpqi = args['cpqi'] if args.has_key('cpqi') else False
+    cpqi = args['cpqi'] if 'cpqi' in args else False
 
     # Aggregating function configuration
     resolution = args['resolution'] if 'resolution' in args else None
@@ -122,31 +118,34 @@ def execute (args, logger=None):
     # Service instance name
     ssrv = args['ssrv']
     # User and password if given this will be used for source istSOS
-    if args.has_key('suser'):
+    if 'suser' in args:
         suser = args['suser']
-    if args.has_key('spwd'):
+    if 'spwd' in args:
         spwd = args['spwd']
 
     # DESTINATION istSOS CONFIG =============================
     # Location (if not given, same as source will be used)
-    durl = args['durl'] if (args.has_key('durl') and args['durl'] is not None) else surl
+    durl = args['durl'] if (
+        'durl' in args and args['durl'] is not None) else surl
     # Service instance name
     dsrv = args['dsrv']
     # User and password if given this will be used for destination istSOS
-    if args.has_key('duser'):
+    if 'duser' in args:
         duser = args['duser']
-    if args.has_key('dpwd'):
+    if 'dpwd' in args:
         dpwd = args['dpwd']
 
     # ALTERNATIVE istSOS SERVICE FOR QI EXTRAPOLATION =======
     # Location (if not given, same as source will be used)
-    aurl = args['aurl'] if (args.has_key('aurl') and args['aurl'] is not None) else None
+    aurl = args['aurl'] if (
+        'aurl' in args and args['aurl'] is not None) else None
     # Service instance name
-    asrv = args['asrv'] if (args.has_key('asrv') and args['asrv'] is not None) else None
+    asrv = args['asrv'] if (
+        'asrv' in args and args['asrv'] is not None) else None
     # User and password if given this will be used for extrapolation QI istSOS
-    if args.has_key('auser'):
+    if 'auser' in args:
         auser = args['auser']
-    if args.has_key('apwd'):
+    if 'apwd' in args:
         apwd = args['apwd']
 
     # PROCESSING STARTS HERE ==================================================
@@ -165,6 +164,7 @@ def execute (args, logger=None):
         ssrv,
         procedure
         ), auth=(suser, spwd), verify=False)
+    print res.text
     sdata = res.json()
     if sdata['success'] is False:
         raise Exception(
@@ -325,7 +325,7 @@ def execute (args, logger=None):
 
     # Insertion loop step timedelta
     interval = timedelta(days=15)
-    if start<stop and start+interval>stop:
+    if start < stop and start+interval > stop:
         interval = stop-start
 
     log("   > Insertion loop step: %s" % interval)
@@ -337,7 +337,7 @@ def execute (args, logger=None):
             raise Exception ("The resolution (%s) to apply in the aggregating function is not valid." % resolution)
         log("   > Function(Resolution) : %s(%s)" % (function,resolution))
 
-    while start+interval<=stop:
+    while start+interval <= stop:
 
         nextStart = start + interval
 
@@ -363,14 +363,18 @@ def execute (args, logger=None):
             if nodataQI != None:
                 params['aggregateNodataQi'] = nodataQI
 
-        res = req.get("%s/%s" % (surl,ssrv),  params=params, auth=(suser, spwd), verify=False)
+        
+        # import urllib
+        # print "%s/%s?%s" % (surl, ssrv, urllib.urlencode(params))
+        
+        res = req.get("%s/%s" % (surl, ssrv),  params=params, auth=(suser, spwd), verify=False)
 
         # Check if an Exception occured
         if 'ExceptionReport' in res.content:
             raise Exception (res.content)
 
         smeasures = res.json()['ObservationCollection']['member'][0]
-        #pp.pprint(smeasures)
+        # pp.pprint(smeasures)
 
         log("   > %s measures from: %s to: %s" % (len(smeasures['result']['DataArray']['values']), start.isoformat(), nextStart.isoformat()))
 

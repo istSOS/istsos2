@@ -5,7 +5,7 @@
         "directAPI": "",
         "spacesToIndent": "4",
         "codeGenFormat": "Class",
-        "exportPath": "/home/milan/workspace/istsos/interface/admin/www/",
+        "exportPath": "/home/milan/workspace/istsos/istsos2/interface/admin/www",
         "extPath": "ext/",
         "lineEnding": "LF",
         "instantiateStore": true,
@@ -10537,6 +10537,67 @@
                                             }
                                         },
                                         {
+                                            "id": "ExtBox1-ext-gen33536",
+                                            "type": "combobox",
+                                            "reference": {
+                                                "name": "items",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "id": "oeCbStyle1",
+                                                "value": "1",
+                                                "fieldLabel": "Style 1",
+                                                "displayField": "name",
+                                                "queryMode": "local",
+                                                "store": "chartStyles",
+                                                "valueField": "id",
+                                                "designer|userClassName": "MyComboBox38",
+                                                "layout|flex": 0.3
+                                            }
+                                        },
+                                        {
+                                            "id": "ExtBox1-ext-gen32981",
+                                            "type": "combobox",
+                                            "reference": {
+                                                "name": "items",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "id": "oeCbObservedProperty2",
+                                                "name": "observedproperty",
+                                                "fieldLabel": "Property",
+                                                "labelWidth": 70,
+                                                "displayField": "name",
+                                                "queryMode": "local",
+                                                "store": "observedproperties",
+                                                "valueField": "definition",
+                                                "designer|userClassName": "MyComboBox4",
+                                                "layout|flex": 0.6
+                                            }
+                                        },
+                                        {
+                                            "id": "ExtBox1-ext-gen35562",
+                                            "type": "combobox",
+                                            "reference": {
+                                                "name": "items",
+                                                "type": "array"
+                                            },
+                                            "codeClass": null,
+                                            "userConfig": {
+                                                "id": "oeCbStyle2",
+                                                "value": "2",
+                                                "fieldLabel": "Style 2",
+                                                "displayField": "name",
+                                                "queryMode": "local",
+                                                "store": "chartStyles",
+                                                "valueField": "id",
+                                                "designer|userClassName": "MyComboBox38",
+                                                "layout|flex": 0.3
+                                            }
+                                        },
+                                        {
                                             "id": "ExtBox1-ext-gen68427",
                                             "type": "button",
                                             "reference": {
@@ -15217,6 +15278,74 @@
                             }
                         }
                     ]
+                }
+            ]
+        },
+        {
+            "id": "ExtBox1-ext-gen32933",
+            "type": "jsonstore",
+            "reference": {
+                "name": "items",
+                "type": "array"
+            },
+            "codeClass": null,
+            "userConfig": {
+                "storeId": "chartStyles",
+                "data": "[\n    {\"id\": 1, \"name\": \"Line\"},\n    {\"id\": 2, \"name\": \"Dotted\"},\n    {\"id\": 3, \"name\": \"Line and Dots\"}\n]",
+                "designer|userClassName": "ChartStyles"
+            },
+            "cn": [
+                {
+                    "id": "ExtBox1-ext-gen32937",
+                    "type": "ajaxproxy",
+                    "reference": {
+                        "name": "proxy",
+                        "type": "object"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "designer|userClassName": "Ajax Proxy27"
+                    },
+                    "cn": [
+                        {
+                            "id": "ExtBox1-ext-gen32943",
+                            "type": "jsonreader",
+                            "reference": {
+                                "name": "reader",
+                                "type": "object"
+                            },
+                            "codeClass": null,
+                            "userConfig": {
+                                "designer|userClassName": "Json Reader25"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ExtBox1-ext-gen34635",
+                    "type": "datafield",
+                    "reference": {
+                        "name": "fields",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "name": "id",
+                        "designer|userClassName": "MyField92"
+                    }
+                },
+                {
+                    "id": "ExtBox1-ext-gen34628",
+                    "type": "datafield",
+                    "reference": {
+                        "name": "fields",
+                        "type": "array"
+                    },
+                    "codeClass": null,
+                    "userConfig": {
+                        "name": "name",
+                        "designer|userClassName": "MyField91"
+                    }
                 }
             ]
         }

@@ -117,19 +117,20 @@ def execute(args, logger=None):
             proc.setSensorType(line[6])
             coords = line[8].split(',')
             proc.setFoi(line[9], line[7], coords[0], coords[1], coords[2])
-
-            proc.setResolution(line[16])
-            proc.setAcquisitionInterval(line[17])
+            if line[16] != '':
+                proc.setResolution(line[16])
+            if line[17] != '':
+                proc.setAcquisitionInterval(line[17])
 
             o1 = line[10].split(',')
             o2 = line[11].split(',')
             o3 = line[12].split(',')
             uom = line[13].split(',')
             cLower = []
-            if line[18]:
+            if line[18] != '-':
                 cLower = line[18].split(',')
             cUpper = []
-            if line[19]:
+            if line[19] != '-':
                 cUpper = line[19].split(',')
 
             if len(cLower) + len(cUpper) > 0:
@@ -141,13 +142,15 @@ def execute(args, logger=None):
                 for idx in range(0, len(o1)):
                     proc.addObservedProperty(
                         o3[idx],
-                        'urn:ogc:def:parameter:x-istsos:1.0:%s:%s:%s' % (
+                        'urn:ogc:def:parameter:x-istsos:1.0:%s:%s%s' % (
                             o1[idx],
                             o2[idx],
-                            o3[idx]
+                            ":%s" % o3[idx] if  o3[idx] != '' else ''
                         ),
                         uom[idx],
-                        upper=cUpper[idx], lower=cLower[idx])
+                        upper=cUpper[idx],
+                        lower=cLower[idx]
+                    )
             else:
                 if (len(o1) + len(o2) + len(o3)) != (len(o1)*3):
                     raise Exception("observed property lenght missmatch")
@@ -155,12 +158,13 @@ def execute(args, logger=None):
                 for idx in range(0, len(o1)):
                     proc.addObservedProperty(
                         o3[idx],
-                        'urn:ogc:def:parameter:x-istsos:1.0:%s:%s:%s' % (
+                        'urn:ogc:def:parameter:x-istsos:1.0:%s:%s%s' % (
                             o1[idx],
                             o2[idx],
-                            o3[idx]
+                            ":%s" % o3[idx] if  o3[idx] != '' else ''
                         ),
-                        uom[idx])
+                        uom[idx]
+                    )
 
             # print proc.toJson()
             service.registerProcedure(proc)

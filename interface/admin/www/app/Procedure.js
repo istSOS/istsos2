@@ -70,7 +70,7 @@ Ext.define('istsos.Sensor', {
     /**
      * {Array} storeFields
      * Array used to initialize an Ext.data.Model object.
-     * 
+     *
      * storeFields = [
      *   {
      *       name: "micro",
@@ -85,15 +85,15 @@ Ext.define('istsos.Sensor', {
      *       type: "string"
      *   }
      * ]
-     * 
+     *
      */
     storeFields: [],
     constructor: function(service, offering, sensor, config){
-        
+
         if (Ext.isEmpty(service) || Ext.isEmpty(offering) || Ext.isEmpty(sensor) ) {
             throw "Service, offering and sensor parameters are mandatory!"
         }
-        
+
         this.addEvents({
             "metadataLoaded" : true,
             "observationLoaded" : true,
@@ -102,21 +102,21 @@ Ext.define('istsos.Sensor', {
             "visibilitychanged" : true,
             "aggregationchanged" : true
         });
-        
+
         this.service = service;
         this.offering = offering;
         this.sensor = sensor;
-        
+
         Ext.applyIf(this, config);
         this.callParent(arguments);
         this._loadMetadata();
-        
-        
+
+
     },
     // can be an iso8601 date string, a Date object or microseconds in unix time
     getObservation: function(from, to, tz, aggregateObj){
         /*
-            [optional] 
+            [optional]
             aggregateObj = {
                 f: 'SUM', //aggregatefunction
                 i: 'SUM', //aggregateinterval
@@ -124,11 +124,11 @@ Ext.define('istsos.Sensor', {
                 ndqi: '210' //aggregatenodataqi
             }
         */
-        
+
         var params = {};
-        
+
         var format = Ext.isEmpty(tz) ? "c": "Y-m-d\\TH:i:s";
-        
+
         if (Ext.isDate(from)) {
             from = Ext.Date.format(from,format);
             if(!Ext.isEmpty(tz)){
@@ -146,7 +146,7 @@ Ext.define('istsos.Sensor', {
             var d = Ext.Date.parse(from,'c');
             throw "Error in istsos.utils.getObservation";
         }
-        
+
         if (Ext.isDate(to)) {
             to = Ext.Date.format(to,format);
             if(!Ext.isEmpty(tz)){
@@ -163,8 +163,8 @@ Ext.define('istsos.Sensor', {
             var d = Ext.Date.parse(to,'c');
             throw "Error in istsos.utils.getObservation";
         }
-        
-        
+
+
         if (Ext.isObject(aggregateObj)){
             params = Ext.apply(params,{
                 aggregatefunction: aggregateObj.f,
@@ -173,7 +173,7 @@ Ext.define('istsos.Sensor', {
                 aggregatenodataqi: aggregateObj.ndqi
             });
         }
-        
+
         Ext.Ajax.request({
             url: Ext.String.format(
                 '{0}/istsos/services/{1}/operations/getobservation/' +
@@ -195,14 +195,14 @@ Ext.define('istsos.Sensor', {
                 }
             }
         });
-        
+
     },
     loadObservation: function(data){
         if (data['name']!=this.sensor) {
             throw "wrong data object. The data belong to " + data['name'];
         }
         this.data = data;
-        var records = [], 
+        var records = [],
         values = this.data['result']['DataArray']['values'],
         field = this.data['result']['DataArray']['field'],
         fieldIdx = {};
@@ -215,10 +215,10 @@ Ext.define('istsos.Sensor', {
             var micro = istsos.utils.iso2micro(values[i][0]);
             row.push(micro, values[i][0]);
             for (var f = 2; f < this.storeFields.length; f++) {
-                
+
                 var fieldName = this.storeConvertIdToField[this.storeFields[f]['name']];
                 row.push(parseFloat(values[i][fieldIdx[fieldName]]));
-                
+
             //row.push(parseFloat(values[i][fieldIdx[this.storeFields[f]['name']]]));
             }
             records.push(row);
@@ -227,18 +227,18 @@ Ext.define('istsos.Sensor', {
         this.fireEvent("observationLoaded", this);
     },
     insertObservation: function(){
-    
+
         var recs = this.store.getUpdatedRecords(),
           fields = this.data.result.DataArray.field,
           values = [[]]
           prev = null;
-          
+
         for (var r = 0; r < recs.length; r++) {
-        
+
           var rec = recs[r];
           var idx = this.store.indexOf(rec);
           var row = [];
-          
+
           for (var i = 0; i < fields.length; i++) {
             var def = fields[i].definition;
             if (def == this.isodef) {
@@ -247,7 +247,7 @@ Ext.define('istsos.Sensor', {
               row.push(""+(rec.get(this.storeConvertFieldToId[def])));
             }
           }
-          
+
           if (prev == null || (prev+1)==idx){
             values[values.length-1].push(row);
           }else{
@@ -255,23 +255,23 @@ Ext.define('istsos.Sensor', {
             values[values.length-1].push(row);
           }
           prev = idx;
-          
+
         }
-        
+
         var queue = {
           procedure: this,
           values: values,
           insert: function(response){
-          
+
             if(this.values.length>0){
-            
+
               var value = this.values.shift();
-            
+
               this.procedure.data.result.DataArray.values = value;
               this.procedure.data.result.DataArray.elementCount = ""+value.length;
               this.procedure.data.samplingTime.beginPosition = value[0][0];
               this.procedure.data.samplingTime.endPosition = value[value.length-1][0];
-            
+
               Ext.Ajax.request({
                 url: Ext.String.format('{0}/istsos/services/{1}/operations/insertobservation',wa.url,this.procedure.service),
                 scope: this,
@@ -285,7 +285,7 @@ Ext.define('istsos.Sensor', {
                   this.insert(response);
                 }
               });
-              
+
             }else{
               var json = Ext.decode(response.responseText);
               this.procedure.commitModifications();
@@ -293,51 +293,8 @@ Ext.define('istsos.Sensor', {
             }
           }
         }
-        
+
         queue.insert(null);
-        
-        console.log(values);
-        
-        /*var recs = this.store.getRange();
-        
-        var fields = this.data.result.DataArray.field;
-        var values = [];
-        for (var r = 0; r < recs.length; r++) {
-            var row = [];
-            for (var i = 0; i < fields.length; i++) {
-                var def = fields[i].definition;
-                if (def == this.isodef) {
-                    row.push(istsos.utils.micro2iso(recs[r].get('micro')));
-                }else{
-                    row.push(""+(recs[r].get(this.storeConvertFieldToId[def])));
-                }
-            }
-            values.push(row);
-        }
-        
-        this.data.result.DataArray.values = values;
-        this.data.result.DataArray.elementCount = ""+values.length;
-        this.data.samplingTime.beginPosition = istsos.utils.micro2iso(recs[0].get('micro'));
-        this.data.samplingTime.endPosition = istsos.utils.micro2iso(recs[recs.length-1].get('micro'));
-        
-        Ext.Ajax.request({
-            url: Ext.String.format('{0}/istsos/services/{1}/operations/insertobservation',wa.url,this.service),
-            scope: this,
-            method: "POST",
-            jsonData: {
-                "AssignedSensorId" : this.getId(),
-                "ForceInsert" : "true",
-                "Observation" : this.data
-            },
-            success: function(response){
-                var json = Ext.decode(response.responseText);
-                
-                this.commitModifications();
-                
-                this.fireEvent("observationSaved", this, json);
-            }
-        });
-        */
     },
     rejectModifications: function(){
         var recs = this.store.getUpdatedRecords();
@@ -354,7 +311,7 @@ Ext.define('istsos.Sensor', {
     // This is a call to wa service for the describeSensor method
     _loadMetadata: function(){
         // First getting some sensors's service config
-        Ext.Ajax.request({          
+        Ext.Ajax.request({
             url: Ext.String.format('{0}/istsos/services/{1}/configsections',wa.url,this.service),
             scope: this,
             method: "GET",
@@ -385,7 +342,7 @@ Ext.define('istsos.Sensor', {
                                 type: 'string'
                             }];
                             for (var i = 1; i < this.meta.outputs.length; i++) {
-                                
+
                                 var one = Ext.id(), two = Ext.id();
                                 this.storeConvertFieldToId.push(
                                     "'"+this.meta.outputs[i].definition+"': '"+one+"'",
@@ -405,7 +362,7 @@ Ext.define('istsos.Sensor', {
                             }
                             this.storeConvertFieldToId = Ext.decode("{"+this.storeConvertFieldToId.join(',')+"}");
                             this.storeConvertIdToField = Ext.decode("{"+this.storeConvertIdToField.join(',')+"}");
-                            
+
                             Ext.define(this.service+'-'+this.sensor+'-model', {
                                 extend: 'Ext.data.Model',
                                 idProperty: "micro",
@@ -436,7 +393,7 @@ Ext.define('istsos.Sensor', {
         return this.meta['assignedSensorId'];
     },
     getName: function(){
-        return this.sensor;    
+        return this.sensor;
     },
     // return insitu-fixed-point, insitu-mobile-point or virtual
     getSystemType: function(){
@@ -484,6 +441,14 @@ Ext.define('istsos.Sensor', {
         }
         return ret;
     },
+    getObservedPropertyName: function(definition){
+        for (var i = 0; i < this.meta.outputs.length; i++) {
+            if (this.meta.outputs[i]['definition']===definition) {
+                return this.meta.outputs[i]['name'];
+            }
+        }
+        return null;
+    },
     getUomCode: function(definition){
         for (var i = 0; i < this.meta.outputs.length; i++) {
             if (this.meta.outputs[i]['definition']==definition) {
@@ -495,7 +460,7 @@ Ext.define('istsos.Sensor', {
         var ret = [];
         for (var i = 0; i < this.meta.outputs.length; i++) {
             if (this.meta.outputs[i]['definition']==this.isodef) {
-                if (Ext.isArray(this.meta.outputs[i]['constraint']['interval']) 
+                if (Ext.isArray(this.meta.outputs[i]['constraint']['interval'])
                     && this.meta.outputs[i]['constraint']['interval'].length==2) {
                     return this.meta.outputs[i]['constraint']['interval'][0];
                 }
@@ -507,7 +472,7 @@ Ext.define('istsos.Sensor', {
         var ret = [];
         for (var i = 0; i < this.meta.outputs.length; i++) {
             if (this.meta.outputs[i]['definition']==this.isodef) {
-                if (Ext.isArray(this.meta.outputs[i]['constraint']['interval']) 
+                if (Ext.isArray(this.meta.outputs[i]['constraint']['interval'])
                     && this.meta.outputs[i]['constraint']['interval'].length==2) {
                     return this.meta.outputs[i]['constraint']['interval'][1];
                 }
@@ -533,6 +498,20 @@ Ext.define('istsos.Sensor', {
         this.color = color;
         if (!silent && this.color != old) {
             this.fireEvent("colorchanged", this, this.color, old);
+        }
+    },
+    /*
+     * Change the color representing this procedure.
+     * If silent = true then the event will NOT be thrown
+     */
+    setColor2: function(color, silent){
+        if (silent != true) {
+            silent = false;
+        }
+        var old = this.color2;
+        this.color2 = color;
+        if (!silent && this.color2 != old) {
+            this.fireEvent("color2changed", this, this.color2, old);
         }
     },
     getColor: function(){
@@ -567,15 +546,15 @@ Ext.define('istsos.utils', {
         // Convert microseconds number to isodate string
         // If offset in minutes is not given UTC will be returned
         micro2iso: function(m, offset){
-            
+
             var offsetObj = new Date();
             offsetObj.setHours(0);
             offsetObj.setMinutes(0);
             var sign = "+";
-            
+
             var date = new Date(parseInt(m/1000));
             var micro = parseFloat("0."+m);
-            
+
             if (offset!=null) {
                 date.setUTCMinutes(date.getUTCMinutes()+offset);
                 if (offset<0) {
@@ -586,7 +565,7 @@ Ext.define('istsos.utils', {
                     offsetObj.setMinutes(offset);
                 }
             }
-            
+
             var year = date.getUTCFullYear();
             var month = (date.getUTCMonth()+1)<10?"0"+(date.getUTCMonth()+1):(date.getUTCMonth()+1);
             var day = date.getUTCDate()<10?"0"+date.getUTCDate():date.getUTCDate();
@@ -594,14 +573,14 @@ Ext.define('istsos.utils', {
             //hour = hour + offsetObj.getHours();
             var minute = date.getUTCMinutes()<10?"0"+date.getUTCMinutes():date.getUTCMinutes();
             //minute = minute + offsetObj.getMinutes();
-            
+
             var second = date.getUTCSeconds()<10?"0"+date.getUTCSeconds():date.getUTCSeconds();
             var micro = (""+parseFloat((""+(m/1000000)).replace(parseInt(m/1000000),"0"))).replace("0","");
-            
+
             var tz = offset==null?"Z":sign+(offsetObj.getHours()<10?"0"+offsetObj.getHours():offsetObj.getHours())+(offsetObj.getMinutes()<10?"0"+offsetObj.getMinutes():offsetObj.getMinutes());
-            
+
             return year + "-" + month + "-"  + day + "T" + hour+ ":" + minute + ":" + second + "" + micro + "" + tz;
-            
+
         },
         minutesToTz: function(offset){
             if (Ext.isEmpty(offset)){
@@ -630,7 +609,7 @@ Ext.define('istsos.utils', {
             }
             var h = parseInt( (value[1]+value[2]));
             var m = parseInt( (value[4]+value[5]));
-            
+
             if (h>23){
                 return tz;
             }
@@ -648,30 +627,30 @@ Ext.define('istsos.utils', {
             return n;
             // return n<10 ? '0'+n : n
         },
-        // Extract microseconds from an isodate string 
+        // Extract microseconds from an isodate string
         //  > iso date with micro seconds: "2012-10-28T01:00:00.123456+0100"
         //  > iso date with micro seconds: "2012-10-28T01:00:00+0100"
         iso2micro: function(iso){
-            
+
             // iso = "2012-10-28T00:50:00.123456+0100" | "2012-10-28T00:50:00+0100"
             // iso = "2012-10-28T00:50:00.123456+0100" | "2012-10-28T00:50:00+01:00" << After OGC compl. tests
             //                0      1     2        3          4        5
             // splitted = ["2012", "10", "28", "00:50:00", "123456", "0100"]
             // splitted = ["2012", "10", "28", "00:50:00", "0100"]
             var splitted = iso.split(/[T]|[.]|[,]|[+]|[-]|[z]|[Z]/g);
-            
+
             // Splitting hours
             var hours = splitted[3].split(":");
-            
+
             // Calculating offset
             var hoffset = 0;
             var moffset = 0;
             if (iso.match(/[Z]/g)==null) { // Already UTC
-                
+
                 if (splitted[splitted.length-1].indexOf(":")>-1){
                     splitted[splitted.length-1] = splitted[splitted.length-1].replace(":","");
                 }
-            
+
                 hoffset = parseInt(parseInt(splitted[splitted.length-1])/100);
                 moffset = parseInt(splitted[splitted.length-1]) - (hoffset*100);
                 if (iso.match(/[+]/g)==null) {
@@ -679,7 +658,7 @@ Ext.define('istsos.utils', {
                     moffset = -1 * moffset;
                 }
             }
-            
+
             var milli = Date.UTC(
                 parseInt(splitted[0]), // years
                 parseInt(splitted[1])-1, // months
@@ -688,25 +667,25 @@ Ext.define('istsos.utils', {
                 parseInt(hours[1])-moffset, // minutes
                 parseInt(hours[2]) // seconds
                 );
-                    
+
             var match = iso.match(/[.]|[,]/g);
             if (match != null && ( Ext.Array.contains(match, '.') || Ext.Array.contains(match, ','))) {
                 var micro = parseFloat("0."+splitted[4]);
-                
+
                 //console.log(istsos.utils.micro2iso((milli * 1000) + (micro * 1000000)));
                 return (milli * 1000) + (micro * 1000000);
             } else {
                 //console.log(istsos.utils.micro2iso( milli*1000));
                 return milli*1000;
             }
-            
+
         },
         getStore: function(procedure){
-            
+
             var meta = procedure.meta;
             var service = procedure.service;
             var sensor = procedure.sensor;
-            
+
             var storeFields = [{
                 name: "micro", // Tagliamo la testa al toro -> i mems misurano ogni mezzo millisecondo (500µs)!!
                 type: 'int'
@@ -714,7 +693,7 @@ Ext.define('istsos.utils', {
                 name: this.isodef,
                 type: 'string'
             }];
-        
+
             for (var i = 1; i < meta.outputs.length; i++) {
                 storeFields.push({
                     name: meta.outputs[i].definition,
@@ -724,18 +703,18 @@ Ext.define('istsos.utils', {
                     type: 'float'
                 });
             }
-            
+
             Ext.define(service+'-'+sensor+'-model', {
                 extend: 'Ext.data.Model',
                 idProperty: this.isodef,
                 fields: storeFields
             });
-            
+
             /*return Ext.create('istsos.store.ObservationEditor',{
                 model: service+'-'+sensor+'-model',
                 name: sensor
             });*/
-            
+
             return Ext.create('Ext.data.Store', {
                 model: service+'-'+sensor+'-model',
                 name: sensor,
@@ -747,7 +726,7 @@ Ext.define('istsos.utils', {
                     }
                 }
             });
-            
+
         },
         validatefilename: function(procedure, filename){
             var tmp = filename.split(/[\\/]/);
@@ -799,12 +778,12 @@ Ext.define('istsos.utils', {
                                     this.parser.callback(e);
                                 }
                                 this.parser.fireEvent('csvfileparsed', e.target.result);
-                            }, false);     
+                            }, false);
                             reader.readAsText(fileList[i]);
                         }
-                    } catch (exception) { 
-                        Ext.Msg.alert('Warning', exception);           
-                    } 
+                    } catch (exception) {
+                        Ext.Msg.alert('Warning', exception);
+                    }
                 }
             });
         },
@@ -828,31 +807,31 @@ Ext.define('istsos.utils', {
          *      "end": "2012-12-10T14:00Z"
          * }
          */
-        parsecsvstring: function(procedure, csvstring){            
-            var lines = csvstring.split(/[\r\n|\n]+/);             
+        parsecsvstring: function(procedure, csvstring){
+            var lines = csvstring.split(/[\r\n|\n]+/);
             var ret = {
                 data: [],
                 header: ["micro"],
                 total: 0,
-                begin: null, 
+                begin: null,
                 end: null,
                 isregular: true,
                 timeresolutions: [],
                 timeresolutionscheck: []
-            }, header = lines[0].split(",");                
-            try {                
+            }, header = lines[0].split(",");
+            try {
                 if (lines.length<2) {
                     throw "CSV file contain less then the minimal 2 line (header + value)";
                 }
                 // Detecting procedure's observation properties order
                 var opcomposition = [];
                 var properties = procedure.meta.outputs;
-                for (c = 0; c < properties.length ; c++) {                    
+                for (c = 0; c < properties.length ; c++) {
                     // Check if the output observed properties exist in the CSV
                     if(!Ext.Array.contains(
                         header, properties[c].definition) ){
                         throw "CSV observed properties in header are not correct"
-                    }                    
+                    }
                     if (properties[c].definition == this.isodef) {
                         opcomposition.push(properties[c].definition);
                     }else{
@@ -861,14 +840,14 @@ Ext.define('istsos.utils', {
                             properties[c].definition+":qualityIndex"
                             );
                     }
-                }             
+                }
                 ret.header = ret.header.concat(opcomposition);
                 // Getting the time column position in the csv file
-                var idx = Ext.Array.indexOf(header, this.isodef);                
+                var idx = Ext.Array.indexOf(header, this.isodef);
                 // csv begin position
-                var bp = Ext.Date.parse(lines[1].split(",")[idx],"c");                
+                var bp = Ext.Date.parse(lines[1].split(",")[idx],"c");
                 // Get microseconds of first date
-                ret.begin = istsos.utils.iso2micro(lines[1].split(",")[idx]);                
+                ret.begin = istsos.utils.iso2micro(lines[1].split(",")[idx]);
                 // csv end position
                 var ep;
                 // reverse loop because sometimes last rows are empty
@@ -883,13 +862,13 @@ Ext.define('istsos.utils', {
                 // statistics counters
                 var updated = 0, inserted = 0;
                 try {
-                    var idxStart=0;      
+                    var idxStart=0;
                     var lastDate;
                     for(c=1;c<lines.length;c++) { // start looping csv lines >>
                         var row = [];
                         var line = lines[c].split(",");
-                        // csv observed properties must be lenght exacly as 
-                        //   the procedure observed property 
+                        // csv observed properties must be lenght exacly as
+                        //   the procedure observed property
                         if (line.length!=header.length) {
                             // Skip empty rows
                             if (line.length==1 && line[0]=="") {
@@ -899,7 +878,7 @@ Ext.define('istsos.utils', {
                         }
                         for (var i = 0; i < opcomposition.length; i++) {
                             // finding the observed property position in the csv
-                            idx = Ext.Array.indexOf(header, opcomposition[i]);      
+                            idx = Ext.Array.indexOf(header, opcomposition[i]);
                             if (idx < 0) { // CSV does not have observed property
                                 if (opcomposition[i].indexOf(":qualityIndex")<0) {
                                     // Quality index are not mandatory, other output obs.prop are mandatory
@@ -931,11 +910,11 @@ Ext.define('istsos.utils', {
                         ret.total += 1;
                         ret.data.push(row);
                     }
-                } catch (exception) { 
+                } catch (exception) {
                     throw "Riga [" + (c+1) + "]:" + exception;
                 }
-            } catch (exception) { 
-                Ext.Msg.alert('Warning', exception);   
+            } catch (exception) {
+                Ext.Msg.alert('Warning', exception);
             }
             return ret;
         }

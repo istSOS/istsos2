@@ -78,7 +78,8 @@ class Converter():
             qualityIndex=False, exceptionBehaviour={},
             user=None, password=None, debug=False,
             csvlength=5000,
-            filenamecheck=None, archivefolder=None):
+            filenamecheck=None, archivefolder=None,
+            extra={}):
         """
         Info:
 
@@ -106,6 +107,7 @@ class Converter():
         """
         # Can be used to speedup directory reading doinng it only once
         #  > "folderIn" and "pattern" must be identical
+        self.extra = extra
 
         self.fileArray = None
         self.name = name
@@ -297,12 +299,12 @@ class Converter():
         )
         '''
         dt = self.getDateFromFileName(name)
-        print dt, ep
+        #print dt, ep
         if self.fntd:
             dt = dt + self.fntd
         if ep is not None and ep < dt:
             return False
-        print " ok skip.."
+        print "skipping %s" % name
         return True
 
     def getDateTimeWithTimeZone(self, dt, tz):
@@ -313,20 +315,21 @@ class Converter():
     def csv2istsos(self):
         from scripts import csv2istsos
         csv2istsos.execute({
-              'u': self.url,
-              's': self.service,
-              'wd': self.folderOut,
-              'p': [self.name],
-              'user': self.user,
-              'password': self.password
-          }, conf = {
-              'logger': self.debugConverter if isinstance(self.debugConverter,DebugConverter) else self,
-              'description': self.describe
-        })
+                'u': self.url,
+                's': self.service,
+                'wd': self.folderOut,
+                'p': [self.name],
+                'user': self.user,
+                'password': self.password,
+                'f': True if ('disable-force-insert' in self.extra and self.extra['disable-force-insert'] == True) else False
+            }, conf = {
+                'logger': self.debugConverter if isinstance(self.debugConverter,DebugConverter) else self,
+                'description': self.describe
+            })
 
     def istsos2istsos(self, ssrv, durl=None, function=None, resolution=None, nodataValue=None, nodataQI=None):
         from scripts import istsos2istsos
-        istsos2istsos.execute({
+        params = {
             'v': True,
             'lm': True,
             'procedure': self.name,
@@ -339,7 +342,11 @@ class Converter():
             'nodataQI': nodataQI if nodataQI is not None else None,
             'user': self.user,
             'pwd': self.password
-        }, self)
+        }
+        if self.qualityIndex:
+            params['cpqi'] = True
+
+        istsos2istsos.execute(params, self)
 
     def archive(self):
 
@@ -463,6 +470,8 @@ class Converter():
                     self.qualityIndex is False):
                 continue
             self.obsindex.append(out['definition'])
+            if 'iso8601' not in out['definition'] and self.qualityIndex is True:
+                self.obsindex.append("%s:qualityIndex" % out['definition'])
 
         self.acquisitionTimeResolution = None
         if 'capabilities' in self.describe:
@@ -617,7 +626,7 @@ class Converter():
         # Check if Observed property are observed by this procedure
         obs = observation.getObservedProperties()
         for o in obs:
-            if not o in self.obsindex:
+            if not o.replace(":qualityIndex", "") in self.obsindex:
                 raise ObservationError(
                     "Observation (%s) is not observed by procedure %s." % (
                         o, self.name))
@@ -634,7 +643,7 @@ class Converter():
                 self.addWarning("Identical observation (%s: %s) has been already processed (file %s), skipping." % (self.name, observation, self.executing['file']))
         else:
             self.observations.append(observation)
-            self.observationsCheck[observation.getEventime()]=observation
+            self.observationsCheck[observation.getEventime()] = observation
 
     def save(self):
         """

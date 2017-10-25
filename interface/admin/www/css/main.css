@@ -574,6 +574,11 @@ table.x-datepicker-inner .x-datepicker-selected a {
 .dygraph-axis-label-x{
     height: 30px;
 }
+.dygraph-legend {
+    width: 100%;
+    text-align: right;
+    background: rgba(255, 255, 255, 0.7);
+}
 
 .pchooserBtnVisible {
     position: absolute;
@@ -593,7 +598,7 @@ table.x-datepicker-inner .x-datepicker-selected a {
 }
 .pchooserBtnDownload {
     position: absolute;
-    right: 46px;
+    right: 66px;
     top: 2px;
     width: 16px;
     height: 16px;
@@ -603,6 +608,15 @@ table.x-datepicker-inner .x-datepicker-selected a {
     background-size: contain;
 }
 .pchooserBtnColor {
+    position: absolute;
+    right: 46px;
+    top: 2px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    border: thin solid whitesmoke;
+}
+.pchooserBtnColor2 {
     position: absolute;
     right: 26px;
     top: 2px;

@@ -164,52 +164,53 @@ class InsertObservationResponse:
                 # check eventTime interval and update begin/end position when
                 #  force flag is off
                 else:
-                    sql = """
-                        SELECT
-                            max(time_eti) as max_time_eti
-                        FROM
-                            %s.event_time""" % (filter.sosConfig.schema)
-                    sql += """
-                        WHERE
-                            id_prc_fk = %s
-                        GROUP BY
-                            id_prc_fk"""
-                    params = (prc["id_prc"],)
-                    try:
-                        lastMsr = pgdb.select(sql, params)[0]["max_time_eti"]
-                    except:
-                        lastMsr = None
+                    if filter.sosConfig.sequential:
+                        sql = """
+                            SELECT
+                                max(time_eti) as max_time_eti
+                            FROM
+                                %s.event_time""" % (filter.sosConfig.schema)
+                        sql += """
+                            WHERE
+                                id_prc_fk = %s
+                            GROUP BY
+                                id_prc_fk"""
+                        params = (prc["id_prc"],)
+                        try:
+                            lastMsr = pgdb.select(sql, params)[0]["max_time_eti"]
+                        except:
+                            lastMsr = None
 
-                    if lastMsr is not None:
-                        # verify begin observation is minor/equal then end
-                        #  time procedure and later then last observation
-                        if not (end >= prc["etime_prc"] and (
-                                start <= prc["etime_prc"]) and (
-                                start >= lastMsr)):
-                            raise Exception(
-                                "begin observation (%s) must be between last "
-                                "observation (%s) and end procedure (%s); end"
-                                " observation (%s) must be after end "
-                                "procedure (%s)" % (
-                                    start,
-                                    lastMsr, prc["etime_prc"],
-                                    end,
-                                    prc["etime_prc"]))
-                    else:
-                        # verify begin observation is minor/equal then end
-                        #  time procedure and later then first observation
-                        if not (end >= prc["etime_prc"] and (
-                                start <= prc["etime_prc"]) and (
-                                start >= prc["stime_prc"])):
-                            raise Exception(
-                                "begin observation (%s) must be between start "
-                                "procedure (%s) and end procedure (%s); end "
-                                "observation (%s) must be after end procedure "
-                                "(%s)" % (
-                                    start,
-                                    prc["stime_prc"], prc["etime_prc"],
-                                    end,
-                                    prc["etime_prc"]))
+                        if lastMsr is not None:
+                            # verify begin observation is minor/equal then end
+                            #  time procedure and later then last observation
+                            if not (end >= prc["etime_prc"] and (
+                                    start <= prc["etime_prc"]) and (
+                                    start >= lastMsr)):
+                                raise Exception(
+                                    "begin observation (%s) must be between last "
+                                    "observation (%s) and end procedure (%s); end"
+                                    " observation (%s) must be after end "
+                                    "procedure (%s)" % (
+                                        start,
+                                        lastMsr, prc["etime_prc"],
+                                        end,
+                                        prc["etime_prc"]))
+                        else:
+                            # verify begin observation is minor/equal then end
+                            #  time procedure and later then first observation
+                            if not (end >= prc["etime_prc"] and (
+                                    start <= prc["etime_prc"]) and (
+                                    start >= prc["stime_prc"])):
+                                raise Exception(
+                                    "begin observation (%s) must be between start "
+                                    "procedure (%s) and end procedure (%s); end "
+                                    "observation (%s) must be after end procedure "
+                                    "(%s)" % (
+                                        start,
+                                        prc["stime_prc"], prc["etime_prc"],
+                                        end,
+                                        prc["etime_prc"]))
 
                     #-- update end time of procedure
                     sql = """
@@ -487,7 +488,7 @@ class InsertObservationResponse:
                         #  aggregate_nodata value OR delete the event time if
                         #  not filter.data[par]["vals"][ii] in ['NULL',u'NULL',
                         #  None]:
-                        pqi = int(filter.data[par+":qualityIndex"]["vals"][ii])
+                        pqi = int(float(filter.data[par+":qualityIndex"]["vals"][ii]))
                         # Constraint quality is done only if the quality index
                         #  is equal to the default qi (RAW DATA)
                         if int(filter.sosConfig.default_qi) == pqi:
