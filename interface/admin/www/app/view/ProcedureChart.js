@@ -258,14 +258,6 @@ Ext.define('istsos.view.ProcedureChart', {
                         }
                     }
                 }
-                if (this.obsprop2!==null && Ext.Array.contains(this.procedures[key].getObservedProperties(), this.obsprop2)) {
-                    v = parseFloat(recs[j].get(p.storeConvertFieldToId[this.obsprop2]));
-                    if (v<-900) {
-                        this.chartStore[recs[j].get("micro")][(idx+1)] = NaN;
-                    }else{
-                        this.chartStore[recs[j].get("micro")][(idx+1)] = v;
-                    }
-                }
             }
             idx++;
             if (Ext.Array.contains(p.getObservedProperties(), this.obsprop) &&

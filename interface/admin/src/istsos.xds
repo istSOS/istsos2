@@ -15285,32 +15285,6 @@
                     "id": "ExtBox1-ext-gen32937",
                     "type": "ajaxproxy",
                     "reference": {
-                        "name": "proxy",
-                        "type": "object"
-                    },
-                    "codeClass": null,
-                    "userConfig": {
-                        "designer|userClassName": "Ajax Proxy27"
-                    },
-                    "cn": [
-                        {
-                            "id": "ExtBox1-ext-gen32943",
-                            "type": "jsonreader",
-                            "reference": {
-                                "name": "reader",
-                                "type": "object"
-                            },
-                            "codeClass": null,
-                            "userConfig": {
-                                "designer|userClassName": "Json Reader25"
-                            }
-                        }
-                    ]
-                },
-                {
-                    "id": "ExtBox1-ext-gen34635",
-                    "type": "datafield",
-                    "reference": {
                         "name": "fields",
                         "type": "array"
                     },
