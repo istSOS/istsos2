@@ -232,11 +232,31 @@ Ext.define('istsos.view.ProcedureChart', {
                     this.chartStore[recs[j].get("micro")] = Ext.Array.clone(template);
                 }
                 // Set the property choosen in the chart store in the right column
-                var v = parseFloat(recs[j].get(p.storeConvertFieldToId[this.obsprop]));
-                if (v<-900) {
-                    this.chartStore[recs[j].get("micro")][idx] = NaN;
-                }else{
-                    this.chartStore[recs[j].get("micro")][idx] = v;
+                var v = NaN;
+
+                if (!Ext.Array.contains(p.getObservedProperties(), this.obsprop)) {
+                    v = parseFloat(recs[j].get(p.storeConvertFieldToId[this.obsprop2]));
+                    if (v<-900) {
+                        this.chartStore[recs[j].get("micro")][(idx)] = NaN;
+                    }else{
+                        this.chartStore[recs[j].get("micro")][(idx)] = v;
+                    }
+                }
+                else if (Ext.Array.contains(p.getObservedProperties(), this.obsprop)) {
+                    v = parseFloat(recs[j].get(p.storeConvertFieldToId[this.obsprop]));
+                    if (v<-900) {
+                        this.chartStore[recs[j].get("micro")][idx] = NaN;
+                    }else{
+                        this.chartStore[recs[j].get("micro")][idx] = v;
+                    }
+                    if(this.obsprop2!==null && Ext.Array.contains(p.getObservedProperties(), this.obsprop2)){
+                        v = parseFloat(recs[j].get(p.storeConvertFieldToId[this.obsprop2]));
+                        if (v<-900) {
+                            this.chartStore[recs[j].get("micro")][(idx+1)] = NaN;
+                        }else{
+                            this.chartStore[recs[j].get("micro")][(idx+1)] = v;
+                        }
+                    }
                 }
                 if (this.obsprop2!==null && Ext.Array.contains(this.procedures[key].getObservedProperties(), this.obsprop2)) {
                     v = parseFloat(recs[j].get(p.storeConvertFieldToId[this.obsprop2]));
@@ -248,7 +268,8 @@ Ext.define('istsos.view.ProcedureChart', {
                 }
             }
             idx++;
-            if (this.obsprop2!==null && Ext.Array.contains(this.procedures[key].getObservedProperties(), this.obsprop2)) {
+            if (Ext.Array.contains(p.getObservedProperties(), this.obsprop) &&
+                    this.obsprop2!==null && Ext.Array.contains(p.getObservedProperties(), this.obsprop2)) {
                 idx++;
             }
         }

@@ -15200,7 +15200,7 @@
             ]
         },
         {
-            "id": "ExtBox1-ext-gen37101",
+            "id": "ExtBox1-ext-gen32933",
             "type": "jsonstore",
             "reference": {
                 "name": "items",
@@ -15208,12 +15208,13 @@
             },
             "codeClass": null,
             "userConfig": {
-                "storeId": "MyJsonStore23",
-                "designer|userClassName": "MyJsonStore23"
+                "storeId": "chartStyles",
+                "data": "[\n    {\"id\": 1, \"name\": \"Line\"},\n    {\"id\": 2, \"name\": \"Dotted\"},\n    {\"id\": 3, \"name\": \"Line and Dots\"}\n]",
+                "designer|userClassName": "ChartStyles"
             },
             "cn": [
                 {
-                    "id": "ExtBox1-ext-gen37105",
+                    "id": "ExtBox1-ext-gen32937",
                     "type": "ajaxproxy",
                     "reference": {
                         "name": "proxy",
@@ -15221,11 +15222,11 @@
                     },
                     "codeClass": null,
                     "userConfig": {
-                        "designer|userClassName": "Ajax Proxy25"
+                        "designer|userClassName": "Ajax Proxy27"
                     },
                     "cn": [
                         {
-                            "id": "ExtBox1-ext-gen37111",
+                            "id": "ExtBox1-ext-gen32943",
                             "type": "jsonreader",
                             "reference": {
                                 "name": "reader",
@@ -15233,51 +15234,36 @@
                             },
                             "codeClass": null,
                             "userConfig": {
-                                "designer|userClassName": "Json Reader23"
+                                "designer|userClassName": "Json Reader25"
                             }
                         }
                     ]
-                }
-            ]
-        },
-        {
-            "id": "ExtBox1-ext-gen6049",
-            "type": "jsonstore",
-            "reference": {
-                "name": "items",
-                "type": "array"
-            },
-            "codeClass": null,
-            "userConfig": {
-                "storeId": "MyJsonStore24",
-                "designer|userClassName": "MyJsonStore24"
-            },
-            "cn": [
+                },
                 {
-                    "id": "ExtBox1-ext-gen6053",
-                    "type": "ajaxproxy",
+                    "id": "ExtBox1-ext-gen34635",
+                    "type": "datafield",
                     "reference": {
-                        "name": "proxy",
-                        "type": "object"
+                        "name": "fields",
+                        "type": "array"
                     },
                     "codeClass": null,
                     "userConfig": {
-                        "designer|userClassName": "Ajax Proxy26"
+                        "name": "id",
+                        "designer|userClassName": "MyField92"
+                    }
+                },
+                {
+                    "id": "ExtBox1-ext-gen34628",
+                    "type": "datafield",
+                    "reference": {
+                        "name": "fields",
+                        "type": "array"
                     },
-                    "cn": [
-                        {
-                            "id": "ExtBox1-ext-gen6059",
-                            "type": "jsonreader",
-                            "reference": {
-                                "name": "reader",
-                                "type": "object"
-                            },
-                            "codeClass": null,
-                            "userConfig": {
-                                "designer|userClassName": "Json Reader24"
-                            }
-                        }
-                    ]
+                    "codeClass": null,
+                    "userConfig": {
+                        "name": "name",
+                        "designer|userClassName": "MyField91"
+                    }
                 }
             ]
         },
