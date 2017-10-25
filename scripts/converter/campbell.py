@@ -42,7 +42,7 @@ lugano = CampbellImporter('T_LUGANO', {
         "tz": "+02:00",
         "rowid": "99",
         "observedProperty": "urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall",
-        "column": 6,
+        "value": "0.2",
         "date": [1,2,3,4]
     }, 'http://localhost/istsos', 'demo',
     "test/scripts/data/in", 'LUGANO.dat', 

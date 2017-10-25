@@ -321,18 +321,34 @@ Ext.define('istsos.view.ProcedureGrid', {
             micro: null,
             iso8601: null
         }
+        var prefix = "$_";
         for (var c = 0; c < keys.length; c++) {
             var key = keys[c];
-            if (Ext.Array.contains(procedures[key].getObservedProperties(),observedProperty)) {
-                modelFields.push({
-                    name: key,
-                    type: 'string'
-                },{
-                    name: key+'_qi',
-                    type: 'string'
-                });
-                template[key] = "-";
-                template[key+'_qi'] = "-";
+            if(Ext.isArray(observedProperty)){
+                if (Ext.Array.contains(procedures[key].getObservedProperties(), (
+                        key.startsWith(prefix)?observedProperty[1]:observedProperty[0]))) {
+                    modelFields.push({
+                        name: key.replace(prefix,''),
+                        type: 'string'
+                    },{
+                        name: key.replace(prefix,'')+'_qi',
+                        type: 'string'
+                    });
+                    template[key] = "-";
+                    template[key+'_qi'] = "-";
+                }
+            }else{
+                if (Ext.Array.contains(procedures[key].getObservedProperties(), observedProperty)) {
+                    modelFields.push({
+                        name: key,
+                        type: 'string'
+                    },{
+                        name: key+'_qi',
+                        type: 'string'
+                    });
+                    template[key] = "-";
+                    template[key+'_qi'] = "-";
+                }
             }
         }
         // Creating data model
@@ -360,7 +376,11 @@ Ext.define('istsos.view.ProcedureGrid', {
 
         for (var c = 0; c < keys.length; c++) {
             var key = keys[c];
-            if (Ext.Array.contains(procedures[key].getObservedProperties(),observedProperty)) {
+            var op = observedProperty;
+            if(Ext.isArray(observedProperty)){
+                op = key.startsWith(prefix)? observedProperty[1]: observedProperty[0];
+            }
+            if (Ext.Array.contains(procedures[key].getObservedProperties(), op)) {
 
                 var recs = procedures[key].store.getRange();
 
@@ -379,9 +399,9 @@ Ext.define('istsos.view.ProcedureGrid', {
                     }
 
                     // Set the property choosen in the chart store in the right column
-                    var v = parseFloat(recs[j].get(procedures[key].storeConvertFieldToId[observedProperty]));
+                    var v = parseFloat(recs[j].get(procedures[key].storeConvertFieldToId[op]));
                     rec.set(key,v);
-                    rec.set(key+"_qi", recs[j].get(procedures[key].storeConvertFieldToId[observedProperty+":qualityIndex"]));
+                    rec.set(key+"_qi", recs[j].get(procedures[key].storeConvertFieldToId[op+":qualityIndex"]));
                     rec.commit(true);
                 }
             }
@@ -410,7 +430,11 @@ Ext.define('istsos.view.ProcedureGrid', {
         for (var c = 0; c < keys.length; c++) {
             var key = keys[c];
             // check if procedures loaded have the requested observed property
-            if (Ext.Array.contains(procedures[key].getObservedProperties(),observedProperty)) {
+            var op = observedProperty;
+            if(Ext.isArray(observedProperty)){
+                op = key.startsWith(prefix)? observedProperty[1]: observedProperty[0];
+            }
+            if (Ext.Array.contains(procedures[key].getObservedProperties(), op)) {
                 columns.push({
                     xtype: 'gridcolumn',
                     //xtype: 'numbercolumn',
@@ -430,7 +454,7 @@ Ext.define('istsos.view.ProcedureGrid', {
                     text: 'QI'
                 });
             }else{
-                console.log("Procedure \""+key+"\" has not the desired observed property: " + observedProperty);
+                console.log("Procedure \""+key+"\" has not the desired observed property: " + op);
             }
         }
         this.grid = Ext.create('Ext.grid.Panel', {

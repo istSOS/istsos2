@@ -150,6 +150,40 @@ Ext.define('istsos.view.ui.ProcedureChart', {
                                             flex: 0.6
                                         },
                                         {
+                                            xtype: 'combobox',
+                                            id: 'oeCbStyle1',
+                                            value: 1,
+                                            fieldLabel: 'Style 1',
+                                            displayField: 'name',
+                                            queryMode: 'local',
+                                            store: 'chartStyles',
+                                            valueField: 'id',
+                                            flex: 0.3
+                                        },
+                                        {
+                                            xtype: 'combobox',
+                                            id: 'oeCbObservedProperty2',
+                                            name: 'observedproperty',
+                                            fieldLabel: 'Property',
+                                            labelWidth: 70,
+                                            displayField: 'name',
+                                            queryMode: 'local',
+                                            store: 'observedproperties',
+                                            valueField: 'definition',
+                                            flex: 0.6
+                                        },
+                                        {
+                                            xtype: 'combobox',
+                                            id: 'oeCbStyle2',
+                                            value: 2,
+                                            fieldLabel: 'Style 2',
+                                            displayField: 'name',
+                                            queryMode: 'local',
+                                            store: 'chartStyles',
+                                            valueField: 'id',
+                                            flex: 0.3
+                                        },
+                                        {
                                             xtype: 'button',
                                             disabled: true,
                                             id: 'btnPlot',

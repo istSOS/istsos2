@@ -5,7 +5,7 @@
 # sudo apt-get install devscripts
 # sudo apt-get install debhelper
 
-revision=$(svn info | grep "Revision" | awk '{print $2}')
+revision=$(git rev-list --count HEAD)
 version=$(cat ./VERSION.txt)
 datetime=$(LC_TIME=en_US date +"%a, %e %b %Y %T %z")
 itp=$(LC_TIME=en_US date +"%Y%m%d")

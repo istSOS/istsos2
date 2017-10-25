@@ -131,6 +131,11 @@ def execute(args, conf=None):
             if args['noqi'] is True:
                 noqi = True
 
+        force = "true" # disabling force insert?
+        if 'f' in args:
+            if args['f'] is True:
+                force = "false"
+
         maxobs = 5000
         if 'm' in args:
             maxobs = int(args['m'])
@@ -274,8 +279,8 @@ def execute(args, conf=None):
 
                         except Exception as e:
                             raise Exception(
-                                "Errore alla riga: %s - %s\n%s" % (
-                                    i, lines[i], str(e)))
+                                "Error in %s line: %s - %s\n%s" % (
+                                    f, i, lines[i], str(e)))
 
                 log("Before insert ST: %s" % proc)
                 if 'beginPosition' in data["samplingTime"]:
@@ -381,7 +386,7 @@ def execute(args, conf=None):
                                 auth=auth,
                                 verify=False,
                                 data=json.dumps({
-                                    "ForceInsert": "true",
+                                    "ForceInsert": force,
                                     "AssignedSensorId": aid,
                                     "Observation": tmpData
                                 })
@@ -416,7 +421,7 @@ def execute(args, conf=None):
                             auth=auth,
                             verify=False,
                             data=json.dumps({
-                                "ForceInsert": "true",
+                                "ForceInsert": force,
                                 "AssignedSensorId": aid,
                                 "Observation": data
                             })
@@ -493,6 +498,13 @@ if __name__ == "__main__":
         action='store_true',
         dest='noqi',
         help='Do not export quality index')
+    
+
+    parser.add_argument(
+        '-f', '--force-disabled',
+        action='store_true',
+        dest='f',
+        help='To disable force insert')
 
     parser.add_argument(
         '-u',

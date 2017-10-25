@@ -56,71 +56,71 @@ class sosGOfilter(f.sosFilter):
     def __init__(self,sosRequest,method,requestObject,sosConfig):
         f.sosFilter.__init__(self,sosRequest,method,requestObject,sosConfig)
         if method == "GET":
-            
+
             self.eventTime = None
             self.featureOfInterest = None
             self.featureOfInterestSpatial = None
             self.result = None #zero-one optional
             self.observedProperty = [':']
-            
+
             # OBSERVED PROPERTY
             #   get_name_from_urn limit the ability to ask for an observedProperty with LIKE:
             #   eg: ask "water" to get all the water related data, "water:discharge", "water:temperature" ...
             if requestObject.has_key("observedproperty"):
                 self.observedProperty = []
                 oprs = requestObject["observedproperty"].split(",")
-                
+
                 for opr in oprs:
                     if opr == '':
                         raise sosException.SOSException("MissingParameterValue", "observedProperty", "Missing 'observedProperty' parameter")
-                        
+
                     oprName = opr
                     self.observedProperty.append(oprName) # one-many ID
-                    
+
             # PROCEDURES FILTER
             if requestObject.has_key("procedure"):
                 self.procedure = []
                 prcs = requestObject["procedure"].split(",")
-                
+
                 for prc in prcs:
                     if prc == '':
                         raise sosException.SOSException("MissingParameterValue", "procedure", "Missing 'procedure' parameter")
-                        
+
                     try:
                         prcName = get_name_from_urn(prc, "procedure", sosConfig)
-                        
+
                     except Exception as e:
                         raise sosException.SOSException("InvalidParameterValue", "procedure", str(e))
 
                     self.procedure.append(prcName)
-                    
+
             else:
-                self.procedure = None    
-                
+                self.procedure = None
+
             if self.version == '2.0.0':
-                
+
                 # THE OFFERING
                 #  > in istSOS offerings are equals to procedures
                 #  > so offerings are inserted into the procedure array filter
-                
+
                 if requestObject.has_key("offering"):
-                    prcs = requestObject["offering"].split(",") 
+                    prcs = requestObject["offering"].split(",")
                     if self.procedure == None:
                         self.procedure = []
-                    
+
                     for prc in prcs:
                         if prc == '':
                             raise sosException.SOSException("MissingParameterValue", "offering", "Missing 'offering' parameter")
-                        try:        
+                        try:
                             prcName = get_name_from_urn(prc, "offering", sosConfig)
-                            
+
                         except Exception as e:
                             raise sosException.SOSException("InvalidParameterValue", "offering", str(e))
-                        
+
                         # Check for name redundancy
                         if prcName not in self.procedure:
                             self.procedure.append(prcName)
-                        
+
                 # RESPONSE FORMAT
                 self.responseFormat = 'text/xml;subtype="om/2.0"'
                 if requestObject.has_key("responseformat"):
@@ -133,64 +133,65 @@ class sosGOfilter(f.sosFilter):
                         self.responseFormat = 'text/xml;subtype="om/2.0"'
                     else:
                         self.responseFormat = requestObject["responseformat"]
-                        
-                    
+
+
                 # OPTIONAL SRS FILTER
                 if requestObject.has_key("crs"):
                     try:
                         self.srsName = requestObject["crs"].split(':')[-1]
-                        
+
                     except Exception as e:
                         raise sosException.SOSException("InvalidParameterValue", "crs", "%s" % e)
-    
+
                     if not self.srsName in sosConfig.parameters["GO_srs"]:
                         raise sosException.SOSException("InvalidParameterValue", "crs",
                             "crs \"%s\" not supported, use one of: %s" %(self.srsName, ",".join(sosConfig.parameters["GO_srs"])))
-                
+
                 else:
                     self.srsName = sosConfig.parameters["GO_srs"][0]
-                    
+
                 # TIME FILTER
-                # istSOS supports 
+                # istSOS supports
                 #     kvp examples:
                 #     - during:       temporalFilter=om:phenomenonTime,2012-11-19T14:00:00+01:00/2012-11-19T14:15:00+01:00
                 #     - equals:       temporalFilter=om:phenomenonTime,2012-11-19T14:00:00.000+01:00
                 #     - combination:  temporalFilter=om:phenomenonTime,2012-11-19T14:00:00+01:00/2012-11-19T14:15:00+01:00,2012-11-19T14:00:00.000+01:00
-                if requestObject.has_key('temporalfilter'):
+                if 'temporalfilter' in requestObject:
                     self.eventTime = []
-                    temporalfilter = requestObject["temporalfilter"].replace(" ","+").split(",")
-                    
+                    temporalfilter = requestObject["temporalfilter"].replace(
+                        " ", "+").split(",")
+
                     #  > in istSOS om:phenomenonTime is equals to om:resultTime
                     if temporalfilter.pop(0) not in ['om:phenomenonTime','phenomenonTime','om:resultTime','resultTime']:
-                        raise sosException.SOSException("InvalidParameterValue", "temporalfilter", 
+                        raise sosException.SOSException("InvalidParameterValue", "temporalfilter",
                             "Parameter \"temporalFilter\" bad formatted")
-                        
+
                     for i in temporalfilter:
                         if '/' in i:
                             interval = i.split("/")
                             if len(interval)!=2:
-                                raise sosException.SOSException("InvalidParameterValue", "temporalfilter", 
+                                raise sosException.SOSException("InvalidParameterValue", "temporalfilter",
                                     "Parameter \"temporalfilter\" bad formatted")
                             try:
                                 iso.parse_date(interval[0])
                                 iso.parse_date(interval[1])
-                                
+
                             except iso.ISO8601Error as isoerr:
-                                raise sosException.SOSException("InvalidParameterValue", "temporalfilter", 
+                                raise sosException.SOSException("InvalidParameterValue", "temporalfilter",
                                     "Parameter \"temporalfilter\" bad formatted, %s" % isoerr)
-                            
+
                             self.eventTime.append(interval)
-                            
+
                         else:
                             try:
                                 iso.parse_date(i)
-                                
+
                             except iso.ISO8601Error as isoerr:
-                                raise sosException.SOSException("InvalidParameterValue", "temporalfilter", 
+                                raise sosException.SOSException("InvalidParameterValue", "temporalfilter",
                                     "Parameter \"temporalfilter\" bad formatted, %s" % isoerr)
-                            
+
                             self.eventTime.append([i])
-                
+
                 # FEATURES OF INTEREST FILTER
                 if requestObject.has_key("featureofinterest"):
                     if requestObject["featureofinterest"] == '':
@@ -199,140 +200,140 @@ class sosGOfilter(f.sosFilter):
                         self.featureOfInterest = get_name_from_urn(requestObject["featureofinterest"], "feature", sosConfig)
                     else:
                         self.featureOfInterest = requestObject["featureofinterest"]
-                    
+
                 # SPATIAL FILTER
                 # example1: spatialFilter=om:featureOfInterest/*/sams:shape,0.0,0.0,60.0,60.0,http://www.opengis.net/def/crs/EPSG/0/4326
                 # example2: spatialFilter=om:featureOfInterest/*/sams:shape,0.0,0.0,60.0,60.0,urn:ogc:def:crs:EPSG::4326
                 if requestObject.has_key("spatialfilter"):
-                    
+
                     sfs = requestObject["spatialfilter"].split(",")
-                    
+
                     if len(sfs)!=6:
-                        raise sosException.SOSException("InvalidParameterValue", "spatialfilter", 
+                        raise sosException.SOSException("InvalidParameterValue", "spatialfilter",
                             "Invalid spatial filter '%s'" % requestObject["spatialfilter"])
-                        
+
                     if sfs[0] != 'om:featureOfInterest/*/sams:shape':
-                        raise sosException.SOSException("InvalidParameterValue", "spatialfilter", 
+                        raise sosException.SOSException("InvalidParameterValue", "spatialfilter",
                             "Invalid spatial filter '%s'" % requestObject["spatialfilter"])
-                    
+
                     srsName = None
-                    
+
                     if sfs[5].index(':')>-1:
                         srsName = sfs[5].split(':')[-1]
-                    
+
                     if sfs[5].index('/')>-1:
                         srsName = sfs[5].split('/')[-1]
-                    
+
                     ogcfilter = (
-                        "<ogc:BBOX>" + 
+                        "<ogc:BBOX>" +
                           "<ogc:PropertyName>the_geom</ogc:PropertyName>"+
                           ("<gml:Box srsName='EPSG:%s'>" % (srsName) )+
                              ("<gml:coordinates>%s,%s %s,%s</gml:coordinates>" % (sfs[1], sfs[2], sfs[3], sfs[4])) +
                           "</gml:Box>"+
                         "</ogc:BBOX>")
-                        
+
                     self.featureOfInterestSpatial = sosUtils.ogcSpatCons2PostgisSql(ogcfilter, 'geom_foi', sosConfig.istsosepsg)
-                        
-                    
+
+
             else:
-                
+
                 # THE OFFERING
                 if requestObject.has_key("offering"):
                     try:
                         self.offering = get_name_from_urn(requestObject["offering"], "offering", sosConfig)
-                        
+
                     except Exception as e:
                         raise sosException.SOSException("InvalidParameterValue","offering",str(e))
-                        
+
                 # RESPONSE FORMAT
                 if requestObject.has_key("responseformat"):
                     if requestObject["responseformat"] == '':
                         raise sosException.SOSException("MissingParameterValue", "responseFormat", "Missing 'responseFormat' parameter")
-                        
+
                     if not requestObject["responseformat"] in sosConfig.parameters["GO_responseFormat"]:
                         raise sosException.SOSException("InvalidParameterValue", "responseFormat",
                             "Parameter \"responseFormat\" sent with invalid value : use one of %s" % "; ".join(sosConfig.parameters["GO_responseFormat"]))
-                    
+
                     else:
                         self.responseFormat = requestObject["responseformat"]
-                        
+
                 if not requestObject.has_key("offering"):
-                    raise sosException.SOSException("MissingParameterValue", "offering", 
+                    raise sosException.SOSException("MissingParameterValue", "offering",
                         "Parameter \"offering\" is mandatory with multiplicity 1")
 
                 if not requestObject.has_key("observedproperty"):
-                    raise sosException.SOSException("MissingParameterValue", "observedProperty", 
+                    raise sosException.SOSException("MissingParameterValue", "observedProperty",
                         "Parameter \"observedProperty\" is mandatory with multiplicity N")
 
                 if not requestObject.has_key("responseformat"):
-                    raise sosException.SOSException("MissingParameterValue", "responseFormat", 
+                    raise sosException.SOSException("MissingParameterValue", "responseFormat",
                         "Parameter \"responseFormat\" is mandatory with multiplicity 1") #one
-    
+
                 # OPTIONAL SRS FILTER
                 if requestObject.has_key("srsname"):
                     try:
                         self.srsName = get_name_from_urn(requestObject["srsname"], "refsystem", sosConfig)
                     except Exception as e:
                         raise sosException.SOSException("InvalidParameterValue", "srsname", "%s" % e)
-    
+
                     if not self.srsName in sosConfig.parameters["GO_srs"]:
-                        raise sosException.SOSException("InvalidParameterValue", "srsName", 
+                        raise sosException.SOSException("InvalidParameterValue", "srsName",
                             "srsName \"%s\" not supported, use one of: %s" %(self.srsName, ",".join(sosConfig.parameters["GO_srs"])))
                 else:
                     self.srsName = sosConfig.parameters["GO_srs"][0]
-                    
+
                 # TIME FILTER
                 if requestObject.has_key('eventtime'):
                     self.eventTime = []
                     for i in requestObject["eventtime"].replace(" ","+").split(","):
                         if len(i.split("/")) < 3:
                             self.eventTime.append(i.split("/"))
-                            
+
                         else:
-                            raise sosException.SOSException("InvalidParameterValue", "eventTime", 
+                            raise sosException.SOSException("InvalidParameterValue", "eventTime",
                                 "Parameter \"eventTime\" bad formatted")
-    
+
                 # FEATURES OF INTEREST FILTER
                 if requestObject.has_key("featureofinterest"):
                     foi = requestObject["featureofinterest"]
                     if foi.find("<ogc:") >= 0 and foi.find("<gml:")>=0:
                         self.featureOfInterestSpatial = sosUtils.ogcSpatCons2PostgisSql(foi, 'geom_foi', sosConfig.istsosepsg)
-                        
+
                     else:
                         try:
                             self.featureOfInterest = get_name_from_urn(foi, "feature", sosConfig)
-                            
+
                         except Exception as e:
                             raise sosException.SOSException("InvalidParameterValue", "featureofinterest", str(e))
-                
+
                 # FILTERS FOR QUERY NOT SUPPORTED YET
                 if requestObject.has_key("result"):
                     self.result = sosUtils.ogcCompCons2PostgisSql(requestObject["result"])
-                    
+
                 # RESULT MODEL
                 if requestObject.has_key("resultmodel"):
                     if requestObject["resultmodel"] in sosConfig.parameters["GO_resultModel"]:
                         self.resultModel = requestObject["resultmodel"]
-                        
+
                     else:
-                        raise sosException.SOSException("InvalidParameterValue", "resultModel", 
+                        raise sosException.SOSException("InvalidParameterValue", "resultModel",
                             "Parameter \"resultModel\" sent with invalid value: supported values are: %s" %",".join(sosConfig.parameters["GO_resultModel"]))
-                
+
                 else:
                     self.resultModel = sosConfig.parameters["GO_resultModel"][0]
-    
+
                 # RESPONSE MODE
                 if requestObject.has_key("responsemode"):
                     if requestObject["responsemode"] in sosConfig.parameters["GO_responseMode"]:
                         self.responseMode = requestObject["responsemode"]
-                        
+
                     else:
                         raise sosException.SOSException("InvalidParameterValue", "responseMode",
                             "Parameter \"responseMode\" sent with invalid value, supported values are: %s" %(",".join(sosConfig.parameters["GO_responseMode"])))
-    
+
                 else:
                     self.responseMode = sosConfig.parameters["GO_responseMode"][0]
-    
+
             # Checking if some event limitation is reached
             if self.eventTime != None:
                 tp=[]
@@ -340,29 +341,29 @@ class sosGOfilter(f.sosFilter):
                     if len(t) == 2:
                         tp.append(iso.parse_datetime(t[0]))
                         tp.append(iso.parse_datetime(t[1]))
-                        
+
                     if len(t)==1:
                         tp.append(iso.parse_datetime(t[0]))
-                        
+
                 if int(sosConfig.maxGoPeriod) > 0:
                     maxhours = timedelta(hours=int(sosConfig.maxGoPeriod))
                     userPeriod = max(tp)-min(tp)
-                    
+
                     if maxhours < userPeriod:
                         if self.version == '2.0.0':
                             # REQ39 - http://www.opengis.net/spec/SOS/2.0/req/core/go-too-many-obs-exception
-                            #     The service determined that the requested result set exceeds the response 
+                            #     The service determined that the requested result set exceeds the response
                             #     size limit of the service and thus cannot be delivered.
                             raise sosException.SOSException("ResponseExceedsSizeLimit", "",
                                 "You are requesting data for a period of [%s hours], but you are not permitted to ask for a period longer than: %s hours" % (userPeriod, maxhours))
-                            
+
                         else:
                             raise sosException.SOSException("InvalidParameterValue", "eventTime",
                                 "You are requesting data for a period of [%s hours], but you are not permitted to ask for a period longer than: %s hours" % (userPeriod, maxhours))
 
             elif (
                     sosConfig.strictogc in ['True','true',1]
-                    and self.version == '2.0.0' 
+                    and self.version == '2.0.0'
                     and self.eventTime == None
                     and self.featureOfInterest == None
                     and self.featureOfInterestSpatial == None
@@ -384,11 +385,11 @@ class sosGOfilter(f.sosFilter):
                 exeMsg = "Using aggregate functions, the event time must exist with an interval composed by a begin and an end date (ISO8601)"
                 if self.eventTime == None or len(self.eventTime)!=1 or len(self.eventTime[0])!=2:
                     raise sosException.SOSException("InvalidParameterValue", "aggregateInterval", exeMsg)
-                    
+
                 self.aggregate_interval = requestObject["aggregateinterval"]
                 try:
                     iso.parse_duration(self.aggregate_interval)
-                    
+
                 except Exception as ex:
                     raise sosException.SOSException("InvalidParameterValue", "aggregateInterval",
                         "Parameter \"aggregate_interval\" sent with invalid format (check ISO8601 duration spec): %s" % ex)
@@ -401,12 +402,12 @@ class sosGOfilter(f.sosFilter):
                 if self.aggregate_interval==None:
                     raise sosException.SOSException("InvalidParameterValue", "aggregateFunction",
                         "Using aggregate functions parameters \"aggregateInterval\" and \"aggregateFunction\" are both mandatory")
-                        
+
                 self.aggregate_function = requestObject["aggregatefunction"]
                 if not (self.aggregate_function.upper() in ["AVG", "COUNT", "MAX", "MIN", "SUM"]):
-                    raise sosException.SOSException("InvalidParameterValue", "aggregateFunction", 
+                    raise sosException.SOSException("InvalidParameterValue", "aggregateFunction",
                         "Available aggregation functions: avg, count, max, min, sum.")
-                        
+
             else:
                 self.aggregate_function = None
 
@@ -415,9 +416,9 @@ class sosGOfilter(f.sosFilter):
                 if self.aggregate_interval==None or self.aggregate_function==None:
                     raise sosException.SOSException("InvalidParameterValue", "aggregateNodata",
                         "Using aggregateNodata parameter requires both \"aggregateInterval\" and \"aggregateFunction\"")
-                        
+
                 self.aggregate_nodata = requestObject["aggregatenodata"]
-                
+
             else:
                 self.aggregate_nodata = sosConfig.aggregate_nodata
 
@@ -427,7 +428,7 @@ class sosGOfilter(f.sosFilter):
                     raise sosException.SOSException("InvalidParameterValue", "aggregateNodataQi",
                         "Using aggregateNodataQi parameter requires both \"aggregateInterval\" and \"aggregateFunction\"")
                 self.aggregate_nodata_qi = requestObject["aggregatenodataqi"]
-                
+
             else:
                 self.aggregate_nodata_qi = sosConfig.aggregate_nodata_qi
 
@@ -436,10 +437,10 @@ class sosGOfilter(f.sosFilter):
             if requestObject.has_key("qualityindex"):
                 if requestObject["qualityindex"].upper() == "TRUE":
                     self.qualityIndex = True
-                    
+
                 elif requestObject["qualityindex"].upper() == "FALSE":
                     self.qualityIndex = False
-                    
+
                 else:
                     raise sosException.SOSException("InvalidParameterValue", "qualityIndex",
                         "qualityIndex can only be True or False!")
@@ -451,7 +452,7 @@ class sosGOfilter(f.sosFilter):
                     try:
                         if requestObject["qualityfilter"][0:2]=='<=' or requestObject["qualityfilter"][0:2]=='>=':
                             self.qualityFilter = (requestObject["qualityfilter"][0:2], float(requestObject["qualityfilter"][2:]))
-                            
+
                         elif (requestObject["qualityfilter"][0]=='>' or
                                 requestObject["qualityfilter"][0]=='=' or
                                 requestObject["qualityfilter"][0]=='<'):
@@ -459,11 +460,11 @@ class sosGOfilter(f.sosFilter):
 
                         # If qualityFilter is defined qualityIndex are automatically returned
                         self.qualityIndex=True
-                        
+
                     except ValueError as ve:
                         raise sosException.SOSException("InvalidParameterValue", "qualityFilter",
                             "invalid quality index value in qualityFilter")
-                            
+
                 else:
                     raise sosException.SOSException("InvalidParameterValue", "qualityFilter",
                         "qualityFilter operator can only be in ['<','>','<=','>=','=']")
@@ -477,14 +478,14 @@ class sosGOfilter(f.sosFilter):
                 if val.nodeType == val.TEXT_NODE:
                     try:
                         self.offering = get_name_from_urn(str(val.data), "offering", sosConfig)
-                        
+
                     except Exception as e:
                         raise sosException.SOSException("InvalidParameterValue", "offering", str(e))
-                        
+
                 else:
                     err_txt = "XML parsing error (get value: offering)"
                     raise sosException.SOSException("NoApplicableCode", None, err_txt)
-                    
+
             else:
                 err_txt = "Parameter \"offering\" is mandatory with multiplicity 1"
                 raise sosException.SOSException("MissingParameterValue", "offering", err_txt)
@@ -500,11 +501,11 @@ class sosGOfilter(f.sosFilter):
                         # eg: ask "water" to get all the water related data, "water:discharge", "water:temperature" ...
                         #self.observedProperty.append(get_name_from_urn(str(val.data),"property"))
                         self.observedProperty.append(str(val.data))
-                        
+
                     else:
                         err_txt = "XML parsing error (get value: observedProperty)"
                         raise sosException.SOSException("NoApplicableCode", None, err_txt)
-                        
+
             else:
                 err_txt = "Parameter \"observedProperty\" is mandatory with multiplicity N"
                 raise sosException.SOSException("MissingParameterValue", "observedProperty", err_txt)
@@ -518,11 +519,11 @@ class sosGOfilter(f.sosFilter):
                     if self.responseFormat not in sosConfig.parameters["GO_responseFormat"]:
                         raise sosException.SOSException("InvalidParameterValue", "responseFormat",
                             "Parameter \"responseFormat\" sent with invalid value: use one of %s" % "; ".join(sosConfig.parameters["GO_responseFormat"]))
-                            
+
                 else:
                     err_txt = "XML parsing error (get value: responseFormat)"
                     raise sosException.SOSException("NoApplicableCode", None, err_txt)
-                    
+
             else:
                 err_txt = "Parameter \"responseFormat\" is mandatory with multiplicity 1"
                 raise sosException.SOSException("MissingParameterValue", "responseFormat", err_txt)
@@ -535,10 +536,10 @@ class sosGOfilter(f.sosFilter):
                 if not self.srsName in sosConfig.parameters["GO_srs"]:
                     raise sosException.SOSException("InvalidParameterValue", "srsName",
                         "srsName \"%s\" not supported, use one of: %s" %(self.srsName, ",".join(sosConfig.parameters["GO_srs"])))
-                        
+
             else:
                 self.srsName = sosConfig.parameters["GO_srs"][0]
-                
+
             # TIME FILTER
             evtms = requestObject.getElementsByTagName('eventTime')
             self.eventTime = []
@@ -553,7 +554,7 @@ class sosGOfilter(f.sosFilter):
                             Eval = end[0].firstChild
                             if Bval.nodeType == Bval.TEXT_NODE and Eval.nodeType == Eval.TEXT_NODE:
                                 self.eventTime.append([str(Bval.data).replace(" ","+"), str(Eval.data).replace(" ","+")])
-                                
+
                             else:
                                 err_txt = "XML parsing error (get value: TimePeriod)"
                                 raise sosException.SOSException("NoApplicableCode",None,err_txt)
@@ -578,19 +579,19 @@ class sosGOfilter(f.sosFilter):
                 for proc in procs:
                     if "xlink:href" in proc.attributes.keys():
                         self.procedure.append(str(proc.getAttribute("xlink:href")))
-                        
+
                     elif proc.hasChildNodes():
                         val = proc.firstChild
                         if val.nodeType == val.TEXT_NODE:
                             try:
                                 self.procedure.append(get_name_from_urn(str(val.data), "procedure", sosConfig))
-                                
+
                             except Exception as e:
                                 raise sosException.SOSException("InvalidParameterValue", "procedure", str(e))
                     else:
                         err_txt = "XML parsing error (get value: procedure)"
                         raise sosException.SOSException("NoApplicableCode", None, err_txt)
-                        
+
             else:
                 self.procedure = None
 
@@ -598,34 +599,34 @@ class sosGOfilter(f.sosFilter):
             fets = requestObject.getElementsByTagName('featureOfInterest')
             self.featureOfInterest = None
             self.featureOfInterestSpatial = None
-            
+
             # get sub-elements of FOI
             if fets:
                 elements = [e for e in fets[0].childNodes if e.nodeType == e.ELEMENT_NODE]
                 if len(elements)==0:
                     err_txt = "ObjectID or ogc:spatialOps elements in parameter \"featureOfInterest\" are mandatory"
                     raise sosException.SOSException("NoApplicableCode",None,err_txt)
-                    
+
                 # only one sub element
                 elif len(elements)==1 and elements[0].tagName!="ObjectID" :
                     self.featureOfInterestSpatial = sosUtils.ogcSpatCons2PostgisSql(elements[0], 'geom_foi', sosConfig.istsosepsg)
-                    
+
                 else:
                     tempfois=[]
                     for e in elements:
                         if not e.tagName=="ObjectID":
                             err_txt = "Allowed only ObjectID or ogc:spatialOps elements in parameter \"featureOfInterest\""
                             raise sosException.SOSException("NoApplicableCode", None, err_txt)
-                            
+
                         try:
                             val = e.firstChild
                             if val.nodeType == val.TEXT_NODE:
                                 try:
                                     tempfois.append( get_name_from_urn(str(val.data), "feature", sosConfig))
-                                    
+
                                 except Exception as e:
                                      raise sosException.SOSException("InvalidParameterValue", "featureOfInterest", str(e))
-                                     
+
                         except Exception as e:
                             raise e
 
@@ -646,17 +647,17 @@ class sosGOfilter(f.sosFilter):
                     if val.nodeType == val.TEXT_NODE:
                         self.resultModel = str(val.data)
                         if self.resultModel not in sosConfig.parameters["GO_resultModel"]:
-                            raise sosException.SOSException("InvalidParameterValue", "resultModel", 
+                            raise sosException.SOSException("InvalidParameterValue", "resultModel",
                                 "Parameter \"resultModel\" sent with invalid value")
-                                
+
                     else:
                         err_txt = "XML parsing error (get value: resultModel)"
                         raise sosException.SOSException("NoApplicableCode", None, err_txt)
-                        
+
                 else:
                     err_txt = "Allowed only ONE parameter \"resultModel\""
                     raise sosException.SOSException("NoApplicableCode", None, err_txt)
-                    
+
             else:
                 self.resultModel = None
 
@@ -668,17 +669,17 @@ class sosGOfilter(f.sosFilter):
                     if val.nodeType == val.TEXT_NODE:
                         self.responseMode = str(val.data)
                         if self.responseMode not in sosConfig.parameters["GO_responseMode"]:
-                            raise sosException.SOSException("InvalidParameterValue", "responseMode", 
+                            raise sosException.SOSException("InvalidParameterValue", "responseMode",
                                 "Parameter \"responseMode\" sent with invalid value")
-                            
+
                     else:
                         err_txt = "XML parsing error (get value: responseMode)"
                         raise sosException.SOSException("NoApplicableCode", None, err_txt)
-                        
+
                 else:
                     err_txt = "Allowed only ONE parameter \"responseMode\""
                     raise sosException.SOSException("NoApplicableCode", None, err_txt)
-                    
+
             else:
                 self.responseMode = sosConfig.parameters["GO_responseMode"][0]
 
@@ -698,21 +699,21 @@ class sosGOfilter(f.sosFilter):
                 exeMsg = "Using aggregate functions, the event time must exist with an interval composed by a begin and an end date (ISO8601)"
                 if self.eventTime == None or len(self.eventTime)!=1 or len(self.eventTime[0])!=2:
                     raise sosException.SOSException("NoApplicableCode", None, exeMsg)
-                    
+
                 val = aggint[0].firstChild
                 if val.nodeType == val.TEXT_NODE:
                     self.aggregate_interval = str(val.data)
                     try:
                         iso.parse_duration(self.aggregate_interval)
-                        
+
                     except Exception as ex:
                         raise sosException.SOSException("InvalidParameterValue", "aggregateInterval",
                             "Parameter \"aggregate_interval\" sent with invalid format (check ISO8601 duration spec): %s" % ex)
-                        
+
                 else:
                     err_txt = "cannot get ISO8601 duration value in \"aggregateInterval\""
                     raise sosException.SOSException("InvalidParameterValue", "aggregateInterval", err_txt)
-                
+
                 # aggregate_function
                 val = aggfun[0].firstChild
                 if val.nodeType == val.TEXT_NODE:
@@ -725,7 +726,7 @@ class sosGOfilter(f.sosFilter):
                 if len(aggnodata)==1:
                     val = aggnodata[0].firstChild
                     self.aggregate_nodata = str(val.data)
-                    
+
                 else:
                     self.aggregate_nodata = sosConfig.aggregate_nodata
 
@@ -750,17 +751,17 @@ class sosGOfilter(f.sosFilter):
                         self.qualityIndex = str(val.data)
                         if self.qualityIndex.upper() == "TRUE":
                             self.qualityIndex=True
-                            
+
                         elif self.qualityIndex.upper() == "FALSE":
                             pass
-                        
+
                         else:
-                            raise sosException.SOSException("InvalidParameterValue", "qualityIndex", 
+                            raise sosException.SOSException("InvalidParameterValue", "qualityIndex",
                                 "qualityIndex can only be \'True\' or \'False\'")
-                            
+
             elif len(qidx)==0:
                 pass
-            
+
             else:
                 err_txt = "\"qualityIndex\" is allowed with multiplicity 1 only"
                 raise sosException.SOSException("NoApplicableCode", None, err_txt)
