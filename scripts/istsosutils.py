@@ -179,7 +179,7 @@ class Service(object):
         jsonRes = res.json()
         if not jsonRes['success']:
             raise Exception("Error loading %s description: %s" % (
-                self.name, jsonRes['message']))
+                name, jsonRes['message']))
         ret.description = jsonRes['data']
 
         return ret
