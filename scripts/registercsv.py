@@ -112,11 +112,22 @@ def execute(args, logger=None):
             proc.setDescription(line[1])
             proc.setKeywords(line[2])
             proc.setLongName(line[3])
-            proc.setModelNumber(line[4])
-            proc.setManufacturer(line[5])
-            proc.setSensorType(line[6])
+            if line[4] != '':
+                proc.setModelNumber(line[4])
+            if line[5] != '':
+                proc.setManufacturer(line[5])
+            if line[6] != '':
+                proc.setSensorType(line[6])
+            else:
+                proc.setSensorType('unknown')
             coords = line[8].split(',')
-            proc.setFoi(line[9], line[7], coords[0], coords[1], coords[2])
+            
+            foiName = line[9].strip()
+            foiName = foiName.replace('(', '')
+            foiName = foiName.replace(')', '')
+            foiName = foiName.replace(' ', '_')
+
+            proc.setFoi(foiName, line[7], coords[0], coords[1], coords[2])
             if line[16] != '':
                 proc.setResolution(line[16])
             if line[17] != '':
@@ -141,7 +152,7 @@ def execute(args, logger=None):
 
                 for idx in range(0, len(o1)):
                     proc.addObservedProperty(
-                        o3[idx],
+                        o3[idx] if o3[idx].find(':') == -1 else o3[idx].replace(':', '-'),
                         'urn:ogc:def:parameter:x-istsos:1.0:%s:%s%s' % (
                             o1[idx],
                             o2[idx],
@@ -157,7 +168,7 @@ def execute(args, logger=None):
 
                 for idx in range(0, len(o1)):
                     proc.addObservedProperty(
-                        o3[idx],
+                        o3[idx] if o3[idx].find(':') == -1 else o3[idx].replace(':', '-'),
                         'urn:ogc:def:parameter:x-istsos:1.0:%s:%s%s' % (
                             o1[idx],
                             o2[idx],
@@ -166,14 +177,14 @@ def execute(args, logger=None):
                         uom[idx]
                     )
 
-            # print proc.toJson()
             service.registerProcedure(proc)
-
+            # print proc.toJson()
             # Setting the begin position
             if line[14]:
                 # Getting the Sensor id
                 aid = service.getProcedure(
-                    proc.name).description['assignedSensorId']
+                    proc.name
+                ).description['assignedSensorId']
 
                 # Getting observation template
                 tmpl = service.getSOSProcedure(proc.name)
