@@ -108,9 +108,10 @@ class StsImporter(raw2csv.Converter):
                         data, self.config["tz"])
 
                 # Removing seconds from date
-                data = datetime(
-                    data.year, data.month, data.day, data.hour,
-                    data.minute, 0, tzinfo=data.tzinfo)
+                if 'rmseconds' not in self.config or self.config['rmseconds'] is True:
+                    data = datetime(
+                        data.year, data.month, data.day, data.hour,
+                        data.minute, 0, tzinfo=data.tzinfo)
 
                 self.setEndPosition(data)
                 self.addObservation(
