@@ -3,3 +3,4 @@ services/demo
 _build/
 docs/_build/
 acquisition/
+.vscode
