@@ -1272,7 +1272,6 @@ class GetObservationResponse_2_0_0:
                         
                           SELECT %s as def_opr, exists(select id_opr from """ +
                               filter.sosConfig.schema + """.observed_properties WHERE def_opr SIMILAR TO '%%(:|)'||%s||'(:|)%%) as exist_opr
-
                     """)
 
                 sql = " UNION ".join(clauses)
