@@ -55,8 +55,9 @@ Ext.define('istsos.view.ViewerPanel', {
 
         Ext.getCmp('chartpanel').on("queueLoaded",function(chartpanel) {
             this.initReadOnlyGrid(
-                chartpanel.procedures,
-                Ext.getCmp("oeCbObservedProperty").getValue());
+                chartpanel.obsprop2!==null? Ext.apply({}, chartpanel.procedures, chartpanel.procedures2): chartpanel.procedures,
+                chartpanel.obsprop2!==null?[chartpanel.obsprop, chartpanel.obsprop2]: chartpanel.obsprop
+            );
         },Ext.getCmp("gridpanel"));
 
         Ext.getCmp('chartpanel').on("clickCallback",function(panel, e, x, pts) {

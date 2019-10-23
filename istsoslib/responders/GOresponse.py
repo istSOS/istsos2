@@ -431,7 +431,7 @@ class VirtualProcessHQ(VirtualProcess):
 
                         elif (self.hqCurves['from'][o] < rec[0] <= self.hqCurves['to'][o]) and (self.hqCurves['low'][o] <= float(rec[1]) < self.hqCurves['up'][o]):
                             if (float(rec[1])-self.hqCurves['B'][o]) >=0:
-                                data_out.append([ rec[0], "%.3f" %(self.hqCurves['K'][o] + self.hqCurves['A'][o]*((float(rec[1])-self.hqCurves['B'][o])**self.hqCurves['C'][o])), rec[2] ])
+                                data_out.append([ rec[0], "%.4f" %(self.hqCurves['K'][o] + self.hqCurves['A'][o]*((float(rec[1])-self.hqCurves['B'][o])**self.hqCurves['C'][o])), rec[2] ])
 
                             else:
                                 data_out.append([ rec[0], -999.9, 120 ])
@@ -451,7 +451,7 @@ class VirtualProcessHQ(VirtualProcess):
 
                     elif (self.hqCurves['from'][o] < rec[0] <= self.hqCurves['to'][o]) and (self.hqCurves['low'][o] <= float(rec[1]) < self.hqCurves['up'][o]):
                         if (float(rec[1])-self.hqCurves['B'][o]) >=0:
-                            data_out.append([ rec[0], "%.3f" %(self.hqCurves['K'][o] + self.hqCurves['A'][o]*((float(rec[1])-self.hqCurves['B'][o])**self.hqCurves['C'][o])) ])
+                            data_out.append([ rec[0], "%.4f" %(self.hqCurves['K'][o] + self.hqCurves['A'][o]*((float(rec[1])-self.hqCurves['B'][o])**self.hqCurves['C'][o])) ])
 
                         else:
                             data_out.append([ rec[0],-999.9 ])
@@ -1269,6 +1269,7 @@ class GetObservationResponse_2_0_0:
                 for p in filter.observedProperty:
                     params.extend([p,p])
                     clauses.append("""
+                        
                           SELECT %s as def_opr, exists(select id_opr from """ +
                               filter.sosConfig.schema + """.observed_properties WHERE def_opr SIMILAR TO '%%(:|)'||%s||'(:|)%%) as exist_opr
                     """)
@@ -1306,8 +1307,10 @@ class GetObservationResponse_2_0_0:
                 for p in filter.procedure:
                     params.extend([p,p])
                     clauses.append("""
+
                           SELECT %s as name_prc, exists(select id_prc from """ +
                               filter.sosConfig.schema + """.procedures where name_prc=%s) as exist_prc
+
                     """)
 
                 sql = " UNION ".join(clauses)

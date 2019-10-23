@@ -50,21 +50,25 @@ step = timedelta(days=20)
 isoop = "urn:ogc:def:parameter:x-istsos:1.0:time:iso8601"
 
 
-def makeFile(res, procedure, op, path):
+def makeFile(res, procedure, op, path, qi, filename):
     text = res.text
     text = text.replace("%s," % procedure, "")
     lines = text.split('\n')
+    print('Lines: %s' % len(lines))
     if lines[-1] == '':
         del lines[-1]
     tmpOp = op.replace("x-ist::", "x-istsos:1.0:")
-    lines[0] = "%s,%s,%s:qualityIndex" % (isoop, tmpOp, tmpOp)
+    if qi == 'True':
+        lines[0] = "%s,%s,%s:qualityIndex" % (isoop, tmpOp, tmpOp)
+    else:
+        lines[0] = "%s,%s" % (isoop, tmpOp)
     if len(lines) > 1:
         datenumber = iso.parse_datetime(lines[-1].split(",")[0])
         print "File: %s/%s_%s.dat" % (
-            path, procedure, datetime.datetime.strftime(
+            path, filename, datetime.datetime.strftime(
                 datenumber, "%Y%m%d%H%M%S%f"))
         out_file = open("%s/%s_%s.dat" % (
-            path, procedure, datetime.datetime.strftime(
+            path, filename, datetime.datetime.strftime(
                 datenumber, "%Y%m%d%H%M%S%f")), "w")
         out_file.write("\n".join(lines))
         out_file.close()
@@ -78,6 +82,12 @@ def execute(args, logger=None):
         url = args['url']
 
         procedure = args['procedure']
+
+        if 'filename' in args and args['filename'] is not None:
+            filename = args['filename']
+        else:
+            filename = procedure
+
         observedProperty = args['op']
 
         begin = iso.parse_datetime(args['begin'])
@@ -91,7 +101,7 @@ def execute(args, logger=None):
         password = None
         if 'password' in args:
             password = args['password']
-        if auth and password:
+        if user and password:
             auth = HTTPBasicAuth(user, password)
 
         qi = 'True'
@@ -116,7 +126,6 @@ def execute(args, logger=None):
         if (end-begin) > step:
             tmpEnd = tmpBegin + step
 
-        print params
 
         while tmpEnd <= end:
             print ("%s - %s") % (tmpBegin, tmpEnd)
@@ -130,7 +139,7 @@ def execute(args, logger=None):
 
             res = req.get("%s?%s" % (url, urllib.urlencode(params)), auth=auth)
 
-            makeFile(res, procedure, observedProperty, d)
+            makeFile(res, procedure, observedProperty, d, qi, filename)
             tmpBegin = tmpEnd
             tmpEnd = tmpBegin + step
 
@@ -147,7 +156,7 @@ def execute(args, logger=None):
                     iso.datetime_isoformat(tmpEnd))
 
             res = req.get("%s?%s" % (url, urllib.urlencode(params)), auth=auth)
-            makeFile(res, procedure, observedProperty, d)
+            makeFile(res, procedure, observedProperty, d, qi, filename)
 
             print " %s ************************** " % iso.datetime_isoformat(
                 end)
@@ -197,6 +206,12 @@ if __name__ == "__main__":
         action='store',
         dest='procedure',
         help='Procedure name')
+
+    parser.add_argument(
+        '-f',
+        action='store',
+        dest='filename',
+        help='filename')
 
     parser.add_argument(
         '-o',

@@ -227,6 +227,10 @@ class istsosConfig():
             "broker_user": serviceobj.serviceconf.mqtt["broker_user"],
             "broker_password": serviceobj.serviceconf.mqtt["broker_password"]
         }
+        
+        self.sequential = True
+        if serviceobj.serviceconf.initialization["sequential"] == 'False':
+            self.sequential = False
 
         self.service = "SOS"
         self.version = "1.0.0"

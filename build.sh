@@ -5,7 +5,7 @@
 # sudo apt-get install devscripts
 # sudo apt-get install debhelper
 
-revision=$(svn info | grep "Revision" | awk '{print $2}')
+revision=$(git rev-list --count HEAD)
 version=$(cat ./VERSION.txt)
 datetime=$(LC_TIME=en_US date +"%a, %e %b %Y %T %z")
 itp=$(LC_TIME=en_US date +"%Y%m%d")
@@ -53,7 +53,7 @@ mv python-istsos_$version-1_all.deb python-istsos_$version.deb
 mv istsos_$version.orig.tar.gz istsos-$version.tar.gz
 rm -rf istsos
 
-cd ../documentation
+cd ../docs
 
 make html
 cd _build

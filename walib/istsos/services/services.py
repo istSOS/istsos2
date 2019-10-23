@@ -37,8 +37,10 @@ import shutil
 import errno
 import traceback
 import psycopg2
+from datetime import datetime
 from lib.etree import et
 import lib.requests as requests
+from lib import isodate as iso
 
 reurl = (r'(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+'
          '([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?')
@@ -865,103 +867,301 @@ class waInsertobservation(waResourceService):
 
 
 class waFastInsert(waResourceService):
-    """class to handle fast insertion of observation, support only the
-    POST method"""
+    """
+        class to handle fast insertion of observation, support only the
+        POST method.
+
+        Path example:
+        http://localhost/istsos/wa/istsos/services/demo/operations/fastinsert
+
+        Regular Time series example body:
+        4759a210178a11e6a91c0800273cbaca;
+        2017-03-13T14:40:15+0100;PT10M;
+        0.2,18.30,69,4.3@0.4,18.80,73,4.1
+
+        Irregular Time series example body:
+        4759a210178a11e6a91c0800273cbaca;
+        2017-03-13T14:40:15+0100,0.2,18.30,69,4.3@
+        2017-03-13T14:40:15+0100,0.4,18.80,73,4.1
+
+        (without line breaks)
+
+        How exception are handled:
+        - Wrong sampling time format: no insert
+        - Sampling time before end position or after now: no insert
+        - Wrong measure value (not a number): is a no data value
+
+    """
+
+    MODE_IRREGULAR = 1
+    MODE_REGULAR = 2
+
     def __init__(self, waEnviron):
-        waResourceService.__init__(self, waEnviron)
+        waResourceService.__init__(self, waEnviron, None, False)
+        self.servicename = self.pathinfo[2]
+        if not self.pathinfo[-1] == "procedures" and len(self.pathinfo) > 4:
+            self.procedurename = self.pathinfo[4]
+        else:
+            self.procedurename = None
 
-    def executePost(self):
-        procedure = self.pathinfo[-1]
-        if procedure == 'fastinsert' and self.pathinfo[-2] == 'operations':
-            self.setException("Request wrong: please, put the procedure"
-                              "name in the url")
+    def executePost(self, db=True):
+        if self.procedurename is None:
+            raise Exception(
+                "POST action without procedure name not allowed")
 
-        if not self.json or len(self.json) == 0:
-            self.setException("Request wrong: body data empty")
+        now = datetime.now(iso.UTC)
+        non_blocking_exceptions = []
+
+        # Create data array
+        data = self.waEnviron['wsgi_input'].split(";")
+
+        # Assigned id always in the first position
+        assignedid = data[0]
+
+        if len(data) == 4:  # regular time series
+            mode = self.MODE_REGULAR
+
+        elif len(data) == 2:  # irregular time series
+            mode = self.MODE_IRREGULAR
 
         else:
+            raise Exception(
+                "Body content wrongly formatted. Please read the docs.")
+
+        try:
             conn = databaseManager.PgDB(
-                self.serviceconf.connection["user"],
-                self.serviceconf.connection["password"],
-                self.serviceconf.connection["dbname"],
-                self.serviceconf.connection["host"],
-                self.serviceconf.connection["port"]
+                self.serviceconf.connection['user'],
+                self.serviceconf.connection['password'],
+                self.serviceconf.connection['dbname'],
+                self.serviceconf.connection['host'],
+                self.serviceconf.connection['port']
             )
-            try:
-                sql = """
+
+            rows = conn.select(
+                ("""
                     SELECT
-                      procedures.id_prc,
-                      proc_obs.id_pro,
-                      proc_obs.constr_pro,
-                      procedures.stime_prc,
-                      procedures.etime_prc
+                        procedures.id_prc,
+                        proc_obs.id_pro,
+                        proc_obs.constr_pro,
+                        procedures.stime_prc,
+                        procedures.etime_prc,
+                        procedures.name_prc
                     FROM
-                      %s.procedures,
-                      %s.proc_obs
+                        %s.procedures,
+                        %s.proc_obs
                     WHERE
-                      proc_obs.id_prc_fk = procedures.id_prc
-                """ % (self.service, self.service)
-                sql += """
-                    AND
-                      name_prc = %s
-                    ORDER BY
-                      proc_obs.id_pro ASC;
-                """
-                rows = conn.select(sql, (procedure,))
+                        proc_obs.id_prc_fk = procedures.id_prc
+                """ % (self.servicename, self.servicename)) + """
+                  AND
+                    assignedid_prc = %s
+                  ORDER BY
+                    proc_obs.id_pro ASC;
+                """,
+                (
+                    assignedid,
+                )
+            )
+
+            if len(rows) == 0:
+                raise Exception(
+                    "Procedure with aid %s not found." % assignedid)
+
+            id_prc = rows[0][0]
+            name_prc = rows[0][5]
+            bp = rows[0][3]
+            bpu = False
+            ep = rows[0][4]
+            epu = False
+
+            def check_sampling(sampling):
+
+                # If the end position exists the new measures must be after
+                if ep is not None and sampling_time < ep:
+                    non_blocking_exceptions.append(
+                        "Procedure %s, Sampling time (%s) "
+                        "is before the end position (%s)" % (
+                            name_prc,
+                            sampling_time.isoformat(),
+                            ep.isoformat())
+                    )
+                    return False
+
+                # Check that the sampling time is before now
+                if sampling_time > now:
+                    non_blocking_exceptions.append(
+                        "Procedure %s, Sampling time (%s) "
+                        "is in the future (%s)" % (
+                            name_prc,
+                            sampling_time.isoformat(),
+                            now.isoformat())
+                    )
+                    return False
+
+                return True
+
+            tmp_data = []
+            if mode == self.MODE_REGULAR:
+
+                try:
+                    start = iso.parse_datetime(data[1])
+                except Exception:
+                    raise Exception(
+                        "Procedure %s, Sampling time (%s) "
+                        "wrong format" %
+                        name_prc, data[1])
+
+                try:
+                    step = iso.parse_duration(data[2])
+                except Exception:
+                    raise Exception(
+                        "Procedure %s, duration (%s) "
+                        "wrong format" % (
+                            name_prc, data[2]
+                        )
+                    )
+
+                data = data[3].split("@")
+                for idx in range(0, len(data)):
+
+                    sampling_time = start + (step * idx)
+
+                    if not check_sampling(sampling_time):
+                        continue
+
+                    tmp_data.append([
+                        sampling_time.isoformat()
+                    ] + data[idx].split(","))
+
+            elif mode == self.MODE_IRREGULAR:
+                data = data[1].split("@")
+                for i in range(0, len(data)):
+                    data[i] = data[i].split(",")
+
+                    try:
+                        try:
+                            sampling_time = iso.parse_datetime(data[i][0])
+                            if not check_sampling(sampling_time):
+                                continue
+                        except Exception:
+                            raise Exception(
+                                "Procedure %s, Sampling time (%s) "
+                                "wrong format" % (
+                                    name_prc, data[i][0]
+                                )
+                            )
+
+                        tmp_data.append(data[i])
+
+                    except Exception:
+                        non_blocking_exceptions.append(
+                            "Procedure %s, Sampling time (%s) "
+                            "wrong format" % (
+                                name_prc, data[1]
+                            )
+                        )
+                        continue
+
+            data = tmp_data
+
+            op_cnt = len(rows)
+
+            for observation in data:
+
+                id_eti = conn.executeInTransaction(
+                    ("""
+                        INSERT INTO %s.event_time (id_prc_fk, time_eti)
+                    """ % self.servicename) + """
+                        VALUES (%s, %s::TIMESTAMPTZ) RETURNING id_eti;
+                    """,
+                    (
+                        id_prc, observation[0]
+                    )
+                )
+
+                if (bp is None) or (bp == '') or (
+                        iso.parse_datetime(observation[0]) < bp):
+                    bp = iso.parse_datetime(observation[0])
+                    bpu = True
+
+                if (ep is None) or (ep == '') or (
+                        iso.parse_datetime(observation[0]) > ep):
+                    ep = iso.parse_datetime(observation[0])
+                    epu = True
 
                 # check if procedure observations length is ok
-                if len(rows) != (len(self.json[0])-1):
-                    self.setException("Array length missmatch with procedures "
-                                      "observation number")
+                #   (-1 remove datetime from lenght of observations array)
+                if op_cnt != (len(observation)-1):
+                    non_blocking_exceptions.append(
+                        "Procedure %s, Array length missmatch with procedures "
+                        "observation number: %s" % (
+                            name_prc, observation
+                        )
+                    )
+                    continue
 
-                else:
-                    insertEventTime = """
-                        INSERT INTO %s.event_time (id_prc_fk, time_eti)
-                    """ % (self.service)
-                    insertEventTime += """
-                        VALUES (%s, %s::TIMESTAMPTZ) RETURNING id_eti;
-                    """
+                for idx in range(0, op_cnt):
+                    try:
+                        conn.executeInTransaction(
+                            ("""
+                                INSERT INTO %s.measures(
+                                    id_eti_fk,
+                                    id_qi_fk,
+                                    id_pro_fk,
+                                    val_msr
+                                )
+                            """ % self.servicename) + """
+                                VALUES (%s, 100, %s, %s);
+                            """,
+                            (
+                                int(id_eti[0][0]),  # id_eti
+                                int(rows[idx][1]),  # id_pro
+                                float(observation[(idx+1)])
+                            )
+                        )
+                    except Exception as ie:
+                        non_blocking_exceptions.append(
+                            "Procedure %s, %s" % (
+                                name_prc, ie
+                            )
+                        )
 
-                    deleteEventTime = """
-                        DELETE FROM %s.event_time
-                    """ % (self.service)
-                    deleteEventTime += """
-                        WHERE id_prc_fk = %s
-                        AND time_eti = %s::TIMESTAMPTZ
-                    """
+            if bpu:
+                conn.executeInTransaction(
+                    ("""
+                        UPDATE %s.procedures
+                    """ % self.servicename) + """
+                        SET stime_prc=%s::TIMESTAMPTZ WHERE id_prc=%s
+                    """,
+                    (
+                        bp.isoformat(),
+                        id_prc
+                    )
+                )
 
-                    insertMeasure = """
-                        INSERT INTO %s.measures(
-                            id_eti_fk, id_qi_fk, id_pro_fk, val_msr)
-                    """ % (self.service)
-                    insertMeasure += """
-                        VALUES (%s, 100, %s, %s);
-                    """
+            if epu:
+                conn.executeInTransaction(
+                    ("""
+                        UPDATE %s.procedures
+                    """ % self.servicename) + """
+                        SET etime_prc=%s::TIMESTAMPTZ WHERE id_prc=%s
+                    """,
+                    (
+                        ep.isoformat(),
+                        id_prc
+                    )
+                )
 
-                    for observation in self.json:
-                        try:
-                            id_eti = conn.executeInTransaction(
-                                insertEventTime, (rows[0][0], observation[0]))
+            conn.commitTransaction()
 
-                        except psycopg2.IntegrityError as ie:
-                            conn.rollbackTransaction()
-                            conn.executeInTransaction(
-                                deleteEventTime, (rows[0][0], observation[0]))
-                            id_eti = conn.executeInTransaction(
-                                insertEventTime, (rows[0][0], observation[0]))
+            # self.setData(ret)
+            self.setMessage("Thanks for data")
 
-                        for idx in range(0, len(rows)):
-                            conn.executeInTransaction(
-                                insertMeasure, (int(id_eti[0][0]),
-                                                int(rows[idx][1]),
-                                                float(observation[(idx+1)])))
+            if len(non_blocking_exceptions) > 0:
+                print >> sys.stderr, str(non_blocking_exceptions)
 
-                        conn.commitTransaction()
-
-                self.setMessage("Faster than light!")
-
-            except Exception as e:
-                print >> sys.stderr, traceback.print_exc()
-                conn.rollbackTransaction()
-                self.setException(
-                    "Error in fast insert (%s): %s" % (type(e), e))
+        except Exception as e:
+            print >> sys.stderr, traceback.print_exc()
+            #traceback.print_exc(file=sys.stderr)
+            conn.rollbackTransaction()
+            raise Exception(
+                "Error in fast insert (%s): %s" % (type(e), e))

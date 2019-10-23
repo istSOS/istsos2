@@ -22,12 +22,15 @@ Ext.define('istsos.view.ProcedureChart', {
 
     initComponent: function() {
         var me = this;
+        this.sPrefix = "$_";
 
         Ext.create('istsos.store.ObservedProperties');
+        Ext.create('istsos.store.ChartStyles');
         Ext.create('istsos.store.AggregateFunctionStore').loadData([
             ['AVG'],['SUM'],['COUNT'],['MAX'],['MIN']
         ]);
         this.procedures = {};
+        this.procedures2 = {};
 
         me.callParent(arguments);
 
@@ -113,52 +116,115 @@ Ext.define('istsos.view.ProcedureChart', {
     rederChart: function(){
 
         this.obsprop = Ext.getCmp("oeCbObservedProperty").getValue();
+        this.obsprop2 = Ext.getCmp("oeCbObservedProperty2").getValue();
+        this.obspropName = Ext.getCmp("oeCbObservedProperty").getRawValue();
+        this.obsprop2Name = Ext.getCmp("oeCbObservedProperty2").getRawValue();
         var procs = [];
+        var procs2 = [];
         // get the json rapresentation of the tree menu of procedures
         //var checked = Ext.getCmp('proceduresTree').getValues();
         var visibility = []; // Initialize the chart series visibility
 
         this.labels = ["isodate"];
+        this.series = {};
         this.colors = [];
         var template = [];
 
         this.chartStore = {};
 
-        var valueFormatter = {
-
-        }
+        var valueFormatter = {}
         var cc = 1;
 
         var keys = Object.keys(this.procedures);
         keys = keys.sort();
+        this.procedures2 = {};
 
-        //for (var key in this.procedures) {
+        var style1 = {};
+        var style2 = {};
+        var usrStyle1 = Ext.getCmp('oeCbStyle1').getValue();
+        var usrStyle2 = Ext.getCmp('oeCbStyle2').getValue();
+
+        if(usrStyle1===2){
+            style1 = {
+                strokeWidth: 0.0,
+                drawPoints: true,
+                pointSize: 3,
+                highlightCircleSize: 6
+            };
+        }else if(usrStyle1===3){
+            style1 = {
+                strokeWidth: 1.0,
+                drawPoints: true,
+                pointSize: 2
+            };
+        }
+        if(usrStyle2===2){
+            style2 = {
+                strokeWidth: 0.0,
+                drawPoints: true,
+                pointSize: 3,
+                highlightCircleSize: 6
+            };
+        }else if(usrStyle2===3){
+            style2 = {
+                strokeWidth: 3.0,
+                drawPoints: true,
+                pointSize: 3
+            };
+        }
+
         for (var c = 0; c < keys.length; c++) {
             var key = keys[c];
             // check if procedures loaded have the requested observed property
-            if (Ext.Array.contains(this.procedures[key].getObservedProperties(),this.obsprop)) {
-                procs.push(this.procedures[key]);
+            if (Ext.Array.contains(this.procedures[key].getObservedProperties(), this.obsprop)) {
+                var pTmp = this.procedures[key];
+                var obspropTmp = this.obsprop;
+                procs.push(pTmp);
+
+                this.series[key] = Ext.apply({
+                    axis: 'y'
+                }, style1)
+
                 // Preparing labels and single native row template
                 template.push(null);
                 this.labels.push(key);
-                this.colors.push(this.procedures[key].color);
+                this.colors.push(pTmp.color);
                 valueFormatter[cc == 1 ? 'y': 'y'+cc] = {
                     valueFormatter: function(ms, fn, p) {
-                        return ' '+ ms + ' '+ Ext.getCmp('chartpanel').procedures[p].getUomCode(
-                            Ext.getCmp("oeCbObservedProperty").getValue()
-                            );
+                        return ' '+ ms + ' '+ pTmp.getUomCode(obspropTmp);
+                    }
+                }
+            }
+
+            if (this.obsprop2!==null && Ext.Array.contains(this.procedures[key].getObservedProperties(), this.obsprop2)) {
+                var pTmp2 = this.procedures[key];
+                var obsprop2Tmp = this.obsprop2;
+                if(!Ext.Array.contains(procs, pTmp2)){
+                    procs.push(pTmp2);
+                }
+                this.procedures2[this.sPrefix+key] = pTmp2;
+
+                this.series[this.sPrefix+key] = Ext.apply({
+                    axis: 'y2'
+                }, style2)
+                // Preparing labels and single native row template
+                template.push(null);
+                this.labels.push(this.sPrefix+key);
+                this.colors.push(this.procedures[key].color2);
+                valueFormatter['y2'] = {
+                    valueFormatter: function(ms, fn, p) {
+                        return ' '+ ms + ' '+ pTmp2.getUomCode(obsprop2Tmp);
                     }
                 }
             }
         }
         // merging data
         var idx = 0;
-        //for (var key in procs) {
         for (var c = 0; c < procs.length; c++) {
             var p = procs[c];
 
-            p.store.on("update",this._storeUpdated,this);
-            p.store.on("seriesupdated",this._storeSeriesUpdated,this);
+            p.store.on("update", this._storeUpdated, this);
+            p.store.on("seriesupdated", this._storeSeriesUpdated, this);
 
             var recs = p.store.getRange();
             for (var j = 0, l = recs.length; j < l; j++) {
@@ -166,14 +232,38 @@ Ext.define('istsos.view.ProcedureChart', {
                     this.chartStore[recs[j].get("micro")] = Ext.Array.clone(template);
                 }
                 // Set the property choosen in the chart store in the right column
-                var v = parseFloat(recs[j].get(p.storeConvertFieldToId[this.obsprop]));
-                if (v<-900) {
-                    this.chartStore[recs[j].get("micro")][idx] = NaN;
-                }else{
-                    this.chartStore[recs[j].get("micro")][idx] = v;
+                var v = NaN;
+
+                if (!Ext.Array.contains(p.getObservedProperties(), this.obsprop)) {
+                    v = parseFloat(recs[j].get(p.storeConvertFieldToId[this.obsprop2]));
+                    if (v<-900) {
+                        this.chartStore[recs[j].get("micro")][(idx)] = NaN;
+                    }else{
+                        this.chartStore[recs[j].get("micro")][(idx)] = v;
+                    }
+                }
+                else if (Ext.Array.contains(p.getObservedProperties(), this.obsprop)) {
+                    v = parseFloat(recs[j].get(p.storeConvertFieldToId[this.obsprop]));
+                    if (v<-900) {
+                        this.chartStore[recs[j].get("micro")][idx] = NaN;
+                    }else{
+                        this.chartStore[recs[j].get("micro")][idx] = v;
+                    }
+                    if(this.obsprop2!==null && Ext.Array.contains(p.getObservedProperties(), this.obsprop2)){
+                        v = parseFloat(recs[j].get(p.storeConvertFieldToId[this.obsprop2]));
+                        if (v<-900) {
+                            this.chartStore[recs[j].get("micro")][(idx+1)] = NaN;
+                        }else{
+                            this.chartStore[recs[j].get("micro")][(idx+1)] = v;
+                        }
+                    }
                 }
             }
             idx++;
+            if (Ext.Array.contains(p.getObservedProperties(), this.obsprop) &&
+                    this.obsprop2!==null && Ext.Array.contains(p.getObservedProperties(), this.obsprop2)) {
+                idx++;
+            }
         }
 
         // Sorting array by dates
@@ -204,12 +294,18 @@ Ext.define('istsos.view.ProcedureChart', {
                 {
                     labels: this.labels,
                     colors: this.colors,
-                    strokeWidth: 2,
-                    digitsAfterDecimal: 6,
+                    strokeWidth: 3,
+                    digitsAfterDecimal: 4, //6,
                     connectSeparatedPoints: true,
+                    series: this.series,
                     //visibility: visibility,
                     legend: 'always',
-                    title: this.obsprop,
+                    title: this.obspropName + (
+                        this.obsprop2!==null?
+                        " / "+ this.obsprop2Name:""),
+                    ylabel: this.obsprop,
+                    y2label: (this.obsprop2!==null?
+                        this.obsprop2:""),
                     showRangeSelector: true,
                     showRoller: true,
                     rangeSelectorHeight: 30,
@@ -222,12 +318,13 @@ Ext.define('istsos.view.ProcedureChart', {
                         'boxShadow': '4px 4px 4px #888',
                         'right': '10px'
                     },
-                    labelsDivWidth: "100%",
+                    //labelsDivWidth: "100%",
                     axisLineColor: 'green',
                     axisLabelFontSize: 12,
-                    axisLabelWidth: 150,
-                    xAxisLabelWidth: 150,
-                    highlightCircleSize: 4,
+                    axisLabelWidth: 85,
+                    //xAxisLabelWidth: 150,
+                    y2AxisLabelWidth: 60,
+                    highlightCircleSize: 5,
                     axes: Ext.apply({
                         x: {
                             valueFormatter: function(ms) {
@@ -325,8 +422,28 @@ Ext.define('istsos.view.ProcedureChart', {
                                 }
 
                             }
-                        }
-                    },valueFormatter),
+                        },
+                        y: {
+                            valueFormatter: function(y) {
+                                console.log(y);
+                                return y;
+                            },
+                            axisLabelFormatter: function(y) {
+                                console.log(y);
+                                return y;
+                            },
+                            axisLabelWidth: 100
+                          },
+                        y2: {
+                            valueFormatter: function(y2) {
+                                return y2;
+                            },
+                            axisLabelFormatter: function(y2) {
+                                return y2;
+                            }
+                          }
+                    },
+                    valueFormatter),
                     clickCallback: function(e, x, pts) {
                         var chartpanel = Ext.getCmp('chartpanel');
                         // Series selectd
@@ -359,7 +476,7 @@ Ext.define('istsos.view.ProcedureChart', {
                         }, chartpanel, [canvas, area, g]);
                     }
                 }
-                );
+            );
         }else if (!Ext.isEmpty(this.chart)) {
             this.chart.updateOptions({
                 file: this.chartdata,
@@ -512,11 +629,30 @@ Ext.define('istsos.view.ProcedureChart', {
             });
         }
     },
+    _color2Changed: function(p, newColor, oldColor){
+        if (this.chart) {
+            var colors = this.chart.getColors();
+            var labels = this.chart.getLabels();
+            var index = Ext.Array.indexOf(labels, this.sPrefix + p.getName());
+            colors[index-1] = newColor;
+            this.chart.updateOptions( {
+                'colors': colors
+            });
+        }
+    },
     _visibilityChanged: function(p, visibile){
         if (this.chart) {
             var labels = this.chart.getLabels();
+
+            // Primary
             var index = Ext.Array.indexOf(labels, p.getName())-1;
             this.chart.setVisibility(index,visibile);
+
+            // secondary
+            index = Ext.Array.indexOf(labels, this.sPrefix + p.getName())-1;
+            if(index>0){
+                this.chart.setVisibility(index, visibile);
+            }
         }
     },
     _storeUpdated: function( store, record){
@@ -563,12 +699,15 @@ Ext.define('istsos.view.ProcedureChart', {
     */
     addProcedure: function(procedure){
         this.procedures[procedure.getName()] = procedure;
-        procedure.on("colorchanged",this._colorChanged,this);
-        procedure.on("visibilitychanged",this._visibilityChanged,this);
+        //this.procedures[this.sPrefix+procedure.getName()] = procedure;
+        procedure.on("colorchanged", this._colorChanged, this);
+        procedure.on("color2changed", this._color2Changed, this);
+        procedure.on("visibilitychanged", this._visibilityChanged, this);
         this.reconfigure();
     },
     removeProcedure: function(procedure){
-        procedure.un("colorchanged",this._colorChanged,this);
+        procedure.un("colorchanged", this._colorChanged, this);
+        procedure.un("color2changed", this._color2Changed, this);
         delete this.procedures[procedure.getName()];
         this.reconfigure();
         if (this.chart) {

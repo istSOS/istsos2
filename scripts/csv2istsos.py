@@ -95,6 +95,9 @@ def execute(args, conf=None):
         if 'q' in args:
             quality = args['q']
 
+        # Offerings
+        off = args['o']
+
         # Procedures
         procs = args['p']
 
@@ -131,6 +134,11 @@ def execute(args, conf=None):
             if args['noqi'] is True:
                 noqi = True
 
+        force = "true" # disabling force insert?
+        if 'f' in args:
+            if args['f'] is True:
+                force = "false"
+
         maxobs = 5000
         if 'm' in args:
             maxobs = int(args['m'])
@@ -138,9 +146,11 @@ def execute(args, conf=None):
         #req = requests.session()
         req = requests
 
+        log("\nOffering: %s" % off)
+
         for proc in procs:
 
-            log("\nProcedure: %s" % proc)
+            log("Procedure: %s" % proc)
 
             if conf is not None and 'description' in conf:
                 data = conf['description']
@@ -176,7 +186,7 @@ def execute(args, conf=None):
                 "%s/wa/istsos/services/%s/operations/getobservation/"
                 "offerings/%s/procedures/%s/observedproperties/%s/ev"
                 "enttime/last" % (
-                    url, service, 'temporary', proc, ','.join(op)),
+                    url, service, off, proc, ','.join(op)),
                 auth=auth,
                 verify=False)
 
@@ -235,7 +245,9 @@ def execute(args, conf=None):
 
                     # Check if all the observedProperties of the procedure are
                     # included in the CSV file (quality index is optional)
+                    # print ("Observations: %s" % obsindex)
                     for k, v in jsonindex.iteritems():
+                        # print ("Checking: %s" % k)
                         if k in obsindex:
                             continue
                         elif ':qualityIndex' in k:
@@ -272,8 +284,8 @@ def execute(args, conf=None):
 
                         except Exception as e:
                             raise Exception(
-                                "Errore alla riga: %s - %s\n%s" % (
-                                    i, lines[i], str(e)))
+                                "Error in %s line: %s - %s\n%s" % (
+                                    f, i, lines[i], str(e)))
 
                 log("Before insert ST: %s" % proc)
                 if 'beginPosition' in data["samplingTime"]:
@@ -333,7 +345,7 @@ def execute(args, conf=None):
                 log("   + End: %s" % ep.isoformat())
                 log(" > Values: %s" % len(
                     data['result']['DataArray']['values']))
-                    
+
                 if not test and len(files) > 0:  # send to wa
 
                     if len(data['result']['DataArray']['values']) > maxobs:
@@ -370,7 +382,7 @@ def execute(args, conf=None):
                                         'values'][0][jsonindex[isourn]],
                                     "endPosition":   ep.isoformat()
                                 }
-                            
+
                             res = req.post(
                                 "%s/wa/istsos/services/%s/"
                                 "operations/insertobservation" % (
@@ -379,7 +391,7 @@ def execute(args, conf=None):
                                 auth=auth,
                                 verify=False,
                                 data=json.dumps({
-                                    "ForceInsert": "true",
+                                    "ForceInsert": force,
                                     "AssignedSensorId": aid,
                                     "Observation": tmpData
                                 })
@@ -414,7 +426,7 @@ def execute(args, conf=None):
                             auth=auth,
                             verify=False,
                             data=json.dumps({
-                                "ForceInsert": "true",
+                                "ForceInsert": force,
                                 "AssignedSensorId": aid,
                                 "Observation": data
                             })
@@ -458,6 +470,14 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
+        '-o',
+        action='store',
+        dest='o',
+        metavar='offering',
+        default='temporary',
+        help='The name of the offering')
+
+    parser.add_argument(
         '-p',
         action='store',
         required=True,
@@ -491,6 +511,13 @@ if __name__ == "__main__":
         action='store_true',
         dest='noqi',
         help='Do not export quality index')
+    
+
+    parser.add_argument(
+        '-f', '--force-disabled',
+        action='store_true',
+        dest='f',
+        help='To disable force insert')
 
     parser.add_argument(
         '-u',
