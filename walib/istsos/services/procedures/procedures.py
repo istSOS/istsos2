@@ -324,16 +324,43 @@ class waProcedures(waResourceService):
             foiY = float(proc.data['location']['geometry']['coordinates'][1])
             foiZ = float(proc.data['location']['geometry']['coordinates'][2])
             foiSrid = int(proc.data['location']['crs']['properties']['name'])
-
+            
             epsg = int(self.serviceconf.geo['istsosepsg'])
+            #--get id_foi or create it if it does not exist yet
+            sqlId = "SELECT id_foi FROM %s.foi" % (self.service)
+            sqlId += " WHERE name_foi=%s"
+            params = (str(name),)
+            try:
+                id_foi = servicedb.select(sqlId, params)
+                if id_foi:
+                    sql = "UPDATE %s.foi " % self.service
+                    sql += """SET geom_foi = ST_Transform(
+                                    ST_GeomFromText('POINT(%s %s %s)',%s), %s)
+                        WHERE name_foi = %s"""
 
-            sql = "UPDATE %s.foi " % self.service
-            sql += """SET geom_foi = ST_Transform(
-                              ST_GeomFromText('POINT(%s %s %s)',%s), %s)
-                WHERE name_foi = %s"""
+                    params = (foiX, foiY, foiZ, foiSrid, epsg, name)
+                    servicedb.executeInTransaction(sql, params)
+                else:
+                    sqlId = "SELECT id_foi_fk FROM %s.procedures" % (
+                        self.service
+                    )
+                    sqlId += " WHERE name_prc=%s"
+                    params = (str(proc.data['system_id']),)
+                    id_foi = servicedb.select(sqlId, params)[0]["id_foi_fk"]
+                    sql = "UPDATE %s.foi " % self.service
+                    sql += """SET geom_foi = ST_Transform(
+                                    ST_GeomFromText('POINT(%s %s %s)',%s), %s),
+                                  name_foi = %s
+                        WHERE id_foi = %s"""
 
-            params = (foiX, foiY, foiZ, foiSrid, epsg, name)
-            servicedb.executeInTransaction(sql, params)
+                    params = (
+                        foiX, foiY, foiZ, foiSrid,
+                        epsg, name, id_foi
+                    )
+                    servicedb.executeInTransaction(sql, params)
+            except:
+                traceback.print_exc(file=sys.stderr)
+                raise Exception("PUT request wrong")
 
         if proc.data['system'] != self.procedurename:
             #rename procedure in transaction
