@@ -33,11 +33,11 @@ from walib import utils, databaseManager, configManager
 from walib.resource import waResourceAdmin, waResourceService
 import sys
 import os
+import csv
 import shutil
 import errno
 import traceback
 import psycopg2
-from datetime import datetime
 from lib.etree import et
 import lib.requests as requests
 from lib import isodate as iso
@@ -865,7 +865,6 @@ class waInsertobservation(waResourceService):
                 "Insert observations failed - Communication: %s %s - Response:"
                 " %s" % (response.status_code, e, response.text))
 
-
 class waFastInsert(waResourceService):
     """
         class to handle fast insertion of observation, support only the
@@ -909,12 +908,18 @@ class waFastInsert(waResourceService):
             raise Exception(
                 "POST action without procedure name not allowed")
 
+        from datetime import datetime
         now = datetime.now(iso.UTC)
         non_blocking_exceptions = []
 
+	# path to file for logging requests
+        dir_name = os.path.dirname(__file__)
+        file_name = os.path.join(dir_name, 'logs', 'fast_insert_log.csv')
+
         # Create data array
         data = self.waEnviron['wsgi_input'].split(";")
-
+        data_log = data[:]
+        print >> sys.stderr, data
         # Assigned id always in the first position
         assignedid = data[0]
 
@@ -936,7 +941,6 @@ class waFastInsert(waResourceService):
                 self.serviceconf.connection['host'],
                 self.serviceconf.connection['port']
             )
-
             rows = conn.select(
                 ("""
                     SELECT
@@ -964,7 +968,7 @@ class waFastInsert(waResourceService):
 
             if len(rows) == 0:
                 raise Exception(
-                    "Procedure with aid %s not found." % assignedid)
+                    "Procedure with aid %s.%s not found." % (self.servicename, assignedid))
 
             id_prc = rows[0][0]
             name_prc = rows[0][5]
@@ -976,7 +980,7 @@ class waFastInsert(waResourceService):
             def check_sampling(sampling):
 
                 # If the end position exists the new measures must be after
-                if ep is not None and sampling_time < ep:
+                if ep is not None and sampling_time <= ep:
                     non_blocking_exceptions.append(
                         "Procedure %s, Sampling time (%s) "
                         "is before the end position (%s)" % (
@@ -1056,7 +1060,7 @@ class waFastInsert(waResourceService):
                         non_blocking_exceptions.append(
                             "Procedure %s, Sampling time (%s) "
                             "wrong format" % (
-                                name_prc, data[1]
+                                name_prc, data[i][0]
                             )
                         )
                         continue
@@ -1100,30 +1104,60 @@ class waFastInsert(waResourceService):
                     continue
 
                 for idx in range(0, op_cnt):
-                    try:
-                        conn.executeInTransaction(
-                            ("""
-                                INSERT INTO %s.measures(
-                                    id_eti_fk,
-                                    id_qi_fk,
-                                    id_pro_fk,
-                                    val_msr
+                    if ':' in observation[(idx+1)]:
+                        try:
+                            value_qc = observation[(idx+1)].split(':')
+                            if value_qc == '40':
+                                value_qc = '400'
+                            conn.executeInTransaction(
+                                ("""
+                                    INSERT INTO %s.measures(
+                                        id_eti_fk,
+                                        id_qi_fk,
+                                        id_pro_fk,
+                                        val_msr
+                                    )
+                                """ % self.servicename) + """
+                                    VALUES (%s, %s, %s, %s);
+                                """,
+                                (
+                                    int(id_eti[0][0]),  # id_eti
+                                    float(value_qc[1]), # quality index
+                                    int(rows[idx][1]),  # id_pro
+                                    float(value_qc[0])
                                 )
-                            """ % self.servicename) + """
-                                VALUES (%s, 100, %s, %s);
-                            """,
-                            (
-                                int(id_eti[0][0]),  # id_eti
-                                int(rows[idx][1]),  # id_pro
-                                float(observation[(idx+1)])
                             )
-                        )
-                    except Exception as ie:
-                        non_blocking_exceptions.append(
-                            "Procedure %s, %s" % (
-                                name_prc, ie
+                        except Exception as ie:
+                            non_blocking_exceptions.append(
+                                "Procedure %s, %s" % (
+                                    name_prc, ie
+                                )
                             )
-                        )
+                    else:
+                        try:
+                            conn.executeInTransaction(
+                                ("""
+                                    INSERT INTO %s.measures(
+                                        id_eti_fk,
+                                        id_qi_fk,
+                                        id_pro_fk,
+                                        val_msr
+                                    )
+                                """ % self.servicename) + """
+                                    VALUES (%s, 100, %s, %s);
+                                """,
+                                (
+                                    int(id_eti[0][0]),  # id_eti
+                                    int(rows[idx][1]),  # id_pro
+                                    float(observation[(idx+1)])
+                                )
+                            )
+                        except Exception as ie:
+                            non_blocking_exceptions.append(
+                                "Procedure %s, %s" % (
+                                    name_prc, ie
+                                )
+                            )
 
             if bpu:
                 conn.executeInTransaction(
@@ -1158,10 +1192,122 @@ class waFastInsert(waResourceService):
 
             if len(non_blocking_exceptions) > 0:
                 print >> sys.stderr, str(non_blocking_exceptions)
+                data_log.append(str(non_blocking_exceptions))
+            else:
+                data_log.append('')
+            data_log.insert(0, now.isoformat())
 
         except Exception as e:
             print >> sys.stderr, traceback.print_exc()
+            data_log.append(str(e))
+            data_log.insert(0, now.isoformat())
             #traceback.print_exc(file=sys.stderr)
             conn.rollbackTransaction()
-            raise Exception(
-                "Error in fast insert (%s): %s" % (type(e), e))
+            if str(e).find("duplicate key")==-1:
+                raise Exception(
+                    "Error in fast insert (%s): %s" % (type(e), e))
+
+            self.setMessage("Thanks for data")
+
+
+class _waFastInsert(waResourceService):
+    """class to handle fast insertion of observation, support only the
+    POST method"""
+    def __init__(self, waEnviron):
+        waResourceService.__init__(self, waEnviron)
+
+    def executePost(self):
+        procedure = self.pathinfo[-1]
+        if procedure == 'fastinsert' and self.pathinfo[-2] == 'operations':
+            self.setException("Request wrong: please, put the procedure"
+                              "name in the url")
+
+        if not self.json or len(self.json) == 0:
+            self.setException("Request wrong: body data empty")
+
+        else:
+            conn = databaseManager.PgDB(
+                self.serviceconf.connection["user"],
+                self.serviceconf.connection["password"],
+                self.serviceconf.connection["dbname"],
+                self.serviceconf.connection["host"],
+                self.serviceconf.connection["port"]
+            )
+            try:
+                sql = """
+                    SELECT
+                      procedures.id_prc,
+                      proc_obs.id_pro,
+                      proc_obs.constr_pro,
+                      procedures.stime_prc,
+                      procedures.etime_prc
+                    FROM
+                      %s.procedures,
+                      %s.proc_obs
+                    WHERE
+                      proc_obs.id_prc_fk = procedures.id_prc
+                """ % (self.service, self.service)
+                sql += """
+                    AND
+                      name_prc = %s
+                    ORDER BY
+                      proc_obs.id_pro ASC;
+                """
+                rows = conn.select(sql, (procedure,))
+
+                # check if procedure observations length is ok
+                if len(rows) != (len(self.json[0])-1):
+                    self.setException("Array length missmatch with procedures "
+                                      "observation number")
+
+                else:
+                    insertEventTime = """
+                        INSERT INTO %s.event_time (id_prc_fk, time_eti)
+                    """ % (self.service)
+                    insertEventTime += """
+                        VALUES (%s, %s::TIMESTAMPTZ) RETURNING id_eti;
+                    """
+
+                    deleteEventTime = """
+                        DELETE FROM %s.event_time
+                    """ % (self.service)
+                    deleteEventTime += """
+                        WHERE id_prc_fk = %s
+                        AND time_eti = %s::TIMESTAMPTZ
+                    """
+
+                    insertMeasure = """
+                        INSERT INTO %s.measures(
+                            id_eti_fk, id_qi_fk, id_pro_fk, val_msr)
+                    """ % (self.service)
+                    insertMeasure += """
+                        VALUES (%s, 100, %s, %s);
+                    """
+
+                    for observation in self.json:
+                        try:
+                            id_eti = conn.executeInTransaction(
+                                insertEventTime, (rows[0][0], observation[0]))
+
+                        except psycopg2.IntegrityError as ie:
+                            conn.rollbackTransaction()
+                            conn.executeInTransaction(
+                                deleteEventTime, (rows[0][0], observation[0]))
+                            id_eti = conn.executeInTransaction(
+                                insertEventTime, (rows[0][0], observation[0]))
+
+                        for idx in range(0, len(rows)):
+                            conn.executeInTransaction(
+                                insertMeasure, (int(id_eti[0][0]),
+                                                int(rows[idx][1]),
+                                                float(observation[(idx+1)])))
+
+                        conn.commitTransaction()
+
+                self.setMessage("Faster than light!")
+
+            except Exception as e:
+                print >> sys.stderr, traceback.print_exc()
+                conn.rollbackTransaction()
+                self.setException(
+                    "Error in fast insert (%s): %s" % (type(e), e))
