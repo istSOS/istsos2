@@ -12,6 +12,9 @@ itp=$(LC_TIME=en_US date +"%Y%m%d")
 
 rm -rf _build
 
+# Remove executable permission from files
+chmod -R -x debian/*
+
 mkdir _build
 mkdir _build/istsos
 mkdir _build/istsos/interface

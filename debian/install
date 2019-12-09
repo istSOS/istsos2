@@ -9,3 +9,4 @@ wnslib /usr/share/istsos
 lib /usr/share/istsos
 logs /usr/share/istsos
 debian/istsos.conf /etc/apache2/sites-available/
+

@@ -15,7 +15,7 @@
             }
         },
         "urlPrefix": "http://localhost/istsos/modules/requests",
-        "exportPath": "/home/milan/workspace/istsos/interface/modules/requests/www/",
+        "exportPath": "/home/milan/workspace/istsos/src/interface/modules/requests",
         "spacesToIndent": 4,
         "sdkPath": "",
         "lineEnding": "LF",

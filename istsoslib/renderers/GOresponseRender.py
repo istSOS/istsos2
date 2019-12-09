@@ -25,6 +25,7 @@ from istsoslib import sosException
 from lib.etree import et
 import hashlib
 import sys
+import datetime
 
 def render(GO,sosConfig):
     if GO.filter.responseFormat in ['text/xml;subtype="om/1.0.0"',"text/xml"]:
@@ -350,9 +351,15 @@ def CSVformat(GO):
             rows.append(row)
                 
     #write results as CSV    
+    print >> sys.stderr, "***************** LOOPING *******************"
+    a = datetime.datetime.now()
     r  = ",".join(columns_name) + "\n"
     for c in rows:
         r += ",".join(c) + "\n"
+        
+    print >> sys.stderr, str(datetime.datetime.now() - a)
+    print >> sys.stderr, "***************** DONE *******************"
+    sys.stderr.flush()
     
     return r
 

@@ -24,6 +24,7 @@
 import os
 import sys
 import copy
+import datetime
 from datetime import timedelta
 from lib import isodate as iso
 from lib import pytz
@@ -111,7 +112,11 @@ class VirtualProcess():
                 result = self.pgdb.select(sql, (p,))
 
                 if len(result)==0:
-                    raise sosException.SOSException("InvalidParameterValue","procedure","Virtual Procedure Error: procedure %s not found in the database" % (p))
+                    raise sosException.SOSException(
+                        "InvalidParameterValue",
+                        "procedure",
+                        "Virtual Procedure Error: procedure %s not found in the database" % (p)
+                    )
 
                 result = result[0]
 
@@ -184,7 +189,7 @@ class VirtualProcess():
             except Exception as e:
                 raise Exception("Database error: %s - %s" % (sql, e))
 
-            self.samplingTime = (result[0],result[1])
+            self.samplingTime = (result[0], result[1])
 
 
 
@@ -974,7 +979,12 @@ class Observation:
                 self.aggregate_function = None
 
             try:
+                print >> sys.stderr, "***************** QUERY *******************"
+                a = datetime.datetime.now()
                 data_res = pgdb.select(sql)
+                print >> sys.stderr, str(datetime.datetime.now() - a)
+                print >> sys.stderr, "***************** DONE  *******************"
+                sys.stderr.flush()
 
             except:
                 raise Exception("SQL: %s"%(sql))
@@ -1042,7 +1052,6 @@ class Observation:
                 sys.path.append(vpFolder)
             except:
                 raise Exception("error in loading virtual procedure path")
-            #import procedure process
             exec "import %s as vproc" %(self.name)
 
             # Initialization of virtual procedure will load the source data
@@ -1223,8 +1232,6 @@ class GetObservationResponse_2_0_0:
 
 
         # check if requested foi exist
-        print >> sys.stderr, "# check if requested foi exist"
-        print >> sys.stderr, filter.featureOfInterest
         if not filter.featureOfInterest in ['', None]:
             params = [
                 filter.featureOfInterest,

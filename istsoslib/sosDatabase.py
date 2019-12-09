@@ -145,6 +145,23 @@ class PgDB(Database):
         else:
             raise Exception("sql must be a SELECT statement")
 
+    def select_array(self, sql, par=None):
+        """ Execute a select statement"""
+        if sql.lstrip()[0:6].lower() == "select":
+            cur = self.__conn.cursor()
+            try:
+                cur.execute(sql, par)
+            except psycopg2.ProgrammingError as e:
+                raise e
+            try:
+                rows = cur.fetchall()
+            except:
+                rows = None
+            cur.close()
+            return rows
+        else:
+            raise Exception("sql must be a SELECT statement")
+
     def commitTransaction(self):
         """Commit current transaction"""
         try:

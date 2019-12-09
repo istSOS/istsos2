@@ -216,6 +216,10 @@ class CsvImporter(raw2csv.Converter):
                 date = self.parseDate(columns)
                 values = {}
                 for obs in self.config["observations"]:
+                    if obs["column"] is None:
+                        values[obs["observedProperty"]] = -999.9
+                    else:
+                        values[obs["observedProperty"]] = columns[obs["column"]]
                     values[obs["observedProperty"]] = columns[obs["column"]]
                 self.addObservation(
                     raw2csv.Observation(date, values)

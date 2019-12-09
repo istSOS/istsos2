@@ -4,3 +4,4 @@ export PYBUILD_NAME=istsos
 
 %:
 	dh $@ --with python2
+
