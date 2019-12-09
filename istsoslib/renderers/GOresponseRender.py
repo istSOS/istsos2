@@ -25,6 +25,7 @@ from istsoslib import sosException
 from lib.etree import et
 import hashlib
 import sys
+import datetime
 
 def render(GO,sosConfig):
     if GO.filter.responseFormat in ['text/xml;subtype="om/1.0.0"',"text/xml"]:
@@ -343,7 +344,7 @@ def CSVformat(GO):
         #append row
         for vals in ob.data:
             row = [""] * len(columns)
-            row[0] = vals[0].isoformat()
+            row[0] = vals[0]  # .isoformat()
             row[1] = ob.procedure.split(":")[-1]
             for i in range(1,len(vals)):
                 row[lut[i]] = str(vals[i])
@@ -351,9 +352,17 @@ def CSVformat(GO):
                 
     #write results as CSV    
     r  = ",".join(columns_name) + "\n"
+    # print >> sys.stderr, "********************************************"
+    # print >> sys.stderr, "********************************************"
+
+    print >> sys.stderr, "***************** LOOPING *******************"
+    a = datetime.datetime.now()
     for c in rows:
-        r += ",".join(c) + "\n"
-    
+        # print >> sys.stderr, (type(c[0]), c[0])
+        r += ",".join(c[0]) + "\n"
+    print >> sys.stderr, str(datetime.datetime.now() - a)
+    print >> sys.stderr, "***************** DONE *******************"
+    sys.stderr.flush()
     return r
 
 

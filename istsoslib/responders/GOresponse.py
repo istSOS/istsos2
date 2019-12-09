@@ -24,6 +24,7 @@
 import os
 import sys
 import copy
+import datetime
 from datetime import timedelta
 from lib import isodate as iso
 from lib import pytz
@@ -111,7 +112,11 @@ class VirtualProcess():
                 result = self.pgdb.select(sql, (p,))
 
                 if len(result)==0:
-                    raise sosException.SOSException("InvalidParameterValue","procedure","Virtual Procedure Error: procedure %s not found in the database" % (p))
+                    raise sosException.SOSException(
+                        "InvalidParameterValue",
+                        "procedure",
+                        "Virtual Procedure Error: procedure %s not found in the database" % (p)
+                    )
 
                 result = result[0]
 
@@ -184,7 +189,7 @@ class VirtualProcess():
             except Exception as e:
                 raise Exception("Database error: %s - %s" % (sql, e))
 
-            self.samplingTime = (result[0],result[1])
+            self.samplingTime = (result[0], result[1])
 
 
 
@@ -756,6 +761,9 @@ class Observation:
         # SET DATA
         #  CASE "insitu-fixed-point" or "insitu-mobile-point"
         if self.procedureType in ["insitu-fixed-point","insitu-mobile-point"]:
+
+            column = ['et.time_eti::text']
+
             sqlSel = "SELECT et.time_eti as t,"
             joinar=[]
             cols=[]
@@ -766,11 +774,24 @@ class Observation:
             valeFieldName = []
             for idx, obspr_row in enumerate(obspr_res):
                 if self.qualityIndex==True:
-                    cols.append("C%s.val_msr as c%s_v, COALESCE(C%s.id_qi_fk,%s) as c%s_qi" %(idx,idx,idx,filter.aggregate_nodata_qi,idx))
+
+                    column.append(
+                        'COALESCE(C%s.val_msr, %s)::text' % (idx, filter.aggregate_nodata),
+                        'COALESCE(C%s.id_qi_fk, %s)::text' % (idx, filter.aggregate_nodata_qi)
+                    )
+
+                    cols.append((
+                        "C%s.val_msr as c%s_v, "
+                        "COALESCE(C%s.id_qi_fk, %s) as c%s_qi"
+                    ) % (idx, idx, idx, filter.aggregate_nodata_qi, idx))
+
                     valeFieldName.append("c%s_v" %(idx))
                     valeFieldName.append("c%s_qi" %(idx))
 
                 else:
+                    column.append(
+                        'COALESCE(C%s.val_msr, %s)::text' % (idx, filter.aggregate_nodata)
+                    )
                     cols.append("C%s.val_msr as c%s_v" %(idx,idx))
                     valeFieldName.append("c%s_v" %(idx))
 
@@ -859,14 +880,24 @@ class Observation:
                     join_txt += " AND Bx.time_eti = (SELECT max(time_eti) FROM %s.event_time WHERE id_prc_fk=%s) " %(filter.sosConfig.schema,row["id_prc"])
 
                 join_txt += " ) as Cx on Cx.id_eti_fk = et.id_eti\n"
+                column.append('Cx.x::text', 'Cx.y::text', 'Cx.z::text')
                 sqlSel += " Cx.x as x, Cx.y as y, Cx.z as z, "
                 if self.qualityIndex==True:
+                    column.append('Cx.posqi::text')
                     sqlSel += "Cx.posqi, "
                 joinar.append(join_txt)
 
             # Set FROM CLAUSE
-            sqlSel += ", ".join(cols)
-            sqlSel += " FROM %s.event_time et\n" %(filter.sosConfig.schema)
+            # sqlSel += ", ".join(cols)
+            # sqlSel += " FROM %s.event_time et\n" %(filter.sosConfig.schema)
+
+            sqlSel = """
+                SELECT ARRAY[%s]
+                %s
+            """ % (
+                ", ".join(column),
+                " FROM %s.event_time et\n" %(filter.sosConfig.schema)
+            )
 
             # Set WHERE CLAUSES
             sqlData = " ".join(joinar)
@@ -974,54 +1005,69 @@ class Observation:
                 self.aggregate_function = None
 
             try:
-                data_res = pgdb.select(sql)
+                # print >> sys.stderr, sql
+                print >> sys.stderr, "***************** QUERY *******************"
+                a = datetime.datetime.now()
+                data_res = pgdb.select_array(sql)
+                print >> sys.stderr, str(datetime.datetime.now() - a)
+                print >> sys.stderr, "***************** DONE  *******************"
+                sys.stderr.flush()
 
-            except:
+                # print >> sys.stderr, "********************************************"
+                # print >> sys.stderr, "********************************************"
+                # print >> sys.stderr, ("Type: ", type(data_res))
+                # print >> sys.stderr, data_res[0][0:10]
+                # sys.stderr.flush()
+
+            except Exception as ex:
+                print >> sys.stderr, str(ex)
                 raise Exception("SQL: %s"%(sql))
 
+            self.data = data_res
+
             # APPEND DATA IN ARRAY
-            if filter.qualityFilter == False:
-                for line in data_res:
-                    if self.procedureType=="insitu-fixed-point":
-                        data_array = [line["t"]]
+            # if filter.qualityFilter == False:
+            #     for line in data_res:
+            #         if self.procedureType=="insitu-fixed-point":
+            #             data_array = [line["t"]]
 
-                    elif self.procedureType=="insitu-mobile-point":
-                        if self.qualityIndex==True:
-                            data_array = [line["t"],line["x"],line["y"],line["z"],line["posqi"]]
-                        else:
-                            data_array = [line["t"],line["x"],line["y"],line["z"]]
+            #         elif self.procedureType=="insitu-mobile-point":
+            #             if self.qualityIndex==True:
+            #                 data_array = [line["t"],line["x"],line["y"],line["z"],line["posqi"]]
+            #             else:
+            #                 data_array = [line["t"],line["x"],line["y"],line["z"]]
 
-                    data_array.extend([line[field] for field in valeFieldName])
-                    self.data.append(data_array)
+            #         data_array.extend([line[field] for field in valeFieldName])
+            #         self.data.append(data_array)
 
-            else:
-                for line in data_res:
-                    if self.procedureType=="insitu-fixed-point":
-                        qis = line[2::2]
-                        data_array = [line["t"]]
+            # else:
+            #     for line in data_res:
+            #         if self.procedureType=="insitu-fixed-point":
+            #             qis = line[2::2]
+            #             data_array = [line["t"]]
 
-                    elif self.procedureType=="insitu-mobile-point":
-                        if self.qualityIndex==True:
-                            qis = line[4::2]
-                            data_array = [line["t"],line["x"],line["y"],line["z"],line["posqi"]]
+            #         elif self.procedureType=="insitu-mobile-point":
+            #             if self.qualityIndex==True:
+            #                 qis = line[4::2]
+            #                 data_array = [line["t"],line["x"],line["y"],line["z"],line["posqi"]]
 
-                    if filter.qualityFilter[0]=='<' and not max(qis)<filter.qualityFilter[1]:
-                        continue
+            #         if filter.qualityFilter[0]=='<' and not max(qis)<filter.qualityFilter[1]:
+            #             continue
 
-                    elif filter.qualityFilter[0]=='>' and not min(qis)>filter.qualityFilter[1]:
-                        continue
+            #         elif filter.qualityFilter[0]=='>' and not min(qis)>filter.qualityFilter[1]:
+            #             continue
 
-                    elif filter.qualityFilter[0]=='>=' and not min(qis)>=filter.qualityFilter[1]:
-                        continue
+            #         elif filter.qualityFilter[0]=='>=' and not min(qis)>=filter.qualityFilter[1]:
+            #             continue
 
-                    elif filter.qualityFilter[0]=='<=' and not max(qis)<=filter.qualityFilter[1]:
-                        continue
+            #         elif filter.qualityFilter[0]=='<=' and not max(qis)<=filter.qualityFilter[1]:
+            #             continue
 
-                    elif filter.qualityFilter[0]=='=' and not filter.qualityFilter[1] in qis:
-                        continue
+            #         elif filter.qualityFilter[0]=='=' and not filter.qualityFilter[1] in qis:
+            #             continue
 
-                    data_array.extend([line[field] for field in valeFieldName])
-                    self.data.append(data_array)
+            #         data_array.extend([line[field] for field in valeFieldName])
+            #         self.data.append(data_array)
 
         # CASE "virtual"
         elif self.procedureType in ["virtual"]:
@@ -1042,7 +1088,6 @@ class Observation:
                 sys.path.append(vpFolder)
             except:
                 raise Exception("error in loading virtual procedure path")
-            #import procedure process
             exec "import %s as vproc" %(self.name)
 
             # Initialization of virtual procedure will load the source data
@@ -1223,8 +1268,6 @@ class GetObservationResponse_2_0_0:
 
 
         # check if requested foi exist
-        print >> sys.stderr, "# check if requested foi exist"
-        print >> sys.stderr, filter.featureOfInterest
         if not filter.featureOfInterest in ['', None]:
             params = [
                 filter.featureOfInterest,
