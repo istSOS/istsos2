@@ -40,9 +40,9 @@ sys.path.insert(0, path.abspath("."))
 try:
     import argparse as argparse
     import requests as requests
-    from lib.requests.auth import HTTPBasicAuth
+    from lib__old.requests.auth import HTTPBasicAuth
     import isodate as iso
-    from lib.pytz import timezone
+    from lib__old.pytz import timezone
     from scripts.raw2csv import DebugConverter
 except ImportError as e:
     print("""

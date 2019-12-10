@@ -27,6 +27,7 @@ import copy
 from datetime import timedelta
 import isodate as iso
 import pytz
+import importlib
 
 from istsoslib import sosException
 
@@ -126,7 +127,8 @@ class VirtualProcess():
 
                     # check if python file exist
                     if os.path.isfile("%s/%s.py" % (vpFolder,p)):
-                        exec("import %s as vproc" %(p))
+                        vproc = importlib.import_module(p)
+                        # exec("import %s as vproc" %(p))
                         vp = vproc.istvp()
                         if len(vp.procedures)>0:
                             # Add data source of virtual procedure
@@ -1043,7 +1045,8 @@ class Observation:
             except:
                 raise Exception("error in loading virtual procedure path")
             #import procedure process
-            exec("import %s as vproc" %(self.name))
+            # exec("import %s as vproc" %(self.name))
+            vproc = importlib.import_module(self.name)
 
             # Initialization of virtual procedure will load the source data
             vp = vproc.istvp()

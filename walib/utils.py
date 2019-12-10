@@ -33,6 +33,7 @@ import sys
 import traceback
 import psycopg2
 import psycopg2.extras
+import importlib
 
 try:
     str = str
@@ -444,9 +445,10 @@ def getProcedureNamesList(pgdb, service, offering = None,
                 # check if python file exist
                 if os.path.isfile("%s/%s.py" % (vpFolder, row["name_prc"])):
                     #import procedure process
-                    g = globals()
-                    l = locals()
-                    exec("import %s as vproc" % row["name_prc"], g, l)
+                    # g = globals()
+                    # l = locals()
+                    # exec("import %s as vproc" % row["name_prc"], g, l)
+                    vproc = importlib.import_module(row["name_prc"])
                     #exec("import %s as vproc" % (
                     #    row["name_prc"]) in globals(), locals()
 

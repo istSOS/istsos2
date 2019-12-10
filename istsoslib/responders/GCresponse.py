@@ -23,6 +23,7 @@
 
 import os
 import sys
+import importlib
 from istsoslib.filters import DS_filter
 
 class ServiceIdentification:
@@ -726,7 +727,8 @@ class ObservationOfferingList_2_0_0:
                 if os.path.isfile("%s/%s.py" % (vpFolder, off.identifier)):
                     
                     #import procedure process
-                    exec("import %s as vproc" % off.procedure)
+                    # exec("import %s as vproc" % off.procedure)
+                    vproc = importlib.import_module(off.procedure)
                     
                     # Initialization of virtual procedure will load the source data
                     vp = vproc.istvp()

@@ -77,6 +77,7 @@ class sosDSfilter(f.sosFilter):
             else:
                 # OUTPUTFORMAT
                 if "outputformat" in requestObject:
+                    print("CIAOOOO: ", requestObject["outputformat"])
                     if requestObject["outputformat"] in sosConfig.parameters["DS_outputFormats"]:
                         self.outputFormat = requestObject["outputformat"]
                         

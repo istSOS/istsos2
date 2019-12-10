@@ -24,7 +24,7 @@ import string
 import os
 import os.path
 import sys
-
+import importlib
 from istsoslib import sosException
 
 
@@ -80,7 +80,8 @@ class DescribeSensorResponse:
             if os.path.isfile("%s/%s.py" % (vpFolder,filter.procedure)):
                 
                 #import procedure process
-                exec("import %s as vproc" %(filter.procedure))
+                vproc = importlib.import_module(filter.procedure)
+                # exec("import %s as vproc" %(filter.procedure))
                 
                 # Initialization of virtual procedure will load the source data
                 vp = vproc.istvp()
