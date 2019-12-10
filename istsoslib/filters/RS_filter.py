@@ -23,10 +23,10 @@
 
 from istsoslib.filters import filter as f
 from istsoslib import sosException
-from filter_utils import parse_and_get_ns
+from parse_and_get import parse_and_get_ns
 
-from lib.isodate import parse_duration
-from lib.etree import et
+from isodate import parse_duration
+from lxml import etree as et
 import json
 
 import sys
@@ -86,10 +86,9 @@ class sosRSfilter(f.sosFilter):
                 "registerSensor request support only POST method!")
 
         if method == "POST":
-            from StringIO import StringIO
 
-            tree, ns = parse_and_get_ns(StringIO(requestObject))
-
+            tree, ns = parse_and_get_ns(requestObject)
+            
             SensorDescription = tree.find("{%s}SensorDescription" % ns['sos'])
             if SensorDescription is None:
                 raise sosException.SOSException(
@@ -307,9 +306,15 @@ class sosRSfilter(f.sosFilter):
                 if not GMLfeature is None:
                     self.foiType = geomtype
                     self.foiSRS = GMLfeature.attrib["srsName"].split(":")[-1]
+                    print(
+                        "et.tostring: ",
+                        et.tostring(
+                            GMLfeature, encoding="UTF-8"
+                        )
+                    )
                     self.foiGML = et.tostring(
                         GMLfeature, encoding="UTF-8"
-                    ).replace("<?xml version='1.0' encoding='UTF-8'?>", "")
+                    )  # .replace(b"<?xml version='1.0' encoding='UTF-8'?>", b"")
 
             if self.foiType is None:
                 raise sosException.SOSException(

@@ -31,21 +31,21 @@ import psycopg2
 sys.path.insert(0, os.path.abspath("."))
 import config
 from walib import utils, databaseManager, configManager
-from lib import isodate as iso
+import isodate as iso
 import istmqttlib
 
 try:
-    unicode = unicode
+    str = str
 except NameError:
     # 'unicode' is undefined, must be Python 3
-    unicode = str
+    str = str
     bytes = bytes
-    basestring = (str, bytes)
+    str = (str, bytes)
 else:
     # 'unicode' exists, must be Python 2
-    unicode = unicode
+    str = str
     bytes = str
-    basestring = basestring
+    str = str
 
 """
 Usage example with paho mqtt client (https://eclipse.org/paho):
@@ -184,8 +184,8 @@ class MQTTMediator():
                     }
 
     def insert_observation(self, broker_url, port, topic, data):
-        print("url: %s:%s, topic: %s, data: %s" % (
-            broker_url, port, topic, data))
+        print(("url: %s:%s, topic: %s, data: %s" % (
+            broker_url, port, topic, data)))
         with self.lock:
             broker = "%s:%s" % (broker_url, port)
             if (broker in self.broker) and (topic in self.broker[broker]):
@@ -340,8 +340,8 @@ class MQTTMediator():
     def start(self, target):
         self.threads = []
         print ("Ciao")
-        print (self.broker)
-        for key in self.broker.keys():
+        print((self.broker))
+        for key in list(self.broker.keys()):
             urlPort = key.split(":")
             self.threads.append(
                 threading.Thread(
@@ -351,7 +351,7 @@ class MQTTMediator():
             try:
                 thread.run()
             except Exception as e:
-                print (str(e))
+                print((str(e)))
 
     def stop(self):
         while len(self.threads) > 0:

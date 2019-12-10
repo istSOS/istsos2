@@ -22,31 +22,13 @@
 # ===============================================================================
 
 import sys
-from lib.etree import et
+from lxml import etree as et
 import json
+from io import StringIO, BytesIO
+from os import path
+from parse_and_get import parse_and_get_ns
 
 reurl = r'(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?'
-
-def parse_and_get_ns(filename):
-    events = "start", "start-ns"
-
-    root = None
-    ns = {}
-    f = open(filename)
-    for event, elem in et.iterparse(f, events):
-        if event == "start-ns":
-            if elem[0] in ns and ns[elem[0]] != elem[1]:
-                # NOTE: It is perfectly valid to have the same prefix refer
-                #   to different URI namespaces in different parts of the
-                #   document. This exception serves as a reminder that this
-                #   solution is not robust.  Use at your own peril.
-                raise KeyError("Duplicate prefix with different URI found.")
-            ns[elem[0]] = "%s" % elem[1]
-        elif event == "start":
-            if root is None:
-                root = elem
-    f.close()
-    return et.ElementTree(root), ns
 
 
 def render(DS,sosConfig):
@@ -54,6 +36,7 @@ def render(DS,sosConfig):
 
     try:
         #---parse xml
+        print("FILE:", DS.smlFile, type(DS.smlFile))
         tree, ns = parse_and_get_ns(DS.smlFile)
     except Exception as ex:
         raise Exception("sensorML description for procedure '%s' not found or corrupted! [%s]"%(DS.smlFile,ex))
@@ -61,8 +44,11 @@ def render(DS,sosConfig):
     #---map namespaces---
     try:
         register_namespace = et.register_namespace
+        
         for key in ns:
-            register_namespace(key,ns[key])
+            print(ns[key])
+            if not key in ns:
+                register_namespace(key,ns[key])
     except AttributeError:
         try:
             et._namespace_map.update(ns)
@@ -75,7 +61,7 @@ def render(DS,sosConfig):
                 try:
                     from elementtree.ElementTree import _namespace_map
                 except ImportError:
-                    print >> sys.stderr, ("Failed to import ElementTree from any known place")
+                    print(("Failed to import ElementTree from any known place"), file=sys.stderr)
             for key in ns:
                 _namespace_map[ns[key]] = key
 
@@ -87,7 +73,7 @@ def render(DS,sosConfig):
             'gml': 'http://www.opengis.net/gml'
         }
 
-    for n in mns.keys():
+    for n in list(mns.keys()):
         try:
             ns[n]
         except:
@@ -95,9 +81,11 @@ def render(DS,sosConfig):
 
 
     #--- CREEATE FIELDS ACCORDING TO DATABASE OBSERVED_PROPERTIES
+    # datarecord = tree.xpath("sml:member/sml:System/sml:outputs/sml:OutputList/sml:output/swe:DataRecord", 
+    #                         namespaces= ns)
+
     datarecord = tree.find("{%s}member/{%s}System/{%s}outputs/{%s}OutputList/{%s}output/{%s}DataRecord"
                         %(ns['sml'],ns['sml'],ns['sml'],ns['sml'],ns['sml'],ns['swe']) )
-
 
     datarecord.clear()
     datarecord.attrib["definition"] = "%stimeSeries" % (sosConfig.urn['dataType'])
@@ -266,7 +254,7 @@ def render(DS,sosConfig):
     root = tree.getroot()
     root.attrib["xmlns"]="http://www.opengis.net/sensorML/1.0.1"
     root.attrib["version"]="1.0.1"
-    return """<?xml version="1.0" encoding="UTF-8"?>\n%s""" % et.tostring(root)
+    return b'<?xml version="1.0" encoding="UTF-8"?>' + et.tostring(root)
 
 
 def render_2_0_0(DS,sosConfig):
@@ -300,7 +288,7 @@ def render_2_0_0(DS,sosConfig):
         'swes': 'http://www.opengis.net/swes/2.0'
     }
 
-    for n in mns.keys():
+    for n in list(mns.keys()):
         try:
             ns[n] = mns[n]
         except:
@@ -323,7 +311,7 @@ def render_2_0_0(DS,sosConfig):
                 try:
                     from elementtree.ElementTree import _namespace_map
                 except ImportError:
-                    print >> sys.stderr, ("Failed to import ElementTree from any known place")
+                    print(("Failed to import ElementTree from any known place"), file=sys.stderr)
             for key in ns:
                 _namespace_map[ns[key]] = key
 
@@ -364,7 +352,7 @@ def render_2_0_0(DS,sosConfig):
         quantity.attrib["definition"] = sosConfig.urn["refsystem"] + sosConfig.istsosepsg + ":z-position"
 
 
-    for index,field in enumerate(DS.observedProperties):
+    for index, field in enumerate(DS.observedProperties):
 
         fieldQ = et.SubElement(datarecord,"{%s}field" % ns["swe"])
         fieldQ.attrib["name"] = field["name_opr"]
@@ -491,4 +479,4 @@ def render_2_0_0(DS,sosConfig):
     data.append(root)
 
     #swes.attrib["xmlns"]="http://www.opengis.net/swes/2.0"
-    return """<?xml version="1.0" encoding="UTF-8"?>\n%s""" % et.tostring(swes)
+    return b'<?xml version="1.0" encoding="UTF-8"?>' + et.tostring(swes)

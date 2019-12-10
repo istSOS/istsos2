@@ -20,7 +20,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # ===============================================================================
-from lib import isodate as iso
+import isodate as iso
 #import sosConfig
 
 def render(GF,sosConfig):

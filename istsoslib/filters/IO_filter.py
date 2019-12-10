@@ -31,10 +31,10 @@ __email__ = 'milan.antonovic@gmail.com'
 
 from istsoslib.filters import filter as f
 from istsoslib import sosException
-from lib.etree import et
+from lxml import etree as et
 import traceback
 import sys
-from filter_utils import parse_and_get_ns
+from parse_and_get import parse_and_get_ns
 
 
 class sosIOfilter(f.sosFilter):
@@ -83,8 +83,7 @@ class sosIOfilter(f.sosFilter):
                 "only POST method!")
 
         if method == "POST":
-            from StringIO import StringIO
-            tree, ns = parse_and_get_ns(StringIO(requestObject))
+            tree, ns = parse_and_get_ns(requestObject)
 
             # Workaround for rare xml parsing bug in etree
             ns = {
@@ -188,7 +187,7 @@ class sosIOfilter(f.sosFilter):
                         self.oprName.append(name.text)
 
                     except:
-                        print >> sys.stderr, "XML: %s" % requestObject
+                        print("XML: %s" % requestObject, file=sys.stderr)
                         raise sosException.SOSException(
                             "NoApplicableCode", None,
                             "om:observedProperty Name is missing: "

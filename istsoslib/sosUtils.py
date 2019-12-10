@@ -68,7 +68,7 @@ def ogcSpatCons2PostgisSql(ogcSpatialOperator,geomField,epsgField):
     #---------------------------
     # PARSE OPTIONS
     #---------------------------
-    if ogcOperator in ogcSupportedSpatialOperators.keys():
+    if ogcOperator in list(ogcSupportedSpatialOperators.keys()):
         childs = childElementNodes(ogcSpatialOperator)
         propertyName = childs[0].firstChild.data.encode()
         geometry = childs[1]
@@ -124,7 +124,7 @@ def ogcSpatCons2PostgisSql(ogcSpatialOperator,geomField,epsgField):
         return sql
     
     elif ogcOperator in ogcUnsupportedSpatialOperators:
-        raise sosException.SOSException("NoApplicableCode",None,"Spatial Operator nor supported. Available methods are: %s" %(",".join(ogcSupportedSpatialOperators.keys())))
+        raise sosException.SOSException("NoApplicableCode",None,"Spatial Operator nor supported. Available methods are: %s" %(",".join(list(ogcSupportedSpatialOperators.keys()))))
     
     else:
         raise sosException.SOSException("NoApplicableCode",None,"ogcSpatialOperator format ERROR")
@@ -172,7 +172,7 @@ def ogcCompCons2PostgisSql(ogcComparisonOperator):
     #---------------------------
     # PARSE OPTIONS
     #---------------------------
-    if ogcOperator in ogcSupportedCompOperators.keys():
+    if ogcOperator in list(ogcSupportedCompOperators.keys()):
         childs = childElementNodes(ogcComparisonOperator)
         propertyNameObj = ogcComparisonOperator.getElementsByTagName("ogc:PropertyName")
         literalObj = ogcComparisonOperator.getElementsByTagName("ogc:Literal")

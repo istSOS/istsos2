@@ -38,7 +38,7 @@ class wnsRegistrations(wnsOperation):
     def __init__(self, wnsEnviron):
         wnsOperation.__init__(self, wnsEnviron)
         pathinfo = wnsEnviron['pathinfo']
-        print pathinfo
+        print(pathinfo)
         self.user_id = None
         self.notification = None
 

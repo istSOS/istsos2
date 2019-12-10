@@ -25,7 +25,7 @@ import sys
 from os import path
 import traceback
 import waconf2sos as cfg
-from urlparse import parse_qs
+from urllib.parse import parse_qs
 import config
 from walib import resourceFactory as factory
 import walib.users as user
@@ -66,6 +66,43 @@ def executeWa(environ, start_response):
     wsgi_mime = 'text/plain'
     wsgi_status = '200 OK'
 
+    def environ(request: httputil.HTTPServerRequest) -> Dict[Text, Any]:
+        """Converts a `tornado.httputil.HTTPServerRequest` to a WSGI environment.
+        """
+        hostport = request.host.split(":")
+        if len(hostport) == 2:
+            host = hostport[0]
+            port = int(hostport[1])
+        else:
+            host = request.host
+            port = 443 if request.protocol == "https" else 80
+        environ = {
+            "REQUEST_METHOD": request.method,
+            "SCRIPT_NAME": "",
+            "PATH_INFO": to_wsgi_str(
+                escape.url_unescape(request.path, encoding=None, plus=False)
+            ),
+            "QUERY_STRING": request.query,
+            "REMOTE_ADDR": request.remote_ip,
+            "SERVER_NAME": host,
+            "SERVER_PORT": str(port),
+            "SERVER_PROTOCOL": request.version,
+            "wsgi.version": (1, 0),
+            "wsgi.url_scheme": request.protocol,
+            "wsgi.input": BytesIO(escape.utf8(request.body)),
+            "wsgi.errors": sys.stderr,
+            "wsgi.multithread": False,
+            "wsgi.multiprocess": True,
+            "wsgi.run_once": False,
+        }
+        if "Content-Type" in request.headers:
+            environ["CONTENT_TYPE"] = request.headers.pop("Content-Type")
+        if "Content-Length" in request.headers:
+            environ["CONTENT_LENGTH"] = request.headers.pop("Content-Length")
+        for key, value in request.headers.items():
+            environ["HTTP_" + key.replace("-", "_").upper()] = value
+        return environ
+
     waEnviron = {
         "path" : environ['PATH_INFO'][3:],
         "method" : str(environ['REQUEST_METHOD']).upper(),
@@ -87,14 +124,15 @@ def executeWa(environ, start_response):
     # Passing the basic authentication header in waEnviron
     #   Shall be used in istSOS lib request from walib
     if 'HTTP_AUTHORIZATION' in environ:
-        waEnviron['HTTP_AUTHORIZATION'] = environ['HTTP_AUTHORIZATION']
-
+        print("AUTH")
+        waEnviron['HTTP_AUTHORIZATION'] = str(len(environ['HTTP_AUTHORIZATION']))
+        print("AUTH OK")
     try:
 
         try:
             op = None
             op = factory.initResource(waEnviron)
-
+            print(op)
             try:
                 if op.response['success']:
                     method = str(environ['REQUEST_METHOD']).upper()
@@ -131,7 +169,7 @@ def executeWa(environ, start_response):
                         )'''
 
             except Exception as exe:
-                print >> sys.stderr, traceback.print_exc()
+                print(traceback.print_exc(),file=sys.stderr)
                 '''logger.error(
                     "Executing %s on %s: %s" % (
                         waEnviron["method"],
@@ -141,7 +179,7 @@ def executeWa(environ, start_response):
                 op.setException(str(exe))
 
         except Exception as exe:
-            print >> sys.stderr, traceback.print_exc()
+            print(traceback.print_exc(),file=sys.stderr)
             '''logger.error(
                 "On initialization %s on %s: %s" % (
                     waEnviron["method"],
@@ -159,7 +197,7 @@ def executeWa(environ, start_response):
             wsgi_mime = op.getMime()
 
         except Exception as exe:
-            print >> sys.stderr, traceback.print_exc()
+            print(traceback.print_exc(),file=sys.stderr)
             '''logger.error(
                 "Executing %s on %s: %s" % (
                     waEnviron["method"],
@@ -169,7 +207,7 @@ def executeWa(environ, start_response):
             op.setException("Error converting response to json")
 
     except Exception as e:
-        print >> sys.stderr, traceback.print_exc()
+        print(traceback.print_exc(),file=sys.stderr)
         '''logger.error(
             "Executing %s on %s: %s" % (
                 waEnviron["method"],
@@ -180,9 +218,16 @@ def executeWa(environ, start_response):
         wsgi_mime = 'text/plain'
         wsgi_status = '400 Bad Request'
 
+    
+    import six
     wsgi_headers = [
         ('Content-Type', "%s; charset=utf-8" % wsgi_mime),
+        # ('Content-Length', b"{len(wsgi_response)}")
         ('Content-Length', str(len(wsgi_response)))
     ]
+    print(wsgi_status, wsgi_headers)
+    print(wsgi_response)
     start_response(wsgi_status, wsgi_headers)
-    return [wsgi_response]
+    print(sys.version, sys.executable)
+
+    return [wsgi_response.encode()]

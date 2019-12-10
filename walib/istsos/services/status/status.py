@@ -26,7 +26,7 @@ from walib import utils
 
 from datetime import datetime, timedelta
 import time
-from lib.pytz import timezone
+from pytz import timezone
 
 getErrorCode = {
 'ParsingError': 1,
@@ -368,7 +368,7 @@ class waStatus(waResourceService):
             "offering": offering[0]['name']
         }
 
-        import lib.requests as requests
+        import requests as requests
         
         headers = {}
         if 'HTTP_AUTHORIZATION' in self.waEnviron:

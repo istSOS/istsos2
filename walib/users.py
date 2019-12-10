@@ -36,7 +36,7 @@ def getUser(environ):
           try:
             import pickle as pic
           except ImportError as ie:
-            print >> sys.stderr, ("Failed to import pickle from any known place")
+            print("Failed to import pickle from any known place", file=sys.stderr)
             raise ie
         s, base64string = environ['HTTP_AUTHORIZATION'].split()
         username, password = base64.decodestring(base64string).split(':')
@@ -63,7 +63,7 @@ class User():
         self.username = username
         self.password = data['password']
         self.roles = data['roles']
-        self.groups = data['roles'].keys()
+        self.groups = list(data['roles'].keys())
         #print >> sys.stderr, "\n\nUser: %s" % pp.pprint(self)
 
     def getJSON(self):
@@ -101,7 +101,7 @@ class User():
             #print >> sys.stderr, "    > keys %s" % keys
             if "*" in keys or service in keys:
                 return True
-        print >> sys.stderr, "NOT AUTHORIZED"
+        print("NOT AUTHORIZED", file=sys.stderr)
         return False
 
     def allowedProcedure(self, service, procedure):
@@ -129,6 +129,7 @@ class waUsers(resource.waResource):
     def getResponse(self):
         if self.jsonResponse:
             import json
+            print("RRR",self.response)
             if self.response['success']:
                 return json.dumps(self.response, ensure_ascii=False)
             else:

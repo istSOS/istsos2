@@ -24,7 +24,7 @@ from walib import resource, utils, databaseManager, configManager
 import sys
 import os
 import xml.etree.ElementTree as ET
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 
 class waIstsos(resource.waResourceAdmin):

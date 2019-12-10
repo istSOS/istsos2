@@ -21,7 +21,7 @@
 #
 # ===============================================================================
 
-from urlparse import parse_qs
+from urllib.parse import parse_qs
 from wnslib import resourceFactory
 import sys
 import traceback
@@ -118,13 +118,13 @@ def executeWns(environ, start_response):
                          environ['PATH_INFO'], str(op.response['message'])))'''
 
             except Exception as exe:
-                print >> sys.stderr, traceback.print_exc()
+                print(traceback.print_exc(), file=sys.stderr)
                 '''logger.error("Executing %s on %s: %s" % (wnsEnviron["method"],
                                  environ['PATH_INFO'], str(exe)))'''
                 op.setException(str(exe))
 
         except Exception as exe:
-            print >> sys.stderr, traceback.print_exc()
+            print(traceback.print_exc(), file=sys.stderr)
             '''logger.error("On initialization %s on %s: %s" % (wnsEnviron["method"],
                                  environ['PATH_INFO'], str(exe)))'''
             from walib import resource
@@ -134,7 +134,7 @@ def executeWns(environ, start_response):
         try:
             wsgi_response = op.getResponse()
         except Exception as exe:
-            print >> sys.stderr, traceback.print_exc()
+            print(traceback.print_exc(), file=sys.stderr)
             '''logger.error("Executing %s on %s: %s" % (wnsEnviron["method"],
                                  environ['PATH_INFO'], str(exe)))'''
             op.setException("Error converting response to json")
@@ -142,7 +142,7 @@ def executeWns(environ, start_response):
         wsgi_mime = "application/json"
 
     except Exception as e:
-        print >> sys.stderr, traceback.print_exc()
+        print(traceback.print_exc(), file=sys.stderr)
         '''logger.error("Executing %s on %s: %s" % (wnsEnviron["method"],
                                  environ['PATH_INFO'], str(e)))'''
         wsgi_response = str(e)

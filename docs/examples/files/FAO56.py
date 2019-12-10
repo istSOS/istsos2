@@ -48,7 +48,7 @@ def ET0(isodate,T,RH,u2,Rs,lat,lon,z,P=None):
     """
     # get datetime object
     dt = parser.parse(isodate)
-    print "dt: %s" % dt
+    print("dt: %s" % dt)
     
     #air pressure (calculation)
     if not P:
@@ -56,89 +56,89 @@ def ET0(isodate,T,RH,u2,Rs,lat,lon,z,P=None):
     
     # saturation vapour pressure (eq.11) [kPa]
     e0T = 0.6108 * math.exp( (17.27*T)/(T+237.3) )
-    print "e0T: %s" % e0T
+    print("e0T: %s" % e0T)
     
     # Slope of saturation vapour pressure curve (eq.13) [kPa / °C]
     D = 4098 * (e0T) / pow ((T + 237.3), 2)
-    print "D: %s" % D
+    print("D: %s" % D)
     
     # Psychrometric constant (eq.8) [kPa / °C]
     g = 0.6665 * (10**-3) * P
-    print "g: %s" % g
+    print("g: %s" % g)
     
     # Actual vapour pressure (eq.54) [kPa]
     ea = e0T * RH / 100
-    print "ea: %s" % ea
+    print("ea: %s" % ea)
     
     # Pressure deficit [kPa]
     ed = e0T - ea
-    print "ed: %s" % ed
+    print("ed: %s" % ed)
     
     # Extraterrestrial radiation
     #============================
     
     # solar costant [ MJ / m2 * min ]
     Gsc = 0.0820 
-    print "Gsc: %s" % Gsc
+    print("Gsc: %s" % Gsc)
     
     # Convert latitude [degrees] to radians
     j = lat * math.pi / 180.0
-    print "j: %s" % j
+    print("j: %s" % j)
     
     # day of the year [-]
     tt = dt.timetuple()
     J = tt.tm_yday-1
-    print "J: %s" % J
+    print("J: %s" % J)
 
     # inverse relative distance Earth-Sun (eq.23) [-]
     dr = 1.0 + 0.033 * math.cos(J* ((2*math.pi)/365) )
-    print "dr: %s" % dr
+    print("dr: %s" % dr)
     
     # solar declination (eq.24) [rad]
     d = 0.409 * math.sin( (2*math.pi/365)*J - 1.39)
-    print "d: %s" % d
+    print("d: %s" % d)
     
     # solar correction (eq.33) [-]
     b = 2 * math.pi * (J-81) / 364
-    print "b: %s" % b
+    print("b: %s" % b)
     
     # Seasonal correction for solar time
     Sc = (0.1645 * math.sin(2*b)) - (0.1255 * math.cos(b)) - (0.025 * math.sin(b))
-    print "Sc: %s" % Sc
+    print("Sc: %s" % Sc)
     
     # longitude of the centre of the local time zone
     Lz = round(lon/15) * 15
-    print "Lz: %s" % Lz
+    print("Lz: %s" % Lz)
     
     # Solartime angle
     t = dt.hour + 0.5
-    print "t: %s" % t
+    print("t: %s" % t)
     
     # standard clock time at the midpoint of the perion [hour]
     w = (math.pi/12) * ( (t + 0.06667*(math.fabs(Lz)-math.fabs(lon)) + Sc) - 12 )
-    print "w: %s" % w
+    print("w: %s" % w)
     
     # time interval [hour]
     ti = 1
     
     # solar time angle at begin of the period
     w1 = w  - (math.pi*ti)/24
-    print "w1: %s" % w1
+    print("w1: %s" % w1)
     
     # solar time angle at end of the period
     w2 = w  + (math.pi*ti)/24
-    print "w2: %s" % w2
+    print("w2: %s" % w2)
     
     # Sanset hour angle 
     ws = math.acos(-math.tan (j) * math.tan(d))
-    print "ws: %s" % ws
+    print("ws: %s" % ws)
     
     # Extraterrestrial radiation (eq.28) [MJ m-2 * hour-1 ]    
     if w<-ws or w>ws:
         Ra = 0
     else:
         Ra = (12*60/math.pi) * Gsc * dr * ( (w2-w1)*math.sin(j)*math.sin(d) + math.cos(j)*math.cos(d)*(math.sin(w2)-math.sin(w1)) )
-    print "Ra: %s" % Ra
+    print("Ra: %s" % Ra)
     
     # Net solar radiation
     #============================
@@ -147,30 +147,30 @@ def ET0(isodate,T,RH,u2,Rs,lat,lon,z,P=None):
     if w<-ws or w>ws:
         # solar radiation
         Rs = 0
-        print "Rs: %s" % Rs
+        print("Rs: %s" % Rs)
         
         # clear sky solar radiation [ MJ * m-2 * hour-1 ]
         Rso = 0
-        print "Rso: %s" % Rso
+        print("Rso: %s" % Rso)
         
         # net solar radiation [ MJ * m-2 * hour-1 ]
         Rns = 0
-        print "Rns: %s" % Rns
+        print("Rns: %s" % Rns)
     else:
         # solar radiation
         Rs = 2.450
-        print "Rs: %s" % Rs
+        print("Rs: %s" % Rs)
         
         # clear sky solar radiation [ MJ * m-2 * hour-1 ]
         Rso = ( 0.75 + 2 * (10**-5) * z ) * Ra
-        print "Rso: %s" % Rso
+        print("Rso: %s" % Rso)
 
         # for reference hypotetical grass reference crop [-]
         albedo = 0.23        
         
         # net solar radiation [ MJ * m-2 * hour-1 ]
         Rns = (1- albedo) * Rs
-        print "Rns: %s" % Rns
+        print("Rns: %s" % Rns)
     
     # Net longwave Radiation
     #============================
@@ -183,20 +183,20 @@ def ET0(isodate,T,RH,u2,Rs,lat,lon,z,P=None):
         f = 1.35 * 0.8 - 0.35
     else:
         f = 1.35 * (Rs/Rso) - 0.35
-    print "f: %s" % f
+    print("f: %s" % f)
     
     # net emissivity of the surface
     nes = 0.34 - 0.14 * math.sqrt(ea)
-    print "nes: %s" % nes
+    print("nes: %s" % nes)
     
     # Net longwave Radiation
     Rnl = nes * f * (sbc * (T + 273)**4)
-    print "Rnl: %s" % Rnl
+    print("Rnl: %s" % Rnl)
     
     # Net Radiation
     #============================
     Rn = Rns - Rnl
-    print "Rn: %s" % Rn
+    print("Rn: %s" % Rn)
     
     # Soil heat flux
     #============================
@@ -204,26 +204,26 @@ def ET0(isodate,T,RH,u2,Rs,lat,lon,z,P=None):
         Ghr = 0.1 * Rn
     else:
         Ghr = 0.5 * Rn
-    print "Ghr: %s" % Ghr
+    print("Ghr: %s" % Ghr)
     
     # Refernce evapotranspiration
     #============================
     
     # alpha
     alpha = 0.408 * D * ( Rn - Ghr)
-    print "alpha: %s" % alpha
+    print("alpha: %s" % alpha)
     
     # beta
     beta =  g * ( 37 / (T+273.3) ) * u2 * (e0T-ea)
-    print "beta: %s" % beta
+    print("beta: %s" % beta)
     
     # gamma
     gamma = D + g * (1 + 0.34*u2)
-    print "gamma: %s" % gamma
+    print("gamma: %s" % gamma)
     
     # Regerence evapotranspiration
     ET0 = ( alpha + beta ) / gamma
-    print "ET0: %s" % ET0
+    print("ET0: %s" % ET0)
     
     return ET0
     
@@ -280,9 +280,9 @@ def Kc(plantation,Li,Ld,Lm,Le,Kci,Kcm,Kce,isodate=None):
     JLm = JLd + Lm
     JLe = JLm + Le
     
-    print "JLi: %s, JLd: %s,  JLm: %s,  JLe: %s" % (JLi,JLd,JLm,JLe)
-    print "cJ: %s, pJ: %s" % (Jc,Jp)
-    print "J: %s" % J
+    print("JLi: %s, JLd: %s,  JLm: %s,  JLe: %s" % (JLi,JLd,JLm,JLe))
+    print("cJ: %s, pJ: %s" % (Jc,Jp))
+    print("J: %s" % J)
     
     if Jc > Jp and Jc < JLe:
         if J <= JLi:

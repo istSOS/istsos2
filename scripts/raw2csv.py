@@ -44,11 +44,11 @@ pp = pprint.PrettyPrinter(indent=4)
 try:
     sys.path.insert(0, path.abspath("."))
     from lib.pytz import timezone
-    import lib.requests as requests
-    import lib.isodate as iso
+    import requests as requests
+    import isodate as iso
 except ImportError as e:
-    print "\nError loading internal libs:\n >> please run the script from the istSOS root folder.\n\n"
-    print str(e)
+    print("\nError loading internal libs:\n >> please run the script from the istSOS root folder.\n\n")
+    print(str(e))
     raise e
 
 
@@ -210,7 +210,7 @@ class Converter():
         if self.debugConverter:
             self.debugConverter.log(message)
         elif self.debug:
-            print message
+            print(message)
         if self.debugfile:
             self.debugfile.write("%s\n" % message)
 
@@ -304,7 +304,7 @@ class Converter():
             dt = dt + self.fntd
         if ep is not None and ep < dt:
             return False
-        print "skipping %s" % name
+        print("skipping %s" % name)
         return True
 
     def getDateTimeWithTimeZone(self, dt, tz):
@@ -536,13 +536,13 @@ class Converter():
         return timedelta()
 
     def getDSBeginPosition(self):
-        if u'constraint' in self.describe['outputs'][0]:
+        if 'constraint' in self.describe['outputs'][0]:
             return iso.parse_datetime(
                 self.describe['outputs'][0]['constraint']['interval'][0])
         return None
 
     def getDSEndPosition(self):
-        if u'constraint' in self.describe['outputs'][0]:
+        if 'constraint' in self.describe['outputs'][0]:
             return iso.parse_datetime(
                 self.describe['outputs'][0]['constraint']['interval'][1])
         return None
@@ -586,9 +586,9 @@ class Converter():
             self.addException(msg)
             raise FileReaderError(msg)
 
-        files = filter(
+        files = list(filter(
             path.isfile,
-            glob.glob(os.path.join(self.folderIn, "%s" % (self.pattern))))
+            glob.glob(os.path.join(self.folderIn, "%s" % (self.pattern)))))
 
         if not self.fndf:  # Default sort
             files.sort()
@@ -731,13 +731,13 @@ class Observation:
             for s in values:
                 v = float(values[s])
                 # Controllo vinculo valore numerico
-                if isinstance(v, (int, long, float, decimal.Decimal)):
+                if isinstance(v, (int, float, decimal.Decimal)):
                     self.__value[s]= v
                 else:
-                    raise TypeError, ('Observations.setValue( %s ): it must be Numeric') % values
+                    raise TypeError(('Observations.setValue( %s ): it must be Numeric') % values)
 
     def getObservedProperties(self):
-        return self.__value.keys()
+        return list(self.__value.keys())
 
     def getEventime(self):
         return self.__eventime
@@ -746,7 +746,7 @@ class Observation:
         if isinstance(eventime, datetime) and eventime.tzinfo is not None:
             self.__eventime = eventime
         else:
-            raise TypeError, ('eventime arg.: it must be a Datetime Object with timezone. [%s]' % eventime)
+            raise TypeError('eventime arg.: it must be a Datetime Object with timezone. [%s]' % eventime)
         pass
 
     def setObservedValue(self,obs,value):
@@ -794,6 +794,6 @@ class Observation:
                     vals.append(str(self.getObservedValue(p)))
         else:
             vs = self.getValue()
-            for key, value in vs.items():
+            for key, value in list(vs.items()):
                 vals += [str(value)]
         return "%s%s%s" % (self.getEventime().strftime(self.fmt), separator, separator.join(vals))

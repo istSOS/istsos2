@@ -35,19 +35,19 @@ import psycopg2
 import psycopg2.extras
 
 try:
-    unicode = unicode
+    str = str
 except NameError:
     # 'unicode' is undefined, must be Python 3
     str = str
-    unicode = str
+    str = str
     bytes = bytes
-    basestring = (str, bytes)
+    str = (str, bytes)
 else:
     # 'unicode' exists, must be Python 2
     str = str
-    unicode = unicode
+    str = str
     bytes = str
-    basestring = basestring
+    str = str
 
 
 def valid_NCName(name):
@@ -240,7 +240,7 @@ def getOfferingDetailsList(pgdb,service):
 
     rows = pgdb.select(sql,None)
     if rows:
-        from lib import isodate
+        import isodate
         return [
             {
                 "id":row["id"],
@@ -762,8 +762,8 @@ def getOfferingsFromProcedure(pgdb,service,procedure):
 
 
 def verifyxmlservice(url, waEnviron):
-    import lib.requests as requests
-    from lib.etree import et
+    import requests as requests
+    from lxml import etree as et
     try:
         if 'HTTP_AUTHORIZATION' in waEnviron:
             response = requests.get(url, headers={
@@ -773,7 +773,8 @@ def verifyxmlservice(url, waEnviron):
             response = requests.get(url)
 
         response.raise_for_status()
-        root = et.fromstring(response.text)
+        
+        root = et.fromstring(response.text.encode())
         if not root.find("Exception") == None:
             return "up with error"
 
@@ -833,9 +834,9 @@ def getObservationPeriod(pgdb,service,procedures):
 
 def to_unicode_or_bust(obj, encoding='utf-8'):
     try:
-        if isinstance(obj, basestring):
-            if not isinstance(obj, unicode):
-                obj = unicode(obj, encoding)
+        if isinstance(obj, str):
+            if not isinstance(obj, str):
+                obj = str(obj, encoding)
     except Exception as e:
         traceback.print_exc(file=sys.stderr)
     return obj
@@ -853,7 +854,7 @@ def encodeobject(obj, encoding='utf-8'):
                 else:
                     obj[key] = to_unicode_or_bust(value, encoding)
         elif type(obj) is dict or type(obj) is psycopg2.extras.DictRow:
-            for key, value in obj.items():
+            for key, value in list(obj.items()):
                 if type(value) is dict:
                     obj[key] = encodeobject(value, encoding)
                 elif type(value) is list:

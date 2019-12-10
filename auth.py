@@ -38,12 +38,12 @@ from os import path
 import hashlib
 import pprint
 try:
-  import cPickle as pic
+  import pickle as pic
 except ImportError:
   try:
     import pickle as pic
   except ImportError:
-    print >> sys.stderr, ("Failed to import pickle from any known place")
+    print(("Failed to import pickle from any known place"), file=sys.stderr)
 
 pp = pprint.PrettyPrinter(indent=4)
 istsosPasswd = path.join(path.dirname(path.abspath(__file__)), "services", "istsos.passwd")
@@ -67,7 +67,7 @@ def check_password(environ, user, password):
     #return True
     with open(istsosPasswd, 'rb') as f:
         users = pic.load(f)
-        if user in users.keys():
+        if user in list(users.keys()):
             if hashlib.md5(password).hexdigest() == users[user]["password"]:
                 return True
             return False

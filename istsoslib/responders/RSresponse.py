@@ -26,7 +26,7 @@ import os
 # import codecs
 
 from istsoslib import sosException
-from lib.etree import et
+from lxml import etree as et
 import uuid
 
 
@@ -82,7 +82,7 @@ class RegisterSensorResponse:
             params = (
                 str(filter.foiName),
                 str(filter.foiDesc),
-                str(filter.foiGML.strip()),
+                str(filter.foiGML.decode().strip()),
                 int(filter.sosConfig.istsosepsg),
                 int(id_fty)
             )
@@ -353,7 +353,7 @@ class RegisterSensorResponse:
 
         # create SensorML for inserted procedure
         f = open(os.path.join(
-            filter.sosConfig.sensorMLpath, filter.procedure + ".xml"), 'w')
+            filter.sosConfig.sensorMLpath, filter.procedure + ".xml"), 'wb')
         # f = codecs.open(os.path.join(
         #    filter.sosConfig.sensorMLpath, filter.procedure + ".xml"),
         #    "w", "utf-8")
@@ -382,9 +382,9 @@ class RegisterSensorResponse:
                     try:
                         from elementtree.ElementTree import _namespace_map
                     except ImportError:
-                        print >> sys.stderr, (
+                        print((
                             "Failed to import ElementTree from "
-                            "any known place")
+                            "any known place"), file=sys.stderr)
                 for key in ns:
                     _namespace_map[ns[key]] = key
 

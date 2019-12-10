@@ -28,11 +28,16 @@ import application_istsoslib
 import application_walib
 import application_wnslib
 
-reload(sys)
-sys.setdefaultencoding('utf-8')
+# import importlib
+# importlib.reload(sys)
+# # reload(sys)
+# sys.setdefaultencoding('utf-8')
+
 
 
 def application(environ, start_response):
+
+    print('PYTHON VERSION:',sys.version)
 
     path = environ['PATH_INFO'].strip()[1:].split("/")
 

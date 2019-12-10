@@ -55,7 +55,7 @@ class waUrn(waResourceConfigurator):
         for key in self.template:
             temp = self.serviceconf.get(self.template[key][0])
             
-            if not temp.has_key(self.template[key][1]):
+            if self.template[key][1] not in temp:
                 raise Exception("Configuration error: value \"%s\" not present in section \"%s\", check your template settings!" % (self.template[key][1],self.template[key][0]))
             
             #---SUBSTITUTED---------------------------------------------------

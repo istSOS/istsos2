@@ -23,8 +23,8 @@
 
 from istsoslib.filters import filter as f
 from istsoslib import sosException, sosUtils
-from lib import isodate as iso
-from filter_utils import get_name_from_urn
+import isodate as iso
+from .filter_utils import get_name_from_urn
 from datetime import timedelta
 
 class sosGOfilter(f.sosFilter):
@@ -66,7 +66,7 @@ class sosGOfilter(f.sosFilter):
             # OBSERVED PROPERTY
             #   get_name_from_urn limit the ability to ask for an observedProperty with LIKE:
             #   eg: ask "water" to get all the water related data, "water:discharge", "water:temperature" ...
-            if requestObject.has_key("observedproperty"):
+            if "observedproperty" in requestObject:
                 self.observedProperty = []
                 oprs = requestObject["observedproperty"].split(",")
 
@@ -78,7 +78,7 @@ class sosGOfilter(f.sosFilter):
                     self.observedProperty.append(oprName) # one-many ID
 
             # PROCEDURES FILTER
-            if requestObject.has_key("procedure"):
+            if "procedure" in requestObject:
                 self.procedure = []
                 prcs = requestObject["procedure"].split(",")
 
@@ -103,7 +103,7 @@ class sosGOfilter(f.sosFilter):
                 #  > in istSOS offerings are equals to procedures
                 #  > so offerings are inserted into the procedure array filter
 
-                if requestObject.has_key("offering"):
+                if "offering" in requestObject:
                     prcs = requestObject["offering"].split(",")
                     if self.procedure == None:
                         self.procedure = []
@@ -123,7 +123,7 @@ class sosGOfilter(f.sosFilter):
 
                 # RESPONSE FORMAT
                 self.responseFormat = 'text/xml;subtype="om/2.0"'
-                if requestObject.has_key("responseformat"):
+                if "responseformat" in requestObject:
                     if requestObject["responseformat"] == '':
                         raise sosException.SOSException("MissingParameterValue", "responseformat", "Missing 'responseformat' parameter")
                     if not requestObject["responseformat"] in sosConfig.parameters["GO_responseFormat_2_0_0"]:
@@ -136,7 +136,7 @@ class sosGOfilter(f.sosFilter):
 
 
                 # OPTIONAL SRS FILTER
-                if requestObject.has_key("crs"):
+                if "crs" in requestObject:
                     try:
                         self.srsName = requestObject["crs"].split(':')[-1]
 
@@ -193,7 +193,7 @@ class sosGOfilter(f.sosFilter):
                             self.eventTime.append([i])
 
                 # FEATURES OF INTEREST FILTER
-                if requestObject.has_key("featureofinterest"):
+                if "featureofinterest" in requestObject:
                     if requestObject["featureofinterest"] == '':
                         raise sosException.SOSException("MissingParameterValue", "featureOfInterest", "Missing 'featureOfInterest' parameter")
                     if sosConfig.urn["feature"] in requestObject["featureofinterest"]:
@@ -204,7 +204,7 @@ class sosGOfilter(f.sosFilter):
                 # SPATIAL FILTER
                 # example1: spatialFilter=om:featureOfInterest/*/sams:shape,0.0,0.0,60.0,60.0,http://www.opengis.net/def/crs/EPSG/0/4326
                 # example2: spatialFilter=om:featureOfInterest/*/sams:shape,0.0,0.0,60.0,60.0,urn:ogc:def:crs:EPSG::4326
-                if requestObject.has_key("spatialfilter"):
+                if "spatialfilter" in requestObject:
 
                     sfs = requestObject["spatialfilter"].split(",")
 
@@ -238,7 +238,7 @@ class sosGOfilter(f.sosFilter):
             else:
 
                 # THE OFFERING
-                if requestObject.has_key("offering"):
+                if "offering" in requestObject:
                     try:
                         self.offering = get_name_from_urn(requestObject["offering"], "offering", sosConfig)
 
@@ -246,7 +246,7 @@ class sosGOfilter(f.sosFilter):
                         raise sosException.SOSException("InvalidParameterValue","offering",str(e))
 
                 # RESPONSE FORMAT
-                if requestObject.has_key("responseformat"):
+                if "responseformat" in requestObject:
                     if requestObject["responseformat"] == '':
                         raise sosException.SOSException("MissingParameterValue", "responseFormat", "Missing 'responseFormat' parameter")
 
@@ -257,20 +257,20 @@ class sosGOfilter(f.sosFilter):
                     else:
                         self.responseFormat = requestObject["responseformat"]
 
-                if not requestObject.has_key("offering"):
+                if "offering" not in requestObject:
                     raise sosException.SOSException("MissingParameterValue", "offering",
                         "Parameter \"offering\" is mandatory with multiplicity 1")
 
-                if not requestObject.has_key("observedproperty"):
+                if "observedproperty" not in requestObject:
                     raise sosException.SOSException("MissingParameterValue", "observedProperty",
                         "Parameter \"observedProperty\" is mandatory with multiplicity N")
 
-                if not requestObject.has_key("responseformat"):
+                if "responseformat" not in requestObject:
                     raise sosException.SOSException("MissingParameterValue", "responseFormat",
                         "Parameter \"responseFormat\" is mandatory with multiplicity 1") #one
 
                 # OPTIONAL SRS FILTER
-                if requestObject.has_key("srsname"):
+                if "srsname" in requestObject:
                     try:
                         self.srsName = get_name_from_urn(requestObject["srsname"], "refsystem", sosConfig)
                     except Exception as e:
@@ -283,7 +283,7 @@ class sosGOfilter(f.sosFilter):
                     self.srsName = sosConfig.parameters["GO_srs"][0]
 
                 # TIME FILTER
-                if requestObject.has_key('eventtime'):
+                if 'eventtime' in requestObject:
                     self.eventTime = []
                     for i in requestObject["eventtime"].replace(" ","+").split(","):
                         if len(i.split("/")) < 3:
@@ -294,7 +294,7 @@ class sosGOfilter(f.sosFilter):
                                 "Parameter \"eventTime\" bad formatted")
 
                 # FEATURES OF INTEREST FILTER
-                if requestObject.has_key("featureofinterest"):
+                if "featureofinterest" in requestObject:
                     foi = requestObject["featureofinterest"]
                     if foi.find("<ogc:") >= 0 and foi.find("<gml:")>=0:
                         self.featureOfInterestSpatial = sosUtils.ogcSpatCons2PostgisSql(foi, 'geom_foi', sosConfig.istsosepsg)
@@ -307,11 +307,11 @@ class sosGOfilter(f.sosFilter):
                             raise sosException.SOSException("InvalidParameterValue", "featureofinterest", str(e))
 
                 # FILTERS FOR QUERY NOT SUPPORTED YET
-                if requestObject.has_key("result"):
+                if "result" in requestObject:
                     self.result = sosUtils.ogcCompCons2PostgisSql(requestObject["result"])
 
                 # RESULT MODEL
-                if requestObject.has_key("resultmodel"):
+                if "resultmodel" in requestObject:
                     if requestObject["resultmodel"] in sosConfig.parameters["GO_resultModel"]:
                         self.resultModel = requestObject["resultmodel"]
 
@@ -323,7 +323,7 @@ class sosGOfilter(f.sosFilter):
                     self.resultModel = sosConfig.parameters["GO_resultModel"][0]
 
                 # RESPONSE MODE
-                if requestObject.has_key("responsemode"):
+                if "responsemode" in requestObject:
                     if requestObject["responsemode"] in sosConfig.parameters["GO_responseMode"]:
                         self.responseMode = requestObject["responsemode"]
 
@@ -380,7 +380,7 @@ class sosGOfilter(f.sosFilter):
 
             # AGGREGATE INTERVAL
             #  In ISO 8601 duration format
-            if requestObject.has_key("aggregateinterval"):
+            if "aggregateinterval" in requestObject:
                 # Check on the eventTime parameter: it must be only one interval: 2010-01-01T00:00:00+00/2011-01-01T00:00:01+00
                 exeMsg = "Using aggregate functions, the event time must exist with an interval composed by a begin and an end date (ISO8601)"
                 if self.eventTime == None or len(self.eventTime)!=1 or len(self.eventTime[0])!=2:
@@ -398,7 +398,7 @@ class sosGOfilter(f.sosFilter):
 
             # AGGREGATE FUNCTION
             #  sum,avg,max,min
-            if requestObject.has_key("aggregatefunction"):
+            if "aggregatefunction" in requestObject:
                 if self.aggregate_interval==None:
                     raise sosException.SOSException("InvalidParameterValue", "aggregateFunction",
                         "Using aggregate functions parameters \"aggregateInterval\" and \"aggregateFunction\" are both mandatory")
@@ -412,7 +412,7 @@ class sosGOfilter(f.sosFilter):
                 self.aggregate_function = None
 
             # AGGREGATE NODATA
-            if requestObject.has_key("aggregatenodata"):
+            if "aggregatenodata" in requestObject:
                 if self.aggregate_interval==None or self.aggregate_function==None:
                     raise sosException.SOSException("InvalidParameterValue", "aggregateNodata",
                         "Using aggregateNodata parameter requires both \"aggregateInterval\" and \"aggregateFunction\"")
@@ -423,7 +423,7 @@ class sosGOfilter(f.sosFilter):
                 self.aggregate_nodata = sosConfig.aggregate_nodata
 
             # AGGREGATE NODATA QUALITY INDEX
-            if requestObject.has_key("aggregatenodataqi"):
+            if "aggregatenodataqi" in requestObject:
                 if self.aggregate_interval==None or self.aggregate_function==None:
                     raise sosException.SOSException("InvalidParameterValue", "aggregateNodataQi",
                         "Using aggregateNodataQi parameter requires both \"aggregateInterval\" and \"aggregateFunction\"")
@@ -434,7 +434,7 @@ class sosGOfilter(f.sosFilter):
 
             # QUALITY INDEX
             self.qualityIndex=False
-            if requestObject.has_key("qualityindex"):
+            if "qualityindex" in requestObject:
                 if requestObject["qualityindex"].upper() == "TRUE":
                     self.qualityIndex = True
 
@@ -447,7 +447,7 @@ class sosGOfilter(f.sosFilter):
 
             # QUALITY INDEX FILTERING
             self.qualityFilter=False
-            if requestObject.has_key("qualityfilter"):
+            if "qualityfilter" in requestObject:
                 if len(requestObject["qualityfilter"])>=2:
                     try:
                         if requestObject["qualityfilter"][0:2]=='<=' or requestObject["qualityfilter"][0:2]=='>=':
@@ -577,7 +577,7 @@ class sosGOfilter(f.sosFilter):
             if len(procs) > 0:
                 self.procedure=[]
                 for proc in procs:
-                    if "xlink:href" in proc.attributes.keys():
+                    if "xlink:href" in list(proc.attributes.keys()):
                         self.procedure.append(str(proc.getAttribute("xlink:href")))
 
                     elif proc.hasChildNodes():

@@ -1,4 +1,7 @@
-*.pyc
+__pycache__/
+*.py[cod]
+.cache/
+venv/
 services/demo
 _build/
 docs/_build/

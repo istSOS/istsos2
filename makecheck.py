@@ -36,7 +36,7 @@ import test.walib.istsos.services.services as ser
 import test.walib.istsos.services.systemtypes as syst
 import test.walib.istsos.services.uoms as uom
 import test.istsoslib.sosRequests as sos
-import lib.argparse as argparse
+import argparse as argparse
 
 import test.get as tget #GET(fname, address)
 import test.post as tpost #POST(fname, spost, address)
@@ -53,11 +53,11 @@ def run_tests(arg):
     verb = arg['v']
 
     ms = 'UNIT TESTING'   
-    print ms
+    print(ms)
     f.write('\n'+ms+'\n=================================')
     
     ms = 'CREATING TESTING ENVIRONMENT'   
-    if verb: print '|---' + ms
+    if verb: print('|---' + ms)
     f.write('\n'+ms+'\n=================================')
     
     #=======================================================================    
@@ -137,7 +137,7 @@ def run_tests(arg):
     if not res['success']:
         raise SystemError("Unable to configure the SOS server: %s" % res['message'])
     ms = 'server configuration set'
-    if verb: print '\t|---' + ms
+    if verb: print('\t|---' + ms)
     f.write('\n'+ms)
     
     #----- CREATE A SOS SERVICE ---------
@@ -159,7 +159,7 @@ def run_tests(arg):
         else:
             raise SystemError("Unable to create a new SOS service: %s" % res['message'])
     ms = 'service test created'
-    if verb: print '\t|---' + ms
+    if verb: print('\t|---' + ms)
     f.write('\n'+ms)
     #----- ADD UNIT OF MEASURE ------
     tuom = {
@@ -171,7 +171,7 @@ def run_tests(arg):
     if not res['success']:
         raise SystemError("Unable to create a new SOS unit of measure: %s" % res['message'])
     ms = 'unit of measure test created'
-    if verb: print '\t|---' + ms
+    if verb: print('\t|---' + ms)
     f.write('\n'+ms)
     #----- ADD OBSERVED PROPERTY ------
     opr = {
@@ -186,7 +186,7 @@ def run_tests(arg):
     if not res['success']:
         raise SystemError("Unable to create a new SOS observed property: %s" % res['message'])
     ms = 'observed property test created'
-    if verb: print '\t|---' + ms
+    if verb: print('\t|---' + ms)
     f.write('\n'+ms)
     #----- ADD PROCEDURE ------
     tproc = {
@@ -236,66 +236,66 @@ def run_tests(arg):
     address = 'http://localhost/istsos/wa/istsos/services/test/procedures'
     res = tpost.POST("",tproc,address)
     if not res['success']:
-        print res
+        print(res)
         raise SystemError("Unable to create a new SOS procedure: %s" % res['message'])
     ms = 'procedure test created'
-    if verb: print '\t|---' + ms
+    if verb: print('\t|---' + ms)
     f.write('\n'+ms)
     
     #=======================================================================
     # TEST RESTFUL SERVICE REQUESTS
     #=======================================================================
     ms = 'TESTING RESTFUL SERVICE REQUESTS\n'   
-    if verb: print '|---' + ms
+    if verb: print('|---' + ms)
     f.write('\n'+ms+'\n=================================')   
     
-    if verb: print '\t|---TESTING dataqualities \n'
+    if verb: print('\t|---TESTING dataqualities \n')
     dataqualities = data.test_dataqualities(f)
     if verb:
-        for el in dataqualities: print '\t\t|---' + el
-    for k,v in dataqualities.items():
+        for el in dataqualities: print('\t\t|---' + el)
+    for k,v in list(dataqualities.items()):
         passed.append(k) if v else failed.append(k)
             
-    if verb: print '\t|---TESTING epsg\n'
+    if verb: print('\t|---TESTING epsg\n')
     epsgs = eps.test_epsgs(f)
     if verb:
-        for el in epsgs: print '\t\t|---' + el
-    for k,v in epsgs.items():
+        for el in epsgs: print('\t\t|---' + el)
+    for k,v in list(epsgs.items()):
         passed.append(k) if v else failed.append(k)
             
-    if verb: print '\t|---TESTING observedproperties \n'
+    if verb: print('\t|---TESTING observedproperties \n')
     observedproperties = obsprop.test_observedproperties(f)
     if verb:
-        for el in observedproperties: print '\t\t|---' + el
-    for k,v in observedproperties.items():
+        for el in observedproperties: print('\t\t|---' + el)
+    for k,v in list(observedproperties.items()):
         passed.append(k) if v else failed.append(k)
             
-    if verb: print '\t|---TESTING offerings \n'
+    if verb: print('\t|---TESTING offerings \n')
     offerings = offer.test_offerings(f)
     if verb:
-        for el in observedproperties: print '\t\t|---' + el
-    for k,v in offerings.items():
+        for el in observedproperties: print('\t\t|---' + el)
+    for k,v in list(offerings.items()):
         passed.append(k) if v else failed.append(k)
          
-    if verb: print '\t|---TESTING operations \n'
+    if verb: print('\t|---TESTING operations \n')
     operations = oper.test_operations(f)
     if verb:
-        for el in operations: print '\t\t|---' + el
-    for k,v in operations.items():
+        for el in operations: print('\t\t|---' + el)
+    for k,v in list(operations.items()):
         passed.append(k) if v else failed.append(k)
            
-    if verb: print '\t|---TESTING procedures \n'
+    if verb: print('\t|---TESTING procedures \n')
     procedures = proc.test_procedures(f)
     if verb:
-        for el in procedures: print '\t\t|---' + el
-    for k,v in procedures.items():
+        for el in procedures: print('\t\t|---' + el)
+    for k,v in list(procedures.items()):
         passed.append(k) if v else failed.append(k)
             
-    if verb: print '\t|---TESTING services \n'
+    if verb: print('\t|---TESTING services \n')
     services = ser.test_services(f)
     if verb:
-        for el in services: print '\t\t|---' + el
-    for k,v in services.items():
+        for el in services: print('\t\t|---' + el)
+    for k,v in list(services.items()):
         passed.append(k) if v else failed.append(k)
     
     """        
@@ -307,73 +307,73 @@ def run_tests(arg):
         passed.append(k) if v else failed.append(k)
     """
                 
-    if verb: print '\t|---TESTING uoms \n'
+    if verb: print('\t|---TESTING uoms \n')
     uoms = uom.test_uoms(f)
     if verb:
-        for el in uoms: print '\t\t|---' + el
-    for k,v in uoms.items():
+        for el in uoms: print('\t\t|---' + el)
+    for k,v in list(uoms.items()):
         passed.append(k) if v else failed.append(k)
            
-    if verb: print '\t|---TESTING configsections \n'
+    if verb: print('\t|---TESTING configsections \n')
     configsections = conf.test_configsections(f)
     if verb:
-        for el in configsections: print '\t\t|---' + el
-    for k,v in configsections.items():
+        for el in configsections: print('\t\t|---' + el)
+    for k,v in list(configsections.items()):
         passed.append(k) if v else failed.append(k)
       
     #=======================================================================
     # TEST SOS SERVICE REQUESTS
     #=======================================================================    
     ms = 'TESTING SOS SERVICE REQUESTS\n'   
-    if verb: print '|---' + ms
+    if verb: print('|---' + ms)
     f.write('\n'+ms+'\n=================================')   
     
-    if verb: print '\t|---TESTING getCapabilities \n'
+    if verb: print('\t|---TESTING getCapabilities \n')
     getCapabilities = sos.getCapabilities(f)
     if verb:
         for el in getCapabilities: 
-            print '\t\t|---' + el
-    for k,v in getCapabilities.items():
+            print('\t\t|---' + el)
+    for k,v in list(getCapabilities.items()):
         passed.append(k) if v else failed.append(k)
             
-    if verb: print '\t|---TESTING registerSensor \n'
+    if verb: print('\t|---TESTING registerSensor \n')
     registerSensor = sos.registerSensor(f)
     if verb:
         for el in registerSensor: 
-            print '\t\t|---' + el
-    for k,v in registerSensor.items():
+            print('\t\t|---' + el)
+    for k,v in list(registerSensor.items()):
         passed.append(k) if v else failed.append(k)
             
-    if verb: print '\t|---TESTING describeSensor \n'
+    if verb: print('\t|---TESTING describeSensor \n')
     describeSensor = sos.describeSensor(f)
     if verb:
         for el in describeSensor: 
-            print '\t\t|---' + el
-    for k,v in describeSensor.items():
+            print('\t\t|---' + el)
+    for k,v in list(describeSensor.items()):
         passed.append(k) if v else failed.append(k)
             
-    if verb: print '\t|---TESTING getFeatureOfInterest \n'
+    if verb: print('\t|---TESTING getFeatureOfInterest \n')
     featureofInterest = sos.getFeatureOfInterest(f)
     if verb:
         for el in featureofInterest: 
-            print '\t\t|---' + el
-    for k,v in featureofInterest.items():
+            print('\t\t|---' + el)
+    for k,v in list(featureofInterest.items()):
         passed.append(k) if v else failed.append(k)
            
-    if verb: print '\t|---TESTING insertObservation \n'
+    if verb: print('\t|---TESTING insertObservation \n')
     insertObservation = sos.insertObservation(f)
     if verb:
         for el in insertObservation: 
-            print '\t\t|---' + el
-    for k,v in insertObservation.items():
+            print('\t\t|---' + el)
+    for k,v in list(insertObservation.items()):
         passed.append(k) if v else failed.append(k)
             
-    if verb: print '\t|---TESTING getObservation \n'
+    if verb: print('\t|---TESTING getObservation \n')
     getObservation = sos.getObservation(f)
     if verb:
         for el in getObservation: 
-            print '\t\t|---' + el
-    for k,v in getObservation.items():
+            print('\t\t|---' + el)
+    for k,v in list(getObservation.items()):
         passed.append(k) if v else failed.append(k)
             
     # delete sensor
@@ -387,14 +387,14 @@ def run_tests(arg):
     #=========================================================    
     # WRITE TEST RESULTS    
     #=========================================================
-    print "results:"
-    print "--test duration: %s" % duration
-    print "--run tests:     %s" % (npassed+nfailed)
-    print "--passed tests:  %s" % npassed
-    print "--failed tests:  %s" % nfailed
+    print("results:")
+    print("--test duration: %s" % duration)
+    print("--run tests:     %s" % (npassed+nfailed))
+    print("--passed tests:  %s" % npassed)
+    print("--failed tests:  %s" % nfailed)
     if len(failed) >0:    
-        print ""
-        print "failed test list: %s" %("\n -".join(failed))
+        print("")
+        print("failed test list: %s" %("\n -".join(failed)))
 
 
 if __name__ == "__main__":

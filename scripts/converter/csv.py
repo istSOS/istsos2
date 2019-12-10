@@ -222,8 +222,8 @@ class CsvImporter(raw2csv.Converter):
                 )
                 self.setEndPosition(date)
             except Exception as e:
-                print "%s [%s]:%s" % (fileName,cnt,line)
-                print traceback.print_exc()
+                print("%s [%s]:%s" % (fileName,cnt,line))
+                print(traceback.print_exc())
                 raise e
                 
         self.setEndPositionFromFilename(fileName)

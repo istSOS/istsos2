@@ -30,17 +30,17 @@ from os import path
 import hashlib
 import pprint
 try:
-  import cPickle as pic
+  import pickle as pic
 except ImportError:
   try:
     import pickle as pic
   except ImportError:
-    print >> sys.stderr, ("Failed to import pickle from any known place")
+    print(("Failed to import pickle from any known place"), file=sys.stderr)
 sys.path.insert(0, path.abspath("."))
 try:
-    import lib.argparse as argparse
+    import argparse as argparse
 except ImportError as e:
-    print "\nError loading internal libs:\n >> did you run the script from the istSOS root folder?\n\n"
+    print("\nError loading internal libs:\n >> did you run the script from the istSOS root folder?\n\n")
     raise e
 
 pp = pprint.PrettyPrinter(indent=4)
@@ -81,7 +81,7 @@ def execute (args, conf=None):
             print ("To remove a user, the user name must be provided.\nAdd -h for help")
             return
         elif not path.isfile(passwordFile):
-            print "User file not exist"
+            print("User file not exist")
         
         user = args['user']
         users = get_users()
@@ -89,28 +89,28 @@ def execute (args, conf=None):
         if role:
         
             if not role in users[user]['roles']:
-                print "User '%s' does not have role %s" % (user, role)
+                print("User '%s' does not have role %s" % (user, role))
                 
             del users[user]['roles'][role]
             with open(passwordFile, 'w+') as f:
                 pic.dump(users, f)
                 
         else:
-            if user in users.keys():
+            if user in list(users.keys()):
                 del users[user]
                 
                 with open(passwordFile, 'w+') as f:
                     pic.dump(users, f)
                     
             else:
-                print "User '%s' does not exists" % user
+                print("User '%s' does not exists" % user)
             
         return
         
             
     elif ll:
         if not path.isfile(passwordFile):
-            print "User file not exist"
+            print("User file not exist")
         users = get_users()
         pp.pprint(users) 
         '''for user in users.keys():
@@ -146,7 +146,7 @@ def execute (args, conf=None):
         
         with open(passwordFile, 'rb') as f:
             users = pic.load(f)
-            if user in users.keys():
+            if user in list(users.keys()):
                 users[user]["password"] = hashlib.md5(password).hexdigest()
             else:
                 users[user] = {
@@ -163,21 +163,21 @@ def execute (args, conf=None):
             return
             
         elif not path.isfile(passwordFile):
-            print "Users file not exist"
+            print("Users file not exist")
         
         user = args['user']
         service = args['service']
         procedures = args['procedures']
         users = get_users()
         
-        if user in users.keys():
+        if user in list(users.keys()):
             if not role in users[user]['roles']:
                 users[user]['roles'][role] = {}
             users[user]['roles'][role][service] = procedures
             with open(passwordFile, 'w+') as f:
                 pic.dump(users, f)
         else:
-            print "User not exists in file, to create the user set also the password.\nAdd -h for help"
+            print("User not exists in file, to create the user set also the password.\nAdd -h for help")
             
     
         

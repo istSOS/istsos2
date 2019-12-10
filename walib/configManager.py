@@ -22,7 +22,7 @@
 # =============================================================================
 try:
     # Python < 3
-    import ConfigParser
+    import configparser
 except ImportError:
     # Python >= 3
     import configparser as ConfigParser
@@ -69,13 +69,13 @@ class waServiceConfig():
         self.servicecfgpath = servicecfgpath
 
         #read config from server
-        defaultconf = ConfigParser.RawConfigParser()
+        defaultconf = configparser.RawConfigParser()
         defaultconf.optionxform = str
         defaultconf.read(defaultcfgpath)
         self.sections = defaultconf.sections()
 
         #read config from service
-        serviceconf = ConfigParser.RawConfigParser()
+        serviceconf = configparser.RawConfigParser()
         serviceconf.optionxform = str
         if not servicecfgpath is None:
             serviceconf.read(servicecfgpath)
@@ -147,14 +147,14 @@ class waServiceConfig():
         save current configuration to appropriate files
         """
         if not self.servicecfgpath is None:
-            serviceconf = ConfigParser.RawConfigParser()
+            serviceconf = configparser.RawConfigParser()
             serviceconf.optionxform = str
 
             for sectionname in self.sections:
                 section = getattr(self, "%s" % sectionname)
                 if section["default"] is False:
                     serviceconf.add_section(sectionname)
-                    for option in section.keys():
+                    for option in list(section.keys()):
                         if not option == "default":
                             serviceconf.set(
                                 sectionname, option, section[option])
@@ -164,13 +164,13 @@ class waServiceConfig():
             cfgfile.close()
 
         else:
-            defaultconf = ConfigParser.RawConfigParser()
+            defaultconf = configparser.RawConfigParser()
             defaultconf.optionxform = str
 
             for sectionname in self.sections:
                 section = getattr(self, "%s" % sectionname)
                 defaultconf.add_section(sectionname)
-                for option in section.keys():
+                for option in list(section.keys()):
                     if not option == "default":
                         defaultconf.set(sectionname, option, section[option])
 

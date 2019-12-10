@@ -62,7 +62,7 @@ def notify(name, message, status=True):
             notifier.post_twitter_status(message['twitter']['public'], name)
         except AttributeError as e:
             # missing or wrong autentiation data
-            print e
+            print(e)
 
     for user in usersList:
         sql = "SELECT * FROM wns.user WHERE id = %s"
@@ -75,18 +75,18 @@ def notify(name, message, status=True):
                 notifier.alert(message['alert'], name)
 
             if con == 'mail' or con == 'email':
-                if 'mail' in message.keys():
+                if 'mail' in list(message.keys()):
                     notifier.email(message['mail'], contact['email'])
 
             elif con == 'twitter':
-                if 'twitter' in message.keys() and 'twitter' in contact.keys():
+                if 'twitter' in list(message.keys()) and 'twitter' in list(contact.keys()):
                     notifier.twitter(message['twitter']['private'],
                                                 contact['twitter'], name)
                 else:
-                    print "Please define a Twitter id"
+                    print("Please define a Twitter id")
 
             elif con == "ftp":
-                if "ftp" in message.keys() and "ftp" in contact.keys():
+                if "ftp" in list(message.keys()) and "ftp" in list(contact.keys()):
                     import json
                     notifier.ftp(json.loads(contact['ftp']), message['ftp'])
 

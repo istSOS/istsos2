@@ -25,8 +25,8 @@ import os
 import sys
 import copy
 from datetime import timedelta
-from lib import isodate as iso
-from lib import pytz
+import isodate as iso
+import pytz
 
 from istsoslib import sosException
 
@@ -96,7 +96,7 @@ class VirtualProcess():
 
             # Identify if procedures are virtual
 
-            tmp = self.procedures.keys()
+            tmp = list(self.procedures.keys())
             procedures = []
 
             # Handle cascading virtual procedures
@@ -126,11 +126,11 @@ class VirtualProcess():
 
                     # check if python file exist
                     if os.path.isfile("%s/%s.py" % (vpFolder,p)):
-                        exec "import %s as vproc" %(p)
+                        exec("import %s as vproc" %(p))
                         vp = vproc.istvp()
                         if len(vp.procedures)>0:
                             # Add data source of virtual procedure
-                            tmp.extend(vp.procedures.keys())
+                            tmp.extend(list(vp.procedures.keys()))
 
                 else:
                     procedures.append(p)
@@ -202,9 +202,9 @@ class VirtualProcess():
             if len(self.procedures)==0:
                 raise Exception("Virtual Procedure Error: no procedures added")
 
-            procedure = self.procedures.keys()[0]
+            procedure = list(self.procedures.keys())[0]
 
-        elif procedure not in self.procedures.keys():
+        elif procedure not in list(self.procedures.keys()):
             raise Exception("Virtual Procedure Error: procedure %s has not been added to this virtual procedure" % procedure)
 
         virtualFilter = copy.deepcopy(self.filter)
@@ -659,7 +659,7 @@ class Observation:
     def baseInfo(self, pgdb, row, sosConfig):
         """set base information of registered procedure"""
 
-        k = row.keys()
+        k = list(row.keys())
         if not ("id_prc" in k and "name_prc" in k and  "name_oty" in k and "stime_prc" in k and "etime_prc" in k and "time_res_prc" in k  ):
             raise Exception("Error, baseInfo argument: %s"%(row))
 
@@ -1043,7 +1043,7 @@ class Observation:
             except:
                 raise Exception("error in loading virtual procedure path")
             #import procedure process
-            exec "import %s as vproc" %(self.name)
+            exec("import %s as vproc" %(self.name))
 
             # Initialization of virtual procedure will load the source data
             vp = vproc.istvp()
@@ -1106,7 +1106,7 @@ class GetObservationResponse:
         # SET TIME PERIOD
         tp=[]
         if filter.eventTime == None:
-            tp = [None,None]
+            self.period = None
         else:
             for t in filter.eventTime:
                 if len(t) == 2:
@@ -1115,8 +1115,10 @@ class GetObservationResponse:
 
                 if len(t)==1:
                     tp.append(iso.parse_datetime(t[0]))
+            self.period = [min(tp),max(tp)]
 
-        self.period = [min(tp),max(tp)]
+        # print("FILTER: ", filter.eventTime)
+        # self.period = [min(tp),max(tp)]
 
         self.obs=[]
 
@@ -1223,8 +1225,8 @@ class GetObservationResponse_2_0_0:
 
 
         # check if requested foi exist
-        print >> sys.stderr, "# check if requested foi exist"
-        print >> sys.stderr, filter.featureOfInterest
+        print("# check if requested foi exist", file=sys.stderr)
+        print(filter.featureOfInterest, file=sys.stderr)
         if not filter.featureOfInterest in ['', None]:
             params = [
                 filter.featureOfInterest,
@@ -1236,7 +1238,7 @@ class GetObservationResponse_2_0_0:
                 ) as exist_foi
             """
             try:
-                print >> sys.stderr, pgdb.mogrify(sql, tuple(params))
+                print(pgdb.mogrify(sql, tuple(params)), file=sys.stderr)
                 result=pgdb.select(sql, tuple(params))
 
             except Exception as ex:

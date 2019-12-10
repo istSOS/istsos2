@@ -65,11 +65,11 @@ import traceback
 sys.path.insert(0, path.abspath("."))
 
 try:
-    import lib.argparse as argparse
-    import lib.requests as requests
-    import lib.isodate as iso
+    import argparse as argparse
+    import requests as requests
+    import isodate as iso
 except ImportError as e:
-    print "\nError loading internal libs:\n >> did you run the script from the istSOS root folder?\n\n"
+    print("\nError loading internal libs:\n >> did you run the script from the istSOS root folder?\n\n")
     raise e
 
 fmt = '%Y-%m-%dT%H:%M:%S.%f%z'
@@ -82,7 +82,7 @@ def execute(args, logger=None):
             if logger:
                 logger.log(message)
             else:
-                print message
+                print(message)
 
     # Activate and print verbose information
     debug = args['v'] if 'v' in args else False
@@ -164,7 +164,7 @@ def execute(args, logger=None):
         ssrv,
         procedure
         ), auth=(suser, spwd), verify=False)
-    print res.text
+    print(res.text)
     sdata = res.json()
     if sdata['success'] is False:
         raise Exception(
@@ -300,7 +300,7 @@ def execute(args, logger=None):
 
                 except Exception as ee:
                     traceback.print_exc()
-                    print "Error setting start date for proc %s: %s" % (procedure, ee)
+                    print("Error setting start date for proc %s: %s" % (procedure, ee))
                     raise Exception(
                         "The date in the destination procedure %s constraint interval (%s) is not valid." % (
                             procedure,

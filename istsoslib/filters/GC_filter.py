@@ -44,10 +44,10 @@ class sosGCfilter(f.sosFilter):
             
             self.sections = None
             
-            if requestObject.has_key("section"):
+            if "section" in requestObject:
                 self.sections = requestObject["section"].lower().split( "," )
                 
-            if requestObject.has_key("sections"):
+            if "sections" in requestObject:
                 self.sections = requestObject["sections"].lower().split( "," )
                 
             if self.sections:                

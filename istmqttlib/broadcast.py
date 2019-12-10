@@ -45,7 +45,7 @@ class MQTTPublisher(threading.Thread):
         return self.conf['data']
 
     def run(self):
-        print >> sys.stderr, "Run run.. zombie run!"
+        print("Run run.. zombie run!", file=sys.stderr)
         pass
 
 

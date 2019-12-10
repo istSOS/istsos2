@@ -31,7 +31,7 @@ __email__ = 'milan.antonovic@gmail.com'
 
 from istsoslib import sosException
 import cgi
-from urlparse import parse_qs
+from urllib.parse import parse_qs
 import sys
 
 
@@ -58,7 +58,7 @@ def sosFactoryFilter(environ, sosConfig):
         #  > null parameter exceptions
         rect = parse_qs(environ['QUERY_STRING'], keep_blank_values=True)
         requestObject = {}
-        for key in rect.keys():
+        for key in list(rect.keys()):
             requestObject[key.lower()] = rect[key][0]
         if "request" in requestObject:
             sosRequest = requestObject["request"].lower()
@@ -90,7 +90,7 @@ def sosFactoryFilter(environ, sosConfig):
 
         else:
             try:
-                xmldoc = minidom.parseString(content)
+                xmldoc = minidom.parseString(content.decode('utf-8'))
             except:
                 raise sosException.SOSException(
                     "MissingParameterValue", None,

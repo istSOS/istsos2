@@ -25,7 +25,7 @@ __copyright__ = 'Copyright (c) 2016 IST-SUPSI (www.supsi.ch/ist)'
 __license__ = 'GPL2'
 __version__ = '1.0'
 
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import datetime
 import sys
 from os import path
@@ -34,16 +34,16 @@ from datetime import timedelta
 
 sys.path.insert(0, path.abspath("."))
 try:
-    import lib.argparse as argparse
-    import lib.requests as req
+    import argparse as argparse
+    import requests as req
     from lib.requests.auth import HTTPBasicAuth
     from scripts import istsosutils
-    import lib.isodate as iso
+    import isodate as iso
 
 except ImportError as e:
-    print """
+    print("""
 Error loading internal libs:
- >> did you run the script from the istSOS root folder?\n\n"""
+ >> did you run the script from the istSOS root folder?\n\n""")
     raise e
 
 step = timedelta(days=20)
@@ -54,7 +54,7 @@ def makeFile(res, procedure, op, path, qi, filename):
     text = res.text
     text = text.replace("%s," % procedure, "")
     lines = text.split('\n')
-    print('Lines: %s' % len(lines))
+    print(('Lines: %s' % len(lines)))
     if lines[-1] == '':
         del lines[-1]
     tmpOp = op.replace("x-ist::", "x-istsos:1.0:")
@@ -64,9 +64,9 @@ def makeFile(res, procedure, op, path, qi, filename):
         lines[0] = "%s,%s" % (isoop, tmpOp)
     if len(lines) > 1:
         datenumber = iso.parse_datetime(lines[-1].split(",")[0])
-        print "File: %s/%s_%s.dat" % (
+        print("File: %s/%s_%s.dat" % (
             path, filename, datetime.datetime.strftime(
-                datenumber, "%Y%m%d%H%M%S%f"))
+                datenumber, "%Y%m%d%H%M%S%f")))
         out_file = open("%s/%s_%s.dat" % (
             path, filename, datetime.datetime.strftime(
                 datenumber, "%Y%m%d%H%M%S%f")), "w")
@@ -76,7 +76,7 @@ def makeFile(res, procedure, op, path, qi, filename):
 
 def execute(args, logger=None):
 
-    print "istsos2csv start.."
+    print("istsos2csv start..")
 
     try:
         url = args['url']
@@ -128,7 +128,7 @@ def execute(args, logger=None):
 
 
         while tmpEnd <= end:
-            print ("%s - %s") % (tmpBegin, tmpEnd)
+            print(("%s - %s") % (tmpBegin, tmpEnd))
 
             if tmpBegin == tmpEnd:
                 params["eventTime"] = iso.datetime_isoformat(tmpBegin)
@@ -137,14 +137,14 @@ def execute(args, logger=None):
                     iso.datetime_isoformat(tmpBegin),
                     iso.datetime_isoformat(tmpEnd))
 
-            res = req.get("%s?%s" % (url, urllib.urlencode(params)), auth=auth)
+            res = req.get("%s?%s" % (url, urllib.parse.urlencode(params)), auth=auth)
 
             makeFile(res, procedure, observedProperty, d, qi, filename)
             tmpBegin = tmpEnd
             tmpEnd = tmpBegin + step
 
-            print " %s ************************** " % iso.datetime_isoformat(
-                tmpEnd)
+            print(" %s ************************** " % iso.datetime_isoformat(
+                tmpEnd))
 
         if tmpBegin < end:
             tmpEnd = end
@@ -155,16 +155,16 @@ def execute(args, logger=None):
                     iso.datetime_isoformat(tmpBegin),
                     iso.datetime_isoformat(tmpEnd))
 
-            res = req.get("%s?%s" % (url, urllib.urlencode(params)), auth=auth)
+            res = req.get("%s?%s" % (url, urllib.parse.urlencode(params)), auth=auth)
             makeFile(res, procedure, observedProperty, d, qi, filename)
 
-            print " %s ************************** " % iso.datetime_isoformat(
-                end)
+            print(" %s ************************** " % iso.datetime_isoformat(
+                end))
 
-        print "Finish."
+        print("Finish.")
 
     except Exception as e:
-        print "ERROR: %s\n\n" % e
+        print("ERROR: %s\n\n" % e)
         traceback.print_exc()
 
 

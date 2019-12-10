@@ -160,7 +160,7 @@ class PgDB(Database):
         try:
             self.__conn.rollback()
         except psycopg2.ProgrammingError as e:
-            print e.message
+            print(e.message)
 
     def executeInTransaction(self, sql, par=None):
         """Execute an sql statement in an open session"""
@@ -168,7 +168,7 @@ class PgDB(Database):
         try:
             cur.execute(sql, par)
         except psycopg2.ProgrammingError as e:
-            print e.message
+            print(e.message)
             self.__conn.rollback()
             raise e
         except Exception as e:
@@ -210,7 +210,7 @@ class PgDB(Database):
         try:
             cur.executemany(sql, dict)
         except psycopg2.ProgrammingError as e:
-            print e.message
+            print(e.message)
             self.__conn.rollback()
             raise e
         try:

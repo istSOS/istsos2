@@ -51,7 +51,7 @@ class wnsResponses(wnsOperation):
         limit = "LIMIT 1"
 
         if params is not None:
-            keyList = params.keys()
+            keyList = list(params.keys())
 
             if 'stime' in keyList:
                 sql += " AND  (date > %s::timestamptz)"

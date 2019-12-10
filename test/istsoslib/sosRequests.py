@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-import lib.requests as requests
+import requests as requests
 import time
 
 def getCapabilities(doc):

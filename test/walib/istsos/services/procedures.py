@@ -279,19 +279,19 @@ def test_procedures(doc):
         
         else:
             
-            print 'get3:\n'
-            print pp.pformat(get3)
-            print 'put, after:\n'
-            print pp.pformat(put)
+            print('get3:\n')
+            print(pp.pformat(get3))
+            print('put, after:\n')
+            print(pp.pformat(put))
             
             temp = deldic(get3['data'], [['location', 'crs']])
             ptloc = deldic(put['location'], ['crs'])
             
             
-            print '\ntemp:\n'
-            print pp.pformat(temp)
-            print '\nptloc, after:\n'
-            print pp.pformat(ptloc)
+            print('\ntemp:\n')
+            print(pp.pformat(temp))
+            print('\nptloc, after:\n')
+            print(pp.pformat(ptloc))
             
             if (temp['description'] == put['description']
                 and temp['inputs'] == put['inputs']
