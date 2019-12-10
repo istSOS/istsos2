@@ -66,43 +66,6 @@ def executeWa(environ, start_response):
     wsgi_mime = 'text/plain'
     wsgi_status = '200 OK'
 
-    def environ(request: httputil.HTTPServerRequest) -> Dict[Text, Any]:
-        """Converts a `tornado.httputil.HTTPServerRequest` to a WSGI environment.
-        """
-        hostport = request.host.split(":")
-        if len(hostport) == 2:
-            host = hostport[0]
-            port = int(hostport[1])
-        else:
-            host = request.host
-            port = 443 if request.protocol == "https" else 80
-        environ = {
-            "REQUEST_METHOD": request.method,
-            "SCRIPT_NAME": "",
-            "PATH_INFO": to_wsgi_str(
-                escape.url_unescape(request.path, encoding=None, plus=False)
-            ),
-            "QUERY_STRING": request.query,
-            "REMOTE_ADDR": request.remote_ip,
-            "SERVER_NAME": host,
-            "SERVER_PORT": str(port),
-            "SERVER_PROTOCOL": request.version,
-            "wsgi.version": (1, 0),
-            "wsgi.url_scheme": request.protocol,
-            "wsgi.input": BytesIO(escape.utf8(request.body)),
-            "wsgi.errors": sys.stderr,
-            "wsgi.multithread": False,
-            "wsgi.multiprocess": True,
-            "wsgi.run_once": False,
-        }
-        if "Content-Type" in request.headers:
-            environ["CONTENT_TYPE"] = request.headers.pop("Content-Type")
-        if "Content-Length" in request.headers:
-            environ["CONTENT_LENGTH"] = request.headers.pop("Content-Length")
-        for key, value in request.headers.items():
-            environ["HTTP_" + key.replace("-", "_").upper()] = value
-        return environ
-
     waEnviron = {
         "path" : environ['PATH_INFO'][3:],
         "method" : str(environ['REQUEST_METHOD']).upper(),
