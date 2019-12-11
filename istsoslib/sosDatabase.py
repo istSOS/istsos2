@@ -34,6 +34,7 @@ import psycopg2.extras
 import psycopg2.extensions
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
+from io import StringIO
 
 
 class Database:
@@ -145,6 +146,78 @@ class PgDB(Database):
         else:
             raise Exception("sql must be a SELECT statement")
 
+    def select_array(self, sql, par=None):
+        """ Execute a select statement"""
+        if sql.lstrip()[0:6].lower() == "select":
+            cur = self.__conn.cursor()
+            try:
+                cur.execute(sql, par)
+            except psycopg2.ProgrammingError as e:
+                raise e
+            try:
+                rows = cur.fetchall()
+            except:
+                rows = None
+            cur.close()
+            return rows
+        else:
+            raise Exception("sql must be a SELECT statement")
+
+    def to_csv(self, sql, par=None, delimiter=','):
+        """ Execute a select statement"""
+        if sql.lstrip()[0:6].lower() == "select":
+            csv = StringIO()
+            cur = self.__conn.cursor()
+            try:
+                cur.copy_expert(
+                    cur.mogrify("""
+                        COPY (
+                            %s
+                        ) TO STDOUT
+                        WITH 
+                            DELIMITER  ','
+                    """ % sql, par).decode('utf-8'),
+                    csv
+                )
+            except psycopg2.ProgrammingError as e:
+                raise e
+            cur.close()
+            return csv
+        else:
+            raise Exception("sql must be a SELECT statement")
+
+    def to_string(self, sql, par=None, delimiter=',', lineterminator='\n'):
+        if sql.lstrip()[0:6].lower() == "select":
+            cur = self.__conn.cursor()
+            lt = (
+                "CONCAT('' , chr(13), '')"
+                if lineterminator == '\n'
+                else "'%s'" % lineterminator
+            )
+            try:
+                import sys
+                cur.execute(
+                    """
+                        SELECT
+                            array_to_string( 
+                                ARRAY (
+                                    %s
+                                ),
+                            %s
+                        );
+                    """ % (cur.mogrify(sql, par).decode('utf-8'), lt)
+                )
+            except psycopg2.ProgrammingError as e:
+                raise e
+            try:
+                row = cur.fetchone()
+            except:
+                row = ""
+            cur.close()
+            return row[0]
+        else:
+            raise Exception("sql must be a SELECT statement")
+
     def commitTransaction(self):
         """Commit current transaction"""
         try:
@@ -160,7 +233,7 @@ class PgDB(Database):
         try:
             self.__conn.rollback()
         except psycopg2.ProgrammingError as e:
-            print e.message
+            print(e.message)
 
     def executeInTransaction(self, sql, par=None):
         """Execute an sql statement in an open session"""
@@ -168,7 +241,7 @@ class PgDB(Database):
         try:
             cur.execute(sql, par)
         except psycopg2.ProgrammingError as e:
-            print e.message
+            print(e.message)
             self.__conn.rollback()
             raise e
         except Exception as e:
@@ -210,7 +283,7 @@ class PgDB(Database):
         try:
             cur.executemany(sql, dict)
         except psycopg2.ProgrammingError as e:
-            print e.message
+            print(e.message)
             self.__conn.rollback()
             raise e
         try:
@@ -225,9 +298,9 @@ class PgDB(Database):
         cur = self.__conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         try:
             if par:
-                a = cur.mogrify(sql, par)
+                a = cur.mogrify(sql, par).decode('utf-8')
             else:
-                a = cur.mogrify(sql)
+                a = cur.mogrify(sql).decode('utf-8')
         except psycopg2.ProgrammingError as e:
             raise e
         cur.close()

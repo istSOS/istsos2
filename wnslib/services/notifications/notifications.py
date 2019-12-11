@@ -40,7 +40,7 @@ class wnsNotifications(wnsOperation):
         self.not_id = None
         if len(wnsEnviron['pathinfo']) > 2:
             self.not_id = wnsEnviron['pathinfo'][2]
-            print self.not_id
+            print(self.not_id)
         self.setData("")
 
     def executeGet(self):
@@ -108,7 +108,7 @@ class wnsNotifications(wnsOperation):
             return
         try:
             from wnslib import notificationManager as notManager
-            if "params" in self.json.keys():
+            if "params" in list(self.json.keys()):
                 params = self.json["params"]
                 condition = self.json["condition"]
                 service = self.json["service"]
@@ -117,7 +117,7 @@ class wnsNotifications(wnsOperation):
                 notManager.createSimpleNotification(name, service, params,
                                             condition, interval, period, store)
             else:
-                print  "Notification"
+                print("Notification")
                 funcFile = self.json["function"]
                 msg = notManager.addNotification(name, funcFile,
                                                         interval, store)
@@ -126,7 +126,7 @@ class wnsNotifications(wnsOperation):
                     servicedb.rollbackTransaction()
                     return
 
-        except Exception, e:
+        except Exception as e:
             msg = "The following error occoured: " + str(e)
             msg += "\n\nPlease try again"
             self.setException(msg)
@@ -198,8 +198,8 @@ class wnsNotifications(wnsOperation):
             # Delete old notification function
             notManager.delNotification(name)
 
-            if "params" in self.json.keys():
-                print >> sys.stderr, "simpleNot"
+            if "params" in list(self.json.keys()):
+                print("simpleNot", file=sys.stderr)
                 params = self.json["params"]
                 condition = self.json["condition"]
                 service = self.json["service"]
@@ -208,7 +208,7 @@ class wnsNotifications(wnsOperation):
                 notManager.createSimpleNotification(name, service, params,
                                             condition, interval, period, store)
             else:
-                print >> sys.stderr, "Notification"
+                print("Notification", file=sys.stderr)
                 function_path = self.json["function"]
                 msg = notManager.addNotification(name, function_path,
                                                         interval, store)
@@ -235,7 +235,7 @@ class wnsNotifications(wnsOperation):
 
                 servicedb.commitTransaction()
 
-        except Exception, e:
+        except Exception as e:
             msg = "The following error occoured: " + str(e)
             msg += "\n\nPlease try again"
             if description:
@@ -273,7 +273,7 @@ class wnsNotifications(wnsOperation):
                 servicedb.rollbackTransaction()
                 self.setException("Canno't delete the notifcation")
                 return
-        except Exception, e:
+        except Exception as e:
             msg = "The following error occoured: " + str(e)
             msg += "\n\nPlease try again"
             servicedb.rollbackTransaction()

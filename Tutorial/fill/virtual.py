@@ -2,13 +2,13 @@
 import requests
 import json
 
+
 def rest_request(url, json_data):
-
 	r = requests.post(url, data=json.dumps(json_data))
-
 	if not r.json()['success']:
-		print "problem with ", json_data['system_id']
-		print r.json()
+		print("problem with ", json_data['system_id'])
+		print(r.json())
+
 
 def insert_virtual(service_url, service):
 
@@ -147,12 +147,12 @@ def insert_virtual(service_url, service):
 
 	url = service_url + 'wa/istsos/services/' + service + "/procedures"
 
-	print " Add virtual procedure"
+	print(" Add virtual procedure")
 
 	rest_request(url, v_lugano)
 	rest_request(url, v_gnosca)
 	
-	print " Add virtual procedure script"
+	print(" Add virtual procedure script")
 
 	# V_LUGANO
 	f = open('vp/V_LUGANO.py', 'r')
@@ -165,7 +165,7 @@ def insert_virtual(service_url, service):
 	url = service_url + "wa/istsos/services/" + service + "/virtualprocedures/" + v_lugano['system_id'] + "/code"
 
 	r = requests.post(url, data=json.dumps(code_lugano))
-	print r.text
+	print(r.text)
 
 	# V_GNOSCA
 	gnosca_curve = [
@@ -201,11 +201,11 @@ def insert_virtual(service_url, service):
 
 	r = requests.post(url, data=json.dumps(code_gnosca))
 	if not r.json()['success']:
-		print r.json()
+		print(r.json())
 
 
 	url = service_url + "wa/istsos/services/" + service + "/virtualprocedures/" + v_gnosca['system_id'] + "/ratingcurve"
 
 	r = requests.post(url, data=json.dumps(gnosca_curve))
 	if not r.json()['success']:
-		print r.json()
+		print(r.json())

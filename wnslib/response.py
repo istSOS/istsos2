@@ -108,7 +108,7 @@ class Response(object):
         not_id = servicedb.execute(sql, params)[0]
         not_id = not_id[0]
 
-        print "Save " + self.__message['notification'] + " notification result"
+        print("Save " + self.__message['notification'] + " notification result")
 
         sql = "INSERT INTO wns.responses(not_id, date, notification, response)"
         sql += " VALUES (%s, %s, %s, %s)"

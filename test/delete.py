@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-import lib.requests as requests
+import requests as requests
 
 def DELETE(fname, address):
     
@@ -29,7 +29,7 @@ def DELETE(fname, address):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     return res.json
     

@@ -110,10 +110,15 @@ class sosFilter():
                     "service", "\"service\" parameter is mandatory")
 
         if method == "POST":
-            if not isinstance(requestObject, basestring):
+            if (
+                not isinstance(requestObject, str) and
+                not isinstance(requestObject, bytes)
+            ):
+
+                print("RO: ", requestObject)
                 # OGC 12-006/REQ 1:
                 # http://www.opengis.net/spec/SOS/2.0/req/core/request-service
-                if "service" in requestObject.attributes.keys():
+                if "service" in list(requestObject.attributes.keys()):
                     self.service = str(requestObject.getAttribute("service"))
                     if self.service not in sosConfig.parameters["service"]:
                         raise sosException.SOSException(
@@ -166,7 +171,7 @@ class sosFilter():
                     # OGC 12-006/REQ 2:
                     # http://www.opengis.net/spec/SOS/2.0/req/
                     # core/request-version
-                    if "version" in requestObject.attributes.keys():
+                    if "version" in list(requestObject.attributes.keys()):
                         self.version = str(
                             requestObject.getAttribute("version"))
                         if self.version not in sosConfig.parameters["version"]:

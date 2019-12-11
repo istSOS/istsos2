@@ -29,7 +29,7 @@ def initResource(wnsEnviron):
         resource factory
     """
     path = wnsEnviron['path']
-    print >> sys.stderr, path
+    print(path, file=sys.stderr)
 
     pathinfo = copy.deepcopy(wnsEnviron['pathinfo'])
     pathinfo.pop(0)

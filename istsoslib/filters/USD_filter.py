@@ -22,7 +22,7 @@
 # ===============================================================================
 from istsoslib.filters import filter as f
 from istsoslib import sosException
-from filter_utils import get_name_from_urn, getElemTxt, getElemAtt
+from .filter_utils import get_name_from_urn, getElemTxt, getElemAtt
 
 class sosUSDfilter(f.sosFilter): 
     """filter object for an updateSensorDescription request

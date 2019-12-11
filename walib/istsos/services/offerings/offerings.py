@@ -20,10 +20,12 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # ===============================================================================
+
 from walib import resource, utils, databaseManager, configManager
 from walib.resource import waResourceService
 import sys, os
-from lib import isodate
+import isodate
+
 
 class waOfferings(waResourceService):
     """class to handle SOS offerings objects, support GET, POST, PUT and DELETE method"""
@@ -48,12 +50,12 @@ class waOfferings(waResourceService):
             } 
         """
         servicedb = databaseManager.PgDB(
-                        self.serviceconf.connection["user"],
-                        self.serviceconf.connection["password"],
-                        self.serviceconf.connection["dbname"],
-                        self.serviceconf.connection["host"],
-                        self.serviceconf.connection["port"]
-                        )
+            self.serviceconf.connection["user"],
+            self.serviceconf.connection["password"],
+            self.serviceconf.connection["dbname"],
+            self.serviceconf.connection["host"],
+            self.serviceconf.connection["port"]
+        )
         
         #insert new offering in db
         try:
@@ -154,12 +156,12 @@ class waOfferings(waResourceService):
                 raise Exception("'temporary' offering name cannot be updated")
                     
             servicedb = databaseManager.PgDB(
-                            self.serviceconf.connection["user"],
-                            self.serviceconf.connection["password"],
-                            self.serviceconf.connection["dbname"],
-                            self.serviceconf.connection["host"],
-                            self.serviceconf.connection["port"]
-                            )
+                self.serviceconf.connection["user"],
+                self.serviceconf.connection["password"],
+                self.serviceconf.connection["dbname"],
+                self.serviceconf.connection["host"],
+                self.serviceconf.connection["port"]
+            )
         
             sql  = "UPDATE %s.offerings" % self.service
             sql += " SET name_off = %s, desc_off = %s, expiration_off = %s , active_off = %s "
@@ -173,7 +175,7 @@ class waOfferings(waResourceService):
             except:
                 exp = None
             try:
-                act = True if (self.json.has_key("active") and self.json["active"]=='on') else False
+                act = True if ("active" in self.json and self.json["active"]=='on') else False
             except:
                 act = False
             
@@ -210,13 +212,18 @@ class waOfferings(waResourceService):
         if self.service == "default":
             raise Exception("offerings operation can not be done for 'default' service instance.")
         else:
-            self.setData(utils.getOfferingDetailsList(
-                databaseManager.PgDB(self.serviceconf.connection['user'],
-                                            self.serviceconf.connection['password'],
-                                            self.serviceconf.connection['dbname'],
-                                            self.serviceconf.connection['host'],
-                                            self.serviceconf.connection['port']
-                ),self.service))
+            self.setData(
+                utils.getOfferingDetailsList(
+                    databaseManager.PgDB(
+                        self.serviceconf.connection['user'],
+                        self.serviceconf.connection['password'],
+                        self.serviceconf.connection['dbname'],
+                        self.serviceconf.connection['host'],
+                        self.serviceconf.connection['port']
+                    ),
+                    self.service
+                )
+            )
             if self.response['total']>0:
                 self.setMessage("Offerings of service \"%s\" successfully retrived" % self.service)
             else:
@@ -232,13 +239,18 @@ class waGetlist(waResourceService):
         if self.service == "default":
             raise Exception("offerings operation can not be done for 'default' service instance.")
         else:
-            self.setData(utils.getOfferingNamesList(
-                databaseManager.PgDB(self.serviceconf.connection['user'],
-                                            self.serviceconf.connection['password'],
-                                            self.serviceconf.connection['dbname'],
-                                            self.serviceconf.connection['host'],
-                                            self.serviceconf.connection['port']
-                ),self.service))
+            self.setData(
+                utils.getOfferingNamesList(
+                    databaseManager.PgDB(
+                        self.serviceconf.connection['user'],
+                        self.serviceconf.connection['password'],
+                        self.serviceconf.connection['dbname'],
+                        self.serviceconf.connection['host'],
+                        self.serviceconf.connection['port']
+                    ),
+                    self.service
+                )
+            )
             if self.response['total']>0:
                 self.setMessage("Offerings names of service \"%s\" successfully retrived" % self.service)
             else:

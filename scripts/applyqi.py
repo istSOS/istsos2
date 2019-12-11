@@ -28,7 +28,7 @@ from os import path
 
 sys.path.insert(0, path.abspath("."))
 try:
-    import lib.argparse as argparse
+    import argparse as argparse
 except ImportError as e:
     print("""
 Error loading internal libs:
@@ -170,7 +170,7 @@ def execute(args, conf=None):
         cur.execute("COMMIT;")
 
     except Exception as e:
-        print(str(e))
+        print((str(e)))
         cur.execute("ROLLBACK;")
 
 

@@ -7,8 +7,8 @@ def rest_request(url, json_data):
 	r = requests.post(url, data=json.dumps(json_data))
 
 	if not r.json()['success']:
-		print "problem with ", json_data['system_id']
-		print r.json()
+		print("problem with ", json_data['system_id'])
+		print(r.json())
 
 def insert_procedure(service_url, service):
 	t_lugano = {
@@ -386,7 +386,7 @@ def insert_procedure(service_url, service):
 	url = service_url + 'wa/istsos/services/' + service + '/procedures'
 
 
-	print " Add procedure"
+	print(" Add procedure")
 	rest_request(url, t_lugano)
 	rest_request(url, p_lugano)
 	rest_request(url, locarno)

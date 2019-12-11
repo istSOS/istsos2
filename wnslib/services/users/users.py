@@ -168,10 +168,10 @@ class wnsUsers(wnsOperation):
         sql = "UPDATE wns.user SET "
         params = ()
 
-        if "ftp" in json_data.keys():
+        if "ftp" in list(json_data.keys()):
             sql += ""
 
-        for key in json_data.keys():
+        for key in list(json_data.keys()):
             if key != "ftp":
                 sql += " " + key + "=%s,"
                 params += (json_data[key],)

@@ -36,7 +36,7 @@ class waGeo(waResourceConfigurator):
         
         sql = "SELECT * FROM spatial_ref_sys WHERE auth_srid IN %s"
         
-        aepsgs = map( int, [ self.json["istsosepsg"] ] + self.json["allowedepsg"].split(",") )
+        aepsgs = list(map( int, [ self.json["istsosepsg"] ] + self.json["allowedepsg"].split(",") ))
         
         params = (tuple(aepsgs),)
         

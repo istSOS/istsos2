@@ -40,10 +40,10 @@ import glob
 
 sys.path.insert(0, path.abspath("."))
 try:
-    import lib.argparse as argparse
-    import lib.requests as requests
+    import argparse as argparse
+    import requests as requests
 except ImportError as e:
-    print "\nError loading internal libs:\n >> did you run the script from the istSOS root folder?\n\n"
+    print("\nError loading internal libs:\n >> did you run the script from the istSOS root folder?\n\n")
     raise e
 
 def is_number(s):
@@ -90,20 +90,20 @@ def execute(args):
         
         jj = json.loads(res.content)
         if veryverbose:
-            print "RETRIVING PRECEDURES..."
+            print("RETRIVING PRECEDURES...")
             pp.pprint(res.json)
-            print "---------------------"
+            print("---------------------")
         elif verbose:
             if jj['success'] is False:
                 pp.pprint(res.json)
-                print "---------------------"
+                print("---------------------")
         
         procedures = dict( ( i["name"], [ j["name"] for j in i["observedproperties"] ] ) for i in jj["data"] )
         
         for nr,line in enumerate(lines):
             line = [ l.strip() for l in line ]
             if len(line)==4:
-                if not line[0] in procedures.keys():
+                if not line[0] in list(procedures.keys()):
                     raise Exception("[line %s]: procedure '%s' not observed by the istsos service!" %(nr,line[0]) )
                 if not "-".join(line[1].split(":")[-2:]) in procedures[line[0]]:
                     raise Exception("[line %s]: procedure '%s' does not observe property '%s'!" %(nr,line[0],line[1]) )
@@ -122,13 +122,13 @@ def execute(args):
                 
                 ds = json.loads(res.content)
                 if veryverbose:
-                    print "RETRIVING PRECEDURES..."
+                    print("RETRIVING PRECEDURES...")
                     pp.pprint(res.json)
-                    print "---------------------"
+                    print("---------------------")
                 elif verbose:
                     if ds['success'] is False:
                         pp.pprint(res.json)
-                        print "---------------------"
+                        print("---------------------")
                                 
                 #update constraints in Json
                 for opr in ds["data"]["outputs"]:
@@ -151,22 +151,22 @@ def execute(args):
                 # read response
                 jj = json.loads(res.content)
                 if veryverbose:
-                    print "SAVING PRECEDURE %s..." % line[0]
+                    print("SAVING PRECEDURE %s..." % line[0])
                     pp.pprint(json.dumps(ds["data"]))
-                    print "---------------------"
+                    print("---------------------")
                 
-                print "---------------------"
-                print " > Updated %s procedure success: %s" %(line[0],res.json['success'])
+                print("---------------------")
+                print(" > Updated %s procedure success: %s" %(line[0],res.json['success']))
 
                 if verbose:
                     if jj['success'] is False:
                         pp.pprint(res.json)
                 
-                print "---------------------"
+                print("---------------------")
                 
                 
     except Exception as e:
-        print "ERROR: %s\n\n" % e
+        print("ERROR: %s\n\n" % e)
         traceback.print_exc()
             
 if __name__ == "__main__":

@@ -23,7 +23,6 @@
 from walib import resource, utils, databaseManager, configManager
 from walib.resource import waResourceService
 import sys, os
-from lib import isodate
 
 class waEpsgs(waResourceService):
     """class to handle SOS service objects, support GET and POST method"""
@@ -47,8 +46,3 @@ class waEpsgs(waResourceService):
         #self.setData( [ self.serviceconf.geo["istsosepsg"] ] + self.serviceconf.geo["allowedEPSG"].split(",") )
         self.setData(data)
         self.setMessage("List of valid EPSG codes of service <%s> successfully retrived" % self.service)
-        
-        
-        
-        
-        

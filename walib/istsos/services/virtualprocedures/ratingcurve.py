@@ -244,7 +244,7 @@ def RCsave(cvlist, filename):
     for item in cvlist:
         try:
             if not item["from"] < item["to"]:
-                raise Exception, 'Error: <from> %s not before of <to> %s' %(item["from"],item["to"])
+                raise Exception('Error: <from> %s not before of <to> %s' %(item["from"],item["to"]))
             line = [item[h] for h in header]
             lines.append(line)
         except Exception as e:
@@ -254,9 +254,9 @@ def RCsave(cvlist, filename):
     for i in range(1, len(lines)):
         if lines[i][0] == lines[i - 1][0] and lines[i][1] == lines[i - 1][1]:
             if not lines[i][2] == lines[i - 1][3]:
-                raise Exception, 'Error: series of HQ curve same period multilevel wrong; check <from> %s' %(lines[i][0])
+                raise Exception('Error: series of HQ curve same period multilevel wrong; check <from> %s' %(lines[i][0]))
         elif not lines[i][0] == lines[i - 1][1]:
-            raise Exception, 'Error: series of HQ curve not continue; check <from> %s' %(lines[i][0])
+            raise Exception('Error: series of HQ curve not continue; check <from> %s' %(lines[i][0]))
 
     with open(filename, 'w') as f:
         f.write("|".join(header) + "\n")

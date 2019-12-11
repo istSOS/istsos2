@@ -28,7 +28,7 @@ istsoswnslib_path = path.join(path.dirname(path.abspath(__file__)), "wnslib")
 wns_path = path.join(path.dirname(path.abspath(__file__)), "wns")
 errorlog_path = path.join(path.dirname(path.abspath(__file__)), "logs")
 errorlog_level = "INFO"
-debug = False
+debug = True
 #authentication = True
 hybrid = False
 #===============================================================================

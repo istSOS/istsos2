@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 import json
-import lib.requests as requests
+import requests as requests
 
 def POST(fname, spost, address):
     
@@ -31,7 +31,7 @@ def POST(fname, spost, address):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
 
     return res.json
     

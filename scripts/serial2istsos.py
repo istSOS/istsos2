@@ -43,14 +43,14 @@ import traceback
 try:
     sys.path.insert(0, path.abspath("."))
     from lib.pytz import timezone
-    import lib.requests as requests
+    import requests as requests
     from lib.requests.auth import HTTPBasicAuth
-    import lib.isodate as iso
-    from lib import isodate as iso
+    import isodate as iso
+    import isodate as iso
 except ImportError as e:
-    print """Error loading internal libs:
- >> please run the script from the istSOS root folder.\n\n"""
-    print str(e)
+    print("""Error loading internal libs:
+ >> please run the script from the istSOS root folder.\n\n""")
+    print(str(e))
     raise e
 
 """
@@ -201,7 +201,7 @@ def execute(args):
 
     ds = res.json()['data']
     if debug:
-        print "Loading info: %s" % procedure
+        print("Loading info: %s" % procedure)
 
     # Preparing "io" object to send
     res = requests.get(
@@ -233,13 +233,13 @@ def execute(args):
         if aggregationFunction is not None:
             aggregationFunction.append("")
 
-    print aggregationFunction
+    print(aggregationFunction)
     if config:
         for observation in config["observations"]:
             if observation['name'] not in observations:
-                print "Warning: procedure \"%s\" does not observe %s" % (
+                print("Warning: procedure \"%s\" does not observe %s" % (
                     procedure, observation['name']
-                )
+                ))
                 s.close()
                 exit()
             else:
@@ -260,7 +260,7 @@ def execute(args):
     while True:
         if skip:
             # clear buffer (avoid bad read)
-            print "Wait for serial"
+            print("Wait for serial")
             s.flushInput()
             s.readline()
             time.sleep(1)
@@ -268,7 +268,7 @@ def execute(args):
             continue
 
         elif line < header:
-            print "Skipping line: %s " % line
+            print("Skipping line: %s " % line)
             s.flushInput()
             time.sleep(1)
             line = line + 1
@@ -278,7 +278,7 @@ def execute(args):
             message = s.readline().strip()
             data = message.split(',')
 
-            print data
+            print(data)
 
             if dtconfig:
                 if 'column' in dtconfig:
@@ -299,7 +299,7 @@ def execute(args):
                     eventtime = datetime.combine(d, t.time())
 
                 else:
-                    print "Warning: date time configuration wrong"
+                    print("Warning: date time configuration wrong")
                     s.close()
                     exit()
 
@@ -324,7 +324,7 @@ def execute(args):
 
             else:
                 if aggregation is not None:
-                    print "Preparing.."
+                    print("Preparing..")
                     startDate = startDate + duration
                     eventtime = startDate
                     data = []
@@ -364,15 +364,15 @@ def execute(args):
 
                 if sample:
                     sample = False
-                    print "\nData sample:"
+                    print("\nData sample:")
                     for idx in range(len(observations)):
-                        print "%s = %s" % (
+                        print("%s = %s" % (
                             observations[idx], data[columns[idx]]
-                        )
-                    print "\n"
+                        ))
+                    print("\n")
 
                 if debug:
-                    print "Sending data: %s" % (", ".join(ob))
+                    print("Sending data: %s" % (", ".join(ob)))
 
                 res = requests.post(
                     '%s/wa/istsos/services/%s/operations/insertobservation' % (
@@ -385,15 +385,15 @@ def execute(args):
                 try:
                     res.raise_for_status()
                     if debug:
-                        print "  > Insert Ok!"
+                        print("  > Insert Ok!")
                 except requests.exceptions.HTTPError as ex:
-                    print "Error: inserting data.."
+                    print("Error: inserting data..")
                     s.close()
                     exit()
 
         except Exception as rex:
-            print traceback.print_exc()
-            print "Error: inserting data:\n%s" % rex
+            print(traceback.print_exc())
+            print("Error: inserting data:\n%s" % rex)
 
     s.close()
 

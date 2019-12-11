@@ -63,15 +63,15 @@ from datetime import datetime
 
 sys.path.insert(0, path.abspath("."))
 try:
-    import lib.argparse as argparse
+    import argparse as argparse
     from scripts import istsosutils as iu
-    import lib.requests as requests
+    import requests as requests
     from lib.requests.auth import HTTPBasicAuth
 
 except ImportError as e:
-    print """
+    print("""
 Error loading internal libs:
->> did you run the script from the istSOS root folder?"""
+>> did you run the script from the istSOS root folder?""")
     raise e
 
 
@@ -206,10 +206,10 @@ def execute(args, logger=None):
                     })
                 )
                 res.raise_for_status()
-                print " > Sampling time configured: %s" % line[14]
+                print(" > Sampling time configured: %s" % line[14])
 
     except Exception as e:
-        print "ERROR: %s\n\n" % e
+        print("ERROR: %s\n\n" % e)
         traceback.print_exc()
 
 

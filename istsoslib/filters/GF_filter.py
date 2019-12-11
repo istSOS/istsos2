@@ -22,7 +22,7 @@
 # ===============================================================================
 from istsoslib.filters import filter as f
 from istsoslib import sosException
-from filter_utils import get_name_from_urn, getElemAtt, getElemTxt
+from .filter_utils import get_name_from_urn, getElemAtt, getElemTxt
 
 
 class sosGFfilter(f.sosFilter):
@@ -44,12 +44,12 @@ class sosGFfilter(f.sosFilter):
         #**************************
         if method == "GET":
             #---FeatureOfInterest
-            if not requestObject.has_key("featureofinterestid"):
+            if "featureofinterestid" not in requestObject:
                 raise sosException.SOSException("MissingParameterValue","FeatureOfInterestId","Parameter \"FeatureOfInterestId\" is required with multiplicity 1")
             else:
                 self.featureOfInterest = get_name_from_urn(requestObject["featureofinterestid"],"feature",sosConfig) #one-many ID
             #---srsName
-            if requestObject.has_key("srsname"):
+            if "srsname" in requestObject:
                 self.srsName = get_name_from_urn(requestObject["srsname"],"refsystem",sosConfig)
                 if not self.srsName in sosConfig.parameters["GO_srs"]:
                     raise sosException.SOSException("OptionNotSupported","srsName","Supported \"srsName\" valueas are: " + ",".join(sosConfig.parameters["GO_srs"]))

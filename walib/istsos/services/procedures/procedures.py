@@ -35,7 +35,7 @@ import json
 import traceback
 from walib import procedure, utils, databaseManager
 from walib.resource import waResourceService
-import lib.requests as requests
+import requests as requests
 
 convertToSec = {
     'min': lambda x: x * 60,
@@ -173,6 +173,7 @@ class waProcedures(waResourceService):
 
         proc.loadDICT(self.json)
         smlstring = proc.toRegisterSensor(indent=False)
+        # print("STRING: ", smlstring)
 
         headers = {"Content-type": "text/xml"}
         if 'HTTP_AUTHORIZATION' in self.waEnviron:
@@ -300,9 +301,11 @@ class waProcedures(waResourceService):
             raise Exception("system parameter is mandatory for PUT request")
 
         smlstring = proc.toXML()
+
         f = open(os.path.join(
             self.sensormlpath,
-            self.procedurename+".xml"), 'w')
+            self.procedurename+".xml"), 'wb')
+
 
         f.write(smlstring)
         f.close()
@@ -725,6 +728,7 @@ class waProcedures(waResourceService):
             smlobj = procedure.Procedure()
             smlobj.loadXML(res.content)
 
+
         except Exception as e:
             raise Exception(
                 "Error loading DescribeSensor of '%s': %s" % (
@@ -901,8 +905,8 @@ class waGetGeoJson(waResourceService):
                         try:
                             smlobj.loadXML(res.content)
                         except Exception as e:
-                            print >> sys.stderr, "\n\nSML: %s\n\n" % (
-                                res.content)
+                            print("\n\nSML: %s\n\n" % (
+                                res.content), file=sys.stderr)
                             raise Exception(
                                 "Error loading DescribeSensor of '%s' "
                                 "[STATUS CODE: %s]: %s" % (

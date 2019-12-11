@@ -32,7 +32,7 @@ __email__ = 'milan.antonovic@gmail.com'
 import sys
 import pprint
 from istsoslib import sosException
-from lib import isodate as iso
+import isodate as iso
 from datetime import datetime
 import json
 
@@ -324,12 +324,12 @@ class InsertObservationResponse:
                 procConstr.append(None)
 
         # get ordered list of observed properties in data----
-        dataKeys = [key for key in filter.data.keys()]
+        dataKeys = [key for key in list(filter.data.keys())]
 
         # get ordered list of unit of measures provided with data-------
         dataUoms = []
-        for key in filter.data.keys():
-            if "uom" in filter.data[key].keys():
+        for key in list(filter.data.keys()):
+            if "uom" in list(filter.data[key].keys()):
                 dataUoms.append(filter.data[key]["uom"])
             else:
                 dataUoms.append('None')
@@ -402,6 +402,7 @@ class InsertObservationResponse:
 
         # verify that eventime are in provided samplingTime
         if len(filter.data[tpar]["vals"]) > 0:
+            print("DATES: ", filter.data)
             maxDate = iso.parse_datetime(max(filter.data[tpar]["vals"]))
             minDate = iso.parse_datetime(min(filter.data[tpar]["vals"]))
             if not maxDate <= end and minDate >= start:
@@ -482,7 +483,7 @@ class InsertObservationResponse:
                 pcp = parsConsPro[i]
                 for ii, id_et in enumerate(ids_eti):
                     if not filter.data[par]["vals"][ii] in [
-                            'NULL', u'NULL', None, 'None', u'None',
+                            'NULL', 'NULL', None, 'None', 'None',
                             filter.sosConfig.aggregate_nodata]:
                         # TODO: add an else statement to add the
                         #  aggregate_nodata value OR delete the event time if

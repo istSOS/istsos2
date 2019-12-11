@@ -38,12 +38,14 @@ import shutil
 import errno
 import traceback
 import psycopg2
-from lib.etree import et
-import lib.requests as requests
-from lib import isodate as iso
+# import xml.etree as et
+from lxml import etree as et
+import requests
+from parse_and_get import parse_and_get_ns
+import isodate as iso
 
 reurl = (r'(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+'
-         '([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?')
+         r'([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?')
 
 
 class waServices(waResourceAdmin):
@@ -440,7 +442,7 @@ class waServices(waResourceAdmin):
                     serviceslist = servicesAllowed
 
             except Exception as ex:
-                print >> sys.stderr, traceback.print_exc()
+                print(traceback.print_exc(), file=sys.stderr)
                 raise ex
 
             self.setData(serviceslist)
@@ -457,7 +459,7 @@ class waServices(waResourceAdmin):
                     raise Exception("")
 
             except Exception as ex:
-                print >> sys.stderr, traceback.print_exc()
+                print(traceback.print_exc(), file=sys.stderr)
                 raise ex
 
             #get database connection and initialize it
@@ -545,7 +547,8 @@ class waGetobservation(waResourceService):
         except:
             raise Exception("ERROR in pathinfo scanning")
 
-        import lib.requests as requests
+        # import requests as requests
+        import requests
 
         headers = {}
         if 'HTTP_AUTHORIZATION' in self.waEnviron:
@@ -615,26 +618,6 @@ class waGetobservation(waResourceService):
                 "GetObservation request failed - Communication: "
                 "%s %s - Response: %s" % (
                     response.status_code, e, response.content))
-
-
-def parse_and_get_ns(file):
-    events = "start", "start-ns"
-    root = None
-    ns = {}
-    for event, elem in et.iterparse(file, events):
-        if event == "start-ns":
-            if elem[0] in ns and ns[elem[0]] != elem[1]:
-                # NOTE: It is perfectly valid to have the same prefix refer
-                #   to different URI namespaces in different parts of the
-                #   document. This exception serves as a reminder that this
-                #   solution is not robust.  Use at your own peril.
-                raise KeyError("Duplicate prefix with different URI found.")
-            ns[elem[0]] = "%s" % elem[1]
-        elif event == "start":
-            if root is None:
-                root = elem
-
-    return et.ElementTree(root), ns
 
 
 class waInsertobservation(waResourceService):
@@ -917,9 +900,9 @@ class waFastInsert(waResourceService):
         file_name = os.path.join(dir_name, 'logs', 'fast_insert_log.csv')
 
         # Create data array
-        data = self.waEnviron['wsgi_input'].split(";")
+        data = self.waEnviron['wsgi_input'].decode().split(";")
         data_log = data[:]
-        print >> sys.stderr, data
+        print(data, file=sys.stderr)
         # Assigned id always in the first position
         assignedid = data[0]
 
@@ -1191,14 +1174,14 @@ class waFastInsert(waResourceService):
             self.setMessage("Thanks for data")
 
             if len(non_blocking_exceptions) > 0:
-                print >> sys.stderr, str(non_blocking_exceptions)
+                print(str(non_blocking_exceptions), file=sys.stderr)
                 data_log.append(str(non_blocking_exceptions))
             else:
                 data_log.append('')
             data_log.insert(0, now.isoformat())
 
         except Exception as e:
-            print >> sys.stderr, traceback.print_exc()
+            print(traceback.print_exc(), file=sys.stderr)
             data_log.append(str(e))
             data_log.insert(0, now.isoformat())
             #traceback.print_exc(file=sys.stderr)
@@ -1307,7 +1290,7 @@ class _waFastInsert(waResourceService):
                 self.setMessage("Faster than light!")
 
             except Exception as e:
-                print >> sys.stderr, traceback.print_exc()
+                print(traceback.print_exc(), file=sys.stderr)
                 conn.rollbackTransaction()
                 self.setException(
                     "Error in fast insert (%s): %s" % (type(e), e))

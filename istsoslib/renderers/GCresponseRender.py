@@ -20,7 +20,10 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # ===============================================================================
-from lib import isodate as iso
+import sys
+print('PATH:',sys.path)
+
+import isodate as iso
 
 def render(GC,sosConfig):
     r = '''<?xml version="1.0" encoding="UTF-8"?>
@@ -173,7 +176,7 @@ def render(GC,sosConfig):
         r += "      </ObservationOfferingList>\n"
         r += "      </Contents>\n"
     r += "    </Capabilities>"
-    return r
+    return r.encode()
     
 
 def render_2_0_0(GC,sosConfig):
@@ -430,4 +433,4 @@ def render_2_0_0(GC,sosConfig):
         r += "    </sos:contents>\n" 
         
     r += "    </sos:Capabilities>"
-    return r
+    return r.encode()
