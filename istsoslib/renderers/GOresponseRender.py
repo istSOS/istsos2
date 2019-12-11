@@ -25,6 +25,27 @@ from istsoslib import sosException
 from lxml import etree as et
 import hashlib
 import sys
+import datetime
+
+date_handler = lambda obj: (
+    obj.isoformat()
+    if isinstance(obj, (datetime.datetime, datetime.date))
+    else (
+        obj
+        if isinstance(obj, str)
+        else float(obj)
+    )
+)
+
+to_string_handler = lambda obj: (
+    obj.isoformat()
+    if isinstance(obj, (datetime.datetime, datetime.date))
+    else (
+        obj
+        if isinstance(obj, str)
+        else str(obj)
+    )
+)
 
 def render(GO,sosConfig):
     if GO.filter.responseFormat in ['text/xml;subtype="om/1.0.0"',"text/xml"]:
@@ -178,18 +199,24 @@ def XMLformat(GO):
         r += "        <swe:encoding>\n"
         r += "          <swe:TextBlock tokenSeparator=\",\" blockSeparator=\"@\" decimalSeparator=\".\"/>\n"
         r += "        </swe:encoding>\n"
-        if len(ob.data)>0:
-            r += "        <swe:values>"
+
+        if ob.csv:
+            r += "        <swe:values>%s</swe:values>" % ob.csv
+
+        elif len(ob.data) > 0:
             data=[]
+            r += "<swe:values>"
             for row in range(len(ob.data)):
-                str_data=[ob.data[row][0].isoformat()]
-                for i in range(1,len(ob.data[0])):
-                    str_data.append(str(ob.data[row][i]))
-                data.append(",".join(str_data))
-            r += "@".join(data)
+                r+=','.join(
+                    map(
+                        lambda x: to_string_handler(x), row
+                    )
+                )
             r += "</swe:values>\n"
+
         else:
             r += "        <swe:values/>"
+
         r += "      </swe:DataArray>\n"
         r += "    </om:result>\n"
         r += "  </om:Observation>\n"
@@ -199,6 +226,7 @@ def XMLformat(GO):
 
 def JSONformat(GO):
     import json
+
     oc = {
         "ObservationCollection": {
             "description": GO.offInfo.desc,
@@ -286,20 +314,12 @@ def JSONformat(GO):
                 }
             ]
         
-        member['result']['DataArray']['values'] = []
-        for row in range(len(ob.data)):
-            data = [ob.data[row][0].isoformat()]
-            for i in range(1,len(ob.data[0])):
-                data.append(str(ob.data[row][i]))
-            member['result']['DataArray']['values'].append(data)
-            
+        member['result']['DataArray']['values'] = ob.data
+
         # append member to collection
         oc["ObservationCollection"]["member"].append(member)
 
-    
-    
-    return json.dumps(oc).encode()
-    #return json.dumps(wut.encodeobject(oc))
+    return json.dumps(oc, default=date_handler).encode()
 
 def CSVformat(GO):
     #create unique columns name
@@ -318,43 +338,50 @@ def CSVformat(GO):
                 columns += [opr]
                 columns_name += ["%s" %(opr)]
     
+
+    r  = ",".join(columns_name)
+
     #create rows
     rows = []
+    csv_rows = ""
     for iob, ob in enumerate(GO.obs):
-        #create look-up-table for given observation member
-        #associates opr index with row index
-        lut = { 0 : 0}
-        i=0
-        if ob.procedureType == "insitu-mobile-point":
-            lut[1] = columns.index("x-position")
-            lut[2] = columns.index("y-position")
-            lut[3] = columns.index("z-position")
-            i=3
-        for opr in ob.observedProperty:
-            i += 1
-            try:
-                lut[i] = columns.index(opr)
-            except:
-                raise Exception("%s - %s" %(lut,columns))
-        #raise Exception( "%s - %s" %(lut,columns))
-        #create row
-        
-        
-        #append row
-        for vals in ob.data:
-            row = [""] * len(columns)
-            row[0] = vals[0].isoformat()
-            row[1] = ob.procedure.split(":")[-1]
-            for i in range(1,len(vals)):
-                row[lut[i]] = str(vals[i])
-            rows.append(row)
-                
-    #write results as CSV    
-    r  = ",".join(columns_name) + "\n"
-    for c in rows:
-        r += ",".join(c) + "\n"
-    
-    return r.encode()
+
+        if ob.csv:
+            r += "\n%s" % ob.csv
+
+        else:
+            lut = { 0 : 0}
+            i=0
+
+            if ob.procedureType == "insitu-mobile-point":
+                lut[1] = columns.index("x-position")
+                lut[2] = columns.index("y-position")
+                lut[3] = columns.index("z-position")
+                i=3
+
+            for opr in ob.observedProperty:
+                i += 1
+                try:
+                    lut[i] = columns.index(opr)
+                except:
+                    raise Exception("%s - %s" %(lut,columns))
+
+            for vals in ob.data:
+                row = [""] * len(columns)
+                row[0] = vals[0].isoformat()
+                row[1] = ob.procedure.split(":")[-1]
+                for i in range(1,len(vals)):
+                    row[lut[i]] = str(vals[i])
+
+                r += "\n%s" % (
+                    ','.join(
+                        map(
+                            lambda x: to_string_handler(x), row
+                        )
+                    )
+                )
+
+    return r.encode("utf-8")
 
 
 def XMLformat_2_0_0(GO, sosConfig):
