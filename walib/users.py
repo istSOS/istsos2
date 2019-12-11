@@ -43,7 +43,6 @@ def getUser(environ):
                 )
                 raise ie
         s, base64string = environ['HTTP_AUTHORIZATION'].split()
-        print('AUTH: ', base64string)
         username, password = base64.b64decode(base64string).decode().split(':')
         passwordFile = path.join(config.services_path, "istsos.passwd")
         with open(passwordFile, 'rb') as f:
