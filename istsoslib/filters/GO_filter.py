@@ -451,12 +451,19 @@ class sosGOfilter(f.sosFilter):
                 if len(requestObject["qualityfilter"])>=2:
                     try:
                         if requestObject["qualityfilter"][0:2]=='<=' or requestObject["qualityfilter"][0:2]=='>=':
-                            self.qualityFilter = (requestObject["qualityfilter"][0:2], float(requestObject["qualityfilter"][2:]))
+                            self.qualityFilter = (
+                                requestObject["qualityfilter"][0:2],
+                                float(requestObject["qualityfilter"][2:])
+                            )
 
                         elif (requestObject["qualityfilter"][0]=='>' or
                                 requestObject["qualityfilter"][0]=='=' or
                                 requestObject["qualityfilter"][0]=='<'):
-                            self.qualityFilter = (requestObject["qualityfilter"][0], float(requestObject["qualityfilter"][1:]))
+
+                            self.qualityFilter = (
+                                requestObject["qualityfilter"][0],
+                                float(requestObject["qualityfilter"][1:])
+                            )
 
                         # If qualityFilter is defined qualityIndex are automatically returned
                         self.qualityIndex=True

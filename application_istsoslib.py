@@ -37,6 +37,8 @@ from istsoslib.renderers import factory_render as FRe
 
 def executeSos(environ, start_response):
 
+    # print >> sys.stderr, "Hello istSOS"
+
     try:
         from istsoslib import sosDatabase
         from istsoslib import sosException
@@ -133,6 +135,7 @@ def executeSos(environ, start_response):
 
     except Exception, e:
         print >> sys.stderr, traceback.print_exc()
+        # sys.stderr.flush()
         othertext = traceback.format_exception(*sys.exc_info())
         if sosConfig.debug:
             response_body = "%s" % (

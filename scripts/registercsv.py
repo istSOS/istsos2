@@ -25,27 +25,31 @@
 This script register new procedures importing data from a csv file
 containing the followings columns:
 
-1.  name
-2.  description
-3.  keyword
-4.  long name
-5.  modelNumber
-6.  manufacturer
-7.  sensorType
-8.  foi-epsg
-9.  foi-coordinates
-10. foi-name
-11. observed property
-12. uom
-13. begin position
-14. end position
-15. resolution
-16. acquisition interval
-17. quality index - lower bound
-18. quality index - upper bound
+0.  name
+1.  description
+2.  keyword
+3.  long name
+4.  modelNumber
+5.  manufacturer
+6.  sensorType
+7.  foi-epsg
+8.  foi-coordinates
+9.  foi-name
+10-12. observed property
+13. uom
+14. begin position
+15. end position
+16. resolution
+17. acquisition interval
+18. quality index - lower bound
+19. quality index - upper bound
 
 
 separated with a semicolumn symbol ";"
+
+Usage:
+
+python scripts/registercsv.py -c ~/workspace/istsos/registrations/20190529.csv -u https://geoservice.ist.supsi.ch/xsos -s sosraw -user admin -password *********
 
 '''
 
@@ -136,6 +140,7 @@ def execute(args, logger=None):
             o1 = line[10].split(',')
             o2 = line[11].split(',')
             o3 = line[12].split(',')
+
             uom = line[13].split(',')
             cLower = []
             if line[18] != '-':

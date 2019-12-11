@@ -164,7 +164,7 @@ def execute(args, logger=None):
         ssrv,
         procedure
         ), auth=(suser, spwd), verify=False)
-    print res.text
+    # print res.text
     sdata = res.json()
     if sdata['success'] is False:
         raise Exception(
