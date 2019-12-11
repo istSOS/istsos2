@@ -24,28 +24,33 @@ from walib import resource
 import config
 import sys
 
+
 def getUser(environ):
-    #if config.authentication:
+    # if config.authentication:
     if 'HTTP_AUTHORIZATION' in environ:
         import hashlib
         import base64
         from os import path
         try:
-          import cPickle as pic
+            import cPickle as pic
         except ImportError:
-          try:
-            import pickle as pic
-          except ImportError as ie:
-            print("Failed to import pickle from any known place", file=sys.stderr)
-            raise ie
+            try:
+                import pickle as pic
+            except ImportError as ie:
+                print(
+                    "Failed to import pickle from any known place",
+                    file=sys.stderr
+                )
+                raise ie
         s, base64string = environ['HTTP_AUTHORIZATION'].split()
-        username, password = base64.decodestring(base64string).split(':')
+        print('AUTH: ', base64string)
+        username, password = base64.b64decode(base64string).decode().split(':')
         passwordFile = path.join(config.services_path, "istsos.passwd")
         with open(passwordFile, 'rb') as f:
             users = pic.load(f)
             return User(username, users[username])
-            #environ["user"] = User(username, users[username])
-    #else:
+            # environ["user"] = User(username, users[username])
+    # else:
     #    raise Exception("Authorization is enabled in config file but HTTP_AUTHORIZATION header not present. Check the security page in the documentation")
 
     return User("admin", {
@@ -57,6 +62,7 @@ def getUser(environ):
         }
     })
 
+
 class User():
 
     def __init__(self, username, data):
@@ -64,7 +70,7 @@ class User():
         self.password = data['password']
         self.roles = data['roles']
         self.groups = list(data['roles'].keys())
-        #print >> sys.stderr, "\n\nUser: %s" % pp.pprint(self)
+        # print >> sys.stderr, "\n\nUser: %s" % pp.pprint(self)
 
     def getJSON(self):
         return {
@@ -94,11 +100,11 @@ class User():
         return False
 
     def allowedService(self, service):
-        #print >> sys.stderr, "Checking service '%s' for user '%s'" % (service, self.username)
+        # print >> sys.stderr, "Checking service '%s' for user '%s'" % (service, self.username)
         for group in self.groups:
-            #print >> sys.stderr, " > group '%s'" % group
+            # print >> sys.stderr, " > group '%s'" % group
             keys = self.roles[group].keys()
-            #print >> sys.stderr, "    > keys %s" % keys
+            # print >> sys.stderr, "    > keys %s" % keys
             if "*" in keys or service in keys:
                 return True
         print("NOT AUTHORIZED", file=sys.stderr)

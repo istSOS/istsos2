@@ -34,7 +34,6 @@ import application_wnslib
 # sys.setdefaultencoding('utf-8')
 
 
-
 def application(environ, start_response):
 
     print('PYTHON VERSION:',sys.version)
