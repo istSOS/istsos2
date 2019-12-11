@@ -43,7 +43,7 @@ pp = pprint.PrettyPrinter(indent=4)
 
 try:
     sys.path.insert(0, path.abspath("."))
-    from lib.pytz import timezone
+    from pytz import timezone
     import requests as requests
     import isodate as iso
 except ImportError as e:

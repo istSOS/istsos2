@@ -31,6 +31,7 @@ from walib import resourceFactory as factory
 import walib.users as user
 import logging, logging.config, logging.handlers
 
+
 def executeWa(environ, start_response):
 
     # Initializing logging

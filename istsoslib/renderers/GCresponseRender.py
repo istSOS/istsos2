@@ -433,4 +433,4 @@ def render_2_0_0(GC,sosConfig):
         r += "    </sos:contents>\n" 
         
     r += "    </sos:Capabilities>"
-    return r
+    return r.encode()

@@ -2,13 +2,13 @@
 import requests
 import json
 
+
 def rest_request(url, json_data):
-
 	r = requests.post(url, data=json.dumps(json_data))
-
 	if not r.json()['success']:
 		print("problem with ", json_data['system_id'])
 		print(r.json())
+
 
 def insert_virtual(service_url, service):
 

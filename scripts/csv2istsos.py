@@ -40,9 +40,9 @@ sys.path.insert(0, path.abspath("."))
 try:
     import argparse as argparse
     import requests as requests
-    from lib__old.requests.auth import HTTPBasicAuth
+    from requests.auth import HTTPBasicAuth
     import isodate as iso
-    from lib__old.pytz import timezone
+    from pytz import timezone
     from scripts.raw2csv import DebugConverter
 except ImportError as e:
     print("""
@@ -143,7 +143,7 @@ def execute(args, conf=None):
         if 'm' in args:
             maxobs = int(args['m'])
 
-        #req = requests.session()
+        # req = requests.session()
         req = requests
 
         log("\nOffering: %s" % off)
