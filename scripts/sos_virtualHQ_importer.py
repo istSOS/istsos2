@@ -41,19 +41,19 @@ import json
 import pprint
 from os import path
 
-print path.abspath(".")
-print path.normpath("%s/../" % path.abspath("."))
-print path.abspath(path.dirname(__file__))
-print path.normpath("%s/../../" % path.abspath(__file__))
+print(path.abspath("."))
+print(path.normpath("%s/../" % path.abspath(".")))
+print(path.abspath(path.dirname(__file__)))
+print(path.normpath("%s/../../" % path.abspath(__file__)))
 
 sys.path.insert(0, path.abspath("."))
 
 try:
-    import lib.requests as req
-    import lib.argparse as argparse
+    import requests as req
+    import argparse as argparse
 except ImportError as e:
     
-    print "\nError loading internal libs:\n >> did you run the script from the istSOS root folder?\n\n"
+    print("\nError loading internal libs:\n >> did you run the script from the istSOS root folder?\n\n")
     exit()
     #raise e
     
@@ -188,7 +188,7 @@ def execute (args):
                 raise Exception("Saving code %s failed: \n%s" % (vproc, res.json["message"]))
              
             cvlist = RCload(sfile)
-            print cvlist
+            print(cvlist)
             res = req.post("%s/wa/istsos/services/%s/virtualprocedures/%s/ratingcurve" % (sosurl,sosservice,vproc), 
                                 data=json.dumps(cvlist)
                         )  
@@ -197,7 +197,7 @@ def execute (args):
         
             
     except Exception as e:    
-        print "ERROR: %s\n\n" % e
+        print("ERROR: %s\n\n" % e)
         #traceback.print_exc()
         
 if __name__ == "__main__":

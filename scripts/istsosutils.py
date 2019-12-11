@@ -25,16 +25,17 @@ import sys
 from datetime import timedelta
 from datetime import datetime
 import pprint
-from StringIO import StringIO
+from io import StringIO
+from parse_and_get import parse_and_get_ns
 import json
 try:
-    import lib.requests as req
+    import requests as req
     from lib.requests.auth import HTTPBasicAuth
-    import lib.argparse as argparse
-    from lib.etree import et
-    import lib.isodate as iso
+    import argparse as argparse
+    from lxml import etree as et
+    import isodate as iso
 except ImportError as e:
-    print "\nError loading internal libs:"
+    print("\nError loading internal libs:")
     raise e
 
 
@@ -56,21 +57,6 @@ class Service(object):
             self.password = basicAuth[1]
             self.auth = HTTPBasicAuth(self.user, self.password)
 
-    def parse_and_get_ns(self, xml):
-        events = "start", "start-ns"
-        root = None
-        ns = {}
-        for event, elem in et.iterparse(xml, events):
-            if event == "start-ns":
-                if elem[0] in ns and ns[elem[0]] != elem[1]:
-                    raise KeyError(
-                        "Duplicate prefix with different URI found.")
-                ns[elem[0]] = "%s" % elem[1]
-            elif event == "start":
-                if root is None:
-                    root = elem
-        return et.ElementTree(root), ns
-
     def getSOSProcedureSamplingtime(self, name):
         """
             Execute a getObservation and extract the begin and endPosition.
@@ -81,7 +67,7 @@ class Service(object):
         ret = self.extractSamplingFromGOJson(
             self.getSOSProcedure(name)
         )
-        print " > %s: %s - %s" % (name, ret[0], ret[1])
+        print(" > %s: %s - %s" % (name, ret[0], ret[1]))
         return ret
 
     def extractSamplingFromGOJson(self, jsonRes):
@@ -115,14 +101,14 @@ class Service(object):
             'section': 'contents'
         }
 
-        print "Requesting a getCapabilitie: %s/%s" % (self.host, self.service)
-        print params
+        print("Requesting a getCapabilitie: %s/%s" % (self.host, self.service))
+        print(params)
 
         res = req.get("%s/%s" % (
             self.host, self.service), params=params, auth=self.auth)
 
         # Parsing response
-        gc, gcNs = self.parse_and_get_ns(StringIO(res.content))
+        gc, gcNs = self.parse_and_get_ns(res.content)
 
         offerings = gc.findall(
             "{%s}Contents/{%s}ObservationOfferingList/"
@@ -144,7 +130,7 @@ class Service(object):
 
                 #print pname
 
-        return procedures.keys()
+        return list(procedures.keys())
 
     def getProcedures(self):
         res = req.get(
@@ -152,7 +138,7 @@ class Service(object):
                 self.host, self.service
             ), auth=self.auth
         )
-        print res
+        print(res)
         jsonRes = res.json()
         if not jsonRes['success']:
             raise Exception(
@@ -164,8 +150,8 @@ class Service(object):
             procedure.merge(data)
             procedures.append(procedure)
 
-        print "Procedures list result:"
-        print " - Found: %s procedures" % len(procedures)
+        print("Procedures list result:")
+        print(" - Found: %s procedures" % len(procedures))
 
         return procedures
 
@@ -196,8 +182,8 @@ class Service(object):
             'procedure': name
         }
 
-        print "Requesting %s GetObservation: %s/%s" % (
-            name, self.host, self.service)
+        print("Requesting %s GetObservation: %s/%s" % (
+            name, self.host, self.service))
 
         res = req.get("%s/%s" % (
             self.host, self.service), params=params, auth=self.auth)
@@ -220,7 +206,7 @@ class Service(object):
             raise Exception("Registering procedure %s failed: \n%s" % (
                 procedure.name, jsonRes["message"]))
         else:
-            print "Sensor '%s' registered successfully" % procedure.name
+            print("Sensor '%s' registered successfully" % procedure.name)
             # jsonRes["message"]
 
     def getObservation(self, name, begin=None, end=None, qi=False):
@@ -354,7 +340,7 @@ class Service(object):
 
             procedures.append(row)
 
-            print row
+            print(row)
 
         procedures = list(set(procedures1) & set(procedures2))
         procedures.sort()

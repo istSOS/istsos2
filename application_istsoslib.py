@@ -25,7 +25,7 @@ import sys
 from os import path
 import traceback
 import waconf2sos
-from urlparse import parse_qs
+from urllib.parse import parse_qs
 import config
 
 sys.path.insert(0, path.abspath(path.dirname(__file__)))
@@ -103,13 +103,13 @@ def executeSos(environ, start_response):
         status = '200 OK'
         response_headers = [
             ('Content-Type', content_type),
-            ('Content-Length', str(len(render.encode('utf-8'))))
+            ('Content-Length', str(len(render)))
         ]
 
         if str(environ['REQUEST_METHOD']).upper() == 'GET':
             rect = parse_qs(environ['QUERY_STRING'])
             requestObject = {}
-            for key in rect.keys():
+            for key in list(rect.keys()):
                 requestObject[key.lower()] = rect[key][0]
             if "attachment" in requestObject:
                 response_headers.append(
@@ -118,9 +118,9 @@ def executeSos(environ, start_response):
                 )
 
         start_response(status, response_headers)
-        return [render.encode('utf-8')]
+        return [render]
 
-    except sosException.SOSException, e:
+    except sosException.SOSException as e:
         #print >> sys.stderr, traceback.print_exc()
         response_body = e.ToXML()
         status = '200 OK'
@@ -131,8 +131,8 @@ def executeSos(environ, start_response):
         start_response(status, response_headers)
         return [response_body.encode('utf-8')]
 
-    except Exception, e:
-        print >> sys.stderr, traceback.print_exc()
+    except Exception as e:
+        print(traceback.print_exc(), file=sys.stderr)
         othertext = traceback.format_exception(*sys.exc_info())
         if sosConfig.debug:
             response_body = "%s" % (

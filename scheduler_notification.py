@@ -62,7 +62,7 @@ sched._threadpool = threadpool.ThreadPool(core_threads=10,
                                             max_threads=50, keepalive=10)
 
 sched.start()
-print "Running..."
+print("Running...")
 
 
 #===========================
@@ -74,21 +74,21 @@ def istsos_job():
     #print "Checking changes"
 
     if not schedmd5:
-        print " > Initialization.."
+        print(" > Initialization..")
         for service, scheduler in recursive_glob(rootdir=wns_path,
                                                                 suffix=".aps"):
             schedmd5[service] = hashlib.md5(open(scheduler).read()).hexdigest()
-            execfile(scheduler)
+            exec(compile(open(scheduler, "rb").read(), scheduler, 'exec'))
     else:
         for service, scheduler in recursive_glob(rootdir=wns_path,
                                                                 suffix=".aps"):
             md5_now = hashlib.md5(open(scheduler).read()).hexdigest()
             if not schedmd5[service] == md5_now:
-                print "  > Change detectd: %s" % service
+                print("  > Change detectd: %s" % service)
                 schedmd5[service] = md5_now
                 jobs = sched.get_jobs()
                 for j in jobs[1:]:
-                    print " job: %s" % j.name
+                    print(" job: %s" % j.name)
                     if j.name.startswith(service):
                         sched.unschedule_job(j)
-                execfile(scheduler)
+                exec(compile(open(scheduler, "rb").read(), scheduler, 'exec'))

@@ -25,14 +25,14 @@ from walib.resource import waResourceService
 import sys, os, shutil, errno
 from walib.resource import waResourceConfigurator, waResourceService
 import traceback
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 class waUoms(waResourceService):
     """class to handle SOS unit of measure objects, support GET and POST method"""
     
     def __init__(self,waEnviron):
         waResourceService.__init__(self,waEnviron)
-        self.uoms = urllib.unquote(self.pathinfo[-1]) if not self.pathinfo[-1]=="uoms" else None
+        self.uoms = urllib.parse.unquote(self.pathinfo[-1]) if not self.pathinfo[-1]=="uoms" else None
 
     def executeGet(self):
     

@@ -20,7 +20,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # ===============================================================================
-createsqlschema = u"""
+createsqlschema = """
 
 SET statement_timeout = 0;
 SET client_encoding = 'UTF8';

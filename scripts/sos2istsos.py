@@ -31,8 +31,9 @@ import pprint
 from datetime import timedelta
 import calendar
 import time
-from StringIO import StringIO
+from io import StringIO
 from os import path
+from parse_and_get import parse_and_get_ns
 
 #print path.abspath(".")
 #print path.normpath("%s/../" % path.abspath("."))
@@ -41,14 +42,14 @@ from os import path
 
 sys.path.insert(0, path.abspath("."))
 try:
-    import lib.requests as req
+    import requests as req
     from lib.requests.auth import HTTPBasicAuth
-    import lib.argparse as argparse
-    from lib.etree import et
-    import lib.isodate as iso
+    import argparse as argparse
+    from lxml import etree as et
+    import isodate as iso
 except ImportError as e:
     
-    print "\nError loading internal libs:\n >> did you run the script from the istSOS root folder?\n\n"
+    print("\nError loading internal libs:\n >> did you run the script from the istSOS root folder?\n\n")
     exit()
     #raise e
     
@@ -162,24 +163,10 @@ class Procedure():
             try:
                 self.template = res.json()['data'][0]
             except Exception as e:
-                print res.text
+                print(res.text)
                 raise e
         return self.template #res.json()['data'][0]
 
-    
-def parse_and_get_ns(xml):
-    events = "start", "start-ns"
-    root = None
-    ns = {}
-    for event, elem in et.iterparse(xml, events):
-        if event == "start-ns":
-            if elem[0] in ns and ns[elem[0]] != elem[1]:
-                raise KeyError("Duplicate prefix with different URI found.")
-            ns[elem[0]] = "%s" % elem[1]
-        elif event == "start":
-            if root is None:
-                root = elem 
-    return et.ElementTree(root), ns
    
 def execute (args):
     pp = pprint.PrettyPrinter(indent=2)
@@ -209,23 +196,23 @@ def execute (args):
             
         auth = None
         if duser and dpassw:
-            print "User and password!"
+            print("User and password!")
             auth = HTTPBasicAuth(duser, dpassw)
         
         appendData = False
         if 'a' in args and args['a']:
-            print "Append data: enabled."
+            print("Append data: enabled.")
             appendData = True
         
         
         dfrom = None
         dto = None
         if 'from' in args and type('') == type(args['from']):
-            print "From: %s" % args['from']
+            print("From: %s" % args['from'])
             dfrom = iso.parse_datetime(args['from'])
             appendData = None
         if 'to' in args and type('') == type(args['to']):
-            print "To: %s" % args['to']
+            print("To: %s" % args['to'])
             dto = iso.parse_datetime(args['to'])
             appendData = None
         
@@ -244,7 +231,7 @@ def execute (args):
         }, verify=False)
         
         # Parsing response
-        gc, gcNs = parse_and_get_ns(StringIO(res.content))
+        gc, gcNs = parse_and_get_ns(res.content)
         
         # Extract all offerings
         elOfferings = gc.findall("{%s}Contents/{%s}ObservationOfferingList/{%s}ObservationOffering" % (gcNs['sos'],gcNs['sos'],gcNs['sos']))
@@ -267,8 +254,8 @@ def execute (args):
                     ):
                     continue
                     
-                print "\n%s" % pname
-                print "================================"
+                print("\n%s" % pname)
+                print("================================")
                 
                 procedures[pname] = Procedure(pname, offeringName, dst, srv, auth)
                 
@@ -285,14 +272,14 @@ def execute (args):
                 
                 #print res.content
                 
-                ds, dsNs = parse_and_get_ns(StringIO(res.content))
+                ds, dsNs = parse_and_get_ns(res.content)
                 
                 #print res.content
                 
                 
                 #print "Root: %s" % ds.getroot().tag
                 if ds.getroot().tag == 'ExceptionReport':
-                    print "Error on DS for %s" % pname
+                    print("Error on DS for %s" % pname)
                     continue
                     
                 
@@ -300,21 +287,21 @@ def execute (args):
                 #print "Outputs found: %s" % len(elDescribe)
                 
                 observedProperties = []
-                print "istsos_version: ", istsos_version
+                print("istsos_version: ", istsos_version)
                 uniqidurn = 'urn:ogc:def:parameter:x-ist::'
                 if istsos_version != None and istsos_version == '2':
                     uniqidurn = 'urn:ogc:def:parameter:x-ist:1.0:'
                     elFields = ds.findall("{%s}member/{%s}System/{%s}outputs/{%s}OutputList/{%s}output/{%s}DataRecord/{%s}field" % (
                                     dsNs['sml'],dsNs['sml'],dsNs['sml'],dsNs['sml'],dsNs['sml'],dsNs['swe'],dsNs['swe']) )
-                    print "Observed properties (v2): %s " % len(elFields)
+                    print("Observed properties (v2): %s " % len(elFields))
                     for fs in elFields:
-                        print fs.get('name')
+                        print(fs.get('name'))
                         if fs.get('name') != 'Time':
                             observedProperties.append(fs.find("{%s}Quantity" % (dsNs['swe'])).get('definition').replace(uniqidurn,''))
                         
                 else:
                     elDescribe = ds.findall("member/{%s}System/{%s}outputs/{%s}OutputList/{%s}output" % (dsNs['sml'],dsNs['sml'],dsNs['sml'],dsNs['sml']) )
-                    print "Observed properties: %s " % len(elDescribe)
+                    print("Observed properties: %s " % len(elDescribe))
                     for ds in elDescribe:
                         definition = ds.find("{%s}ObservableProperty" % (dsNs['swe'])).get('definition').replace(uniqidurn,'')
                         #print definition
@@ -341,11 +328,11 @@ def execute (args):
                     'observedProperty': ",".join(observedProperties)
                 }, verify=False)
                               
-                go, goNs = parse_and_get_ns(StringIO(res.content))
+                go, goNs = parse_and_get_ns(res.content)
                 
                 
                 if go.getroot().tag == 'ExceptionReport':
-                    print "Error on GO for %s:\nparams:%s\n%s" % (pname,{
+                    print("Error on GO for %s:\nparams:%s\n%s" % (pname,{
                         'service': 'SOS', 
                         'version': '1.0.0',
                         'request': 'GetObservation',
@@ -353,7 +340,7 @@ def execute (args):
                         'responseFormat': 'text/xml;subtype=\'sensorML/1.0.0\'',
                         'procedure': pname,
                         'observedProperty': ",".join(observedProperties)
-                    },res.content)
+                    },res.content))
                     continue
                 
                 # Extracting begin and end position
@@ -453,7 +440,7 @@ def execute (args):
                             procedures[pname].begin = template['samplingTime']['endPosition']
                             begin = iso.parse_datetime(template['samplingTime']['endPosition'])     
                     except Exception as exproc:
-                        print res.text
+                        print(res.text)
                         raise exproc
                 
                 procedures[pname].oid = res.json()["data"]["assignedSensorId"]
@@ -470,7 +457,7 @@ def execute (args):
                         pass
                         
                     else:
-                        print "Starting migration.."
+                        print("Starting migration..")
                         
                         # ~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
                         # PROCEDURE OBSERVATIONS MIGRATION
@@ -484,7 +471,7 @@ def execute (args):
                         
                         startTime = time.time()
                         
-                        print "%s: %s - %s" % (pname, procedures[pname].begin, procedures[pname].end)
+                        print("%s: %s - %s" % (pname, procedures[pname].begin, procedures[pname].end))
                         
                         if begin<end and begin+interval>end:
                             interval = end-begin
@@ -540,7 +527,7 @@ def execute (args):
                             
                             lastPrint = "%s - GO: '%s'" % (lastPrint, gotime)
                             
-                            go, goNs = parse_and_get_ns(StringIO(res.content))
+                            go, goNs = parse_and_get_ns(res.content)
                                                         
                             if len(oOrder)==0:
                                 fields = go.findall("{%s}member/{%s}Observation/{%s}result/{%s}DataArray/{%s}elementType/{%s}DataRecord/{%s}field" % (
@@ -575,16 +562,16 @@ def execute (args):
                                     "endPosition": nextPosition.strftime(fmt)
                                 }'''
                                 
-                                template[u"AssignedSensorId"] = procedures[pname].oid
+                                template["AssignedSensorId"] = procedures[pname].oid
                                 
                                 looptime = time.time() 
                                 res = req.post("%s/wa/istsos/services/%s/operations/insertobservation" % (
                                     dst,
                                     srv
                                 ), auth=auth, data = json.dumps({
-                                    u"AssignedSensorId": procedures[pname].oid,
-                                    u"ForceInsert": u"true",
-                                    u"Observation": template
+                                    "AssignedSensorId": procedures[pname].oid,
+                                    "ForceInsert": "true",
+                                    "Observation": template
                                 }))
                                 
                                 iotime = timedelta(seconds=int(time.time() - looptime))
@@ -610,10 +597,10 @@ def execute (args):
                             sys.stdout.flush()
                         
                         
-                        print " > Completed in %s" % timedelta(seconds=int(time.time() - startTime))
+                        print(" > Completed in %s" % timedelta(seconds=int(time.time() - startTime)))
             break
     except Exception as e:    
-        print "ERROR: %s\n\n" % e
+        print("ERROR: %s\n\n" % e)
         traceback.print_exc()
         
 if __name__ == "__main__":

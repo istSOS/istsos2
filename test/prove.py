@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 import json, pprint
-import lib.requests as requests
+import requests as requests
 
 
 def run():
@@ -27,7 +27,7 @@ def run():
 
 
 def operations_status_GET(pp):
-    print "operations/status, GET \n"
+    print("operations/status, GET \n")
      
     res = requests.get(
         'http://localhost/istsos/wa/istsos/operations/status',
@@ -39,12 +39,12 @@ def operations_status_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def operations_log_GET(pp):
-    print "operations/log, GET"
+    print("operations/log, GET")
     
     res = requests.get(
         'http://localhost/istsos/wa/istsos/operations/log',
@@ -56,12 +56,12 @@ def operations_log_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def operations_log_DELETE(pp):
-    print "operations/log, DELETE"
+    print("operations/log, DELETE")
     
     res = requests.delete(
         'http://localhost/istsos/wa/istsos/operations/log',
@@ -73,12 +73,12 @@ def operations_log_DELETE(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def operations_about_GET(pp):
-    print "operations/about, GET"
+    print("operations/about, GET")
     
     res = requests.get(
         'http://localhost/istsos/wa/istsos/operations/about',
@@ -90,12 +90,12 @@ def operations_about_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def operations_validatedb_POST(pp):
-    print "operations/validatedb, POST"
+    print("operations/validatedb, POST")
     
     put = { #not the right object implementation
         "title": "IST Sensor Observation Service 200000",
@@ -116,14 +116,14 @@ def operations_validatedb_POST(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def operations_initialization_GET(pp):
-    print "operations/initialization, GET"
+    print("operations/initialization, GET")
     
     res = requests.get(
         'http://localhost/istsos/wa/istsos/operations/initialization',
@@ -133,14 +133,14 @@ def operations_initialization_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def operations_initialization_PUT(pp):
-    print "operations/initialization, PUT"
+    print("operations/initialization, PUT")
     
     put = {"level": "2"}
     
@@ -153,13 +153,13 @@ def operations_initialization_PUT(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_GET(pp):
-    print "services, GET"
+    print("services, GET")
     
     res = requests.get(
         'http://localhost/istsos/wa/istsos/services',
@@ -169,14 +169,14 @@ def services_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_POST(pp):
-    print "services, POST"
+    print("services, POST")
     
     post = {
         "path": "gneeeeeeek",
@@ -192,13 +192,13 @@ def services_POST(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_GET(pp):
-    print "services/{name}, GET"
+    print("services/{name}, GET")
     
     dbname = 'demo'
     
@@ -210,14 +210,14 @@ def services_name_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_PUT(pp):
-    print "services/{name}, PUT"
+    print("services/{name}, PUT")
     
     dbname = "pippo"
     
@@ -239,13 +239,13 @@ def services_name_PUT(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_DELETE(pp):
-    print "services/{name}, DELETE"
+    print("services/{name}, DELETE")
     
     dbname = "test_update"
     
@@ -257,13 +257,13 @@ def services_name_DELETE(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_configsections_GET(pp):
-    print "services/{name}/configsections, GET"
+    print("services/{name}/configsections, GET")
     
     dbname = 'demo'
     
@@ -275,14 +275,14 @@ def services_name_configsections_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_configsections_PUT(pp):
-    print "services/{name}/configsections, PUT"
+    print("services/{name}/configsections, PUT")
     
     dbname = "demo"
     
@@ -368,13 +368,13 @@ def services_name_configsections_PUT(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_configsections_DELETE(pp):
-    print "services/{name}/configsections, DELETE" #shouldn't work with default as {name}
+    print("services/{name}/configsections, DELETE") #shouldn't work with default as {name}
     
     dbname = 'default'
     
@@ -388,13 +388,13 @@ def services_name_configsections_DELETE(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
     
 def services_name_configsections_getobservation_GET(pp):
-    print "services/{name}/configsections/getobservation, GET"
+    print("services/{name}/configsections/getobservation, GET")
     
     dbname = 'demo'
     
@@ -406,14 +406,14 @@ def services_name_configsections_getobservation_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_configsections_getobservation_PUT(pp):
-    print "services/{name}/configsections/getobservation, PUT"
+    print("services/{name}/configsections/getobservation, PUT")
     
     dbname = "demo"
     
@@ -434,13 +434,13 @@ def services_name_configsections_getobservation_PUT(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_configsections_getobservation_DELETE(pp):
-    print "services/{name}/configsections/getobservation, DELETE" #shouldn't work with default as {name}
+    print("services/{name}/configsections/getobservation, DELETE") #shouldn't work with default as {name}
     
     dbname = 'default'
     
@@ -454,12 +454,12 @@ def services_name_configsections_getobservation_DELETE(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_configsections_identification_GET(pp):
-    print "services/{name}/configsections/identification, GET"
+    print("services/{name}/configsections/identification, GET")
     
     dbname = 'demo'
     
@@ -471,14 +471,14 @@ def services_name_configsections_identification_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_configsections_identification_PUT(pp):
-    print "services/{name}/configsections/identification, PUT"
+    print("services/{name}/configsections/identification, PUT")
     
     dbname = "demo"
     
@@ -501,13 +501,13 @@ def services_name_configsections_identification_PUT(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_configsections_identification_DELETE(pp):
-    print "services/{name}/configsections/identification, DELETE" #shouldn't work with default as {name}
+    print("services/{name}/configsections/identification, DELETE") #shouldn't work with default as {name}
     
     dbname = 'default'
     
@@ -521,12 +521,12 @@ def services_name_configsections_identification_DELETE(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_configsections_geo_GET(pp):
-    print "services/{name}/configsections/geo, GET"
+    print("services/{name}/configsections/geo, GET")
     
     dbname = 'demo'
     
@@ -538,14 +538,14 @@ def services_name_configsections_geo_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_configsections_geo_PUT(pp):
-    print "services/{name}/configsections/geo, PUT"
+    print("services/{name}/configsections/geo, PUT")
     
     dbname = "demo"
     
@@ -567,13 +567,13 @@ def services_name_configsections_geo_PUT(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_configsections_geo_DELETE(pp):
-    print "services/{name}/configsections/geo, DELETE" #shouldn't work with default as {name}
+    print("services/{name}/configsections/geo, DELETE") #shouldn't work with default as {name}
     
     dbname = 'default'
     
@@ -587,12 +587,12 @@ def services_name_configsections_geo_DELETE(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_configsections_connection_GET(pp):
-    print "services/{name}/configsections/connection, GET"
+    print("services/{name}/configsections/connection, GET")
     
     dbname = 'demo'
     
@@ -604,14 +604,14 @@ def services_name_configsections_connection_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_configsections_connection_PUT(pp):
-    print "services/{name}/configsections/connection, PUT"
+    print("services/{name}/configsections/connection, PUT")
     
     dbname = "demo"
     
@@ -633,13 +633,13 @@ def services_name_configsections_connection_PUT(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_configsections_connection_operations_validatedb_GET(pp):
-    print "services/{name}/configsections/connection/operations/validatedb, GET"
+    print("services/{name}/configsections/connection/operations/validatedb, GET")
     
     dbname = 'demo'
     
@@ -651,14 +651,14 @@ def services_name_configsections_connection_operations_validatedb_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_configsections_serviceurl_GET(pp):
-    print "services/{name}/configsections/serviceurl, GET"
+    print("services/{name}/configsections/serviceurl, GET")
     
     dbname = 'demo'
     
@@ -670,14 +670,14 @@ def services_name_configsections_serviceurl_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_configsections_serviceurl_PUT(pp):
-    print "services/{name}/configsections/serviceurl, PUT"
+    print("services/{name}/configsections/serviceurl, PUT")
     
     dbname = "demo"
     
@@ -692,13 +692,13 @@ def services_name_configsections_serviceurl_PUT(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_configsections_serviceurl_DELETE(pp):
-    print "services/{name}/configsections/serviceurl, DELETE" #shouldn't work with default as {name}
+    print("services/{name}/configsections/serviceurl, DELETE") #shouldn't work with default as {name}
     
     dbname = 'default'
     
@@ -712,12 +712,12 @@ def services_name_configsections_serviceurl_DELETE(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_configsections_provider_GET(pp):
-    print "services/{name}/configsections/provider, GET"
+    print("services/{name}/configsections/provider, GET")
     
     dbname = 'demo'
     
@@ -729,14 +729,14 @@ def services_name_configsections_provider_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_configsections_provider_PUT(pp):
-    print "services/{name}/configsections/provider, PUT"
+    print("services/{name}/configsections/provider, PUT")
     
     dbname = "demo"
     
@@ -765,13 +765,13 @@ def services_name_configsections_provider_PUT(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_configsections_provider_DELETE(pp):
-    print "services/{name}/configsections/provider, DELETE" #shouldn't work with default as {name}
+    print("services/{name}/configsections/provider, DELETE") #shouldn't work with default as {name}
     
     dbname = 'default'
     
@@ -785,12 +785,12 @@ def services_name_configsections_provider_DELETE(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_dataqualities_GET(pp):
-    print "services/{name}/dataqualities, GET"
+    print("services/{name}/dataqualities, GET")
     
     dbname = 'demo'
     
@@ -802,14 +802,14 @@ def services_name_dataqualities_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_dataqualities_POST(pp):
-    print "services/{name}/dataqualities, POST"
+    print("services/{name}/dataqualities, POST")
     
     dbname = "demo"
     
@@ -827,13 +827,13 @@ def services_name_dataqualities_POST(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_dataqualities_code_GET(pp):
-    print "services/{name}/dataqualities/{code}, GET"
+    print("services/{name}/dataqualities/{code}, GET")
     
     dbname = 'demo'
     qualcode = '42'
@@ -846,14 +846,14 @@ def services_name_dataqualities_code_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_dataqualities_code_PUT(pp):
-    print "services/{name}/dataqualities/{code}, PUT"
+    print("services/{name}/dataqualities/{code}, PUT")
     
     dbname = "demo"
     qualcode = '42'
@@ -872,13 +872,13 @@ def services_name_dataqualities_code_PUT(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_dataqualities_code_DELETE(pp):
-    print "services/{name}/dataqualities/{code}, DELETE"
+    print("services/{name}/dataqualities/{code}, DELETE")
     
     dbname = "demo"
     qualcode = '42'
@@ -891,13 +891,13 @@ def services_name_dataqualities_code_DELETE(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_procedures_POST(pp):
-    print "services/{name}/procedures, POST"
+    print("services/{name}/procedures, POST")
     
     dbname = "demo"
     
@@ -978,14 +978,14 @@ def services_name_procedures_POST(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_procedures_name_GET(pp):
-    print "services/{name}/procedures/{name}, GET"
+    print("services/{name}/procedures/{name}, GET")
     
     dbname = 'demo'
     pname = 'PIPPO'
@@ -998,14 +998,14 @@ def services_name_procedures_name_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_procedures_name_PUT(pp):
-    print "services/{name}/procedures/{name}, PUT"
+    print("services/{name}/procedures/{name}, PUT")
     
     dbname = "demo"
     pname = 'PIPPO'
@@ -1087,13 +1087,13 @@ def services_name_procedures_name_PUT(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_procedures_name_DELETE(pp):
-    print "services/{name}/procedures/{name}, DELETE"
+    print("services/{name}/procedures/{name}, DELETE")
     
     dbname = "demo"
     pname = 'PIPPO'
@@ -1106,13 +1106,13 @@ def services_name_procedures_name_DELETE(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_procedures_operations_getlist_GET(pp):
-    print "services/{name}/procedures/operations/getlist, GET"
+    print("services/{name}/procedures/operations/getlist, GET")
     
     dbname = 'demo'
     
@@ -1124,14 +1124,14 @@ def services_name_procedures_operations_getlist_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_offerings_GET(pp):
-    print "services/{name}/offerings, GET"
+    print("services/{name}/offerings, GET")
     
     dbname = 'demo'
     
@@ -1143,14 +1143,14 @@ def services_name_offerings_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_offerings_POST(pp):
-    print "services/{name}/offerings, POST"
+    print("services/{name}/offerings, POST")
     
     dbname = 'demo'
     
@@ -1172,14 +1172,14 @@ def services_name_offerings_POST(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_offerings_name_GET(pp):
-    print "services/{name}/offerings/{name}, GET"
+    print("services/{name}/offerings/{name}, GET")
     
     dbname = 'demo'
     oname = 'piripicchio'
@@ -1192,14 +1192,14 @@ def services_name_offerings_name_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_offerings_name_PUT(pp):
-    print "services/{name}/offerings/{name}, PUT"
+    print("services/{name}/offerings/{name}, PUT")
     
     dbname = "demo"
     oname = 'piripicchio'
@@ -1221,13 +1221,13 @@ def services_name_offerings_name_PUT(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_offerings_name_DELETE(pp):
-    print "services/{name}/offerings/{name}, DELETE"
+    print("services/{name}/offerings/{name}, DELETE")
     
     dbname = "demo"
     oname = 'piripicchio'
@@ -1240,13 +1240,13 @@ def services_name_offerings_name_DELETE(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_offerings_name_procedures_GET(pp):
-    print "services/{name}/offerings/{name}/procedures, GET"
+    print("services/{name}/offerings/{name}/procedures, GET")
     
     dbname = 'demo'
     oname = 'temporary'
@@ -1259,14 +1259,14 @@ def services_name_offerings_name_procedures_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_offerings_name_procedures_operations_memberlist_GET(pp):
-    print "services/{name}/offerings/{name}/procedures/operations/membelist, GET"
+    print("services/{name}/offerings/{name}/procedures/operations/membelist, GET")
     
     dbname = 'demo'
     oname = 'temporary'
@@ -1279,14 +1279,14 @@ def services_name_offerings_name_procedures_operations_memberlist_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_offerings_name_procedures_operations_nonmemberlist_GET(pp):
-    print "services/{name}/offerings/{name}/procedures/operations/nonmemberlist, GET"
+    print("services/{name}/offerings/{name}/procedures/operations/nonmemberlist, GET")
     
     dbname = 'demo'
     oname = 'temporary'
@@ -1299,15 +1299,15 @@ def services_name_offerings_name_procedures_operations_nonmemberlist_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
     
 def services_name_offerings_operations_getlist_GET(pp):
-    print "services/{name}/offerings/operations/getlist, GET"
+    print("services/{name}/offerings/operations/getlist, GET")
     
     dbname = 'demo'
     res = requests.get(
@@ -1318,14 +1318,14 @@ def services_name_offerings_operations_getlist_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_operations_getobservation_offerings_name_procedures_GET(pp):
-    print "services/{name}/operations/getobservation/offerings/{name}/procedures/..., GET"
+    print("services/{name}/operations/getobservation/offerings/{name}/procedures/..., GET")
     
     dbname = 'demo'
     oname = 'temporary'
@@ -1342,14 +1342,14 @@ def services_name_operations_getobservation_offerings_name_procedures_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_operations_insertobservation_POST(pp):
-    print "services/{name}/operations/insertobservation, POST"
+    print("services/{name}/operations/insertobservation, POST")
     
     dbname = 'demo'    
     
@@ -1378,7 +1378,7 @@ def services_name_operations_insertobservation_POST(pp):
                 {
                 "definition": "urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature", 
                 "name": "air-temperature", 
-                "uom": "\u00b0C"
+                "uom": "\\u00b0C"
                 }, 
                 {"definition": "urn:ogc:def:parameter:x-istsos:1.0:meteo:air:temperature:qualityIndex", 
                  "name": "air-temperature:qualityIndex", 
@@ -1420,14 +1420,14 @@ def services_name_operations_insertobservation_POST(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_observedproperties_GET(pp):
-    print "services/{name}/observedproperties, GET"
+    print("services/{name}/observedproperties, GET")
     
     dbname = 'demo'
     res = requests.get(
@@ -1438,14 +1438,14 @@ def services_name_observedproperties_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_observedproperties_POST(pp):
-    print "services/{name}/observedproperties, POST"
+    print("services/{name}/observedproperties, POST")
     
     dbname = 'demo'    
     
@@ -1465,14 +1465,14 @@ def services_name_observedproperties_POST(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_observedproperties_name_GET(pp):
-    print "services/{name}/observedproperties/{name}, GET"
+    print("services/{name}/observedproperties/{name}, GET")
     
     dbname = 'demo'
     oname = 'urn:ogc:def:parameter:x-istsos:1.0:meteo:air:LOVEisintheAIR'
@@ -1485,14 +1485,14 @@ def services_name_observedproperties_name_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_observedproperties_name_PUT(pp):
-    print "services/{name}/observedproperties/{name}, PUT"
+    print("services/{name}/observedproperties/{name}, PUT")
     
     dbname = "demo"
     oname = 'urn:ogc:def:parameter:x-istsos:1.0:meteo:air:LOVEisintheAIR'
@@ -1512,13 +1512,13 @@ def services_name_observedproperties_name_PUT(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_observedproperties_name_DELETE(pp):
-    print "services/{name}/observedproperties/{name}, DELETE"
+    print("services/{name}/observedproperties/{name}, DELETE")
     
     dbname = "demo"
     oname = 'urn:ogc:def:parameter:x-istsos:1.0:meteo:air:LoveIsInTheAir'
@@ -1531,13 +1531,13 @@ def services_name_observedproperties_name_DELETE(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_uoms_GET(pp):
-    print "services/{nome}/uoms, GET"
+    print("services/{nome}/uoms, GET")
     
     dbname = 'demo'    
     
@@ -1549,14 +1549,14 @@ def services_name_uoms_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_uoms_POST(pp):
-    print "services/{nome}/uoms, POST"
+    print("services/{nome}/uoms, POST")
     
     dbname = 'demo'
     
@@ -1575,13 +1575,13 @@ def services_name_uoms_POST(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_uoms_name_GET(pp):
-    print "services/{name}/uoms/{name}, GET"
+    print("services/{name}/uoms/{name}, GET")
     
     dbname = 'demo'
     oname = 'test'
@@ -1594,14 +1594,14 @@ def services_name_uoms_name_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_uoms_name_PUT(pp):
-    print "services/{name}/uoms/{name}, PUT"
+    print("services/{name}/uoms/{name}, PUT")
     
     dbname = "demo"
     oname = 'am'
@@ -1621,13 +1621,13 @@ def services_name_uoms_name_PUT(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_uoms_name_DELETE(pp):
-    print "services/{name}/uoms/{name}, DELETE"
+    print("services/{name}/uoms/{name}, DELETE")
     
     dbname = "demo"
     oname = 'test'
@@ -1640,13 +1640,13 @@ def services_name_uoms_name_DELETE(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_epsgs_GET(pp):
-    print "services/{name}/epsgs, GET"
+    print("services/{name}/epsgs, GET")
     
     dbname = 'demo'
     
@@ -1658,14 +1658,14 @@ def services_name_epsgs_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")
     
 def services_name_systemtypes_GET(pp):
-    print "services/{name}/systemtypes, GET"
+    print("services/{name}/systemtypes, GET")
     
     dbname = 'demo'
     
@@ -1677,8 +1677,8 @@ def services_name_systemtypes_GET(pp):
     try:
         res.raise_for_status() # raise exception if som comunication error occured    
     except Exception as e:
-        print str(e)
+        print(str(e))
         
     pp.pprint(res.json)   
     
-    print "\n ************************************ \n"
+    print("\n ************************************ \n")

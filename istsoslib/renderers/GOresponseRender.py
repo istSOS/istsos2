@@ -20,9 +20,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # ===============================================================================
-from lib import isodate as iso
+import isodate as iso
 from istsoslib import sosException
-from lib.etree import et
+from lxml import etree as et
 import hashlib
 import sys
 
@@ -195,7 +195,7 @@ def XMLformat(GO):
         r += "  </om:Observation>\n"
         r += "</om:member>\n"
     r += "</om:ObservationCollection>" 
-    return r
+    return r.encode()
 
 def JSONformat(GO):
     import json
@@ -298,7 +298,7 @@ def JSONformat(GO):
 
     
     
-    return json.dumps(oc)
+    return json.dumps(oc).encode()
     #return json.dumps(wut.encodeobject(oc))
 
 def CSVformat(GO):
@@ -354,7 +354,7 @@ def CSVformat(GO):
     for c in rows:
         r += ",".join(c) + "\n"
     
-    return r
+    return r.encode()
 
 
 def XMLformat_2_0_0(GO, sosConfig):
@@ -393,7 +393,7 @@ def XMLformat_2_0_0(GO, sosConfig):
                 try:
                     from elementtree.ElementTree import _namespace_map
                 except ImportError:
-                    print >> sys.stderr, ("Failed to import ElementTree from any known place")
+                    print(("Failed to import ElementTree from any known place"), file=sys.stderr)
             for key in ns:
                 _namespace_map[ns[key]] = key
         
@@ -491,5 +491,5 @@ def XMLformat_2_0_0(GO, sosConfig):
     
     """
     
-    return '<?xml version="1.0" encoding="UTF-8"?>\n%s' % et.tostring(res)
+    return b'<?xml version="1.0" encoding="UTF-8"?>\n%s' % et.tostring(res)
     

@@ -29,5 +29,5 @@ def render(IO,sosConfig):
         r += "    <sos:AssignedObservationId>" + str(IO.assignedId) + "</sos:AssignedObservationId>"
     r += "  </sos:InsertObservationResponse>"
     
-    return r
+    return r.encode()
 

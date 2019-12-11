@@ -42,6 +42,12 @@ def ogcSpatCons2PostgisSql(ogcSpatialOperator,geomField,epsgField):
     ogcSupportedDistanceBufferType = [ 'ogc:DWithin' ] 
     ogcBBOXType = ['ogc:BBOX']
     ogcUnsupportedSpatialOperators = ['ogc:Beyond']
+
+    print("INPUTS: {}\n{}\n{}".format(
+        ogcSpatialOperator,
+        geomField,
+        epsgField
+    ))
     
     if ogcSpatialOperator.__class__.__name__ in ["str","StringField"]:
         xmlString = """<?xml version="1.0" encoding="UTF-8"?><sos:featureOfInterest 
@@ -59,18 +65,21 @@ def ogcSpatCons2PostgisSql(ogcSpatialOperator,geomField,epsgField):
         ogcSpatialOperator = childElementNodes(foi)[0]
     
     try:
-        ogcOperator = ogcSpatialOperator.nodeName.encode()
+        ogcOperator = ogcSpatialOperator.nodeName
     except:
         raise sosException.SOSException("NoApplicableCode",None,"ogcSpatCons2PostgisSql: argunment must be an ''XML object'' or a valid ''XML string''")
     
     sql=''
+    print("ogcOperator: {}".format(
+        ogcOperator
+    ))
 
     #---------------------------
     # PARSE OPTIONS
     #---------------------------
-    if ogcOperator in ogcSupportedSpatialOperators.keys():
+    if ogcOperator in list(ogcSupportedSpatialOperators.keys()):
         childs = childElementNodes(ogcSpatialOperator)
-        propertyName = childs[0].firstChild.data.encode()
+        propertyName = childs[0].firstChild.data
         geometry = childs[1]
         try:
             epsg = geometry.attributes['srsName'].value.split(":")[-1]
@@ -87,7 +96,7 @@ def ogcSpatCons2PostgisSql(ogcSpatialOperator,geomField,epsgField):
     
     elif ogcOperator == 'ogc:BBOX':
         childs = childElementNodes(ogcSpatialOperator)
-        propertyName = childs[0].firstChild.data.encode()
+        propertyName = childs[0].firstChild.data
         geometry = childs[1]
         try:
             epsg = geometry.attributes['srsName'].value.split(":")[-1]
@@ -107,9 +116,9 @@ def ogcSpatCons2PostgisSql(ogcSpatialOperator,geomField,epsgField):
     
     elif ogcOperator == 'ogc:DWithin':
         childs = childElementNodes(ogcSpatialOperator)
-        propertyName = childs[0].firstChild.data.encode()
+        propertyName = childs[0].firstChild.data
         geometry = childs[1]
-        distance = childs[2].firstChild.data.encode()
+        distance = childs[2].firstChild.data
         try:
             epsg = geometry.attributes['srsName'].value.split(":")[-1]
         except:
@@ -124,7 +133,7 @@ def ogcSpatCons2PostgisSql(ogcSpatialOperator,geomField,epsgField):
         return sql
     
     elif ogcOperator in ogcUnsupportedSpatialOperators:
-        raise sosException.SOSException("NoApplicableCode",None,"Spatial Operator nor supported. Available methods are: %s" %(",".join(ogcSupportedSpatialOperators.keys())))
+        raise sosException.SOSException("NoApplicableCode",None,"Spatial Operator nor supported. Available methods are: %s" %(",".join(list(ogcSupportedSpatialOperators.keys()))))
     
     else:
         raise sosException.SOSException("NoApplicableCode",None,"ogcSpatialOperator format ERROR")
@@ -161,7 +170,7 @@ def ogcCompCons2PostgisSql(ogcComparisonOperator):
         ogcComparisonOperator = childElementNodes(res)[0]
     
     try:
-        ogcOperator = ogcComparisonOperator.nodeName.encode()
+        ogcOperator = ogcComparisonOperator.nodeName
     except:
         raise sosException.SOSException("NoApplicableCode",None,"ogcCompCons2PostgisSql: argunment must be an ''XML object'' or a valid ''XML string''")
     
@@ -172,19 +181,19 @@ def ogcCompCons2PostgisSql(ogcComparisonOperator):
     #---------------------------
     # PARSE OPTIONS
     #---------------------------
-    if ogcOperator in ogcSupportedCompOperators.keys():
+    if ogcOperator in list(ogcSupportedCompOperators.keys()):
         childs = childElementNodes(ogcComparisonOperator)
         propertyNameObj = ogcComparisonOperator.getElementsByTagName("ogc:PropertyName")
         literalObj = ogcComparisonOperator.getElementsByTagName("ogc:Literal")
         matchCase = True
         if len(propertyNameObj)==1 and len(literalObj)==1:
             #raise sosException.SOSException(1,"XML %s" %(propertyNameObj[0].data))
-            propertyName = propertyNameObj[0].firstChild.data.encode().strip()
+            propertyName = propertyNameObj[0].firstChild.data.strip()
             """ -- unsupported because only digits are valid --
             if propertyNameObj[0].value.upper()=="FALSE": 
                 matchCase = False
             """
-            literal = literalObj[0].firstChild.data.encode().strip()
+            literal = literalObj[0].firstChild.data.strip()
             if not literal.isdigit() and not literal == None:
                 raise sosException.SOSException("NoApplicableCode",None,"Sorry istsos support only numeric constraints, provided: \'%s\'" %(literal))
         else:

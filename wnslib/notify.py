@@ -20,7 +20,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # ===============================================================================
-from lib import twitter
+import twitter
 
 
 class Notify(object):
@@ -64,13 +64,13 @@ class Notify(object):
             to (str): mail where to send notification
         """
 
-        print 'send mail'
+        print('send mail')
 
-        if not 'subject' in message.keys():
-            print "please define a email subject"
+        if not 'subject' in list(message.keys()):
+            print("please define a email subject")
             return
-        if not 'message' in message.keys():
-            print "please define a email text"
+        if not 'message' in list(message.keys()):
+            print("please define a email text")
             return
 
         import smtplib
@@ -97,10 +97,10 @@ class Notify(object):
             mailServer.login(mail_usr, mail_pwd)
             mailServer.sendmail(mail_usr, to, msg.as_string())
             mailServer.quit()
-            print 'successfully sent the mail'
+            print('successfully sent the mail')
         except Exception as e:
-            print 'failed to send mail'
-            print e
+            print('failed to send mail')
+            print(e)
 
     def post_twitter_status(self, message, name):
         """Update status twitter
@@ -111,22 +111,22 @@ class Notify(object):
         """
 
         if not self.twitter_api:
-            print "please define a twitter account to update status"
+            print("please define a twitter account to update status")
 
-        print 'update twitter status'
+        print('update twitter status')
         tweet = '#' + name + ' '
         tweet += message
 
         if len(message) < 140:
             try:
                 self.twitter_api.PostUpdate(tweet)
-            except twitter.TwitterError, e:
+            except twitter.TwitterError as e:
                 if e[0][0]['code'] == 187:
-                    print 'Duplicate tweet'
+                    print('Duplicate tweet')
                 else:
-                    print e
+                    print(e)
             except AttributeError as e:
-                print e
+                print(e)
         else:
             raise Exception("Message for twitter to long!!!, MAX 140 character")
 
@@ -143,9 +143,9 @@ class Notify(object):
         import json
 
         if not self.twitter_api:
-            print "please define a twitter account to send private message"
+            print("please define a twitter account to send private message")
 
-        print 'Send via Twitter'
+        print('Send via Twitter')
         # Send direct message
         tweet = '#' + name + ' '
         tweet += message
@@ -154,38 +154,38 @@ class Notify(object):
         user = json.loads(str(user))
 
         if len(message) < 140:
-            print 'send direct message'
+            print('send direct message')
             try:
                 self.twitter_api.PostDirectMessage(user_id=user['id'],
                                     text=tweet, screen_name=to)
             except twitter.TwitterError as e:
                 if e[0][0]['code'] == 187:
-                    print 'Duplicate tweet'
+                    print('Duplicate tweet')
                 else:
-                    print e
+                    print(e)
             except AttributeError as e:
-                print e
+                print(e)
         else:
             raise Exception("Message for twitter to long!!!, MAX 140 character")
 
     def ftp(self, ftp_params, message):
         import ftplib
-        import StringIO
+        import io
 
-        print "try ftp"
+        print("try ftp")
 
         try:
             ftps = ftplib.FTP(ftp_params['server'])
         except Exception as e:
-            print e
+            print(e)
 
         try:
             ftps.login(user=ftp_params['user'], passwd=ftp_params['passwd'])
         except Exception as e:
-            print e
+            print(e)
 
         # create temporary file
-        mess = StringIO.StringIO(message['message'])
+        mess = io.StringIO(message['message'])
         # FTP requeire a file
 
         ftps.storlines('STOR %s' % message['filename'], mess)
@@ -193,16 +193,16 @@ class Notify(object):
         mess.close()
         ftps.close()
 
-        print "end ftp"
+        print("end ftp")
 
     def fax(self, message, to, name):
         """
             Not implemented
         """
-        print "notify via FAX"
+        print("notify via FAX")
 
     def sms(self, message, to, name):
         """
             not implemented
         """
-        print "notify via SMS"
+        print("notify via SMS")

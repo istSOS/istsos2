@@ -209,7 +209,7 @@ class waLogs(waResourceService):
 
         # where
         if not params == None:
-            keyList = params.keys()
+            keyList = list(params.keys())
 
             if 'message' in keyList:
                 sql += " AND ( message_clo = %s) "

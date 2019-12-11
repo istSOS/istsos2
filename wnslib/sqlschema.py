@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-wnsschema = u"""
+wnsschema = """
 
 SET statement_timeout = 0;
 SET client_encoding = 'UTF8';

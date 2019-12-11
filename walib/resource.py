@@ -306,10 +306,10 @@ class waResourceConfigurator(waResourceService):
         import locale
         import sys
 
-        print >> sys.stderr,  "\ngetlocale: " + str(locale.getlocale()) + \
+        print("\ngetlocale: " + str(locale.getlocale()) + \
             "\ngetdefaultlocale(): " + str(locale.getdefaultlocale()) + \
             "\nfs_encoding: " + str(sys.getfilesystemencoding()) + \
-            "\nsys default encoding: " + str(sys.getdefaultencoding())
+            "\nsys default encoding: " + str(sys.getdefaultencoding()), file=sys.stderr)
 
         if json is not None:
             self.json = json
@@ -318,7 +318,7 @@ class waResourceConfigurator(waResourceService):
         for key in self.template:
             if not key in self.json:
                 raise Exception("Key \"%s\" not present in json data" % (key))
-            print >> sys.stderr, self.json[key]
+            print(self.json[key], file=sys.stderr)
             self.serviceconf.put(
                 self.template[key][0],
                 self.template[key][1],

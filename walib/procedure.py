@@ -24,27 +24,12 @@
 import sys
 import traceback
 import json
-from lib.etree import et
+from lxml import etree as et
 from walib import utils as ut
-
-
-def parse_and_get_ns(file):
-    events = "start", "start-ns"
-    root = None
-    ns = {}
-    for event, elem in et.iterparse(file, events):
-        if event == "start-ns":
-            if elem[0] in ns and ns[elem[0]] != elem[1]:
-                # NOTE: It is perfectly valid to have the same prefix refer
-                #   to different URI namespaces in different parts of the
-                #   document. This exception serves as a reminder that this
-                #   solution is not robust.  Use at your own peril.
-                raise KeyError("Duplicate prefix with different URI found.")
-            ns[elem[0]] = "%s" % elem[1]
-        elif event == "start":
-            if root is None:
-                root = elem
-    return et.ElementTree(root), ns
+from copy import deepcopy
+from io import StringIO, BytesIO, IOBase
+from os import path
+from parse_and_get import parse_and_get_ns
 
 
 class Procedure():
@@ -81,13 +66,11 @@ class Procedure():
         @param json: a json describeSensor object (xml string or xml
         file full path)
         """
-        if isinstance(xml, basestring):
-            from os import path
+        if isinstance(xml, str) or isinstance(xml, bytes):
             if path.isfile(xml):
                 tree, ns = parse_and_get_ns(xml)
             else:
-                from StringIO import StringIO
-                tree, ns = parse_and_get_ns(StringIO(xml))
+                tree, ns = parse_and_get_ns(xml)
         else:
             raise TypeError(
                 "xml input must be a string representing the XML itself "
@@ -103,6 +86,7 @@ class Procedure():
         }
 
         system = tree.find("{%s}member/{%s}System" % (ns['sml'], ns['sml']))
+
         try:
             self.data['system_id'] = system.attrib["{%s}id" % ns['gml']]
         except Exception as e:
@@ -303,7 +287,7 @@ class Procedure():
                     item["web"] = ""
                 self.data["contacts"].append(item)
             except Exception as e:
-                print >> sys.stderr, traceback.print_exc()
+                print(traceback.print_exc(), file=sys.stderr)
                 raise SyntaxError(
                     "Error in <swe:contact>: some <swe:contact> mandatory "
                     "sub elements or attributes are missing"
@@ -468,7 +452,7 @@ class Procedure():
                 self.data["outputs"].append(item)
 
             except Exception as ex:
-                print >> sys.stderr, traceback.print_exc()
+                print(traceback.print_exc(), file=sys.stderr)
                 raise SyntaxError("Error in <sml:outputs>: some <swe:field> mandatory sub elements or attributes are missing")
         if time==False:
             raise SyntaxError("Error in <sml:outputs>: <swe:Time> is mandatory")
@@ -513,6 +497,7 @@ class Procedure():
         }
 
         #---map namespaces---
+        
         try:
             register_namespace = et.register_namespace
             for key in ns:
@@ -529,10 +514,10 @@ class Procedure():
                     try:
                         from elementtree.ElementTree import _namespace_map
                     except ImportError:
-                        print >> sys.stderr, ("Failed to import ElementTree from any known place")
+                        print(("Failed to import ElementTree from any known place"), file=sys.stderr)
                 for key in ns:
                     _namespace_map[ns[key]] = key
-
+        
         root = et.Element("{%s}SensorML" % ns['sml'])
         root.attrib[ "{%s}schemaLocation" % ns['xsi'] ] = "http://www.opengis.net/sensorML/1.0.1 http://schemas.opengis.net/sensorML/1.0.1/sensorML.xsd"
         root.attrib["version"] = "1.0"
@@ -739,9 +724,11 @@ class Procedure():
         OutputList = et.SubElement(outputs, "{%s}OutputList" % ns['sml'])
         output = et.SubElement(OutputList, "{%s}output" % ns['sml'])
         output.attrib["name"] = "output data"
+        
         DataRecord = et.SubElement(output, "{%s}DataRecord" % ns['swe'])
         DataRecord.attrib["definition"] = "urn:ogc:def:dataType:x-istsos:1.0:timeSeries"
-        oid = 0
+        oid = 0        
+        
         for o in self.data["outputs"]:
             oid += 1
             field = et.SubElement(DataRecord, "{%s}field" % ns['swe'])
@@ -820,6 +807,9 @@ class Procedure():
                         amax.text = str(o["constraint"]["max"])
 
 
+
+        
+
         if timetag == False:
             raise Exception("self.data['outputs']: Time is mandatory")
 
@@ -877,7 +867,7 @@ class Procedure():
                     try:
                         from elementtree.ElementTree import _namespace_map
                     except ImportError:
-                        print >> sys.stderr, ("Failed to import ElementTree from any known place")
+                        print(("Failed to import ElementTree from any known place"), file=sys.stderr)
                 for key in ns:
                     _namespace_map[ns[key]] = key
 
@@ -891,10 +881,12 @@ class Procedure():
 
         sml = self.toXML()
         #print >> sys.stderr, "SML:%s" % sml
-        from StringIO import StringIO
-        smltree, smlns = parse_and_get_ns(StringIO(sml))
+        # parase elements and get items 
+        # WARNING: if parsed later the smltree object became empty (???)
+        smltree, smlns = parse_and_get_ns(sml)
         member = smltree.find("{%s}member" % ns['sml'] )
-        SensorDescription.append(member)
+        
+        SensorDescription.append(deepcopy(member))
 
         #---
         ObservationTemplate = et.SubElement(root, "{%s}ObservationTemplate" % ns['sos'])
@@ -943,7 +935,7 @@ class Procedure():
         DataRecord = smltree.find("{%s}member/{%s}System/{%s}outputs/{%s}OutputList/{%s}output/{%s}DataRecord"
                             % (ns['sml'],  ns['sml'],  ns['sml'], ns['sml'],    ns['sml'],  ns['swe'] ) )
 
-        elementType.append(DataRecord)
+        elementType.append(deepcopy(DataRecord))
 
         encoding = et.SubElement(DataArray, "{%s}encoding" % ns['swe'])
         TextBlock = et.SubElement(encoding, "{%s}TextBlock" % ns['swe'])
@@ -951,7 +943,7 @@ class Procedure():
         TextBlock.attrib["blockSeparator"] = "@"
         TextBlock.attrib["decimalSeparator"] = "."
 
-        #values = et.SubElement(DataArray, "{%s}values" % ns['swe'])
+        # print("ROOT: ", et.tostring(root, encoding="UTF-8"))
 
         return root
 
@@ -961,4 +953,5 @@ class Procedure():
         Create a SOS register sensor request String from self.procedure object
         """
         dom = self.toRegisterSensorDom()
+        print("DOM: ", et.tostring(dom, encoding="UTF-8"))
         return et.tostring(dom, encoding="UTF-8")

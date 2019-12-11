@@ -38,16 +38,16 @@ import copy
 
 sys.path.insert(0, path.abspath("."))
 try:
-    import lib.argparse as argparse
-    import lib.requests as requests
-    from lib.requests.auth import HTTPBasicAuth
-    import lib.isodate as iso
-    from lib.pytz import timezone
+    import argparse as argparse
+    import requests as requests
+    from requests.auth import HTTPBasicAuth
+    import isodate as iso
+    from pytz import timezone
     from scripts.raw2csv import DebugConverter
 except ImportError as e:
-    print """
+    print("""
 Error loading internal libs:
- >> did you run the script from the istSOS root folder?\n\n"""
+ >> did you run the script from the istSOS root folder?\n\n""")
     raise e
 
 datacache = None
@@ -60,25 +60,25 @@ def execute(args, conf=None):
         if conf is not None and 'logger' in conf:
             conf['logger'].log(message)
         else:
-            print message
+            print(message)
 
     def addMessage(self, message):
         if 'logger' in conf:
             conf['logger'].addMessage(message)
         else:
-            print message
+            print(message)
 
     def addWarning(self, message):
         if 'logger' in conf:
             conf['logger'].addWarning(message)
         else:
-            print message
+            print(message)
 
     def addException(self, message):
         if 'logger' in conf:
             conf['logger'].addException(message)
         else:
-            print message
+            print(message)
 
     pp = pprint.PrettyPrinter(indent=2)
 
@@ -143,7 +143,7 @@ def execute(args, conf=None):
         if 'm' in args:
             maxobs = int(args['m'])
 
-        #req = requests.session()
+        # req = requests.session()
         req = requests
 
         log("\nOffering: %s" % off)
@@ -246,7 +246,7 @@ def execute(args, conf=None):
                     # Check if all the observedProperties of the procedure are
                     # included in the CSV file (quality index is optional)
                     # print ("Observations: %s" % obsindex)
-                    for k, v in jsonindex.iteritems():
+                    for k, v in jsonindex.items():
                         # print ("Checking: %s" % k)
                         if k in obsindex:
                             continue
@@ -267,7 +267,7 @@ def execute(args, conf=None):
                             # be inserted
                             observation = ['']*len(jsonindex)
 
-                            for k, v in jsonindex.iteritems():
+                            for k, v in jsonindex.items():
                                 val = None
                                 if k in obsindex:
                                     val = lineArray[obsindex.index(k)]

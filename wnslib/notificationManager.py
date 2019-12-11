@@ -81,7 +81,7 @@ def addNotification(name, func_path, interval, store=False):
 
     """
 
-    print func_path
+    print(func_path)
     f = open(func_path, 'r')
     code = f.read()
     f.close()
@@ -122,7 +122,7 @@ def __check_valid_python(code, func_path):
         # check only the syntax
         compile(code, func_path, 'exec')
     except Exception as e:
-        print "Exception in validate python"
+        print("Exception in validate python")
         raise e
 
 
@@ -196,7 +196,7 @@ def createSimpleNotification(name, service, params, cql, interval,
             config = """
         import datetime
         import time
-        import lib.isodate as isodate
+        import isodate as isodate
         from lib.pytz import timezone
         now = datetime.datetime.now().replace(tzinfo=timezone(time.tzname[0]))
         endDate = now.strftime('%%Y-%%m-%%dT%%H:%%M:%%S%%z')
@@ -219,7 +219,7 @@ def createSimpleNotification(name, service, params, cql, interval,
         code_string = """
 def %s():
     %s
-    import lib.requests as requests
+    import requests as requests
     res = requests.get('%s', params=rparams)
 
     result = res.json()['ObservationCollection']['member'][0]['result']['DataArray']['values']
@@ -270,7 +270,7 @@ def %s():
         write_to_aps(name, interval, store)
 
     except Exception as e:
-        print >> sys.stderr, traceback.print_exc()
+        print(traceback.print_exc(), file=sys.stderr)
         raise e
 
 
@@ -353,7 +353,7 @@ def delete_script_file(name):
         if os.path.exists(wns_script_path + name + '.pyc'):
             os.remove(wns_script_path + name + '.pyc')
 
-        print "file removed"
+        print("file removed")
     else:
-        print "file not found"
+        print("file not found")
 

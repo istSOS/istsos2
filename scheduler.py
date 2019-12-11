@@ -81,34 +81,34 @@ def istsos_job():
             schedmd5[service] = md5_now
             jobs = sched.get_jobs()
             for j in jobs[1:]:
-                print " job: %s" % j.name
+                print(" job: %s" % j.name)
                 if j.name.startswith(service):
                     sched.unschedule_job(j)
-            execfile(scheduler)
+            exec(compile(open(scheduler, "rb").read(), scheduler, 'exec'))
     if timer>0:
       timer = timer - 1
-    print "Checking changes"
+    print("Checking changes")
     if not schedmd5:
-        print " > Initialization.."
+        print(" > Initialization..")
         for service,scheduler in recursive_glob(rootdir=services_path ,suffix=".aps"):
             apsfile = open(scheduler)
             schedmd5[service]=hashlib.md5(apsfile.read()).hexdigest()
             apsfile.close()
-            execfile(scheduler)
+            exec(compile(open(scheduler, "rb").read(), scheduler, 'exec'))
     else:
         for service,scheduler in recursive_glob(rootdir=services_path ,suffix=".aps"):
             apsfile = open(scheduler)
             md5_now = hashlib.md5(apsfile.read()).hexdigest()
             apsfile.close()
             if not schedmd5[service] == md5_now:
-                print "  > Change detectd: %s" % service
+                print("  > Change detectd: %s" % service)
                 schedmd5[service] = md5_now
                 jobs = sched.get_jobs()
                 #print jobs
                 for j in jobs[1:]:
-                    print " job: %s" % j.name
+                    print(" job: %s" % j.name)
                     if j.name.startswith(service):
                         sched.unschedule_job(j)
-                execfile(scheduler)
+                exec(compile(open(scheduler, "rb").read(), scheduler, 'exec'))
 
 

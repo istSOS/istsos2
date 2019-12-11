@@ -152,7 +152,7 @@ class CampbellImporter(raw2csv.Converter):
                         try:
                             arr[self.config["column"]]
                         except:
-                            print "Error in line %s: %s" % (lineCounter, arr)
+                            print("Error in line %s: %s" % (lineCounter, arr))
                             continue
                         values[self.config["observedProperty"]] = arr[self.config["column"]]
                     else:

@@ -20,7 +20,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # ===============================================================================
-from lib import isodate as iso
+import isodate as iso
 
 def render(RS,sosConfig):
     r = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -32,4 +32,5 @@ def render(RS,sosConfig):
     r += "%s" %(RS.assignedSensorId)
     r += "</AssignedSensorId>\n"
     r += "</sos:RegisterSensorResponse>"
-    return r
+    return r.encode()
+

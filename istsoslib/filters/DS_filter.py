@@ -54,11 +54,11 @@ class sosDSfilter(f.sosFilter):
             
             if self.version == '2.0.0':
                 # OUTPUTFORMAT
-                if requestObject.has_key("procedure"):
+                if "procedure" in requestObject:
                     if requestObject["procedure"] == '':
                         raise sosException.SOSException("MissingParameterValue", "procedure", "Missing 'procedure' parameter")
 
-                if requestObject.has_key("proceduredescriptionformat"):
+                if "proceduredescriptionformat" in requestObject:
                     if requestObject["proceduredescriptionformat"] == '':
                         raise sosException.SOSException("MissingParameterValue", "proceduredescriptionformat", "Missing 'proceduredescriptionformat' parameter")
                         
@@ -76,7 +76,8 @@ class sosDSfilter(f.sosFilter):
             
             else:
                 # OUTPUTFORMAT
-                if requestObject.has_key("outputformat"):
+                if "outputformat" in requestObject:
+                    print("CIAOOOO: ", requestObject["outputformat"])
                     if requestObject["outputformat"] in sosConfig.parameters["DS_outputFormats"]:
                         self.outputFormat = requestObject["outputformat"]
                         
@@ -88,7 +89,7 @@ class sosDSfilter(f.sosFilter):
                     raise sosException.SOSException("MissingParameterValue","outputFormat","Parameter \"outputFormat\" is mandatory")
             
             # PROCEDURES
-            if requestObject.has_key("procedure"):
+            if "procedure" in requestObject:
                 if requestObject["procedure"] == '':
                     raise sosException.SOSException("MissingParameterValue", "procedure", "Missing 'procedure' parameter")
                     
@@ -113,7 +114,7 @@ class sosDSfilter(f.sosFilter):
             self.procedure = None
             
             # OUTPUTFORMAT
-            if "outputFormat" in requestObject.attributes.keys():
+            if "outputFormat" in list(requestObject.attributes.keys()):
                 self.outputFormat = str(requestObject.getAttribute("outputFormat"))
                 if self.outputFormat not in sosConfig.parameters["DS_outputFormats"]:
                     err_txt = "Allowed \"outputFormat\" values are: " + ",".join(sosConfig.parameters["DS_outputFormats"])
@@ -135,7 +136,7 @@ class sosDSfilter(f.sosFilter):
                         """
                         prc = str(val.data).split(":")
                         if len(prc)>1:
-                            if prc[0:-1] == filter(None,sosConfig.urn["procedure"].split(":")):
+                            if prc[0:-1] == [_f for _f in sosConfig.urn["procedure"].split(":") if _f]:
                                 pass
                             else:
                                 err_txt = "Supported \"procedure\" urn is: " + sosConfig.urn["procedure"]

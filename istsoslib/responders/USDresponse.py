@@ -28,7 +28,7 @@ import os
 from istsoslib import sosDatabase
 from istsoslib import sosException
 #import mx.DateTime.ISO
-from lib import isodate as iso
+import isodate as iso
 
 def get_name_from_urn(stringa,urnName,sosConfig):
     a = stringa.split(":")
