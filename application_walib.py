@@ -88,9 +88,7 @@ def executeWa(environ, start_response):
     # Passing the basic authentication header in waEnviron
     #   Shall be used in istSOS lib request from walib
     if 'HTTP_AUTHORIZATION' in environ:
-        print("AUTH")
-        waEnviron['HTTP_AUTHORIZATION'] = str(len(environ['HTTP_AUTHORIZATION']))
-        print("AUTH OK")
+        waEnviron['HTTP_AUTHORIZATION'] = str(environ['HTTP_AUTHORIZATION'])
     try:
 
         try:
