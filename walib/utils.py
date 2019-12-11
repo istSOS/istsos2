@@ -783,7 +783,7 @@ def verifyxmlservice(url, waEnviron):
         else:
             return  "up"
 
-    except Exception as e:
+    except Exception:
         traceback.print_exc(file=sys.stderr)
         return "down"
 
@@ -823,7 +823,7 @@ def getObservationPeriod(pgdb,service,procedures):
     sql += """
         WHERE
             name_prc IN %s"""
-    params = touple(procedure)
+    params = tuple(procedures)
     rows = pgdb.select(sql,(params,))
     if rows:
         return [{
@@ -839,7 +839,7 @@ def to_unicode_or_bust(obj, encoding='utf-8'):
         if isinstance(obj, str):
             if not isinstance(obj, str):
                 obj = str(obj, encoding)
-    except Exception as e:
+    except Exception:
         traceback.print_exc(file=sys.stderr)
     return obj
 
@@ -863,7 +863,7 @@ def encodeobject(obj, encoding='utf-8'):
                     obj[key] = encodeobject(value, encoding)
                 else:
                     obj[key] = to_unicode_or_bust(value, encoding)
-    except Exception as e:
+    except Exception:
         traceback.print_exc(file=sys.stderr)
     return obj
 
