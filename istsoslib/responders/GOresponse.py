@@ -1148,7 +1148,7 @@ class Observation:
 
             except Exception as xx:
                 print >> sys.stderr, str(xx)
-                sys.stderr.flush()
+                # sys.stderr.flush()
                 raise Exception("SQL: %s"%(sql))
 
         # CASE "virtual"
@@ -1364,7 +1364,7 @@ class GetObservationResponse_2_0_0:
                 ) as exist_foi
             """
             try:
-                print >> sys.stderr, pgdb.mogrify(sql, tuple(params))
+                # print >> sys.stderr, pgdb.mogrify(sql, tuple(params))
                 result=pgdb.select(sql, tuple(params))
 
             except Exception as ex:
@@ -1400,6 +1400,7 @@ class GetObservationResponse_2_0_0:
                         
                           SELECT %s as def_opr, exists(select id_opr from """ +
                               filter.sosConfig.schema + """.observed_properties WHERE def_opr SIMILAR TO '%%(:|)'||%s||'(:|)%%) as exist_opr
+
                     """)
 
                 sql = " UNION ".join(clauses)

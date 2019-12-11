@@ -37,6 +37,16 @@ date_handler = lambda obj: (
     )
 )
 
+to_string_handler = lambda obj: (
+    obj.isoformat()
+    if isinstance(obj, (datetime.datetime, datetime.date))
+    else (
+        obj
+        if isinstance(obj, basestring) # isinstance(s, str) # Python 3
+        else str(obj)
+    )
+)
+
 def render(GO,sosConfig):
     if GO.filter.responseFormat in ['text/xml;subtype="om/1.0.0"',"text/xml"]:
         return XMLformat(GO)
@@ -191,7 +201,6 @@ def XMLformat(GO):
         r += "        </swe:encoding>\n"
 
         if ob.csv:
-            print >> sys.stderr, "CSV is READY"
             r += "        <swe:values>%s</swe:values>" % ob.csv
 
         elif len(ob.data) > 0:
@@ -200,7 +209,7 @@ def XMLformat(GO):
             for row in range(len(ob.data)):
                 r+=','.join(
                     map(
-                        lambda x: date_handler(x), row
+                        lambda x: to_string_handler(x), row
                     )
                 )
             r += "</swe:values>\n"
@@ -356,20 +365,14 @@ def CSVformat(GO):
                 raise Exception("%s - %s" %(lut,columns))
 
         if ob.csv:
-
-            print >> sys.stderr, "CSV is READY"
-            
             r += "\n%s" % ob.csv
 
         else:
-
-            print >> sys.stderr, "DATA LOOP"
-
             for vals in ob.data:
                 r += "\n%s" % (
                     ','.join(
                         map(
-                            lambda x: date_handler(x), vals
+                            lambda x: to_string_handler(x), vals
                         )
                     )
                 )

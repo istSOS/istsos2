@@ -199,15 +199,6 @@ class PgDB(Database):
             )
             try:
                 import sys
-                print >> sys.stderr, """
-                        SELECT
-                            array_to_string( 
-                                ARRAY (
-                                    %s
-                                ),
-                            %s
-                        );
-                    """ % (cur.mogrify(sql, par), lt)
                 cur.execute(
                     """
                         SELECT
