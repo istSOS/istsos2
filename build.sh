@@ -50,7 +50,7 @@ cd _build/istsos
 debuild -us -uc -d
 cd ..
 
-mv python-istsos_$version-1_all.deb python-istsos_$version.deb
+mv python3-istsos_$version-1_all.deb python3-istsos_$version.deb
 
 mv istsos_$version.orig.tar.gz istsos-$version.tar.gz
 # rm -rf istsos

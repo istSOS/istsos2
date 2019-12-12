@@ -13,7 +13,7 @@ Vcs-Browser: https://sourceforge.net/p/istsos/code/HEAD/tree/
 Vcs-Svn: svn://svn.code.sf.net/p/istsos/code/trunk
 Homepage: http://istsos.org
 
-Package: python-istsos
+Package: python3-istsos
 Architecture: all 
 Depends: ${misc:Depends},
          python3-dateutil,
