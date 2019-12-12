@@ -1,6 +1,9 @@
 #!/bin/bash
 
-# required 
+# required
+
+# Remove the x flag on install
+chmod -x debian/install
 
 # sudo apt-get install devscripts
 # sudo apt-get install debhelper
@@ -24,7 +27,6 @@ rsync -a interface/modules/requests/build/requests/* _build/istsos/interface/mod
 cp -r interface/modules/requests/src/xml _build/istsos/interface/modules/requests
 # rsync -a interface/modules/status/www/istsosStatus/* _build/istsos/interface/modules/status
 rsync -a --exclude=*.pyc istsoslib/* _build/istsos/istsoslib
-rsync -a --exclude=*.pyc lib/* _build/istsos/lib
 rsync -a --exclude=*.pyc scripts/* _build/istsos/scripts
 cp services/default.cfg.example  _build/istsos/services/default.cfg
 rsync -a --exclude=*.pyc walib/* _build/istsos/walib
@@ -51,16 +53,16 @@ cd ..
 mv python-istsos_$version-1_all.deb python-istsos_$version.deb
 
 mv istsos_$version.orig.tar.gz istsos-$version.tar.gz
-rm -rf istsos
+# rm -rf istsos
 
-cd ../docs
+# cd ../docs
 
-make html
-cd _build
-mv html v$version
-tar -zcvf istsos-$version.doc.tar.gz v$version
+# make html
+# cd _build
+# mv html v$version
+# tar -zcvf istsos-$version.doc.tar.gz v$version
 
-mv istsos-$version.doc.tar.gz ../../_build/
+# mv istsos-$version.doc.tar.gz ../../_build/
 
 
 
