@@ -42,7 +42,7 @@ class Database:
     port = None
     def getConnection(self):
         """Return a database connection"""
-        return None;
+        return None
     def closeConnection(self):
         """Close a database connection"""
         return None
@@ -171,7 +171,6 @@ class PgDB(Database):
             cur.execute(sql, par)
         except psycopg2.ProgrammingError as e:
             raise e
-
         try:
             rows = cur.fetchall()
         except:
