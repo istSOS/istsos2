@@ -136,6 +136,14 @@ def initResource(waEnviron):
                     return dataqualities.waDataqualities(waEnviron)
 
                 # ---------------------------------------
+                # Entering istsos.services.specimens
+                # ---------------------------------------
+                elif resource == "specimens":
+                    #print >> sys.stderr, resource
+                    from walib.istsos.services.specimens import specimens
+                    return specimens.waSpecimens(waEnviron)
+
+                # ---------------------------------------
                 # Entering istsos.services.procedures
                 # ---------------------------------------
                 elif resource == "procedures":
