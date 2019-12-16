@@ -1,12 +1,14 @@
 #!/bin/bash
 
+# execute build:
+# > /bin/bash build.sh
+
 # required
+# sudo apt-get install devscripts
+# sudo apt-get install debhelper
 
 # Remove the x flag on install
 chmod -x debian/install
-
-# sudo apt-get install devscripts
-# sudo apt-get install debhelper
 
 revision=$(git rev-list --count HEAD)
 version=$(cat ./VERSION.txt)
