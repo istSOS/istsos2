@@ -314,11 +314,7 @@ def JSONformat(GO):
                 }
             ]
         
-        if ob.array:
-            member['result']['DataArray']['values'] = ob.array
-
-        else:
-            member['result']['DataArray']['values'] = ob.data
+        member['result']['DataArray']['values'] = ob.data
 
         # append member to collection
         oc["ObservationCollection"]["member"].append(member)

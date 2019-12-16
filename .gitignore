@@ -1,6 +1,7 @@
-*.pyc
+*.py[cod]
 services/demo
 _build/
 docs/_build/
 acquisition/
 .vscode
+venv/

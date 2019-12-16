@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Remove the x flag on install
+chmod -x debian/install
+
 # required 
 
 # sudo apt-get install devscripts
@@ -56,14 +59,14 @@ mv python-istsos_$version-1_all.deb python-istsos_$version.deb
 mv istsos_$version.orig.tar.gz istsos-$version.tar.gz
 rm -rf istsos
 
-cd ../docs
+# cd ../docs
 
-make html
-cd _build
-mv html v$version
-tar -zcvf istsos-$version.doc.tar.gz v$version
+# make html
+# cd _build
+# mv html v$version
+# tar -zcvf istsos-$version.doc.tar.gz v$version
 
-mv istsos-$version.doc.tar.gz ../../_build/
+# mv istsos-$version.doc.tar.gz ../../_build/
 
 
 
