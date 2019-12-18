@@ -7,8 +7,8 @@
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or (at your option)
-# any later version.
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,7 +17,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+# Foundation, Inc., 51 Franklin Street, Fifth Floor,
+# Boston, MA  02110-1301  USA
 #
 # ===============================================================================
 
@@ -30,6 +31,8 @@ import isodate as iso
 import pytz
 import importlib
 import traceback
+from operator import add
+from dateutil.parser import parse
 
 from istsoslib import sosException
 
@@ -39,6 +42,7 @@ date_handler = lambda obj: (
     if isinstance(obj, (datetime.datetime, datetime.date))
     else float(obj)
 )
+
 
 class VirtualProcess():
     """Virtual procedure object
@@ -53,12 +57,17 @@ class VirtualProcess():
     """
 
     procedures = {}
-    samplingTime = (None,None)
+    samplingTime = (None, None)
+    obs_input = [':']
 
-    def _configure(self, filterRequest, pgdb):
+    def _configure(self, filterRequest, pgdb, props=None):
         """Configure base object"""
         self.filter = copy.deepcopy(filterRequest)
         self.pgdb = pgdb
+        if props:
+            self.coords = props['coords']
+            self.obs = props['obs']
+            self.name = props['name']
 
     def addProcedure(self, name, observedProperty):
         """Add a procedure to the self.procedures[name]
@@ -77,7 +86,7 @@ class VirtualProcess():
         self.observation = observation
         self.observation.samplingTime = self.getSampligTime()
         self.observation.data = self.execute()
-        if self.filter.aggregate_interval != None:
+        if self.filter.aggregate_interval is not None:
             self.applyFunction()
 
     def getSampligTime(self):
@@ -100,13 +109,15 @@ class VirtualProcess():
         It supports also SamplingTime calculation from cascading Virtual Procedures.
         """
 
-        if len(self.procedures)==0:
-            self.samplingTime = (None,None)
+        if len(self.procedures) == 0:
+            self.samplingTime = (None, None)
         else:
 
             # Identify if procedures are virtual
-
-            tmp = list(self.procedures.keys())
+            if isinstance(self.procedures, list):
+                tmp = self.procedures
+            else:
+                tmp = list(self.procedures.keys())
             procedures = []
 
             # Handle cascading virtual procedures
@@ -200,9 +211,7 @@ class VirtualProcess():
                 raise Exception("Database error: %s - %s" % (sql, e))
 
             self.samplingTime = (result[0], result[1])
-
-
-
+    
     def getData(self, procedure=None, disableAggregation=True):
         """Return the observations of associated procedure
 
@@ -340,6 +349,125 @@ class VirtualProcess():
 
         except Exception as e:
             raise Exception("Error while applying aggregate function on virtual procedures: %s" % (e))
+
+
+class VirtualProcessProfile(VirtualProcess):
+
+    def getProceduresInfo(self):
+
+        proc_sql = ('\' OR name_prc=\'').join(self.procedures)
+        sql_filter = ' WHERE name_prc=\'' + proc_sql + '\' '
+        sql = """
+            SELECT id_prc, name_prc, st_z(geom_foi), array_agg(def_opr)
+            FROM ((
+            SELECT *
+            FROM
+            (
+                SELECT
+                    *
+                FROM %s.procedures
+                JOIN %s.proc_obs
+                ON id_prc = id_prc_fk""" % ((self.filter.sosConfig.schema,)*2)
+
+        sql += sql_filter
+        sql += """
+            ) p1 JOIN %s.observed_properties ON id_opr = id_opr_fk
+            ) p2 JOIN %s.off_proc ON off_proc.id_prc_fk = id_prc
+            ) p3 JOIN %s.offerings ON id_off = p3.id_off_fk, demo.foi
+            WHERE id_foi = p3.id_foi_fk GROUP BY id_prc, name_prc, geom_foi
+            ORDER BY st_z DESC""" % ((self.filter.sosConfig.schema,)*3)
+        try:
+            result = self.pgdb.select(sql)
+
+            if len(result) == 0:
+                raise Exception(
+                    "Virtual Procedure Error: procedure %s not found in the database"
+                    % procedure
+                )
+            self.procedures = {}
+            for res in result:
+                self.procedures[res[1]] = res[3]
+
+            # result = result[0]
+            return result
+
+        except Exception as e:
+            raise Exception("Database error: %s - %s" % (sql, e))
+
+    def getProceduresFromOffering(self, offering):
+
+        sql = """
+            SELECT
+                id_prc, name_prc, st_z(geom_foi)
+            FROM
+                %s.procedures,
+                %s.foi,
+                %s.offerings,
+                %s.off_proc """ % ((self.filter.sosConfig.schema,)*4 )
+        sql += """
+            WHERE
+                offerings.id_off = off_proc.id_off_fk
+                AND off_proc.id_prc_fk = procedures.id_prc
+                AND foi.id_foi = procedures.id_foi_fk
+                AND offerings.name_off=%s """
+        sql += """"""
+
+        try:
+            result = self.pgdb.select(sql, (offering,))
+            self.procedures = {}
+
+            if len(result) == 0:
+                raise Exception("Virtual Procedure Error: procedure %s not found in the database" % procedure)
+            else:
+                for proc in result:
+                    self.procedures[proc[1]] = self.obs_input
+
+            # result = result[0]
+            return result
+
+        except Exception as e:
+            raise Exception("Database error: %s - %s" % (sql, e))
+
+    def execute(self):
+        procs_info = self.getProceduresInfo()
+        data = []
+        # start_time = time.time()
+        for proc in procs_info:
+            check = False
+            for i in range(len(self.obs_input)):
+                if self.obs_input[i] not in proc[3]:
+                    check = True
+                    break
+            if check:
+                raise Exception('Procedure does not measure the required observed properties.')
+            else:
+                self.procedures[proc[1]] = self.obs_input
+                data_temp = self.getData(proc[1])
+                if data_temp:
+                    if self.filter.qualityIndex is True:
+                        depths_list = [
+                            [round(abs(self.coords[2] - proc[2]), 1), 100]
+                        ] * len(data_temp)
+
+                    else:
+                        depths_list = [
+                            [round(abs(self.coords[2] - proc[2]), 1)]
+                        ] * len(data_temp)
+
+                    data_temp = list(
+                        map(add, data_temp, depths_list)
+                    )
+                    data = data + data_temp
+        # print("STEP1: ", time.time()-start_time)
+        data.sort(key=lambda row: row[0])
+        if self.filter.qualityIndex is True:
+            data.sort(key=lambda row: row[4], reverse=True)
+        else:
+            data.sort(key=lambda row: row[3], reverse=True)
+        if len(self.obs) != (len(data[0]) - 1):
+            raise Exception("Number of observed properties mismatches")
+        # print("TIME TOT: ", time.time()-start_time)
+        return data
 
 
 class VirtualProcessHQ(VirtualProcess):
@@ -710,7 +838,7 @@ class Observation:
         """get data according to request filters"""
 
         # SET FOI OF PROCEDURE
-        sqlFoi  = "SELECT name_fty, name_foi, ST_AsGml(ST_Transform(geom_foi,%s)) as gml, st_x(geom_foi) as x, st_y(geom_foi) as y " %(filter.srsName)
+        sqlFoi  = "SELECT name_fty, name_foi, ST_AsGml(ST_Transform(geom_foi,%s)) as gml, st_x(geom_foi) as x, st_y(geom_foi) as y, st_z(geom_foi) as z " %(filter.srsName)
         sqlFoi += " FROM %s.procedures, %s.foi, %s.feature_type" %(filter.sosConfig.schema,filter.sosConfig.schema,filter.sosConfig.schema)
         sqlFoi += " WHERE id_foi_fk=id_foi AND id_fty_fk=id_fty AND id_prc=%s" %(row["id_prc"])
         try:
@@ -731,6 +859,7 @@ class Observation:
         self.srs = srs
         self.x = resFoi[0]["x"]
         self.y = resFoi[0]["y"]
+        self.z = resFoi[0]["z"]
 
         # SET INFORMATION ABOUT OBSERVED_PROPERTIES
         sqlObsPro = "SELECT id_pro, id_opr, name_opr, def_opr, name_uom FROM %s.observed_properties, %s.proc_obs, %s.uoms" %(filter.sosConfig.schema,filter.sosConfig.schema,filter.sosConfig.schema)
@@ -1182,7 +1311,12 @@ class Observation:
 
             # Initialization of virtual procedure will load the source data
             vp = vproc.istvp()
-            vp._configure(filter, pgdb)
+            props = {
+                "name": self.name,
+                "coords": [self.x, self.y, self.z],
+                "obs": self.observedProperty
+            }
+            vp._configure(filter, pgdb, props)
 
             # Calculate virtual procedure data
             vp.calculateObservations(self)
