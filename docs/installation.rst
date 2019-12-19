@@ -4,37 +4,53 @@
 Installation
 ==============
 
+**From version 2.4, istSOS relies on Python 3.**
+
+
 ---------------------------------------------
-Installation of the software on Ubuntu 14.04
+Installation from source on Ubuntu 18.04
 ---------------------------------------------
-This part of the tutorial provides instruction on installing istSOS on a Linux Operating System based on Debian distribution. Nevertheless, even though extensive testing has been conducted in this environment only, istSOS is developed in Python which is known for its cross platform support and existing installation are recorded in Windows ® systems and OS X Apple's operating system should be supported too. Interested users may look at the istSOS Website or ask support on the mailing list.
+This part of the tutorial provides instruction on installing istSOS on a
+Linux Operating System based on Debian distribution. Nevertheless, even
+though extensive testing has been conducted in this environment only,
+istSOS is developed in Python which is known for its cross platform support
+and existing installation are recorded in Windows® systems and OS X
+Apple's operating system should be supported too. Interested users may
+look at the istSOS Website or ask support on the mailing list.
 
 **1) Install PostgreSQL and PostGIS**
 
-::
-    
-    sudo apt-get install postgresql postgresql-9.3-postgis-2.1 pgadmin3
-    
+.. code-block:: bash
+
+    sudo apt install postgresql postgis
+
 **2) Configure postgreSQL password**
 
+.. highlight:: bash
+
 ::
-    
+
     sudo -u postgres psql
-    alter user postgres password '*******'; 
+
+.. highlight:: sql
+
+::
+
+    alter user postgres password '*******';
 
 .. note:: Ctrl-D to exit from psql console
 
-    
+
 **3) Install Apache2 and mod_wsgi**
 
 ::
 
-    sudo apt-get install apache2 libapache2-mod-wsgi
-    
+    sudo apt-get install apache2 libapache2-mod-wsgi-py3
+
 **4) Install psycopg2**
 
 ::
-    
+
     sudo apt-get install python-psycopg2
 
 
@@ -307,7 +323,6 @@ Now istSOS is up and running. Open a web browser and go to `<http://localhost/is
     :: 
         
         <Apache2.2 folder>\logs\error.log
-
 
 
 

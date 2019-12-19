@@ -16,7 +16,7 @@ Some advices:
     - **Procedures with multiple observed properties**:
       Is it possible to add new procedures observing more than one properties,
       but in istSOS this means that for each observation instant we have a list
-      all the observed properties values.
+      of all the observed properties values.
       e.g.:
       if a procedure that observes temperature (T), humidity (H) and rain (R) is
       created the time series will always have a list of 3 values [T,H,R] for
@@ -97,8 +97,8 @@ fill at your own need and willing
 Add other procedures
 --------------------
 
-In order to speed up the "*boring*" process of inserting all the other procedures
-we have prepared a script. Open a terminal and run:
+In order to speed up the "*boring*" process of inserting all the other
+procedures we have prepared a script. Open a terminal and run:
 
 .. code-block:: bash
 
@@ -107,17 +107,17 @@ we have prepared a script. Open a terminal and run:
 
 .. note::
 
-    Feel free to analyze the code to understand the process and eventually create
-    your own script to import new sensors in the istSOS server.
+    Feel free to analyze the code to understand the process and eventually
+    create     your own script to import new sensors in the istSOS server.
 
 
 Verify the inserted procedures using the administration interface
 -----------------------------------------------------------------
 
-Check your procedures by accessing the "**Procedures**" panel. You will see a table
-showing an abstract of all the inserted procedures. By clicking on the name you
-will be able to enter the details metadata that you configured during the
-procedure registration.
+Check your procedures by accessing the "**Procedures**" panel. You will see a
+table showing an abstract of all the inserted procedures. By clicking on the
+name you will be able to enter the details metadata that you configured during
+the procedure registration.
 
 .. note::
 
