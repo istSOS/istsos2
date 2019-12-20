@@ -376,11 +376,12 @@ class Procedure(dict):
         self.keywords = keywords
 
     def setSystemType(self, systemType):
-        if systemType in ['virtual', 'insitu-fixed-point']:
+        syst = ['virtual', 'insitu-fixed-point','insitu-fixed-specimen','insitu-mobile-point']
+        if systemType in syst:
             self.systemType = systemType
         else:
             raise Exception(
-                "System type supported virtual, insitu-fixed-point only.")
+                "System type supported %s only." % ','.join(syst))
 
     def setSensorType(self, sensorType):
         self.sensorType = sensorType

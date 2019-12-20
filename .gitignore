@@ -3,6 +3,7 @@ __pycache__/
 .cache/
 venv/
 services/demo
+services/demo*
 _build/
 docs/_build/
 acquisition/

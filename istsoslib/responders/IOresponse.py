@@ -91,6 +91,16 @@ class InsertObservationResponse:
                 "featureOfInterest '%s' not associated with "
                 "provided assignedSensorId" % (filter.foiName))
 
+        # check requested procedure type, if of type specimen
+        # suggest to use walib ti insert data
+        #--insert position values if required
+        if prc["name_oty"] == "insitu-mobile-specimen":
+            raise sosException.SOSException(
+                "NoApplicableCode",
+                None,
+                "procedureType '%s' not supported"
+                "please use walib to insert specimen data")
+
         # check provided samplingTime and upadate
         #  begin/end time procedure if necessary
         #  (samplingTime=period or istant of provided

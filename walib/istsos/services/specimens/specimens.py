@@ -29,6 +29,7 @@ from walib.resource import waResourceService
 import sys, os
 import isodate as iso
 import json
+from datetime import datetime
 
 
 # TODO: we are not yet validating the specimen object
@@ -36,10 +37,30 @@ import json
 class waSpecimens(waResourceService):
     """class to handle Specimens objects, support GET, POST, DELETE and UPDATE method"""
     
-    def __init__(self,waEnviron):
+    def __init__(self, waEnviron):
         waResourceService.__init__(self, waEnviron)
-        self.specimen_id = int(self.pathinfo[-1]) if not self.pathinfo[-1]=="specimens" else None
+        self.identifier = self.pathinfo[-1] if not self.pathinfo[-1]=="specimens" else None
         self.servicename = self.pathinfo[2]
+        self.force = False
+        
+        if self.identifier is None:
+            if (self.waEnviron['parameters']
+                and ('etime' in self.waEnviron['parameters'])
+                and ('procedure' in self.waEnviron['parameters'])):
+                
+                self.etime = [
+                    iso.parse_datetime(t) for t in self.waEnviron['parameters']['etime'][0].split("/")
+                ]
+                # self.etime = self.waEnviron['parameters']['etime'][0].split("/")
+                self.procedure = self.waEnviron['parameters']['procedure'][0]
+            else:
+                self.etime = None
+                self.procedure = None
+        
+        if (self.waEnviron['parameters']
+                and 'forceInsert' in self.waEnviron['parameters']):
+            if self.waEnviron['parameters'] in ['true', 'True','TRUE']:
+                self.force = True 
 
         self.conn = databaseManager.PgDB(
                 self.serviceconf.connection['user'],
@@ -53,26 +74,134 @@ class waSpecimens(waResourceService):
         Method for executing a GET requests that return a specific specime
                           
         """
+        
         if self.service == "default":
             raise Exception("dataqualities operation can not be done for default service instance.")
         else:
             try:
-                if self.specimen_id is None:
-                    raise Exception("GET specimen without specimen_id not allowed")
-                # retrieve specimen from id
-                rows = self.conn.select(
-                    """
-                        SELECT 
-                            specimen
-                        FROM
-                            %s.specimens
-                        """ % (self.service) + """
-                        WHERE
-                            id_spec = %s
-                    """, (self.specimen_id,))
+                if self.identifier is None:
+                    if self.etime is not None and self.procedure is not None:
+                        if len(self.etime) == 1:
+                            self.etime = self.etime * 2
+                        elif len(self.etime) == 2:
+                            pass
+                        else:
+                            raise Exception("etime parameter accept single time"
+                                            " [2019-12-30T16:25:00+01]"
+                                            " or pariod [2019-12-30T16:25:00+01"
+                                            "/2019-12-31T16:25:00+01] values")
+                        
+                        rows = self.conn.select(
+                        """
+                            select 
+                                array_to_json(array_agg(row_to_json(rows)))
+                            from (
+                                SELECT 
+                                    t.procedure,
+                                    t.observations,
+                                    t."eventTime",
+                                    sp.specimen
+                                FROM
+                                (
+                                SELECT
+                                    MIN(p.name_prc) as procedure,
+                                    json_collect(json_build_object(op.def_opr,me.val_msr)) as observations,
+                                    et.time_eti as "eventTime",
+                                    et.id_eti
+                                FROM
+                                    %s.procedures p,
+                                    %s.proc_obs po,
+                                    %s.observed_properties op,
+                                    %s.obs_type ot,
+                                    %s.measures me,
+                                    %s.event_time et
+                                """ % (self.service,self.service,
+                                    self.service,self.service,
+                                    self.service,self.service) + """
+                                WHERE
+                                    po.id_prc_fk = p.id_prc
+                                AND
+                                    po.id_opr_fk = op.id_opr
+                                AND
+                                    name_prc = %s
+                                AND
+                                    id_oty = id_oty_fk
+                                AND
+                                    me.id_pro_fk = id_pro
+                                AND
+                                    et.time_eti BETWEEN %s AND %s
+                                AND
+                                    me.id_eti_fk = et.id_eti
+                                AND
+                                    ot.name_oty = 'insitu-fixed-specimen'
+                                GROUP BY 
+                                    et.time_eti, et.id_eti
+                            ) t,
+                            """ + "%s.specimens sp" % self.service +
+                            """
+                            WHERE
+                                sp.id_eti_fk = t.id_eti) rows
+                        """, (self.procedure, self.etime[0], self.etime[1]))
+                    else:
+                        raise Exception("GET specimen without [specimen_id] or [etime and procedure] not allowed")
+                else:
+                    # retrieve specimen from id
+                    rows = self.conn.select(
+                        """
+                            select 
+                                array_to_json(array_agg(row_to_json(rows)))
+                            from (
+                                SELECT 
+                                    t.procedure,
+                                    t.observations,
+                                    t."eventTime",
+                                    sp.specimen
+                                FROM
+                                (
+                                SELECT
+                                    MIN(p.name_prc) as procedure,
+                                    json_collect(json_build_object(op.def_opr,me.val_msr)) as observations,
+                                    et.time_eti as "eventTime",
+                                    et.id_eti
+                                FROM
+                                    %s.procedures p,
+                                    %s.proc_obs po,
+                                    %s.observed_properties op,
+                                    %s.obs_type ot,
+                                    %s.measures me,
+                                    %s.event_time et
+                                """ % (self.service,self.service,
+                                    self.service,self.service,
+                                    self.service,self.service) + """
+                                WHERE
+                                    po.id_prc_fk = p.id_prc
+                                AND
+                                    po.id_opr_fk = op.id_opr
+                                AND
+                                    id_oty = id_oty_fk
+                                AND
+                                    me.id_pro_fk = id_pro
+                                AND
+                                    me.id_eti_fk = et.id_eti
+                                AND
+                                    ot.name_oty = 'insitu-fixed-specimen'
+                                GROUP BY 
+                                    et.time_eti, et.id_eti
+                            ) t,
+                            """ + "%s.specimens sp" % self.service +
+                            """
+                            WHERE
+                                sp.id_eti_fk = t.id_eti
+                                AND
+	                            sp.identifier = %s) rows
+                            """, (self.identifier,))
                 if rows:
-                    self.setMessage("Specimen %s successfully retrived" % self.specimen_id)
-                    self.setData(rows[0][0])
+                    print("LEN: ",len(rows[0][0]))
+                    self.setMessage("Specimen(s) successfully retrived")
+                    if len(rows[0][0]) < 2:
+                        self.setData(rows[0][0][0])
+                    else:
+                        self.setData(rows[0][0])
                 else:
                     self.setMessage("Specimen %s not found!" % self.specimen_id)
                 
@@ -144,11 +273,14 @@ class waSpecimens(waResourceService):
                 if 'procedure_id' not in self.json or self.json['procedure_id'] is None:
                     raise Exception(
                         "POST specimen without procedure_id not allowed")
-                if 'eventTime' not in self.json or self.json['eventTime'] is None:
+                if 'data' not in self.json or self.json['data'] is None:
                     raise Exception(
-                        "POST specimen without eventTime name not allowed")
-
-                from datetime import datetime
+                        "POST specimen without data not allowed")
+                
+                if 'forceInsert' in in self.json:
+                    self.force = self.json['forceInsert']
+                
+                # verify specimen procedure exists and get info
                 now = datetime.now(iso.UTC)
                 
                 rows = self.conn.select(
@@ -187,8 +319,7 @@ class waSpecimens(waResourceService):
                         self.json["procedure_id"],
                     )
                 )
-                print("ROWS: ",rows)
-
+                
                 if not rows:
                     raise Exception("Cannot find specified procedure_id %s" % self.json["procedure_id"])
 
@@ -201,162 +332,187 @@ class waSpecimens(waResourceService):
                 bpu = False
                 ep = rows[0][5]
                 epu = False
-                data = []                
-
-                def check_sampling(sampling):
-                    # If the end position exists the new measures must be after
-                    if ep is not None and sampling <= ep:
-                        return False
-                    # Check that the sampling time is before now
-                    if sampling > now:
-                        return False
-                    return True
+                data = []      
                 
-                # get and verify specimen eventTime
-                print(self.json['eventTime'], type(self.json['eventTime']))
-                try:
-                    eventTime = iso.parse_datetime(self.json['eventTime'])
-                    # import dateutil.parser
-                    # samplingTime = dateutil.parser.parse(self.json['samplingTime'])
-                except:
-                    raise Exception(
-                        "Procedure %s, Sampling time (%s) "
-                        "wrong format" % (
-                            name_prc, eventTime
+                print("EP:",ep)
+
+                # loop dataset and insert specimens & observations
+                if not isinstance(self.json['data'], list):
+                    self.json['data'] = [self.json['data']]
+
+                id_specs = []
+
+                for dataset in self.json['data']:
+
+                    if 'eventTime' not in dataset or dataset['eventTime'] is None:
+                        raise Exception(
+                            "POST specimen without eventTime name not allowed")                             
+
+                    def check_sampling(sampling):
+                        # If the end position exists the new measures must be after
+                        if ep is not None and sampling <= ep:
+                            return False
+                        # Check that the sampling time is before now
+                        if sampling > now:
+                            return False
+                        return True
+                    
+                    # get and verify specimen eventTime
+                    print("ET: ",dataset['eventTime'], type(dataset['eventTime']))
+                    try:
+                        eventTime = iso.parse_datetime(dataset['eventTime'])
+                    except:
+                        raise Exception(
+                            "Procedure %s, Sampling time (%s) "
+                            "wrong format" % (
+                                name_prc, eventTime
+                            )
+                        )
+
+                    if self.force is True:
+                        if check_sampling(eventTime) is False:
+                            raise Exception("eventTime in begin/end periods")
+                    
+                    # create the eventTime
+                    id_eti = self.conn.executeInTransaction(
+                        ("""
+                            INSERT INTO %s.event_time (id_prc_fk, time_eti)
+                        """ % self.servicename) + """
+                            VALUES (%s, %s::TIMESTAMPTZ) RETURNING id_eti;
+                        """,
+                        (
+                            id_prc, eventTime
                         )
                     )
 
-                if check_sampling(eventTime):
-                    raise Exception("eventTime in begin/end periods")
-                    
-                
-                # create the eventTime
-                id_eti = self.conn.executeInTransaction(
-                    ("""
-                        INSERT INTO %s.event_time (id_prc_fk, time_eti)
-                    """ % self.servicename) + """
-                        VALUES (%s, %s::TIMESTAMPTZ) RETURNING id_eti;
-                    """,
-                    (
-                        id_prc, eventTime
-                    )
-                )
+                    data = []
+                    # set observedProperties data values
+                    for row in rows:
 
-                # set observedProperties data values
-                for row in rows:
-
-                    val = self.json['observations'][row['def_opr']]
-                    pco = json.loads(row[8]) # constraint of the observation (level 0)
-                    pcp = json.loads(row[3]) # constraint of the procedure (level 1)
-                    
-                    # set qualityIndex if not set
-                    if row['def_opr']+":qualityIndex" in self.json['observations']:
-                        qi = self.json['observations'][row['def_opr']+":qualityIndex"]
-                    else:
-                        # Constraint quality is done only if the quality index
-                        #  is equal to the default qi (RAW DATA)
-                        qi = int(self.serviceconf.getobservation['default_qi'])
+                        val = dataset['observations'][row['def_opr']]
                         
-                        # quality check level I (gross error)
-                        if self.serviceconf.getobservation['correct_qi'] is not None and (
-                                pco is not None):
-                            if 'max' in pco:
-                                if val <= (
-                                        float(pco['max'])):
-                                    qi = int(self.serviceconf.getobservation['correct_qi'])
+                        if row[8]:
+                            pco = json.loads(row[8]) # constraint of the observation (level 0)
+                        else:
+                            pco = None
+                        if row[3]:
+                            pcp = json.loads(row[3]) # constraint of the procedure (level 1)
+                        else:
+                            pcp = None
 
-                            elif 'min' in pco:
-                                if val >= (
-                                        float(pco['min'])):
-                                    qi = int(self.serviceconf.getobservation['correct_qi'])
+                        # set qualityIndex if not set
+                        if row['def_opr']+":qualityIndex" in dataset['observations']:
+                            qi = dataset['observations'][row['def_opr']+":qualityIndex"]
+                        else:
+                            # Constraint quality is done only if the quality index
+                            #  is equal to the default qi (RAW DATA)
+                            qi = int(self.serviceconf.getobservation['default_qi'])
+                            
+                            # quality check level I (gross error)
+                            if self.serviceconf.getobservation['correct_qi'] is not None and (
+                                    pco is not None):
+                                if 'max' in pco:
+                                    if val <= (
+                                            float(pco['max'])):
+                                        qi = int(self.serviceconf.getobservation['correct_qi'])
 
-                            elif 'interval' in pco:
-                                if (float(pco['interval'][0])
-                                        <= val
-                                        <= float(pco['interval'][1])):
-                                    qi = int(self.serviceconf.getobservation['correct_qi'])
+                                elif 'min' in pco:
+                                    if val >= (
+                                            float(pco['min'])):
+                                        qi = int(self.serviceconf.getobservation['correct_qi'])
 
-                            elif 'valueList' in pco:
-                                if val in [float(p) for p in (
-                                        pco['valueList'])]:
-                                    qi = int(self.serviceconf.getobservation['correct_qi'])
+                                elif 'interval' in pco:
+                                    if (float(pco['interval'][0])
+                                            <= val
+                                            <= float(pco['interval'][1])):
+                                        qi = int(self.serviceconf.getobservation['correct_qi'])
 
-                        # quality check level II (statistical range)
-                        if self.serviceconf.getobservation['stat_qi'] is not None and (
-                                pcp is not None):
-                            if 'max' in pcp:
-                                if val <= float(pcp['max']):
-                                    qi = int(self.serviceconf.getobservation['stat_qi'])
+                                elif 'valueList' in pco:
+                                    if val in [float(p) for p in (
+                                            pco['valueList'])]:
+                                        qi = int(self.serviceconf.getobservation['correct_qi'])
 
-                            elif 'min' in pcp:
-                                if val >= float(pcp['min']):
-                                    qi = int(self.serviceconf.getobservation['stat_qi'])
+                            # quality check level II (statistical range)
+                            if self.serviceconf.getobservation['stat_qi'] is not None and (
+                                    pcp is not None):
+                                if 'max' in pcp:
+                                    if val <= float(pcp['max']):
+                                        qi = int(self.serviceconf.getobservation['stat_qi'])
 
-                            elif 'interval' in pcp:
-                                if (float(pcp['interval'][0]) <=
-                                        val <=
-                                        float(pcp['interval'][1])):
-                                    qi = int(self.serviceconf.getobservation['stat_qi'])
+                                elif 'min' in pcp:
+                                    if val >= float(pcp['min']):
+                                        qi = int(self.serviceconf.getobservation['stat_qi'])
 
-                            elif 'valueList' in pcp:
-                                if val in [float(p) for p in pcp[
-                                        'valueList']]:
-                                    qi = int(self.serviceconf.getobservation['stat_qi'])
+                                elif 'interval' in pcp:
+                                    if (float(pcp['interval'][0]) <=
+                                            val <=
+                                            float(pcp['interval'][1])):
+                                        qi = int(self.serviceconf.getobservation['stat_qi'])
 
-                    data.append(
-                        (
-                            int(id_eti[0][0]),
-                            int(row['id_pro']),
-                            float(val),
-                            int(qi)
-                            )
-                    )
-                
-                print("DATA: ", data)
+                                elif 'valueList' in pcp:
+                                    if val in [float(p) for p in pcp[
+                                            'valueList']]:
+                                        qi = int(self.serviceconf.getobservation['stat_qi'])
 
-                # insert data values
-                for d in data:
-                    self.conn.executeInTransaction(
-                        ("""
-                            INSERT INTO %s.measures(
-                                id_eti_fk,
-                                id_pro_fk,
-                                val_msr,
-                                id_qi_fk
-                            )
+                        data.append(
+                            (
+                                int(id_eti[0][0]),
+                                int(row['id_pro']),
+                                float(val),
+                                int(qi)
+                                )
+                        )
+                    
+                    print("DATA: ", data)
+
+                    # insert data values
+                    for d in data:
+                        print("DATA d: ", d)
+                        self.conn.executeInTransaction(
+                            ("""
+                                INSERT INTO %s.measures(
+                                    id_eti_fk,
+                                    id_pro_fk,
+                                    val_msr,
+                                    id_qi_fk
+                                )
+                            """ % self.servicename) + """
+                                VALUES (%s, %s, %s, %s);
+                            """, d
+                        )
+
+                    # insert the specimen
+                    id_spec = self.conn.executeInTransaction(
+                        ("""INSERT INTO %s.specimens(
+                            id_qi_fk,
+                            identifier,
+                            id_eti_fk,
+                            specimen
+                        )
                         """ % self.servicename) + """
-                            VALUES (%s, %s, %s, %s);
-                        """, d
-                    )
+                                VALUES (%s, %s, %s, %s)
+                            RETURNING identifier;
+                        """,
+                        (
+                            int(self.serviceconf.getobservation['default_qi']),
+                            dataset["specimen"]["identifier"],
+                            int(id_eti[0][0]),
+                            json.dumps(dataset["specimen"])
+                        )
+                    )[0]
 
-                # insert the specimen
-                id_spec = self.conn.executeInTransaction(
-                    ("""INSERT INTO %s.specimens(
-                        id_qi_fk,
-                        id_eti_fk,
-                        specimen
-                    )
-                    """ % self.servicename) + """
-                            VALUES (%s, %s, %s)
-                        RETURNING id_spec;
-                    """,
-                    (
-                        int(self.serviceconf.getobservation['default_qi']),
-                        int(id_eti[0][0]),
-                        json.dumps(self.json["specimen"])
-                    )
-                )[0]
+                    id_specs.append(id_spec)
 
-                # update begin/end position of the procedure
-                if (bp is None) or (bp == '') or (
-                        eventTime < bp):
-                    bp = eventTime
-                    bpu = True
+                    # update begin/end position of the procedure
+                    if (bp is None) or (bp == '') or (
+                            eventTime < bp):
+                        bp = eventTime
+                        bpu = True
 
-                if (ep is None) or (ep == '') or (
-                        eventTime > ep):
-                    ep = eventTime
-                    epu = True
+                    if (ep is None) or (ep == '') or (
+                            eventTime > ep):
+                        ep = eventTime
+                        epu = True
 
                 if bpu:
                     self.conn.executeInTransaction(
@@ -385,8 +541,8 @@ class waSpecimens(waResourceService):
                     )
 
                 self.conn.commitTransaction()
-                self.setMessage("Specimen %s succesfully inserted" % id_spec)
-                self.setData(id_spec)
+                self.setMessage("Specimen %s succesfully inserted" % len(id_specs))
+                self.setData(id_specs)
 
             except Exception as e:
                 self.conn.rollbackTransaction()
@@ -395,30 +551,69 @@ class waSpecimens(waResourceService):
                            
     def executePut(self):
         """
-        Method for executing a PUT requests that updates an existing Specimen
+        Method for executing a PUT requests that updates an existing Specimen but not associated data
+        If you want to change data also, please use a combination of DELETE & POST specimen wa-requests
 
         """
         if self.service == "default":
-            raise Exception("dataqualities operation can not be done for default service instance.")
+            raise Exception("speciemns operation can not be done for default service instance.")
         else:
             try:
                 if self.specimen_id is None:
-                    raise Exception("GET specimen without specimen_id not allowed")
-                
-                # update the specimen
-                rows = self.conn.executeInTransaction(
-                    """
-                        UPDATE
-                            %s.specimens
-                            """ % (self.service) + """
-                        SET 
-                            specimen = %s
-                        WHERE
-                            id_spec = %s
-                        RETURNING *;
-                    """, 
-                    (json.dumps(self.json), self.specimen_id)
-                    )
+                    if self.etime is not None and self.procedure is not None:
+                        if len(self.etime) > 1:
+                            raise Exception("UPDATE etime parameter accept single time"
+                                            " [2019-12-30T16:25:00+01] value")
+
+                        # update the specimen by eventTime and procedure_name
+                        rows = self.conn.executeInTransaction(
+                            """
+                                UPDATE
+                                    %s.specimens
+                                    """ % (self.service) + """
+                                SET 
+                                    specimen = %s
+                                WHERE
+                                    id_spec = ANY (
+                                        SELECT 
+                                            s.id_spec
+                                        FROM
+                                        """ + """
+                                            %s.specimens s,
+                                            %s.event_time et,
+                                            %s.procedures p
+                                            """ % (self.service,
+                                            self.service,
+                                            self.service) + """
+                                        WHERE
+                                            p.name_prc = %s
+                                            AND
+                                            p.id_prc = et.id_prc_fk
+                                            AND
+                                            et.time_eti = %s
+                                            AND
+                                            et.id_eti = s.id_eti_fk
+                                    )
+                                RETURNING *;
+                            """, 
+                            (json.dumps(self.json), self.procedure, self.etime[0])
+                            )
+
+                else:
+                    # update the specimen by id
+                    rows = self.conn.executeInTransaction(
+                        """
+                            UPDATE
+                                %s.specimens
+                                """ % (self.service) + """
+                            SET 
+                                specimen = %s
+                            WHERE
+                                id_spec = %s
+                            RETURNING *;
+                        """, 
+                        (json.dumps(self.json), self.specimen_id)
+                        )
                 if rows and len(rows)==1:
                     self.conn.commitTransaction()
                     self.setMessage("Specimen %s succesfully inserted" % self.specimen_id)
@@ -432,35 +627,147 @@ class waSpecimens(waResourceService):
                            
     def executeDelete(self):
         """
-        Method for executing a DELETE requests that remove an existing SOS data quality
+        Method for executing a DELETE requests that remove an existing SOS speciemn and related data
         
         """
         if self.service == "default":
-            raise Exception("dataqualities operation can not be done for default service instance.")
+            raise Exception("speciemns operation can not be done for default service instance.")
         else:
             try:
-                if self.specimen_id is None:
-                    raise Exception(
-                        "GET specimen without specimen_id not allowed")
-                # retrieve specimen from id
-                rows = self.conn.execute(
-                    """
-                        UPDATE
-                            %s.specimens
-                            """ % (self.service) + """
-                        SET 
-                            specimen = NULL
-                        WHERE
-                            id_spec = %s
-                        RETURNING *;
-                    """, (self.specimen_id,))
-                if rows:
-                    self.setMessage("Specimen %s set to NULL" % self.specimen_id)
-                    self.setData(json.dumps(rows[0][0]))
+                if self.identifier is None:
+                    if self.etime is not None and self.procedure is not None:
+                        if len(self.etime) == 1:
+                            self.etime = self.etime * 2
+                        elif len(self.etime) == 2:
+                            pass
+                        else:
+                            raise Exception("etime parameter accept single time"
+                                            " [2019-12-30T16:25:00+01]"
+                                            " or pariod [2019-12-30T16:25:00+01"
+                                            "/2019-12-31T16:25:00+01] values")
+                        
+                        # delete specimen by eventTime and procedure_name
+                        rows = self.conn.executeInTransaction(
+                            """
+                            DELETE
+                            FROM 
+                            %s.event_time e
+                            WHERE
+                                e.id_eti = ANY (
+                                   SELECT 
+                                        id_eti_fk
+                                    FROM 
+                                        %s.specimens s,
+                                        %s.event_time et,
+	                                    %s.procedures p""" % (
+                                        self.service,
+                                        self.service,
+                                        self.service,
+                                        self.service) + """
+                                    WHERE
+                                        p.name_prc = %s
+                                        AND
+                                        p.id_prc = et.id_prc_fk
+                                        AND
+                                        et.time_eti BETWEEN %s AND %s
+                                        AND
+                                        et.id_eti = s.id_eti_fk
+                                )
+                            RETURNING id_eti;
+                        """, (self.procedure, self.etime[0], self.etime[1]))
+
+                        # get start-end position
+                        if rows:
+                            trows = self.conn.select(
+                                """
+                                    SELECT
+                                        procedures.stime_prc,
+                                        procedures.etime_prc
+                                    FROM
+                                        %s.procedures""" % (self.service) + """
+                                    WHERE
+                                        procedures.name_prc = %s
+                                """, (self.procedure,)
+                            )
+                        
+                        bp = trows[0][0]
+                        ep = trows[0][1]
+                        bpu = False
+                        epu = False
+
+                        # evalaute if begin/end position of the procedure
+                        # should be updated
+                        #------------------------------------------------
+
+                        # deleted inteval crosses begin position
+                        if (self.etime[0] < bp < self.etime[1]) and self.etime[1] < ep:
+                            bp = self.etime[1]
+                            bpu = True
+                        
+                        # deleted interval crosses end position
+                        if (self.etime[0] < ep < self.etime[1]) and self.etime[0] > bp:
+                            ep = self.etime[0]
+                            epu = True
+                        
+                        # deleted interval cover all observed period
+                        if (self.etime[0] < bp and self.etime[1] > ep):
+                            ep = None
+                            bp = None
+                            bpu = True
+                            epu = True
+
+                        # update begin position
+                        if bpu:
+                            self.conn.executeInTransaction(
+                                ("""
+                                    UPDATE %s.procedures
+                                """ % self.servicename) + """
+                                    SET stime_prc=%s WHERE name_prc=%s
+                                """,
+                                (
+                                    bp,
+                                    self.procedure
+                                )
+                            )
+                        
+                        # update end position
+                        if epu:
+                            self.conn.executeInTransaction(
+                                ("""
+                                    UPDATE %s.procedures
+                                """ % self.servicename) + """
+                                    SET etime_prc=%s WHERE name_prc=%s
+                                """,
+                                (
+                                    ep,
+                                    self.procedure
+                                )
+                            )
+                    
                 else:
-                    self.setMessage("Specimen %s not found!" % self.specimen_id)
+                    # delete specimen by identifier
+                    rows = self.conn.executeInTransaction(
+                        """
+                            DELETE
+                            FROM 
+                            %s.event_time e""" % (self.service) + """
+                            WHERE
+                                e.id_eti = ANY (
+                                    SELECT id_eti_fk
+                                    FROM %s.specimens """ % (self.service) + """
+                                    WHERE identifier = %s
+                                )
+                            RETURNING id_eti;
+                        """, (self.identifier,))
+
+                self.conn.commitTransaction()
+                if rows:
+                    self.setMessage("Specimen(s) and related data succesfully deleted" % rows)
+                else:
+                    self.setMessage("Specimen(s) not found!")
                 
             except Exception as e:
+                self.conn.rollbackTransaction()
                 print(traceback.print_exc(), file=sys.stderr)
                 self.setException(
                     "Error in DELETE sepcimen (%s): %s" % (type(e), e))
