@@ -1,0 +1,43 @@
+{
+    "procedure_id": "my_assigned_specimen_id",
+    "data": {
+        "eventTime": "2019-09-01T10:51:00+01:00",
+        "observations": {
+            "urn:ogc:def:parameter:x-istsos:1.0:water:ph": 7.35,
+            "urn:ogc:def:parameter:x-istsos:1.0:water:dox": 3.10
+        },
+        "specimen": {
+            "description": "A sample for the Lugano Lake water quality monitoring",
+            "campaign": "2019",
+            "identifier": "GNO_T99",
+            "name": "Water quality Gnosca river",
+            "sampledFeature": "http://www.istsos.org/demo/feature/GnoscaRiver",
+            "materialClass": "http://www.istsos.org/material/water",
+            "samplingMethod": "http://www.istsos.org/samplingMethod/bottle",
+            "samplingtTime": "2019-07-30T10:51:00+01:00",
+            "processingDetails": [
+                        {
+                            "processOperator": "http://www.supsi.ch/ist?person=MarioBianchi",
+                            "processingDetails": "http://www.istsos.org/processes/Electrometer",
+                            "processingProtocol": "http://3.212.46.113/pdf/Env%20Engg%20Lab%20Manual.pdf",
+                            "time": "2019-07-31T10:15:00+01:00"
+                        },
+                        {
+                            "processOperator": "https://www.supsi.ch/ist?person=LucaRossi",
+                            "processingDetails": "http://www.istsos.org/processes/OxidationKI",
+                            "processingProtocol": "http://3.212.46.113/pdf/Env%20Engg%20Lab%20Manual.pdf",
+                            "time": "2019-07-31T09:22:00+01:00"
+                        }],
+            "size": {
+                "value": 1,
+                "uom": "http://www.uom/liter"
+            },
+            "currentLocation": {
+                "href": "https://www4.ti.ch/dt/da/spaas/uma/ufficio/",
+                "rel": "http://www.onu.org/offices",
+                "title": "Ufficio Monitoraggio Ambientale - Canton Ticino"
+            },
+            "specimenType": "http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_Specimen"
+        }
+    }
+}

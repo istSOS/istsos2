@@ -68,10 +68,10 @@ def render(GF,sosConfig):
         
         # ObservationProperty
         r += "      <om:observedProperty>\n"
-        if GF.obsType[i] == "insitu-fixed-point":
-            ii=1
-        elif GF.obsType[i] == "insitu-mobile-point":
+        if GF.obsType[i] == "insitu-mobile-point":
             ii=4
+        else:
+            ii=1
         r += "      <swe:CompositePhenomenon gml:id=\"comp_" + str(GF.idPrc[i]) + "\" dimension=\"" + str(len(GF.properties[i])+ii) + "\">\n"
         r += "      <gml:name/>\n"
         r += "        <swe:component xlink:href=\"" + sosConfig.urn["parameter"] + "time:iso8601" + " \" />\n" 
