@@ -196,7 +196,6 @@ class waSpecimens(waResourceService):
 	                            sp.identifier = %s) rows
                             """, (self.identifier,))
                 if rows:
-                    print("LEN: ",len(rows[0][0]))
                     self.setMessage("Specimen(s) successfully retrived")
                     if len(rows[0][0]) < 2:
                         self.setData(rows[0][0][0])
@@ -332,9 +331,7 @@ class waSpecimens(waResourceService):
                 bpu = False
                 ep = rows[0][5]
                 epu = False
-                data = []      
-                
-                print("EP:",ep)
+                data = []
 
                 # loop dataset and insert specimens & observations
                 if not isinstance(self.json['data'], list):
@@ -358,7 +355,6 @@ class waSpecimens(waResourceService):
                         return True
                     
                     # get and verify specimen eventTime
-                    print("ET: ",dataset['eventTime'], type(dataset['eventTime']))
                     try:
                         eventTime = iso.parse_datetime(dataset['eventTime'])
                     except:
@@ -462,12 +458,9 @@ class waSpecimens(waResourceService):
                                 int(qi)
                                 )
                         )
-                    
-                    print("DATA: ", data)
 
                     # insert data values
                     for d in data:
-                        print("DATA d: ", d)
                         self.conn.executeInTransaction(
                             ("""
                                 INSERT INTO %s.measures(

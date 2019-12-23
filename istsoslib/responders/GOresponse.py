@@ -458,15 +458,17 @@ class VirtualProcessProfile(VirtualProcess):
                         map(add, data_temp, depths_list)
                     )
                     data = data + data_temp
-        # print("STEP1: ", time.time()-start_time)
+
         data.sort(key=lambda row: row[0])
         if self.filter.qualityIndex is True:
             data.sort(key=lambda row: row[4], reverse=True)
+
         else:
             data.sort(key=lambda row: row[3], reverse=True)
+
         if len(self.obs) != (len(data[0]) - 1):
             raise Exception("Number of observed properties mismatches")
-        # print("TIME TOT: ", time.time()-start_time)
+
         return data
 
 
@@ -1279,7 +1281,6 @@ class Observation:
                     'text/xml;subtype="om/1.0.0"',
                     "text/xml"
                 ]:
-                    print(type(csv_sql), csv_sql)
                     self.csv = pgdb.to_string(csv_sql, lineterminator='@')
 
             except Exception as xx:
@@ -1390,9 +1391,6 @@ class GetObservationResponse:
                     tp.append(iso.parse_datetime(t[0]))
             self.period = [min(tp),max(tp)]
 
-        # print("FILTER: ", filter.eventTime)
-        # self.period = [min(tp),max(tp)]
-
         self.obs=[]
 
         # SET REQUEST TIMEZONE
@@ -1498,8 +1496,6 @@ class GetObservationResponse_2_0_0:
 
 
         # check if requested foi exist
-        print("# check if requested foi exist", file=sys.stderr)
-        print(filter.featureOfInterest, file=sys.stderr)
         if not filter.featureOfInterest in ['', None]:
             params = [
                 filter.featureOfInterest,

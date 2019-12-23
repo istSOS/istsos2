@@ -310,8 +310,6 @@ def JSONformat(GO):
         
         member['result']['DataArray']['values'] = ob.data
 
-        print("OBDATA: ", ob.data)
-
         # append member to collection
         oc["ObservationCollection"]["member"].append(member)
 

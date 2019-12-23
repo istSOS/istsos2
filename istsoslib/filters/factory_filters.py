@@ -60,7 +60,6 @@ def sosFactoryFilter(environ, sosConfig):
             environ['QUERY_STRING'],
             keep_blank_values=True
         )
-        print(unquote(environ['QUERY_STRING']))
         requestObject = {}
         for key in list(rect.keys()):
             requestObject[key.lower()] = rect[key][0]

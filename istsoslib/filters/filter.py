@@ -115,7 +115,6 @@ class sosFilter():
                 not isinstance(requestObject, bytes)
             ):
 
-                print("RO: ", requestObject)
                 # OGC 12-006/REQ 1:
                 # http://www.opengis.net/spec/SOS/2.0/req/core/request-service
                 if "service" in list(requestObject.attributes.keys()):
