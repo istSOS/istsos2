@@ -36,8 +36,6 @@ import application_wnslib
 
 def application(environ, start_response):
 
-    print('PYTHON VERSION:',sys.version)
-
     path = environ['PATH_INFO'].strip()[1:].split("/")
 
     if path[0] == 'wa':

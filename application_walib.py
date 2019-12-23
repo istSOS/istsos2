@@ -94,7 +94,6 @@ def executeWa(environ, start_response):
         try:
             op = None
             op = factory.initResource(waEnviron)
-            print(op)
             try:
                 if op.response['success']:
                     method = str(environ['REQUEST_METHOD']).upper()
@@ -187,9 +186,6 @@ def executeWa(environ, start_response):
         # ('Content-Length', b"{len(wsgi_response)}")
         ('Content-Length', str(len(wsgi_response)))
     ]
-    print(wsgi_status, wsgi_headers)
-    print(wsgi_response)
     start_response(wsgi_status, wsgi_headers)
-    print(sys.version, sys.executable)
 
     return [wsgi_response.encode()]
