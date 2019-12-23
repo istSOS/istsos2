@@ -95,6 +95,17 @@ configuration:
 
     </VirtualHost>
 
+**Optional: configure WSGI with Python virtual environments**
+
+If you are using a Python virtual environment, and istSOS is the only
+wsgi application running on your apache server then add this line to the
+/etc/apache2/mods-enabled/wsgi.conf file:
+
+.. code-block::
+
+   WSGIPythonPath /PATH_TO_YOUR_VENV/venv/lib/python3.X/site-packages/
+
+
 **Restart the Apache web server**
 
 .. code-block:: bash
