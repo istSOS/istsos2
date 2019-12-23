@@ -69,7 +69,6 @@ class User():
         self.password = data['password']
         self.roles = data['roles']
         self.groups = list(data['roles'].keys())
-        # print >> sys.stderr, "\n\nUser: %s" % pp.pprint(self)
 
     def getJSON(self):
         return {
@@ -99,26 +98,30 @@ class User():
         return False
 
     def allowedService(self, service):
-        # print >> sys.stderr, "Checking service '%s' for user '%s'" % (service, self.username)
         for group in self.groups:
-            # print >> sys.stderr, " > group '%s'" % group
             keys = self.roles[group].keys()
-            # print >> sys.stderr, "    > keys %s" % keys
             if "*" in keys or service in keys:
                 return True
-        print("NOT AUTHORIZED", file=sys.stderr)
+
         return False
 
     def allowedProcedure(self, service, procedure):
         if self.allowedService(service):
-            special = False
             for group in self.groups:
-                if role == "*":
-                    if "*" in self.roles[role]['services']["*"] or procedure in self.roles[role]['services']["*"]:
+                if group == "*":
+                    if (
+                        "*" in self.roles[group]['services']["*"] or
+                        procedure in self.roles[group]['services']["*"]
+                    ):
                         return True
-                elif service in self.roles[role]['services']:
-                    if "*" in self.roles[role]['services'][service] or procedure in self.roles[role]['services'][service]:
+
+                elif service in self.roles[group]['services']:
+                    if (
+                        "*" in self.roles[group]['services'][service] or
+                        procedure in self.roles[group]['services'][service]
+                    ):
                         return True
+
                     else:
                         return False
         return False
@@ -134,14 +137,16 @@ class waUsers(resource.waResource):
     def getResponse(self):
         if self.jsonResponse:
             import json
-            print("RRR",self.response)
             if self.response['success']:
                 return json.dumps(self.response, ensure_ascii=False)
+
             else:
                 return json.dumps(self.response, ensure_ascii=False)
+
         else:
             if self.response['success']:
                 return "var user = %s;" % json.dumps(self.response['data'])
+
             else:
                 return "var user = false;"
 
