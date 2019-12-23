@@ -100,14 +100,17 @@ class RegisterSensorResponse:
         for index, par in enumerate(filter.parameters):
             # insitu-fixed-point (this is the default if no system
             # type defined in XML request)
-            if (filter.systemType == 'insitu-fixed-point' or
-                    filter.systemType is None or
-                    filter.systemType == "virtual"):
-
-                if filter.systemType == "virtual":
-                    oty = 'virtual'
-                else:
+            if filter.systemType in [
+                'insitu-fixed-point',
+                'insitu-fixed-specimen',
+                'virtual',
+                None]:
+                
+                if filter.systemType == None:
                     oty = 'insitu-fixed-point'
+                else:
+                    oty = filter.systemType
+
                 if not par.split(":")[-1] == "iso8601":
                     if par in filter.oprDef:
                         i = filter.oprDef.index(par)
@@ -205,7 +208,7 @@ class RegisterSensorResponse:
         # for uom in filter.uoms:
         for i, uom in enumerate(filter.uoms):
             par = filter.parameters[i]
-            if oty == 'insitu-fixed-point' or oty == 'virtual':
+            if oty in ['insitu-fixed-point','insitu-fixed-specimen','virtual']:
                 if not par.split(":")[-1] == "iso8601":
                     sqlId = "SELECT id_uom FROM %s.uoms" % (
                         filter.sosConfig.schema)

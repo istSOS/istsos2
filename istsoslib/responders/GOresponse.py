@@ -759,7 +759,7 @@ class Observation:
         id_prc (str): the internal id of the selected procedure
         name (str): the name of the procedure
         procedure (str): the URI name of the procedure
-        procedureType (str): the type of procedure (one of "insitu-fixed-point","insitu-mobile-point","virtual")
+        procedureType (str): the type of procedure (one of "insitu-fixed-point","insitu-fixed-specimen","insitu-mobile-point","virtual")
         samplingTime (list): the time interval for which this procedure has data [*from*, *to*]
         timeResVal (str): the time resolution setted for this procedure when registered in ISO 8601 duration
         observedPropertyName (list): list of observed properties names as string
@@ -812,10 +812,13 @@ class Observation:
         self.name = row["name_prc"]
         self.procedure = sosConfig.urn["procedure"] + row["name_prc"]
 
-        # SET PROCEDURE TYPE
-        if row["name_oty"].lower() in ["insitu-fixed-point","insitu-mobile-point","virtual"]:
+        # CHECK & SET PROCEDURE TYPE
+        if row["name_oty"].lower() in [
+            "insitu-fixed-point",
+            "insitu-fixed-specimen",
+            "insitu-mobile-point",
+            "virtual"]:
             self.procedureType=row["name_oty"]
-
         else:
             raise Exception("error in procedure type setting")
 
@@ -899,8 +902,8 @@ class Observation:
                 self.uom += ["-"]
 
         # SET DATA
-        #  CASE "insitu-fixed-point" or "insitu-mobile-point"
-        if self.procedureType in ["insitu-fixed-point","insitu-mobile-point"]:
+        #  CASE is not virtual #"insitu-fixed-point", "insitu-mobile-point" or "insiru-fixed-specimen"
+        if self.procedureType is not "virtual":
                         
             sqlSel = "SELECT "
             csv_sql_cols = [

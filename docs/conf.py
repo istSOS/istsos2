@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # istSOS WebAdmin - Istituto Scienze della Terra
-# Copyright (C) 2012 Massimiliano Cannata, Milan Antonovic
+# Copyright (C) 2020 Massimiliano Cannata, Milan Antonovic
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ import sys, os
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
-sys.path.insert(0, os.path.abspath('/home/milan/workspace/istsos/'))
+sys.path.insert(0, os.path.abspath('/home/milan/workspace/istsos/istsos2/'))
 
 # -- General configuration -----------------------------------------------------
 
@@ -58,10 +58,10 @@ master_doc = 'index'
 
 # General information about the project.
 # General information about the project.
-project = 'istSOS'
-authors = 'Massimiliano Cannata, Milan Antonovic'
-license = 'This work is licensed under a Creative Commons Attribution 4.0 International License'
-copyright = '2010-2017, ' + authors + ' ' + license
+project = u'istSOS'
+authors = u'Massimiliano Cannata, Milan Antonovic'
+license = u'This work is licensed under a Creative Commons Attribution 4.0 International License'
+copyright = u'2010-2020, ' + authors + ' ' + license
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -203,8 +203,8 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'istSOS.tex', 'istSOS Documentation',
-   'Massimiliano Cannata, Milan Antonovic', 'manual'),
+  ('index', 'istSOS.tex', u'istSOS Documentation',
+   u'Massimiliano Cannata, Milan Antonovic', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -233,8 +233,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'istsos', 'istSOS Documentation',
-     ['Massimiliano Cannata, Milan Antonovic'], 1)
+    ('index', 'istsos', u'istSOS Documentation',
+     [u'Massimiliano Cannata, Milan Antonovic'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -247,8 +247,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'istSOS', 'istSOS Documentation',
-   'Massimiliano Cannata, Milan Antonovic', 'istSOS', 'One line description of project.',
+  ('index', 'istSOS', u'istSOS Documentation',
+   u'Massimiliano Cannata, Milan Antonovic', 'istSOS', 'One line description of project.',
    'Miscellaneous'),
 ]
 
@@ -265,10 +265,10 @@ texinfo_documents = [
 # -- Options for Epub output ---------------------------------------------------
 
 # Bibliographic Dublin Core info.
-epub_title = 'istSOS'
-epub_author = 'Massimiliano Cannata, Milan Antonovic'
-epub_publisher = 'Massimiliano Cannata, Milan Antonovic'
-epub_copyright = '2017, Massimiliano Cannata, Milan Antonovic'
+epub_title = u'istSOS'
+epub_author = u'Massimiliano Cannata, Milan Antonovic'
+epub_publisher = u'Massimiliano Cannata, Milan Antonovic'
+epub_copyright = u'2020, Massimiliano Cannata, Milan Antonovic'
 
 # The language of the text. It defaults to the language option
 # or en if the language is not set.

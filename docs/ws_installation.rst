@@ -20,13 +20,13 @@ to get the latest release.
 
 Open a terminal and move to the folder containing the downloaded deb file.
 
-.. code-block:: bash
+.. parsed-literal::
 
-    cd ~/Downloads
-    sudo dpkg -i python-istsos_2.x.x.deb;sudo apt-get -f -y install
+    sudo dpkg -i python-istsos_\ |version|\.deb;sudo apt-get -f -y install
 
 This command will install all the required dependencies, with the exception of
-PostgreSQL and PostGIS. In fact it could reside on other servers.
+PostgreSQL and PostGIS. In fact it could reside on other servers. Go to the
+:ref:`ws_database` for instruction on how to configure the database.
 
 .. note::
 
@@ -41,31 +41,18 @@ Installation on Linux from source
 The dependencies need to be installed manually or using apt-get command.
 Please refer also to specific software installation procedures.
 
-**Install Apache2 and mod_wsgi**
-
-.. code-block:: bash
-
-    sudo apt-get install apache2 libapache2-mod-wsgi
-
-**Install psycopg2**
-
-.. code-block:: bash
-
-    sudo apt-get install python-psycopg2
-
 **Download istSOS and unpack it**
 
-Please go to `https://sourceforge.net/projects/istsos/files <https://sourceforge.net/projects/istsos/files/>`_
-, and chose the latest istSOS-2.x.x.tar.gz file. Save the file in the Downloads
-folder in your home directory, then unpack it executing these commands:
+Please go to `https://sourceforge.net/projects/istsos/files 
+<https://sourceforge.net/projects/istsos/files/>`_, and chose the current
+istSOS-|version|.tar.gz file. Save the file in the Downloads folder in your
+home directory, then unpack it executing these commands:
 
-.. code-block:: bash
+.. parsed-literal::
 
-    cd ~/Downloads
-    sudo tar -zxvf istSOS-2.x.x.tar.gz -C /usr/local/
+    sudo tar -zxvf istSOS-\ |version|\.tar.gz -C /usr/local/
 
-
-**Set executing permission and owner for the services and logs folders**
+**Set executing permissions and the owner for the services and logs folders**
 
 .. code-block:: bash
 
@@ -73,9 +60,22 @@ folder in your home directory, then unpack it executing these commands:
     sudo chown -R www-data:www-data /usr/local/istsos/services
     sudo chown -R www-data:www-data /usr/local/istsos/logs
 
+**Install Python3, Apache2 and mod_wsgi**
+
+.. code-block:: bash
+
+    sudo apt install python3 python3-pip apache2 libapache2-mod-wsgi-py3
+
+**Install Python3 dependencies**
+
+.. code-block:: bash
+
+    sudo pip3 install -r /usr/local/istsos/requirements.txt
+
 **Configure Apache and WSGI**
 
-Open /etc/apache2/sites-enabled/000-default, and add the following configuration:
+Open /etc/apache2/sites-enabled/000-default.conf, and add the following
+configuration:
 
 .. code-block:: apacheconf
    :emphasize-lines: 9-11
@@ -95,45 +95,16 @@ Open /etc/apache2/sites-enabled/000-default, and add the following configuration
 
     </VirtualHost>
 
-
-.. note::
-
-    If you are using Apache/2.4.6 or above (like in Ubuntu 13.10 or above) you
-    could meet the "403 Forbidden" message.
-
-
-    .. code-block:: apacheconf
-       :emphasize-lines: 13-17
-       :linenos:
-
-        <VirtualHost *:80>
-
-            ServerAdmin webmaster@localhost
-            DocumentRoot /var/www/html
-
-            ErrorLog ${APACHE_LOG_DIR}/error.log
-            CustomLog ${APACHE_LOG_DIR}/access.log combined
-
-            WSGIScriptAlias /istsos /usr/local/istsos/application.py
-            Alias /istsos/admin /usr/local/istsos/interface/admin
-            Alias /istsos/modules /usr/local/istsos/interface/modules
-
-            <LocationMatch /istsos>
-                Options +Indexes +FollowSymLinks +MultiViews
-                AllowOverride all
-                Require all granted
-            </LocationMatch>
-
-        </VirtualHost>
-
 **Restart the Apache web server**
 
 .. code-block:: bash
 
     sudo service apache2 restart
 
-
 .. note::
 
     If everything has gone well, you should see the administration page at
     this address: `http://localhost/istsos/admin/ <http://localhost/istsos/admin/>`_
+
+
+Go to the :ref:`ws_database` for instruction on how to configure the database.

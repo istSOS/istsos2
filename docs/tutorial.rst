@@ -29,6 +29,7 @@ Please download the latest archive and extract the content on your Desktop.
     ws_datavalidation
     ws_dataaccess
     ws_virtualprocedures
+    ws_specimens
     ws_mapping
     ws_mqtt
     ws_arduino
