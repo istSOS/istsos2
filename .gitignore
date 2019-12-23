@@ -4,7 +4,7 @@ __pycache__/
 venv/
 services/demo
 _build/
-docs/_build/
+docs/_build
 acquisition/
 .vscode
 istsos.passwd
