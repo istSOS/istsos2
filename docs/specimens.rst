@@ -4,17 +4,22 @@
 Managing specimen procedures
 ============================
 
-With specimen procedures you are ablo to manage monitoring points whose observations are the results of repeated specimens sampling and analyses. 
-Examples may be a well that periodically undergo to water sampling and lab analyses for water quality monitoring, or periodic soil sampling to quantify available nutrients.
+With specimen procedures you are ablo to manage monitoring points whose
+observations are the results of repeated specimens sampling and analyses.
+Examples may be a well that periodically undergo to water sampling and
+lab analyses for water quality monitoring, or periodic soil sampling
+to quantify available nutrients.
 
 .. image:: images/istsos_specimens.png
 
-So far in istSOS is possible to manage specimen type monitoring point using the *walib*. Nevertheless data will be available as standard SOS.
+So far in istSOS is possible to manage specimen type monitoring point
+using the *walib*. Nevertheless data will be available as standard SOS.
 
 Registering a new specimen procedure
 ====================================
 
-We can use the standard istSOS web administration interface at http://localhost/istsos/admin/
+We can use the standard istSOS web administration interface at
+http://localhost/istsos/admin/
 
 
 **1. Go to the 'demo' instance and create a new procedure:**
@@ -26,11 +31,11 @@ We can use the standard istSOS web administration interface at http://localhost/
 .. code-block:: rest
 
     Name: GNOSCA_SPEC
-    
+
     Description: water quality control point of the GNOSCA river
-    
+
     System type: insitu-fixed-specimen
-    
+
     Sensor type: specimen lab analyses
 
     EPSG: 4326
@@ -40,18 +45,19 @@ We can use the standard istSOS web administration interface at http://localhost/
 .. code-block:: rest
 
     Observed property: urn:ogc:def:parameter:x-istsos:1.0:water:ph
-    
+
     Unit of measure: -
 
 .. code-block:: rest
 
     Observed property: urn:ogc:def:parameter:x-istsos:1.0:water:dox
-    
+
     Unit of measure: mg/l
 
 **3. Register the new sensor**
 
-Finally register the new sensor (procedure) pressing the **"submit"** button and teke note of the **assigned procedure id**.
+Finally register the new sensor (procedure) pressing the **"submit"**
+button and teke note of the **assigned procedure id**.
 
 .. image:: images/specimen_procedure.png
 
@@ -59,11 +65,12 @@ Finally register the new sensor (procedure) pressing the **"submit"** button and
 Specimen data structure
 =======================
 
-Data derived from a specimen consists in: **observations**, **specimen metadata** and **processing details**.
+Data derived from a specimen consists in: **observations**,
+**specimen metadata** and **processing details**.
 
-.. code-block:: json
+.. code-block::json
     :linenos:
-    
+
     {
         "eventTime": "2019-07-30T10:51:00+01:00",
         "observations": {

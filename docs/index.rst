@@ -84,6 +84,7 @@ Please download the latest archive and extract the content on your Desktop.
     ws_insertobservation
     ws_datavalidation
     ws_dataaccess
+    specimens
     ws_virtualprocedures
     ws_mapping
     ws_mqtt
