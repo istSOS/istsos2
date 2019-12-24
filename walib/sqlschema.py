@@ -434,8 +434,20 @@ ALTER TABLE ONLY specimens
 --=====================================
 -- INDEXES
 --=====================================
-CREATE INDEX ety_prc_date ON event_time USING btree (id_eti, time_eti);
-CREATE UNIQUE INDEX idx_spec_identifier ON specimens(identifier);
+CREATE INDEX idx_eti_pk_date
+ON event_time USING btree (id_eti, time_eti);
+
+CREATE INDEX idx_eti_prc_date
+ON event_time USING btree (id_prc_fk, time_eti);
+
+CREATE INDEX idx_msr_id_eti_fk
+ON measures USING btree (id_eti_fk);
+
+CREATE INDEX idx_msr_eti_pro
+ON measures USING btree (id_eti_fk, id_pro_fk);
+
+CREATE UNIQUE INDEX idx_spec_identifier
+ON specimens(identifier);
 
 --=====================================
 -- CONSTANT/DEFAULT VALUES
