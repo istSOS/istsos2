@@ -36,7 +36,7 @@ sys.path.insert(0, path.abspath("."))
 try:
     import argparse as argparse
     import requests as req
-    from lib.requests.auth import HTTPBasicAuth
+    from requests.auth import HTTPBasicAuth
     from scripts import istsosutils
     import isodate as iso
 

@@ -306,12 +306,6 @@ class sosRSfilter(f.sosFilter):
                 if not GMLfeature is None:
                     self.foiType = geomtype
                     self.foiSRS = GMLfeature.attrib["srsName"].split(":")[-1]
-                    print(
-                        "et.tostring: ",
-                        et.tostring(
-                            GMLfeature, encoding="UTF-8"
-                        )
-                    )
                     self.foiGML = et.tostring(
                         GMLfeature, encoding="UTF-8"
                     )  # .replace(b"<?xml version='1.0' encoding='UTF-8'?>", b"")

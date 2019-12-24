@@ -197,7 +197,7 @@ def createSimpleNotification(name, service, params, cql, interval,
         import datetime
         import time
         import isodate as isodate
-        from lib.pytz import timezone
+        from pytz import timezone
         now = datetime.datetime.now().replace(tzinfo=timezone(time.tzname[0]))
         endDate = now.strftime('%%Y-%%m-%%dT%%H:%%M:%%S%%z')
         period = isodate.parse_duration('%s')

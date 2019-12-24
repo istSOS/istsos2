@@ -902,7 +902,7 @@ class waFastInsert(waResourceService):
         # Create data array
         data = self.waEnviron['wsgi_input'].decode().split(";")
         data_log = data[:]
-        print(data, file=sys.stderr)
+
         # Assigned id always in the first position
         assignedid = data[0]
 

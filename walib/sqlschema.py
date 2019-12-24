@@ -86,7 +86,7 @@ ALTER SEQUENCE foi_id_foi_seq OWNED BY foi.id_foi;
 
 CREATE TABLE specimens
 (
-    id_spec bigint NOT NULL DEFAULT nextval('demo.specimens_id_spec_seq'::regclass),
+    id_spec bigint NOT NULL,
     identifier VARCHAR(36),
     id_qi_fk integer NOT NULL,
     id_eti_fk bigint NOT NULL,
@@ -433,8 +433,20 @@ ALTER TABLE ONLY specimens
 --=====================================
 -- INDEXES
 --=====================================
-CREATE INDEX ety_prc_date ON event_time USING btree (id_eti, time_eti);
-CREATE UNIQUE INDEX idx_spec_identifier ON specimens(identifier);
+CREATE INDEX idx_eti_pk_date
+ON event_time USING btree (id_eti, time_eti);
+
+CREATE INDEX idx_eti_prc_date
+ON event_time USING btree (id_prc_fk, time_eti);
+
+CREATE INDEX idx_msr_id_eti_fk
+ON measures USING btree (id_eti_fk);
+
+CREATE INDEX idx_msr_eti_pro
+ON measures USING btree (id_eti_fk, id_pro_fk);
+
+CREATE UNIQUE INDEX idx_spec_identifier
+ON specimens(identifier);
 
 --=====================================
 -- CONSTANT/DEFAULT VALUES
@@ -468,8 +480,8 @@ INSERT INTO observed_properties VALUES ('river-discharge', 'urn:ogc:def:paramete
 INSERT INTO observed_properties VALUES ('soil-evapotranspiration', 'urn:ogc:def:parameter:x-istsos:1.0:meteo:soil:evapotranspiration', '', NULL, 8);
 INSERT INTO observed_properties VALUES ('air-heatindex', 'urn:ogc:def:parameter:x-istsos:1.0:meteo:air:heatindex', '', NULL, 9);
 INSERT INTO observed_properties VALUES ('ground-water-height', 'urn:ogc:def:parameter:x-istsos:1.0:ground:water:height', '', NULL, 10);
-INSERT INTO observed_properties VALUES ('water-ph', 'urn:ogc:def:parameter:x-istsos:1.0:water:ph', 'water pH', {"interval": ["0", "14"], "role": "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0"}', 11);
-INSERT INTO observed_properties VALUES ('water-dox', 'urn:ogc:def:parameter:x-istsos:1.0:water:dox', 'water dissolved oxygen', {"interval": ["0", "1000"], "role": "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0"}', 12);
+INSERT INTO observed_properties VALUES ('water-ph', 'urn:ogc:def:parameter:x-istsos:1.0:water:ph', 'water pH', '{"interval": ["0", "14"], "role": "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0"}', 11);
+INSERT INTO observed_properties VALUES ('water-dox', 'urn:ogc:def:parameter:x-istsos:1.0:water:dox', 'water dissolved oxygen', '{"interval": ["0", "1000"], "role": "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0"}', 12);
 SELECT pg_catalog.setval('obs_pr_id_opr_seq', 12, true);
 
 --=====================================

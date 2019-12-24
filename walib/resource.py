@@ -303,13 +303,6 @@ class waResourceConfigurator(waResourceService):
         Execute operation PUT for on service configuration
         sections and return new values
         """
-        import locale
-        import sys
-
-        print("\ngetlocale: " + str(locale.getlocale()) + \
-            "\ngetdefaultlocale(): " + str(locale.getdefaultlocale()) + \
-            "\nfs_encoding: " + str(sys.getfilesystemencoding()) + \
-            "\nsys default encoding: " + str(sys.getdefaultencoding()), file=sys.stderr)
 
         if json is not None:
             self.json = json
@@ -318,7 +311,7 @@ class waResourceConfigurator(waResourceService):
         for key in self.template:
             if not key in self.json:
                 raise Exception("Key \"%s\" not present in json data" % (key))
-            print(self.json[key], file=sys.stderr)
+
             self.serviceconf.put(
                 self.template[key][0],
                 self.template[key][1],

@@ -21,8 +21,6 @@
 #
 # ===============================================================================
 import sys
-print('PATH:',sys.path)
-
 import isodate as iso
 
 def render(GC,sosConfig):

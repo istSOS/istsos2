@@ -458,15 +458,17 @@ class VirtualProcessProfile(VirtualProcess):
                         map(add, data_temp, depths_list)
                     )
                     data = data + data_temp
-        # print("STEP1: ", time.time()-start_time)
+
         data.sort(key=lambda row: row[0])
         if self.filter.qualityIndex is True:
             data.sort(key=lambda row: row[4], reverse=True)
+
         else:
             data.sort(key=lambda row: row[3], reverse=True)
+
         if len(self.obs) != (len(data[0]) - 1):
             raise Exception("Number of observed properties mismatches")
-        # print("TIME TOT: ", time.time()-start_time)
+
         return data
 
 
@@ -927,14 +929,18 @@ class Observation:
             for idx, obspr_row in enumerate(obspr_res):
                 if self.qualityIndex==True:
 
-                    cols.append((
-                        "C%s.val_msr as c%s_v, "
-                        "COALESCE(C%s.id_qi_fk, %s) as c%s_qi"
-                    ) % (idx, idx, idx, filter.aggregate_nodata_qi, idx))
-                    csv_sql_cols.append((
-                        "C%s.val_msr, "
-                        "COALESCE(C%s.id_qi_fk, %s)"
-                    ) % (idx, idx, filter.aggregate_nodata_qi))
+                    cols += [
+                        "C%s.val_msr as c%s_v" % (idx, idx),
+                        "COALESCE(C%s.id_qi_fk, %s) as c%s_qi" % (
+                            idx,
+                            filter.aggregate_nodata_qi,
+                            idx
+                        )
+                    ]
+                    csv_sql_cols += [
+                        "C%s.val_msr" % idx,
+                        "COALESCE(C%s.id_qi_fk, %s)" % (idx, filter.aggregate_nodata_qi)
+                    ]
 
                     valeFieldName.append("c%s_v" %(idx))
                     valeFieldName.append("c%s_qi" %(idx))
@@ -978,7 +984,7 @@ class Observation:
                 # Set SQL JOINS
                 join_txt = """
                     LEFT JOIN (
-                        SELECT distinct
+                        SELECT
                             A%s.id_msr,
                             A%s.val_msr,
                             A%s.id_eti_fk
@@ -1010,7 +1016,7 @@ class Observation:
             if self.procedureType=="insitu-mobile-point":
                 join_txt = """
                     LEFT JOIN (
-                        SELECT DISTINCT
+                        SELECT
                             Ax.id_pos,
                             st_X(ST_Transform(Ax.geom_pos,%s)) as x,
                             st_Y(ST_Transform(Ax.geom_pos,%s)) as y,
@@ -1268,6 +1274,7 @@ class Observation:
             else:
                 self.aggregate_function = None
 
+
             try:
                 a = datetime.datetime.now()
                 self.data = pgdb.select(sql)
@@ -1279,7 +1286,6 @@ class Observation:
                     'text/xml;subtype="om/1.0.0"',
                     "text/xml"
                 ]:
-                    print(type(csv_sql), csv_sql)
                     self.csv = pgdb.to_string(csv_sql, lineterminator='@')
 
             except Exception as xx:
@@ -1390,9 +1396,6 @@ class GetObservationResponse:
                     tp.append(iso.parse_datetime(t[0]))
             self.period = [min(tp),max(tp)]
 
-        # print("FILTER: ", filter.eventTime)
-        # self.period = [min(tp),max(tp)]
-
         self.obs=[]
 
         # SET REQUEST TIMEZONE
@@ -1498,8 +1501,6 @@ class GetObservationResponse_2_0_0:
 
 
         # check if requested foi exist
-        print("# check if requested foi exist", file=sys.stderr)
-        print(filter.featureOfInterest, file=sys.stderr)
         if not filter.featureOfInterest in ['', None]:
             params = [
                 filter.featureOfInterest,

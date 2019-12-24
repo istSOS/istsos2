@@ -36,7 +36,6 @@ def render(DS,sosConfig):
 
     try:
         #---parse xml
-        print("FILE:", DS.smlFile, type(DS.smlFile))
         tree, ns = parse_and_get_ns(DS.smlFile)
     except Exception as ex:
         raise Exception("sensorML description for procedure '%s' not found or corrupted! [%s]"%(DS.smlFile,ex))
@@ -46,7 +45,6 @@ def render(DS,sosConfig):
         register_namespace = et.register_namespace
         
         for key in ns:
-            print(ns[key])
             if not key in ns:
                 register_namespace(key,ns[key])
     except AttributeError:

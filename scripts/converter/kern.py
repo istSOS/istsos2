@@ -71,7 +71,7 @@ sts.execute()
 from scripts import raw2csv
 from datetime import datetime
 from datetime import timedelta
-from lib.pytz import timezone
+from pytz import timezone
 import traceback
 
 

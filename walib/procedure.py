@@ -943,8 +943,6 @@ class Procedure():
         TextBlock.attrib["blockSeparator"] = "@"
         TextBlock.attrib["decimalSeparator"] = "."
 
-        # print("ROOT: ", et.tostring(root, encoding="UTF-8"))
-
         return root
 
 
@@ -952,6 +950,7 @@ class Procedure():
         """
         Create a SOS register sensor request String from self.procedure object
         """
-        dom = self.toRegisterSensorDom()
-        print("DOM: ", et.tostring(dom, encoding="UTF-8"))
-        return et.tostring(dom, encoding="UTF-8")
+        return et.tostring(
+            self.toRegisterSensorDom(),
+            encoding="UTF-8"
+        )
