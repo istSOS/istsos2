@@ -11,14 +11,8 @@ services/*
 # Building folders
 _build/
 docs/_build
-<<<<<<< HEAD
 
 # Dev's
 acquisition/
 .vscode
 venv/
-=======
-acquisition/
-.vscode
-istsos.passwd
->>>>>>> 6ed9bf4227d32443d295ceef07fb1e0e355318b8
