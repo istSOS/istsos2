@@ -23,6 +23,7 @@ Depends: ${misc:Depends},
          python3-tz,
          python3-requests,
          python3-urllib3,
+         python3-apscheduler,
          libapache2-mod-wsgi-py3,
          apache2
 Recommends: postgis
