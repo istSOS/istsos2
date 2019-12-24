@@ -98,7 +98,6 @@ CREATE SEQUENCE specimens_id_spec_seq
     NO MAXVALUE
     NO MINVALUE
     CACHE 1;
-
 ALTER SEQUENCE specimens_id_spec_seq OWNED BY specimens.id_spec;
 
 --=====================================
