@@ -103,7 +103,7 @@ class KernImporter(raw2csv.Converter):
         year = datetime.strptime(self.upDate[-3], '%y').year  # 12 -> 2012
         mins = self.upDate[-2]  # 183730
 
-        self.self.upDate = self.minutesdate(year, mins)
+        self.upDate = self.minutesdate(year, mins)
         if self.getDSEndPosition() is not None and (
                 isinstance(self.getDSEndPosition(), datetime) and
                 self.upDate <= self.getDSEndPosition()):

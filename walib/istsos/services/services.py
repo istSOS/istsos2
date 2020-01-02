@@ -816,7 +816,7 @@ class waInsertobservation(waResourceService):
         TextBlock.attrib["decimalSeparator"] = "."
 
         values = et.SubElement(DataArray, "{%s}values" % ns['swe'])
-        values.text = "@".join([",".join(row) for row in (
+        values.text = "@".join([",".join(map(str, row)) for row in (
             self.json["Observation"]["result"]["DataArray"]["values"])])
 
         # PrettyPrint XML
