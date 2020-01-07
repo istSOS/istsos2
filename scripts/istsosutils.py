@@ -102,7 +102,7 @@ class Service(object):
         }
 
         print("Requesting a getCapabilitie: %s/%s" % (self.host, self.service))
-        print(params)
+        # print(params)
 
         res = req.get("%s/%s" % (
             self.host, self.service), params=params, auth=self.auth)
@@ -118,8 +118,8 @@ class Service(object):
         procedures = {}
 
         for offering in offerings:
-            offeringName = offering.find(
-                "{%s}name" % (gcNs['gml'])).text.split(":")[-1]
+            # offeringName = offering.find(
+            #     "{%s}name" % (gcNs['gml'])).text.split(":")[-1]
 
             # For each offering get the procedures
             elProcs = offering.findall("{%s}procedure" % (gcNs['sos']))
@@ -138,7 +138,6 @@ class Service(object):
                 self.host, self.service
             ), auth=self.auth
         )
-        print(res)
         jsonRes = res.json()
         if not jsonRes['success']:
             raise Exception(
@@ -150,8 +149,8 @@ class Service(object):
             procedure.merge(data)
             procedures.append(procedure)
 
-        print("Procedures list result:")
-        print(" - Found: %s procedures" % len(procedures))
+        # print("Procedures list result:")
+        # print(" - Found: %s procedures" % len(procedures))
 
         return procedures
 
