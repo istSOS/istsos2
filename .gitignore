@@ -1,7 +1,16 @@
+# Python stuff
 *.py[cod]
-services/demo
+
+# Service folder
+services/*
+!services/default.cfg
+!services/default.cfg.example
+
+# Building folders
 _build/
-docs/_build/
+docs/_build
+
+# Dev's
 acquisition/
 .vscode
 venv/
