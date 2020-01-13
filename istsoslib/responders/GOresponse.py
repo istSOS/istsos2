@@ -24,6 +24,7 @@
 
 import os
 import sys
+from abc import ABC, abstractmethod
 import copy
 import datetime
 from datetime import timedelta
@@ -44,7 +45,7 @@ date_handler = lambda obj: (
 )
 
 
-class VirtualProcess():
+class VirtualProcess(ABC):
     """Virtual procedure object
 
     Attributes:
@@ -77,6 +78,7 @@ class VirtualProcess():
         """
         self.procedures[name] = observedProperty
 
+    @abstractmethod
     def execute(self):
         "This method must be overridden to implement data gathering for this virtual procedure"
         raise Exception("function execute must be overridden")
