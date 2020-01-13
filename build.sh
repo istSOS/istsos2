@@ -49,7 +49,7 @@ sed -i 's/DATETIME/'"$datetime"'/g' _build/istsos/debian/changelog
 sed -i 's/VERSION/'"$version"'/g' _build/istsos/debian/files
 
 cd _build/istsos
-debuild -us -uc -d
+debuild --no-lintian -us -uc -d
 cd ..
 
 mv python3-istsos_$version-1_all.deb python3-istsos_$version.deb
