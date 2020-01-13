@@ -907,7 +907,7 @@ class Observation:
 
         # SET DATA
         #  CASE is not virtual #"insitu-fixed-point", "insitu-mobile-point" or "insiru-fixed-specimen"
-        if self.procedureType is not "virtual":
+        if self.procedureType != "virtual":
                         
             sqlSel = "SELECT "
             csv_sql_cols = [
@@ -1514,7 +1514,7 @@ class GetObservationResponse_2_0_0:
                 ) as exist_foi
             """
             try:
-                print(pgdb.mogrify(sql, tuple(params)), file=sys.stderr)
+                # print(pgdb.mogrify(sql, tuple(params)), file=sys.stderr)
                 result=pgdb.select(sql, tuple(params))
 
             except Exception as ex:
