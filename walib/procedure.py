@@ -420,7 +420,7 @@ class Procedure():
                     item["uom"] = ""
 
 
-                if allow:
+                if allow is not None:
 
                     item["constraint"] = {}
 
