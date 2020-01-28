@@ -137,7 +137,7 @@ Example:
 	def meanTemp():
 	    import datetime
 	    import time
-	    from lib.pytz import timezone
+	    from pytz import timezone
 	    now = datetime.datetime.now().replace(tzinfo=timezone(time.tzname[0]))
 	    endDate = now.strftime('%Y-%m-%dT%H:%M:%S%z')
 	    eventTime = now - datetime.timedelta(hours=5)

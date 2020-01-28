@@ -96,7 +96,9 @@ def execute(args, conf=None):
             quality = args['q']
 
         # Offerings
-        off = args['o']
+        off = 'temporary'
+        if 'o' in args:
+            off = args['o']
 
         # Procedures
         procs = args['p']

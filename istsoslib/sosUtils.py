@@ -42,12 +42,6 @@ def ogcSpatCons2PostgisSql(ogcSpatialOperator,geomField,epsgField):
     ogcSupportedDistanceBufferType = [ 'ogc:DWithin' ] 
     ogcBBOXType = ['ogc:BBOX']
     ogcUnsupportedSpatialOperators = ['ogc:Beyond']
-
-    print("INPUTS: {}\n{}\n{}".format(
-        ogcSpatialOperator,
-        geomField,
-        epsgField
-    ))
     
     if ogcSpatialOperator.__class__.__name__ in ["str","StringField"]:
         xmlString = """<?xml version="1.0" encoding="UTF-8"?><sos:featureOfInterest 
@@ -70,9 +64,6 @@ def ogcSpatCons2PostgisSql(ogcSpatialOperator,geomField,epsgField):
         raise sosException.SOSException("NoApplicableCode",None,"ogcSpatCons2PostgisSql: argunment must be an ''XML object'' or a valid ''XML string''")
     
     sql=''
-    print("ogcOperator: {}".format(
-        ogcOperator
-    ))
 
     #---------------------------
     # PARSE OPTIONS

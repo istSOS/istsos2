@@ -187,7 +187,6 @@ class sosIOfilter(f.sosFilter):
                         self.oprName.append(name.text)
 
                     except:
-                        print("XML: %s" % requestObject, file=sys.stderr)
                         raise sosException.SOSException(
                             "NoApplicableCode", None,
                             "om:observedProperty Name is missing: "

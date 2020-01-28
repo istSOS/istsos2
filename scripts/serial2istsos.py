@@ -42,9 +42,9 @@ import traceback
 
 try:
     sys.path.insert(0, path.abspath("."))
-    from lib.pytz import timezone
+    from pytz import timezone
     import requests as requests
-    from lib.requests.auth import HTTPBasicAuth
+    from requests.auth import HTTPBasicAuth
     import isodate as iso
     import isodate as iso
 except ImportError as e:

@@ -102,7 +102,6 @@ class waOfferings(waResourceService):
         if self.service == "default":
             raise Exception("offerings DELETE operation can not be done for 'default' service instance.")
             
-        
         try:
         
             self.offering = self.pathinfo[(self.pathinfo.index("offerings")+1)]

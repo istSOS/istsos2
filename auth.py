@@ -36,7 +36,6 @@ Add this files to configure basic authentication in Apache2
 import sys
 from os import path
 import hashlib
-import pprint
 try:
     import pickle as pic
 except ImportError:
@@ -48,7 +47,6 @@ except ImportError:
             file=sys.stderr
         )
 
-pp = pprint.PrettyPrinter(indent=4)
 istsosPasswd = path.join(
     path.dirname(
         path.abspath(__file__)
@@ -73,8 +71,6 @@ if not path.isfile(istsosPasswd):
 
 
 def check_password(environ, user, password):
-    # print >> sys.stderr, "\nCheck_password: %s" % pp.pformat(environ)
-    # return True
     with open(istsosPasswd, 'rb') as f:
         users = pic.load(f)
         if user in list(users.keys()):

@@ -27,7 +27,7 @@ from walib import databaseManager
 
 import datetime
 import time
-from lib.pytz import timezone
+from pytz import timezone
 
 
 class Response(object):

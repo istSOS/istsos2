@@ -36,7 +36,6 @@ def render(DS,sosConfig):
 
     try:
         #---parse xml
-        print("FILE:", DS.smlFile, type(DS.smlFile))
         tree, ns = parse_and_get_ns(DS.smlFile)
     except Exception as ex:
         raise Exception("sensorML description for procedure '%s' not found or corrupted! [%s]"%(DS.smlFile,ex))
@@ -46,7 +45,6 @@ def render(DS,sosConfig):
         register_namespace = et.register_namespace
         
         for key in ns:
-            print(ns[key])
             if not key in ns:
                 register_namespace(key,ns[key])
     except AttributeError:
@@ -216,7 +214,7 @@ def render(DS,sosConfig):
     system = tree.find("{%s}member/{%s}System" %(ns['sml'],ns['sml']))
     identification = tree.find("{%s}member/{%s}System/{%s}identification" %(ns['sml'],ns['sml'],ns['sml']))
 
-    if not identification:
+    if identification is None:
         identification = et.Element("{%s}identification" % ns["sml"])
         identifierList = et.SubElement(identification, "{%s}IdentifierList" % ns["sml"])
         identifier = et.SubElement(identifierList, "{%s}identifier" % ns["sml"])
@@ -228,7 +226,7 @@ def render(DS,sosConfig):
 
     else:
         identifierList = identification.find("{%s}IdentifierList" % ns["sml"])
-        if not identifierList:
+        if identifierList is None:
             identifierList = et.SubElement(identification, "{%s}IdentifierList" % ns["sml"])
             identifier = et.SubElement(identifierList, "{%s}identifier" % ns["sml"])
             term = et.SubElement(identifier, "{%s}Term" % ns["sml"])

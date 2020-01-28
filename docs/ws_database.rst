@@ -11,14 +11,14 @@ on the database on the same machine is ok.
 
 .. code-block:: bash
 
-    sudo apt-get install postgresql postgresql-9.3-postgis-2.1
+    sudo apt install postgresql postgis
 
 
-*Optionally install also PGAdmin*
+.. *Optionally install also PGAdmin*
 
-.. code-block:: bash
+.. .. code-block:: bash
 
-    sudo apt-get install pgadmin3
+..     sudo apt-get install pgadmin3
 
 
 **Change the postgreSQL password**
@@ -27,22 +27,15 @@ on the database on the same machine is ok.
 
     sudo -u postgres psql -c "alter user postgres password 'postgres';"
 
-**Create your PostGIS database**
+.. note::
 
-For Postgresql 9.1 and later versions:
+    replace the example password with something stronger if you like
+
+**Create the istSOS database**
 
 .. code-block:: bash
 
     sudo -u postgres createdb -E UTF8 istsos
     sudo -u postgres psql -d istsos -c 'CREATE EXTENSION postgis'
 
-
-.. note::
-
-    For older versions of postgresql / postgis:
-
-    .. code-block:: bash
-
-        sudo -u postgres createdb -E UTF8 istsos
-        sudo -u postgres psql -d istsos -f /usr/share/postgresql/9.x/contrib/postgis-1.5/postgis.sql
-        sudo -u postgres psql -d istsos -f /usr/share/postgresql/9.x/contrib/postgis-1.5/spatial_ref_sys.sql
+Now your istSOS server is ready to be used.

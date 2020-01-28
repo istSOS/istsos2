@@ -66,7 +66,7 @@ try:
     import argparse as argparse
     from scripts import istsosutils as iu
     import requests as requests
-    from lib.requests.auth import HTTPBasicAuth
+    from requests.auth import HTTPBasicAuth
 
 except ImportError as e:
     print("""

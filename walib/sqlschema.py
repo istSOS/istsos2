@@ -84,6 +84,22 @@ ALTER SEQUENCE foi_id_foi_seq OWNED BY foi.id_foi;
 
 --=====================================
 
+CREATE TABLE specimens
+(
+    id_spec bigint NOT NULL,
+    identifier VARCHAR(36),
+    id_qi_fk integer NOT NULL,
+    id_eti_fk bigint NOT NULL,
+    specimen json
+);
+
+CREATE SEQUENCE specimens_id_spec_seq
+    INCREMENT 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+ALTER SEQUENCE specimens_id_spec_seq OWNED BY specimens.id_spec;
+
 --=====================================
 
 CREATE TABLE measures (
@@ -406,10 +422,31 @@ ALTER TABLE ONLY tran_log
 ALTER TABLE ONLY cron_log
     ADD CONSTRAINT cron_log_id_prc_fk_fkey FOREIGN KEY (id_prc_fk) REFERENCES procedures(id_prc) ON DELETE CASCADE;
 
+ALTER TABLE ONLY specimens
+	ADD CONSTRAINT specimens_pkey PRIMARY KEY (id_spec);
+ALTER TABLE ONLY specimens
+    	ADD CONSTRAINT specimens_id_eti_fk_fkey FOREIGN KEY (id_eti_fk) REFERENCES event_time(id_eti) ON DELETE CASCADE;
+ALTER TABLE ONLY specimens    
+	ADD CONSTRAINT specimens_id_qi_fk_fkey FOREIGN KEY (id_qi_fk) REFERENCES quality_index(id_qi);
+
+
 --=====================================
 -- INDEXES
 --=====================================
-CREATE INDEX ety_prc_date ON event_time USING btree (id_eti, time_eti);
+CREATE INDEX idx_eti_pk_date
+ON event_time USING btree (id_eti, time_eti);
+
+CREATE INDEX idx_eti_prc_date
+ON event_time USING btree (id_prc_fk, time_eti);
+
+CREATE INDEX idx_msr_id_eti_fk
+ON measures USING btree (id_eti_fk);
+
+CREATE INDEX idx_msr_eti_pro
+ON measures USING btree (id_eti_fk, id_pro_fk);
+
+CREATE UNIQUE INDEX idx_spec_identifier
+ON specimens(identifier);
 
 --=====================================
 -- CONSTANT/DEFAULT VALUES
@@ -428,6 +465,7 @@ INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('correct', 'the valu
 INSERT INTO obs_type (id_oty, name_oty, desc_oty) VALUES (1, 'insitu-fixed-point', 'fixed, in-situ, pointwise observation');
 INSERT INTO obs_type (id_oty, name_oty, desc_oty) VALUES (2, 'insitu-mobile-point', 'mobile, in-situ, pointwise observation');
 INSERT INTO obs_type (id_oty, name_oty, desc_oty) VALUES (3, 'virtual', 'virtual procedure');
+INSERT INTO obs_type (id_oty, name_oty, desc_oty) VALUES (4, 'insitu-fixed-specimen', 'fixed, in-situ, pointwise observation from specimen');
 
 --=====================================
 -- ADDING OBSERVED PROPERTIES
@@ -442,7 +480,9 @@ INSERT INTO observed_properties VALUES ('river-discharge', 'urn:ogc:def:paramete
 INSERT INTO observed_properties VALUES ('soil-evapotranspiration', 'urn:ogc:def:parameter:x-istsos:1.0:meteo:soil:evapotranspiration', '', NULL, 8);
 INSERT INTO observed_properties VALUES ('air-heatindex', 'urn:ogc:def:parameter:x-istsos:1.0:meteo:air:heatindex', '', NULL, 9);
 INSERT INTO observed_properties VALUES ('ground-water-height', 'urn:ogc:def:parameter:x-istsos:1.0:ground:water:height', '', NULL, 10);
-SELECT pg_catalog.setval('obs_pr_id_opr_seq', 10, true);
+INSERT INTO observed_properties VALUES ('water-ph', 'urn:ogc:def:parameter:x-istsos:1.0:water:ph', 'water pH', '{"interval": ["0", "14"], "role": "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0"}', 11);
+INSERT INTO observed_properties VALUES ('water-dox', 'urn:ogc:def:parameter:x-istsos:1.0:water:dox', 'water dissolved oxygen', '{"interval": ["0", "1000"], "role": "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0"}', 12);
+SELECT pg_catalog.setval('obs_pr_id_opr_seq', 12, true);
 
 --=====================================
 -- ADDING UNIT OF MEASURES
@@ -456,7 +496,39 @@ INSERT INTO uoms VALUES ('W/m2', 'Watt per square metre', 5);
 INSERT INTO uoms VALUES ('°F', 'Fahrenheit degree', 6);
 INSERT INTO uoms VALUES ('m', 'metre', 7);
 INSERT INTO uoms VALUES ('m3/s', 'cube meter per second', 8);
-INSERT INTO uoms VALUES ('mm/h', 'evapotranspiration', 9);
-SELECT pg_catalog.setval('uoms_id_uom_seq', 9, true);
+INSERT INTO uoms VALUES ('mm/h', 'millimiters per hour', 9);
+INSERT INTO uoms VALUES ('mg/l', 'milligrams per liter', 10);
+SELECT pg_catalog.setval('uoms_id_uom_seq', 10, true);
+
+--=====================================
+-- ADDING FUNCTIONS
+--=====================================
+CREATE OR REPLACE FUNCTION public.json_merge(
+	data json,
+	merge_data json)
+    RETURNS json
+    LANGUAGE 'sql'
+
+    COST 100
+    IMMUTABLE 
+AS $BODY$
+  SELECT json_object_agg(key, value)
+  FROM (
+    WITH to_merge AS (
+      SELECT * FROM json_each(merge_data)
+    )
+    SELECT *
+    FROM json_each(data)
+    WHERE key NOT IN (SELECT key FROM to_merge)
+    UNION ALL
+    SELECT * FROM to_merge
+  ) t;
+$BODY$;
+
+CREATE AGGREGATE json_collect(json) (
+  SFUNC = json_merge,
+  STYPE = json,
+  INITCOND = '{}'
+);
 
 """

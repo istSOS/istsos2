@@ -106,11 +106,9 @@ def XMLformat(GO):
         r += "    <om:procedure xlink:href=\"" + ob.procedure + "\"/>\n"                
         
         #PROPRIETA OSSERVATA
-        if ob.procedureType == "insitu-fixed-point":
-            ii=1
-        elif ob.procedureType == "insitu-mobile-point":
+        if ob.procedureType == "insitu-mobile-point":
             ii=4
-        elif ob.procedureType == "virtual":
+        else:
             ii=1
         
         #OBSERVED PROPERTIES
@@ -141,10 +139,6 @@ def XMLformat(GO):
         #SERIE TEMPORALE
         r += "    <om:result>\n"
         
-        #ii = 1
-        #if ob.procedureType=="insitu-mobile-point":
-        #    ii = 4
-        
         #DESCRIZIONE DEI DATI ESTRATTI: VARIA A SECONDA DEL TIPO DI PROCEDURA
         
         #-- CASO GENERALE
@@ -174,7 +168,7 @@ def XMLformat(GO):
                 r += "            <swe:field name=\"position-qualityIndex\">\n"
                 r += "              <swe:Quantity definition=\"" + GO.refsys + ":position:qualityIndex\"/>\n"
                 r += "            </swe:field>\n"
-        
+
         for idx in range(len(ob.observedProperty)):
             if ob.aggregate_function:
                 if ob.observedProperty[idx].split(":")[-1] == "qualityIndex":
@@ -240,6 +234,7 @@ def JSONformat(GO):
             "samplingTime": {},
             "procedure": ob.procedure
         }
+        
         if ob.samplingTime != None:
             member["samplingTime"]["beginPosition"] = ob.samplingTime[0].astimezone(GO.reqTZ).isoformat()
             if ob.samplingTime[1]:
@@ -248,11 +243,10 @@ def JSONformat(GO):
                 
             else:
                 member["samplingTime"]["endPosition"] = ob.samplingTime[0].astimezone(GO.reqTZ).isoformat()
-        if ob.procedureType == "insitu-fixed-point":
-            ii=1
-        elif ob.procedureType == "insitu-mobile-point":
+        
+        if ob.procedureType == "insitu-mobile-point":
             ii=4
-        elif ob.procedureType == "virtual":
+        else:
             ii=1
             
         member['observedProperty'] = {

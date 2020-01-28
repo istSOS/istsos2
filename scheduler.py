@@ -51,8 +51,8 @@ import hashlib
 schedmd5 = {}
 services_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "services")
 
-from lib.apscheduler.scheduler import Scheduler
-from lib.apscheduler import threadpool
+from apscheduler.scheduler import Scheduler
+from apscheduler import threadpool
 
 sched = Scheduler(daemonic=False)
 sched._threadpool = threadpool.ThreadPool(core_threads=10, max_threads=200, keepalive=10)

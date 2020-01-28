@@ -816,7 +816,7 @@ class waInsertobservation(waResourceService):
         TextBlock.attrib["decimalSeparator"] = "."
 
         values = et.SubElement(DataArray, "{%s}values" % ns['swe'])
-        values.text = "@".join([",".join(row) for row in (
+        values.text = "@".join([",".join(map(str, row)) for row in (
             self.json["Observation"]["result"]["DataArray"]["values"])])
 
         # PrettyPrint XML
@@ -895,14 +895,14 @@ class waFastInsert(waResourceService):
         now = datetime.now(iso.UTC)
         non_blocking_exceptions = []
 
-	# path to file for logging requests
+	    # path to file for logging requests
         dir_name = os.path.dirname(__file__)
         file_name = os.path.join(dir_name, 'logs', 'fast_insert_log.csv')
 
         # Create data array
         data = self.waEnviron['wsgi_input'].decode().split(";")
         data_log = data[:]
-        print(data, file=sys.stderr)
+
         # Assigned id always in the first position
         assignedid = data[0]
 

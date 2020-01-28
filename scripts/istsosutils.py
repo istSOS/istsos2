@@ -30,7 +30,7 @@ from parse_and_get import parse_and_get_ns
 import json
 try:
     import requests as req
-    from lib.requests.auth import HTTPBasicAuth
+    from requests.auth import HTTPBasicAuth
     import argparse as argparse
     from lxml import etree as et
     import isodate as iso
@@ -102,7 +102,7 @@ class Service(object):
         }
 
         print("Requesting a getCapabilitie: %s/%s" % (self.host, self.service))
-        print(params)
+        # print(params)
 
         res = req.get("%s/%s" % (
             self.host, self.service), params=params, auth=self.auth)
@@ -118,8 +118,8 @@ class Service(object):
         procedures = {}
 
         for offering in offerings:
-            offeringName = offering.find(
-                "{%s}name" % (gcNs['gml'])).text.split(":")[-1]
+            # offeringName = offering.find(
+            #     "{%s}name" % (gcNs['gml'])).text.split(":")[-1]
 
             # For each offering get the procedures
             elProcs = offering.findall("{%s}procedure" % (gcNs['sos']))
@@ -138,7 +138,6 @@ class Service(object):
                 self.host, self.service
             ), auth=self.auth
         )
-        print(res)
         jsonRes = res.json()
         if not jsonRes['success']:
             raise Exception(
@@ -150,8 +149,8 @@ class Service(object):
             procedure.merge(data)
             procedures.append(procedure)
 
-        print("Procedures list result:")
-        print(" - Found: %s procedures" % len(procedures))
+        # print("Procedures list result:")
+        # print(" - Found: %s procedures" % len(procedures))
 
         return procedures
 
@@ -376,11 +375,12 @@ class Procedure(dict):
         self.keywords = keywords
 
     def setSystemType(self, systemType):
-        if systemType in ['virtual', 'insitu-fixed-point']:
+        syst = ['virtual', 'insitu-fixed-point','insitu-fixed-specimen','insitu-mobile-point']
+        if systemType in syst:
             self.systemType = systemType
         else:
             raise Exception(
-                "System type supported virtual, insitu-fixed-point only.")
+                "System type supported %s only." % ','.join(syst))
 
     def setSensorType(self, sensorType):
         self.sensorType = sensorType

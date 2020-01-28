@@ -1,10 +1,18 @@
+# Python stuff
 __pycache__/
 *.py[cod]
 .cache/
-venv/
-services/demo
+
+# Service folder
+services/*
+!services/default.cfg
+!services/default.cfg.example
+
+# Building folders
 _build/
-docs/_build/
+docs/_build
+
+# Dev's
 acquisition/
 .vscode
-istsos.passwd
+venv/

@@ -43,7 +43,7 @@ from parse_and_get import parse_and_get_ns
 sys.path.insert(0, path.abspath("."))
 try:
     import requests as req
-    from lib.requests.auth import HTTPBasicAuth
+    from requests.auth import HTTPBasicAuth
     import argparse as argparse
     from lxml import etree as et
     import isodate as iso

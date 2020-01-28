@@ -3,9 +3,9 @@ Maintainer: Institute of Earth Science - SUPSI <geoservice@supsi.ch>
 Section: python
 Priority: optional
 Build-Depends: debhelper (>= 9),
-               python-all-dev,
-               python,
-               python-setuptools,
+               python3-all-dev,
+               python3,
+               python3-setuptools,
                apache2,
                dh-python
 Standards-Version: 3.9.6
@@ -13,12 +13,19 @@ Vcs-Browser: https://sourceforge.net/p/istsos/code/HEAD/tree/
 Vcs-Svn: svn://svn.code.sf.net/p/istsos/code/trunk
 Homepage: http://istsos.org
 
-Package: python-istsos
+Package: python3-istsos
 Architecture: all 
 Depends: ${misc:Depends},
-         apache2,
-         python-psycopg2,
-         libapache2-mod-wsgi
+         python3-dateutil,
+         python3-isodate,
+         python3-lxml,
+         python3-psycopg2,
+         python3-tz,
+         python3-requests,
+         python3-urllib3,
+         python3-apscheduler,
+         libapache2-mod-wsgi-py3,
+         apache2
 Recommends: postgis
 Description: Sensor Observation Service Data Management system
  IstSOS is an OGC Sensor Observation Service (SOS) server implementation
