@@ -375,7 +375,7 @@ class Procedure(dict):
         self.keywords = keywords
 
     def setSystemType(self, systemType):
-        syst = ['virtual', 'insitu-fixed-point','insitu-fixed-specimen','insitu-mobile-point']
+        syst = ['virtual', 'insitu-fixed-point','insitu-fixed-specimen','insitu-mobile-point','profile']
         if systemType in syst:
             self.systemType = systemType
         else:

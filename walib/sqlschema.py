@@ -466,6 +466,7 @@ INSERT INTO obs_type (id_oty, name_oty, desc_oty) VALUES (1, 'insitu-fixed-point
 INSERT INTO obs_type (id_oty, name_oty, desc_oty) VALUES (2, 'insitu-mobile-point', 'mobile, in-situ, pointwise observation');
 INSERT INTO obs_type (id_oty, name_oty, desc_oty) VALUES (3, 'virtual', 'virtual procedure');
 INSERT INTO obs_type (id_oty, name_oty, desc_oty) VALUES (4, 'insitu-fixed-specimen', 'fixed, in-situ, pointwise observation from specimen');
+INSERT INTO obs_type (id_oty, name_oty, desc_oty) VALUES (4, 'profile', 'profile rapresentation');
 
 --=====================================
 -- ADDING OBSERVED PROPERTIES

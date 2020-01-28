@@ -276,7 +276,7 @@ class waSpecimens(waResourceService):
                     raise Exception(
                         "POST specimen without data not allowed")
                 
-                if 'forceInsert' in in self.json:
+                if 'forceInsert' in self.json:
                     self.force = self.json['forceInsert']
                 
                 # verify specimen procedure exists and get info
