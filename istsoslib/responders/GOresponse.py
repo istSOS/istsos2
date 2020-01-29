@@ -911,7 +911,7 @@ class Observation:
                         
             sqlSel = "SELECT "
             csv_sql_cols = [
-                "to_char(et.time_eti , 'YYYY-MM-DD\"T\"HH24:MI:SS.USOF')"
+                "to_char(et.time_eti , 'YYYY-MM-DD\"T\"HH24:MI:SSOF')"
             ]
             if 'text/plain' == filter.responseFormat:
                 csv_sql_cols.append("'%s'" % self.name)
