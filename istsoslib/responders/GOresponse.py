@@ -910,8 +910,10 @@ class Observation:
         if self.procedureType != "virtual":
                         
             sqlSel = "SELECT "
+            #  Missing offset minutes ':00' whit this method:
+            # "to_char(et.time_eti , 'YYYY-MM-DD\"T\"HH24:MI:SSOF')"
             csv_sql_cols = [
-                "to_char(et.time_eti , 'YYYY-MM-DD\"T\"HH24:MI:SSOF')"
+                "row_to_json(row(time_eti))->>'f1'"
             ]
             if 'text/plain' == filter.responseFormat:
                 csv_sql_cols.append("'%s'" % self.name)
