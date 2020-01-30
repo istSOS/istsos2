@@ -910,8 +910,7 @@ class Observation:
         if self.procedureType != "virtual":
                         
             sqlSel = "SELECT "
-            #  Missing offset minutes ':00' whit this method:
-            # "to_char(et.time_eti , 'YYYY-MM-DD\"T\"HH24:MI:SSOF')"
+            
             csv_sql_cols = [
                 "row_to_json(row(time_eti))->>'f1'"
             ]
@@ -924,8 +923,8 @@ class Observation:
             joinar=[]
             cols=['et.time_eti as t']
 
-            aggrCols=['ts.sint as t']
-            csv_aggr_cols=['ts.sint']
+            aggrCols=["row_to_json(row(ts.sint))->>'f1' as t"]
+            csv_aggr_cols=["row_to_json(row(ts.sint))->>'f1'"]
             aggrNotNull=[]
 
             valeFieldName = []
