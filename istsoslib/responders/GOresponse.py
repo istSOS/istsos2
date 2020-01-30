@@ -908,9 +908,9 @@ class Observation:
         # SET DATA
         #  CASE is not virtual #"insitu-fixed-point", "insitu-mobile-point" or "insiru-fixed-specimen"
         if self.procedureType != "virtual":
-                        
+
             sqlSel = "SELECT "
-            
+
             csv_sql_cols = [
                 "row_to_json(row(time_eti))->>'f1'"
             ]
@@ -925,6 +925,8 @@ class Observation:
 
             aggrCols=["row_to_json(row(ts.sint))->>'f1' as t"]
             csv_aggr_cols=["row_to_json(row(ts.sint))->>'f1'"]
+            if 'text/plain' == filter.responseFormat:
+                csv_aggr_cols.append("'%s'" % self.name)
             aggrNotNull=[]
 
             valeFieldName = []
