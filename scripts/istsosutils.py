@@ -208,6 +208,15 @@ class Service(object):
             print("Sensor '%s' registered successfully" % procedure.name)
             # jsonRes["message"]
 
+    def insertObservation(self, observation):    
+        request = observation.toJson()
+        res = req.post(
+            "%s/wa/istsos/services/%s/operations/insertobservation" % (
+                self.host, self.service),
+            data=json.dumps(request), auth=self.auth
+        )
+        return res.json()
+
     def getObservation(self, name, begin=None, end=None, qi=False):
         begin1 = ""
         end1 = ""
