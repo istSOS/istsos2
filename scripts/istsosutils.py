@@ -206,6 +206,15 @@ class Service(object):
 
         return jsonRes
 
+    def insertObservation(self, observation):    
+        request = observation  # .toJson()
+        res = req.post(
+            "%s/wa/istsos/services/%s/operations/insertobservation" % (
+                self.host, self.service),
+            data=json.dumps(request), auth=self.auth
+        )
+        return res.json()
+
     def registerProcedure(self, procedure):
         request = procedure.toJson()
         res = req.post(
