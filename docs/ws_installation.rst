@@ -22,7 +22,7 @@ Open a terminal and move to the folder containing the downloaded deb file.
 
 .. parsed-literal::
 
-    sudo dpkg -i python-istsos_\ |version|\.deb;sudo apt-get -f -y install
+    sudo dpkg -i python3-istsos_\ |version|\.deb;sudo apt-get -f -y install
 
 This command will install all the required dependencies, with the exception of
 PostgreSQL and PostGIS. In fact it could reside on other servers. Go to the
@@ -50,15 +50,15 @@ home directory, then unpack it executing these commands:
 
 .. parsed-literal::
 
-    sudo tar -zxvf istSOS-\ |version|\.tar.gz -C /usr/local/
+    sudo tar -zxvf istSOS-\ |version|\.tar.gz -C /usr/share/
 
 **Set executing permissions and the owner for the services and logs folders**
 
 .. code-block:: bash
 
-    sudo chmod 755 -R /usr/local/istsos
-    sudo chown -R www-data:www-data /usr/local/istsos/services
-    sudo chown -R www-data:www-data /usr/local/istsos/logs
+    sudo chmod 755 -R /usr/share/istsos
+    sudo chown -R www-data:www-data /usr/share/istsos/services
+    sudo chown -R www-data:www-data /usr/share/istsos/logs
 
 **Install Python3, Apache2 and mod_wsgi**
 
@@ -70,7 +70,7 @@ home directory, then unpack it executing these commands:
 
 .. code-block:: bash
 
-    sudo pip3 install -r /usr/local/istsos/requirements.txt
+    sudo pip3 install -r /usr/share/istsos/requirements.txt
 
 **Configure Apache and WSGI**
 
@@ -89,9 +89,15 @@ configuration:
         ErrorLog ${APACHE_LOG_DIR}/error.log
         CustomLog ${APACHE_LOG_DIR}/access.log combined
 
-        WSGIScriptAlias /istsos /usr/local/istsos/application.py
-        Alias /istsos/admin /usr/local/istsos/interface/admin
-        Alias /istsos/modules /usr/local/istsos/interface/modules
+        WSGIScriptAlias /istsos /usr/share/istsos/application.py
+        Alias /istsos/admin /usr/share/istsos/interface/admin
+        Alias /istsos/modules /usr/share/istsos/interface/modules
+
+        <LocationMatch /istsos>
+            Options +Indexes +FollowSymLinks +MultiViews
+            AllowOverride all
+            Require all granted
+        </LocationMatch>
 
     </VirtualHost>
 
