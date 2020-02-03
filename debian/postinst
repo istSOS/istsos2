@@ -3,4 +3,4 @@ chown -R www-data:www-data /usr/share/istsos/services
 #chown -R www-data:www-data /usr/share/istsos/scripts/wns
 
 a2ensite istsos
-service apache2 reload
+service apache2 restart
