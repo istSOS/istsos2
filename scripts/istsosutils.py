@@ -209,7 +209,7 @@ class Service(object):
             # jsonRes["message"]
 
     def insertObservation(self, observation):    
-        request = observation.toJson()
+        request = observation # .toJson()
         res = req.post(
             "%s/wa/istsos/services/%s/operations/insertobservation" % (
                 self.host, self.service),
