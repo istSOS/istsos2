@@ -1,0 +1,23 @@
+FROM python:3.8.1-buster
+
+MAINTAINER davide.zanin@supsi.ch
+
+WORKDIR /usr/share/
+# download .tar.gz from sourceforge.net
+RUN apt-get update &&\
+  apt-get install -y curl && \
+  curl -L \
+  https://sourceforge.net/projects/istsos/files/istsos-2.4.0-RC2.tar.gz/download \
+  > istsos-2.4.0-RC2.tar.gz
+
+# extract tar, change permission
+RUN tar -zxvf istsos-2.4.0-RC2.tar.gz -C /usr/share/
+RUN rm  istsos-2.4.0-RC2.tar.gz
+RUN chmod 755 -R /usr/share/istsos
+RUN chown -R www-data:www-data /usr/share/istsos/services
+RUN chown -R www-data:www-data /usr/share/istsos/logs
+RUN apt-get install -y apache2 libapache2-mod-wsgi-py3
+RUN pip3 install -r /usr/share/istsos/requirements.txt
+
+EXPOSE 80
+

@@ -1,0 +1,28 @@
+#FROM python:3.6.10-buster
+#FROM python:3.8.1-buster
+FROM python:3.7.6-buster
+
+MAINTAINER davide.zanin@supsi.ch
+
+WORKDIR /usr/share/
+
+# download .tar.gz from sourceforge.net
+COPY _build/istsos-2.4.0-RC2.tar.gz /usr/share/
+
+# extract tar, change permission, install apache&mod-wsgi
+RUN apt-get update && \
+    # update-alternatives --install /usr/bin/python python /usr/local/bin/python3.8 1 && \
+    tar -zxvf istsos-2.4.0-RC2.tar.gz -C /usr/share/ && \
+    rm istsos-2.4.0-RC2.tar.gz && \
+    chmod 755 -R /usr/share/istsos && \
+    chown -R www-data:www-data /usr/share/istsos/services && \
+    chown -R www-data:www-data /usr/share/istsos/logs  && \
+    apt-get install -y apache2 libapache2-mod-wsgi-py3 && \
+    cp /usr/share/istsos/istsos.conf /etc/apache2/sites-available/ && \
+    a2ensite istsos && \
+    service apache2 restart && \
+    pip install -r /usr/share/istsos/requirements.txt 
+
+EXPOSE 80
+
+CMD ["/usr/sbin/apachectl", "-D", "FOREGROUND"]

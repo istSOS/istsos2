@@ -1,0 +1,41 @@
+#docker build -t istsos-pg:1.0.0 -f Dockerfile-pg .
+#docker run -d --name istsosC-pg -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=postgres istsos-pg:1.0.0
+
+FROM postgres:12.1
+
+MAINTAINER xxx
+
+#ARG A_DB_USER='postgres'
+#ARG A_DB_PASS='postgres'
+ARG A_DB_NAME='istsos'
+ARG A_TZ='Europe/Zurich'
+
+#ENV DB_USER=${A_DB_USER}
+#ENV DB_PASS=${A_DB_PASS}
+ENV DB_NAME=${A_DB_NAME}
+ENV TZ=${A_TZ}
+
+# Adjusting Timezone in the system
+RUN echo $TZ > /etc/timezone && \
+    apt-get update && apt-get install -y tzdata && \
+    rm /etc/localtime && \
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
+    dpkg-reconfigure -f noninteractive tzdata && \
+    apt-get clean
+
+# install postgis
+RUN apt-get update && \
+    apt-get install -y postgis && \
+    apt-get clean
+
+USER postgres
+
+#Add password "postgres" to user postgres, create db, add .sql
+#RUN /etc/init.d/postgresql start && \
+#    psql --command "ALTER USER ${DB_USER} WITH PASSWORD '${DB_PASS}'; SET TIME ZONE '${TZ}';" && \
+#    createdb -O ${DB_USER} ${DB_NAME} -E UTF8 && \
+#    psql -d ${DB_NAME} -c 'CREATE EXTENSION postgis'
+
+EXPOSE 5432
+
+

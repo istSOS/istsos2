@@ -1,0 +1,48 @@
+#version: '3'
+#services:
+#  web:
+#    build: .
+#    ports:
+#      - "5000:5000"
+#  redis:
+#    image: "redis:alpine"
+
+
+# Use postgres/example user/password credentials
+version: '3.7'
+
+services:
+
+  app-db:
+    build:
+      context: ./
+      dockerfile: Dockerfile-pg
+    image: app-pg:1.0.0
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: app
+    volumes:
+       - ./docker-entrypoint-initdb.d/init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
+       - v-app-pgdata:/var/lib/postgresql
+       - v-app-pglog:/data/var/log/postgresql
+       - v-app-pgconf:/etc/postgresql
+
+
+    
+  app-main:
+    build: 
+      context: ./
+      dockerfile: Dockerfile-tar-cp
+    image: app-main:1.0.0
+    restart: always
+    ports:
+      - 80:80
+volumes:
+  v-app-pgdata:
+    name: v-app-pgdata
+  v-app-pglog:
+    name: v-app-pglog
+  v-app-pgconf:
+    name: v-app-pgconf

@@ -12,6 +12,8 @@ Ext.define('istsos.view.newservice', {
             }
             this.mask.show();
             
+            console.dir(this.getForm().getValues())
+            
             Ext.Ajax.request({
                 url: Ext.String.format('{0}/istsos/operations/validatedb', wa.url),
                 scope: this,
@@ -67,40 +69,36 @@ Ext.define('istsos.view.newservice', {
         });
     },
     operationPost: function(){
-
-        var values = this.istForm.getValues();
-        var json = {};
+        
+        var json = this.istForm.getValues();
             
-        if (Ext.isEmpty(values['customdb'])) {
+        if (Ext.isEmpty(json['customdb'])) {
             if (!Ext.getCmp('nsservice').isValid()){
                 Ext.Msg.alert('Validation error', 'Service name is invalid, it must be a single lower case word.');
                 return;
             }
             json = {
-                "service": values['service'],
-                "epsg": values['epsg']
+                "service": json['service']
             };
         }else{
             if (!this.istForm.getForm().isValid()){
                 Ext.Msg.alert('Validation error', 'Please correct the invalid values');
                 return;
             }
-            json = Ext.apply(json, values);
         }
-
+        
         if (Ext.isEmpty(this.mask)) {
             this.mask = new Ext.LoadMask(this.body, {
                 msg:"Please wait..."
             });
         }
         this.mask.show();
-
+        
         if (Ext.isEmpty(json.epsg)){
             delete json.epsg;
         }
-
+        
         this.servicename = json['service'];
-
         Ext.Ajax.request({
             url: Ext.String.format('{0}/istsos/services', wa.url),
             scope: this,

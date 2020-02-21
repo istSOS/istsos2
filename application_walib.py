@@ -179,6 +179,8 @@ def executeWa(environ, start_response):
         wsgi_mime = 'text/plain'
         wsgi_status = '400 Bad Request'
 
+    
+    import six
     wsgi_headers = [
         ('Content-Type', "%s; charset=utf-8" % wsgi_mime),
         # ('Content-Length', b"{len(wsgi_response)}")

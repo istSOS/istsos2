@@ -189,8 +189,8 @@ class PgDB(Database):
     def to_string(self, sql, par=None, delimiter=',', lineterminator='\n'):
         if sql.lstrip()[0:6].lower() == "select":
             cur = self.__conn.cursor()
-            lt = ( # chr(13) = \r chr(10) = \n
-                "CONCAT('' , chr(13) , chr(10), '')"
+            lt = (
+                "CONCAT('' , chr(13), '')"
                 if lineterminator == '\n'
                 else "'%s'" % lineterminator
             )

@@ -1,0 +1,29 @@
+FROM ubuntu:18.04
+
+MAINTAINER davide.zanin@supsi.ch
+
+ARG A_TZ='Europe/Zurich'
+ENV TZ=${A_TZ}
+
+# Adjusting Timezone in the system
+RUN echo $TZ > /etc/timezone && \
+    apt-get update && apt-get install -y tzdata && \
+    rm /etc/localtime && \
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
+    dpkg-reconfigure -f noninteractive tzdata && \
+    apt-get clean
+
+WORKDIR /app
+
+COPY _build/python3-istsos_2.4.0-RC2.deb /app/
+
+
+EXPOSE 80
+
+# install .deb
+RUN dpkg -i python3-istsos_2.4.0-RC2.deb; apt-get -f -y install && \
+		rm -r /app
+
+CMD ["/usr/sbin/apachectl", "-D", "FOREGROUND"]
+
+

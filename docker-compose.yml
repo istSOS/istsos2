@@ -1,0 +1,48 @@
+#version: '3'
+#services:
+#  web:
+#    build: .
+#    ports:
+#      - "5000:5000"
+#  redis:
+#    image: "redis:alpine"
+
+
+# Use postgres/example user/password credentials
+version: '3.7'
+
+services:
+
+  istsos-db:
+    build:
+      context: ./
+      dockerfile: Dockerfile-pg
+    image: istsos-pg:1.0.0
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: istsos
+    volumes:
+       - ./docker-entrypoint-initdb.d/init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
+       - v-istsos-pgdata:/var/lib/postgresql
+       - v-istsos-pglog:/data/var/log/postgresql
+       - v-istsos-pgconf:/etc/postgresql
+
+
+    
+  istsos-main:
+    build: 
+      context: ./
+      dockerfile: Dockerfile-tar-cp
+    image: istsos-main:1.0.0
+    restart: always
+    ports:
+      - 80:80
+volumes:
+  v-istsos-pgdata:
+    name: v-istsos-pgdata
+  v-istsos-pglog:
+    name: v-istsos-pglog
+  v-istsos-pgconf:
+    name: v-istsos-pgconf
