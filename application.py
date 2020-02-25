@@ -28,11 +28,6 @@ import application_istsoslib
 import application_walib
 import application_wnslib
 
-# import importlib
-# importlib.reload(sys)
-# # reload(sys)
-# sys.setdefaultencoding('utf-8')
-
 
 def application(environ, start_response):
 
@@ -48,5 +43,5 @@ def application(environ, start_response):
         return application_istsoslib.executeSos(environ, start_response)
 
     else:
-        start_response('309 Redirect', [('Location', 'admin/')])
+        start_response('307 Redirect', [('Location', 'istsos/admin/')])
         return []
