@@ -134,7 +134,7 @@ present.
 
 `http://localhost/istsos/modules/requests <http://localhost/istsos/modules/requests>`_
 
-Choose the the demo service and then choose “GET > GetCapabilities” option and
+Choose the demo service and then choose “GET > GetCapabilities” option and
 then modify the section parameter to contain just the “contents” option the
 request to be like this:
 

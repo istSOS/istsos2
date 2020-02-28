@@ -202,9 +202,9 @@ def XMLformat(GO):
             r += "<swe:values>"
             for row in range(len(ob.data)):
                 r+=','.join(
-                    map(
-                        lambda x: to_string_handler(x), row
-                    )
+                    list(map(
+                        lambda x: to_string_handler(x), ob.data[row]
+                    ))
                 )
             r += "</swe:values>\n"
 

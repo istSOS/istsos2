@@ -18,7 +18,4 @@ acquisition/
 venv/
 
 # Docker
-Dockerfile-deb
-Dockerfile-deb-cp
-Dockerfile-tar
-Dockerfile-tar-cp
+Dockerfile*

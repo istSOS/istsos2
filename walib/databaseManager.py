@@ -50,7 +50,7 @@ class Database:
 class PgDB(Database):
     """Connect to a PostgreSQL database"""
     host=None
-    def __init__(self,user,password,dbName,host='localhost',port='5433'):
+    def __init__(self,user,password,dbName,host='localhost',port='5432'):
         "Initialize PostgreSQL connection parameters"
         self.__dns=""
         if host: self.__dns += "host='%s' " % host

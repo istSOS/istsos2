@@ -151,12 +151,7 @@ a valid request for loading a single observation to the service is:
                     </swe:elementType>
                     <swe:encoding>
                         <swe:TextBlock blockSeparator="@" decimalSeparator="." tokenSeparator=","/>
-                    </swe:encoding>
-                    <swe:values>
-                        2015-06-03T14:10:00+02,0,200,20.4,200@2015-06-03T14:20:00+02,0.1,200,19.5,200@
-                        2015-06-03T14:30:00+02,0.1,200,19.1,200@2015-06-03T14:40:00+02,0,200,19.5,200@
-                        2015-06-03T14:50:00+02,0,200,20.6,200
-                    </swe:values>
+                    </swe:encoding> <swe:values>2015-06-03T14:10:00+02,0,200,20.4,200@2015-06-03T14:20:00+02,0.1,200,19.5,200@2015-06-03T14:30:00+02,0.1,200,19.1,200@2015-06-03T14:40:00+02,0,200,19.5,200@2015-06-03T14:50:00+02,0,200,20.6,200</swe:values>
                 </swe:DataArray>
             </om:result>
         </om:Observation>
