@@ -128,15 +128,18 @@ the procedure registration.
 Verify the inserted procedures using the Sensor Observation Service requests
 ----------------------------------------------------------------------------
 
-Let’s try to execute a getCapabilities request to verify if procedures are now
-available. We can use the “Requests” test page where some samples are already
-present.
+.. Let’s try to execute a getCapabilities request to verify if procedures are now
+   available. We can use the “Requests” test page where some samples are already
+   present.
 
-`http://localhost/istsos/modules/requests <http://localhost/istsos/modules/requests>`_
+.. `http://localhost/istsos/modules/requests <http://localhost/istsos/modules/requests>`_
 
-Choose the demo service and then choose “GET > GetCapabilities” option and
-then modify the section parameter to contain just the “contents” option the
-request to be like this:
+.. Choose the demo service and then choose “GET > GetCapabilities” option and
+.. then modify the section parameter to contain just the “contents” option the
+.. request to be like this:
+
+Let's execute a getCapabilities request to verify if procedures are now
+available:
 
 `http://localhost/istsos/demo?request=getCapabilities&section=contents&service=SOS
 <http://localhost/istsos/demo?request=getCapabilities&section=contents&service=SOS>`_
