@@ -453,7 +453,7 @@ ON specimens(identifier);
 --=====================================
 
 INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('aggregation no data', 'no values are present for this aggregation interval', -100);
-INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('outboud', 'gross error', 0);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('aggregation no data sent', 'no values are present for this aggregation interval and it is sent correctly', -110);
 INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('raw', 'the format is correct', 100);
 INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('acceptable', 'the value is acceptable for the observed property', 110);
 INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('reasonable', 'the value is in a resonable range for that observed property and station', 200);
@@ -462,11 +462,18 @@ INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('spatilly coherent',
 INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('manually adjusted', 'the value has been manually corrected', 500);
 INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('correct', 'the value has not been modified and is correct', 600);
 
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('error', 'the value is not ok', 000);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('error sent', 'the value is not ok and it is sent correctly', 010);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('suspicious', 'the value is suspicious', 001);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('suspicious sent', 'the value is suspicious and it is sent correctly', 011);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('good', 'the value is correct', 002);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('good sent', 'the value is correct and it is sent correctly', 012);
+
 INSERT INTO obs_type (id_oty, name_oty, desc_oty) VALUES (1, 'insitu-fixed-point', 'fixed, in-situ, pointwise observation');
 INSERT INTO obs_type (id_oty, name_oty, desc_oty) VALUES (2, 'insitu-mobile-point', 'mobile, in-situ, pointwise observation');
 INSERT INTO obs_type (id_oty, name_oty, desc_oty) VALUES (3, 'virtual', 'virtual procedure');
 INSERT INTO obs_type (id_oty, name_oty, desc_oty) VALUES (4, 'insitu-fixed-specimen', 'fixed, in-situ, pointwise observation from specimen');
-INSERT INTO obs_type (id_oty, name_oty, desc_oty) VALUES (4, 'profile', 'profile rapresentation');
+INSERT INTO obs_type (id_oty, name_oty, desc_oty) VALUES (5, 'profile', 'profile rapresentation');
 
 --=====================================
 -- ADDING OBSERVED PROPERTIES
