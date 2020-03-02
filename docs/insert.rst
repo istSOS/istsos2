@@ -83,13 +83,13 @@ Loading data with OGC-SOS InsertObservation request
 
 Even if you can use the *csv2istsos.py* script to facilitate the data loading, users may also use the SOS *insertObservation* request directly. 
 
-To execute the XML request from the interface:
+To execute the XML request:
 
-    1. **Open the requests test page:** `<http://localhost/istsos/modules/requests>`_
-    2. **Select the desired service instance**
-    3. **Choose the “POST” option**
-    4. **Paste into the field the InsertObservation xml**
-    5. **Press “Send”**
+    1. Download a tool like `Postman <https://www.postman.com/>`_
+    2. Choose the “POST” option
+    3. Insert this URL for the demo instance: http://localhost/istsos/demo
+    4. Copy and paste the XML in the body tab
+    5. Press “Send”
 
 .. note::
     Pay attention to the AssignedSensorId parameter: this according to the standard is returned by the system only when the sensor is registered. To access it, you can use administration interface, looking at the procedure metadata details.
