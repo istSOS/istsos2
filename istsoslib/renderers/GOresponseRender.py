@@ -319,7 +319,7 @@ def CSVformat(GO):
     #create unique columns name
     columns = ["time","procedure"]
     columns_name = [None,"urn:ogc:def:procedure"]
-    
+    uoms = []
     
     for iob, ob in enumerate(GO.obs):
         if columns_name[0]==None:
@@ -329,6 +329,14 @@ def CSVformat(GO):
             columns_name += ["%s:x-position" % GO.refsys,"%s:y-position" % GO.refsys,"%s:z-position" % GO.refsys]
         for idx,opr in enumerate(ob.observedProperty):
             if not opr in columns:
+                columns += [opr]
+                columns_name += ["%s" %(opr)]
+                uoms.append(ob.uom[idx])
+            elif ob.uom[idx] not in uoms:
+                columns += [opr]
+                columns_name += ["%s" %(opr)]
+                uoms.append(ob.uom[idx])
+            elif opr == f'{columns[-1]}:qualityIndex':
                 columns += [opr]
                 columns_name += ["%s" %(opr)]
     
