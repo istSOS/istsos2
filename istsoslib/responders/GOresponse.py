@@ -1173,6 +1173,16 @@ class Observation:
                             )
                         )
                     sqlData += " AND (%s)" % " OR ".join(qi_sql)
+                elif filter.qualityFilter[0]=='~*':
+                    qi_sql = []
+                    for qi_field in qi_field_name:
+                        qi_sql.append(
+                            " %s::text ~* \'%s\' " % (
+                                qi_field,
+                                filter.qualityFilter[1]
+                            )
+                        )
+                    sqlData += " AND (%s)" % " OR ".join(qi_sql)
 
             sqlData += " ORDER by et.time_eti"
 

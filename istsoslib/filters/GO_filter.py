@@ -492,11 +492,16 @@ class sosGOfilter(f.sosFilter):
                     try:
                         if requestObject["qualityfilter"][0:2]=='<=' or requestObject["qualityfilter"][0:2]=='>=':
                             self.qualityFilter = (requestObject["qualityfilter"][0:2], float(requestObject["qualityfilter"][2:]))
-
+                        
                         elif (requestObject["qualityfilter"][0]=='>' or
                                 requestObject["qualityfilter"][0]=='=' or
-                                requestObject["qualityfilter"][0]=='<'):
-                            self.qualityFilter = (requestObject["qualityfilter"][0], float(requestObject["qualityfilter"][1:]))
+                                requestObject["qualityfilter"][0]=='<'or
+                                requestObject["qualityfilter"][0]=='~'):
+                            if requestObject["qualityfilter"][0:2]=='~*':
+                                self.qualityFilter = (requestObject["qualityfilter"][0:2], requestObject["qualityfilter"][2:])
+                                print(self.qualityFilter)
+                            else:
+                                self.qualityFilter = (requestObject["qualityfilter"][0], float(requestObject["qualityfilter"][1:]))
 
                         # If qualityFilter is defined qualityIndex are automatically returned
                         self.qualityIndex=True
@@ -507,7 +512,7 @@ class sosGOfilter(f.sosFilter):
 
                 else:
                     raise sosException.SOSException("InvalidParameterValue", "qualityFilter",
-                        "qualityFilter operator can only be in ['<','>','<=','>=','=']")
+                        "qualityFilter operator can only be in ['<','>','<=','>=','=','~*']")
 
         if method == "POST":
             from xml.dom import minidom
