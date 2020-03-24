@@ -58,6 +58,7 @@ class VirtualProcess(ABC):
     """
 
     procedures = {}
+    offering = None
     samplingTime = (None, None)
     obs_input = [':']
 
@@ -110,7 +111,8 @@ class VirtualProcess(ABC):
 
         It supports also SamplingTime calculation from cascading Virtual Procedures.
         """
-
+        if self.offering:
+            self.proc_info = self.getProceduresFromOffering(self.offering)
         if len(self.procedures) == 0:
             self.samplingTime = (None, None)
         else:
@@ -214,6 +216,43 @@ class VirtualProcess(ABC):
 
             self.samplingTime = (result[0], result[1])
     
+    def getProceduresFromOffering(self, offering):
+        sql = """
+            SELECT id_prc, name_prc, st_z(geom_foi), array_agg(def_opr)
+            FROM (
+                (
+                    SELECT *
+                    FROM (
+                        SELECT
+                            *
+                        FROM %s.procedures
+                        JOIN %s.proc_obs
+                        ON id_prc = id_prc_fk
+                    ) p1 JOIN %s.observed_properties ON id_opr = id_opr_fk
+                ) p2 JOIN %s.off_proc ON off_proc.id_prc_fk = id_prc
+            ) p3 JOIN %s.offerings ON id_off = p3.id_off_fk, %s.foi """ % (
+                (self.filter.sosConfig.schema,)*6
+            )
+        sql += """
+            WHERE id_foi = p3.id_foi_fk AND name_off = \'%s\' AND name_prc != \'%s\'
+            GROUP BY id_prc, name_prc, geom_foi
+            ORDER BY st_z DESC""" % (offering, self.filter.procedure[0])
+
+        try:
+            result = self.pgdb.select(sql)
+            self.procedures = {}
+
+            if len(result) == 0:
+                raise Exception("Virtual Procedure Error: procedure %s not found in the database" % procedure)
+            else:
+                for res in result:
+                    self.procedures[res[1]] = res[3]
+            # result = result[0]
+            return result
+
+        except Exception as e:
+            raise Exception("Database error: %s - %s" % (sql, e))
+    
     def getData(self, procedure=None, disableAggregation=True):
         """Return the observations of associated procedure
 
@@ -264,7 +303,6 @@ class VirtualProcess(ABC):
             raise Exception("Database error: %s - %s" % (sql, e))
 
         obs = Observation()
-
         obs.baseInfo(self.pgdb, result, virtualFilter.sosConfig)
 
         if disableAggregation:
@@ -355,8 +393,40 @@ class VirtualProcess(ABC):
 
 class VirtualProcessProfile(VirtualProcess):
 
-    def getProceduresInfo(self):
+    def observed_properties(self, offering):
+        sql = """
+            SELECT array_agg(def_opr)
+            FROM (
+                (
+                    SELECT *
+                    FROM (
+                        SELECT
+                            *
+                        FROM %s.procedures
+                        JOIN %s.proc_obs
+                        ON id_prc = id_prc_fk
+                    ) p1 JOIN %s.observed_properties ON id_opr = id_opr_fk
+                ) p2 JOIN %s.off_proc ON off_proc.id_prc_fk = id_prc
+            ) p3 JOIN %s.offerings ON id_off = p3.id_off_fk, %s.foi """ % (
+                (self.filter.sosConfig.schema,)*6
+            )
+        sql += """
+            WHERE id_foi = p3.id_foi_fk AND name_off = \'%s\' AND name_prc = \'%s\'
+            """ % (offering, self.filter.procedure[0])
+        
+        try:
+            result = self.pgdb.select(sql)
+            self.procedures = {}
 
+            if len(result) == 0:
+                raise Exception("Virtual Procedure Error: procedure %s not have observed properties" % procedure)
+            # result = result[0]
+            return result[0]
+
+        except Exception as e:
+            raise Exception("Database error: %s - %s" % (sql, e))
+
+    def getProceduresInfo(self):
         proc_sql = ('\' OR name_prc=\'').join(self.procedures)
         sql_filter = ' WHERE name_prc=\'' + proc_sql + '\' '
         sql = """
@@ -396,50 +466,24 @@ class VirtualProcessProfile(VirtualProcess):
         except Exception as e:
             raise Exception("Database error: %s - %s" % (sql, e))
 
-    def getProceduresFromOffering(self, offering):
-
-        sql = """
-            SELECT
-                id_prc, name_prc, st_z(geom_foi)
-            FROM
-                %s.procedures,
-                %s.foi,
-                %s.offerings,
-                %s.off_proc """ % ((self.filter.sosConfig.schema,)*4 )
-        sql += """
-            WHERE
-                offerings.id_off = off_proc.id_off_fk
-                AND off_proc.id_prc_fk = procedures.id_prc
-                AND foi.id_foi = procedures.id_foi_fk
-                AND offerings.name_off=%s """
-        sql += """"""
-
-        try:
-            result = self.pgdb.select(sql, (offering,))
-            self.procedures = {}
-
-            if len(result) == 0:
-                raise Exception("Virtual Procedure Error: procedure %s not found in the database" % procedure)
-            else:
-                for proc in result:
-                    self.procedures[proc[1]] = self.obs_input
-
-            # result = result[0]
-            return result
-
-        except Exception as e:
-            raise Exception("Database error: %s - %s" % (sql, e))
-
     def execute(self):
-        procs_info = self.getProceduresInfo()
+        try:
+            procs_info = self.proc_info
+        except Exception as e:
+            procs_info = self.getProceduresInfo()
+        if self.offering:
+            obs = self.observed_properties(self.filter.offering)
+        else:
+            obs = self.observed_properties(self.filter.offering)
         data = []
         # start_time = time.time()
         for proc in procs_info:
             check = False
-            for i in range(len(self.obs_input)):
-                if self.obs_input[i] not in proc[3]:
-                    check = True
-                    break
+            obs_tmp = []
+            for i in range(len(obs)):
+                if obs[i] in proc[3]:
+                    obs_tmp.append(obs[i])
+            proc[3] = obs_tmp
             if check:
                 raise Exception('Procedure does not measure the required observed properties.')
             else:
