@@ -37,17 +37,14 @@ FROM httpd:2.4.41-alpine
 
 WORKDIR /usr/share
 
-# download .tar.gz from sourceforge.net
 COPY --from=build-stage /app/_build/ /usr/share/
 
-# extract tar, change permission, install apache&mod-wsgi
 RUN apk update && \
     chmod 755 -R /usr/share/istsos && \
     chown -R daemon:daemon /usr/share/istsos/services && \
     chown -R daemon:daemon /usr/share/istsos/logs && \
     mkdir /usr/local/apache2/conf/sites-available /usr/local/apache2/conf/sites-enabled && \
     mkdir -p /var/www/html && \
-    #chmod 777 -R /var/www/html && \
     echo "LoadModule wsgi_module /usr/lib/apache2/mod_wsgi.so" >> /usr/local/apache2/conf/httpd.conf && \
     echo "IncludeOptional /usr/local/apache2/conf/sites-enabled/*.conf " >> /usr/local/apache2/conf/httpd.conf && \
     cp /usr/share/istsos/httpd-istsos.conf /usr/local/apache2/conf/sites-available && \
@@ -79,11 +76,5 @@ RUN apk update && \
         python3-dev \
         musl-dev
 RUN pip3 install -r /usr/share/istsos/requirements.txt
-#     cp /usr/share/istsos/istsos.conf /etc/apache2/sites-available/ && \
-#     a2ensite istsos && \
-#     service apache2 restart && \
-#     pip install -r /usr/share/istsos/requirements.txt 
 
 EXPOSE 80
-
-# CMD ["/usr/sbin/apachectl", "-D", "FOREGROUND"] 
