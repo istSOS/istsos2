@@ -139,12 +139,12 @@ docker with small variations.
 **Install Docker**
 
 Please refer to `https://docs.docker.com/install/linux/docker-ce/ubuntu/ <https://docs.docker.com/install/linux/docker-ce/ubuntu/>`_
-to get information about how to install the latest docker engine.
+to get information about how to install the latest docker engine. Use docker version >= 19.03.8.
 
 **Install docker-compose**
 
 Please refer to `https://docs.docker.com/compose/install/ <https://docs.docker.com/compose/install/>`_
-to get information about how to install the latest docker-compose release.
+to get information about how to install the latest docker-compose release. Use docker-compose version >= 1.25.1.
 
 **Clone istSOS repository**
 
@@ -255,6 +255,16 @@ Go to the :ref:`ws_database` for instruction on how to configure the database.
 
     It is possible to use this docker-compose application on any system that supports 
     docker with small variations.
+
+    **Install Docker**
+
+    Please refer to `https://docs.docker.com/install/linux/docker-ce/ubuntu/ <https://docs.docker.com/install/linux/docker-ce/ubuntu/>`_
+    to get information about how to install the latest docker engine. Use docker version >= 19.03.8.
+
+    **Install docker-compose**
+
+    Please refer to `https://docs.docker.com/compose/install/ <https://docs.docker.com/compose/install/>`_
+    to get information about how to install the latest docker-compose release. Use docker-compose version >= 1.25.1.
 
     **Create docker-compose**
 
