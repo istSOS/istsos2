@@ -21,7 +21,7 @@ Press the “new” button and fill the form as following:
 **Name**                   workshop
 **Description**            demo dataset
 **Expiration (optional)**  2020-01-01T00:00:00+09:00
-**Validity**               Enabled
+**Visibility**               Enabled
 ========================= ================================
 
 **Associate procedures with offering**

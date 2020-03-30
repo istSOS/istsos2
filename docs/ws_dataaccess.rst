@@ -294,7 +294,7 @@ Data in JSON:
 |     ``offering=temporary&``
 |     ``eventTime=2015-06-01T00:00:00+0200/2015-06-03T00:00:00+0200&``
 |     ``observedProperty=rainfall&``
-|     ``responseFormat=text/json&``
+|     ``responseFormat=application/json&``
 |     ``service=SOS&``
 |     ``version=1.0.0``
 

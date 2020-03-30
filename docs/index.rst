@@ -87,7 +87,7 @@ Please download the latest archive and extract the content on your Desktop.
     specimens
     profile
     ws_virtualprocedures
-    ws_mapping
+    .. ws_mapping
     ws_mqtt
     ws_arduino
     security
