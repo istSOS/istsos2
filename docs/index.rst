@@ -85,6 +85,7 @@ Please download the latest archive and extract the content on your Desktop.
     ws_datavalidation
     ws_dataaccess
     specimens
+    profile
     ws_virtualprocedures
     ws_mapping
     ws_mqtt
