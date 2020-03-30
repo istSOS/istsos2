@@ -807,7 +807,7 @@ class Observation:
         id_prc (str): the internal id of the selected procedure
         name (str): the name of the procedure
         procedure (str): the URI name of the procedure
-        procedureType (str): the type of procedure (one of "insitu-fixed-point","insitu-fixed-specimen","insitu-mobile-point","virtual","profile")
+        procedureType (str): the type of procedure (one of "insitu-fixed-point","insitu-fixed-specimen","insitu-mobile-point","virtual","virtual-profile")
         samplingTime (list): the time interval for which this procedure has data [*from*, *to*]
         timeResVal (str): the time resolution setted for this procedure when registered in ISO 8601 duration
         observedPropertyName (list): list of observed properties names as string
@@ -866,7 +866,7 @@ class Observation:
             "insitu-fixed-specimen",
             "insitu-mobile-point",
             "virtual",
-            "profile"]:
+            "virtual-profile"]:
             self.procedureType=row["name_oty"]
         else:
             raise Exception("error in procedure type setting")
