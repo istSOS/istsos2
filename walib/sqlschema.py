@@ -248,7 +248,7 @@ ALTER SEQUENCE procedures_id_prc_seq OWNED BY procedures.id_prc;
 --=====================================
 
 CREATE TABLE quality_index (
-    name_qi character varying(25) NOT NULL,
+    name_qi character varying(50) NOT NULL,
     desc_qi text,
     id_qi integer NOT NULL
 );
@@ -453,14 +453,35 @@ ON specimens(identifier);
 --=====================================
 
 INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('aggregation no data', 'no values are present for this aggregation interval', -100);
-INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('outboud', 'gross error', 0);
-INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('raw', 'the format is correct', 100);
-INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('acceptable', 'the value is acceptable for the observed property', 110);
-INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('reasonable', 'the value is in a resonable range for that observed property and station', 200);
-INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('timely coherent', 'the value is coherent with time-series', 300);
-INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('spatilly coherent', 'the value is coherent with close by observations', 400);
-INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('manually adjusted', 'the value has been manually corrected', 500);
-INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('correct', 'the value has not been modified and is correct', 600);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('aggregation no data sent', 'no values are present for this aggregation interval and it is sent correctly', -110);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('erroneous', 'gross error', 000);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('erroneous sent', 'gross error, value sent to the server', 010);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('QC0 - raw', 'the format is correct', 100);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('QC0 - raw sent', 'the format is correct, value sent to the server', 110);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('QC0 - range test1', 'range test using measuring range of the sensor', 101);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('QC0 - range test1 sent', 'range test using sensor limits values, value sent to the server ', 111);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('QC0 - range test2', 'the value is in a resonable range for that observed property', 102);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('QC0 - range test2 sent', 'the value is in a resonable range for that observed property', 112);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('QC0 - step test', 'the value is coherent with the previous', 103);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('QC0 - step test sent', 'the value is coherent with the previous, value sent to the server', 113);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('QC0 - time consistency', 'the value is timely consistent', 104);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('QC0 - time consistency sent', 'the value is timely consistent, value sent to the server', 114);
+
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('QC1 - value aggregated with < 0.6', 'the value has been aggregated with less than 0.6 of good values', 200);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('QC1 - value aggregated with < 0.6', 'the value has been aggregated with less than 0.6 of good values, value sent ot the server', 210);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('QC1 - value aggregated', 'the value has been aggregated correctly', 201);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('QC1 - value aggregated sent', 'the value has been aggregated correctly, value sent ot the server', 211);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('QC1 - range test', 'the value is in a resonable range for that observed property', 202);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('QC1 - range test sent', 'the value is in a resonable range for that observed property', 212);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('QC1 - step test', 'the value is coherent with the previous', 203);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('QC1 - step test sent', 'the value is coherent with the previous, value sent to the server', 213);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('QC1 - time consistency', 'the value is timely consistent', 204);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('QC1 - time consistency sent', 'the value is timely consistent, value sent to the server', 214);
+
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('QC2 - consistency time', 'the value is coherent with time-series', 300);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('QC2 - spatially coherent', 'the value is coherent with close by observations', 301);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('HQ - manually adjusted', 'the value has been manually corrected', 900);
+INSERT INTO quality_index (name_qi, desc_qi, id_qi) VALUES ('HQ - correct', 'the value is correct', 909);
 
 INSERT INTO obs_type (id_oty, name_oty, desc_oty) VALUES (1, 'insitu-fixed-point', 'fixed, in-situ, pointwise observation');
 INSERT INTO obs_type (id_oty, name_oty, desc_oty) VALUES (2, 'insitu-mobile-point', 'mobile, in-situ, pointwise observation');
@@ -482,7 +503,11 @@ INSERT INTO observed_properties VALUES ('air-heatindex', 'urn:ogc:def:parameter:
 INSERT INTO observed_properties VALUES ('ground-water-height', 'urn:ogc:def:parameter:x-istsos:1.0:ground:water:height', '', NULL, 10);
 INSERT INTO observed_properties VALUES ('water-ph', 'urn:ogc:def:parameter:x-istsos:1.0:water:ph', 'water pH', '{"interval": ["0", "14"], "role": "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0"}', 11);
 INSERT INTO observed_properties VALUES ('water-dox', 'urn:ogc:def:parameter:x-istsos:1.0:water:dox', 'water dissolved oxygen', '{"interval": ["0", "1000"], "role": "urn:x-ogc:def:classifiers:x-istsos:1.0:qualityIndexCheck:level0"}', 12);
-SELECT pg_catalog.setval('obs_pr_id_opr_seq', 12, true);
+INSERT INTO observed_properties VALUES ('water-temperature', 'urn:ogc:def:parameter:x-istsos:1.0:water:temperature', 'water temperature', NULL, 13);
+INSERT INTO observed_properties VALUES ('water-pressure', 'urn:ogc:def:parameter:x-istsos:1.0:water:pressure', 'water pressure', NULL, 14);
+INSERT INTO observed_properties VALUES ('water-depth', 'urn:ogc:def:parameter:x-istsos:1.0:water:depth', 'water depth', NULL, 15);
+
+SELECT pg_catalog.setval('obs_pr_id_opr_seq', 15, true);
 
 --=====================================
 -- ADDING UNIT OF MEASURES
@@ -498,7 +523,8 @@ INSERT INTO uoms VALUES ('m', 'metre', 7);
 INSERT INTO uoms VALUES ('m3/s', 'cube meter per second', 8);
 INSERT INTO uoms VALUES ('mm/h', 'millimiters per hour', 9);
 INSERT INTO uoms VALUES ('mg/l', 'milligrams per liter', 10);
-SELECT pg_catalog.setval('uoms_id_uom_seq', 10, true);
+INSERT INTO uoms VALUES ('hPa', 'hecto Pascal', 11);
+SELECT pg_catalog.setval('uoms_id_uom_seq', 11, true);
 
 --=====================================
 -- ADDING FUNCTIONS
