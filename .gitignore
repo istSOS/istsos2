@@ -17,6 +17,5 @@ acquisition/
 .vscode
 venv/
 
-# Docker
-Dockerfile*
-docker-*
+#Swarm prod
+prod_*.yaml
