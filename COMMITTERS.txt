@@ -3,7 +3,9 @@ Login(s)               Name                  Email / Contact                    
 ===================== ===================== ==================================== ==================================
 massimiliano-cannata  Massimiliano Cannata  massimiliano.cannata at gmail.com    Overall 
 mantonovic            Milan Antonovic       milan.antonovic at gmail.com         Overall 
-pietrap               Priska Pietra         
+danistrigaro          Daniele Strigaro      daniele.strigaro at gmail.com
+dzanin                Davide Zanin
+pietrap               Priska Pietra
 fmassa                Francesco Massa
 doscio                Mirko Cardoso
 ambrosiniluca         Ambrosini Luca
