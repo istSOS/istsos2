@@ -2,10 +2,10 @@ version: '3.7'
 services:
   istsos-db:
     build:
-      context: ./db/
-      dockerfile: Dockerfile
-    image: istsos-pg:1.0.0
-    # image: postgis/postgis:12-2.5-alpine
+    #  context: ./db/
+    #  dockerfile: Dockerfile
+    #image: istsos-pg:1.0.0
+    image: postgis/postgis:12-2.5-alpine
     restart: always
     ports:
       - 5432:5432
@@ -16,14 +16,12 @@ services:
     # POSTGRES_HOST: istsos_istsos-db_1
       TZ: Europe/Zurich
     volumes:
-  #     - ./docker-entrypoint-initdb.d/init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
       - v-istsos-pgdata:/var/lib/postgresql/data
   istsos:
-    build: 
-      context: ./
-      dockerfile: Dockerfile
-    image: istsos:1.0.0 
-    # image: geomatica/istsos:1.0.0
+    #build: 
+    #  context: ./
+    #  dockerfile: Dockerfile
+    image: istsos/istsos:2.4.0-RC4
     restart: always
     ports:
       - 80:80
