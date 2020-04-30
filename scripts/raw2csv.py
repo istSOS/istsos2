@@ -647,9 +647,9 @@ class Converter():
                 self.addException(msg)
                 raise RedundacyError(msg)
 
-            elif(
+            elif (
                 'disable_identical_warning' not in self.extra
-                or self.extra['disable_identical_warning'] = False
+                or self.extra['disable_identical_warning'] == False
             ):
                 self.addWarning(
                     "Identical observation (%s: %s) has been already processed (file %s), skipping." % (
