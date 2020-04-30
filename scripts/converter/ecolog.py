@@ -124,7 +124,10 @@ class Ecolog1k(raw2csv.Converter):
             inputDir, fileNamePattern, outputDir,
             qualityIndex, exceptionBehaviour,
             user, password, debug, csvlength,
-            filenamecheck, archivefolder
+            filenamecheck, archivefolder,
+            extra={
+                "disable_identical_warning": True
+            }
         )
 
     def parseDate(self, row):

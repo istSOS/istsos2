@@ -79,7 +79,10 @@ class Converter():
             user=None, password=None, debug=False,
             csvlength=5000,
             filenamecheck=None, archivefolder=None,
-            extra={}):
+            extra={
+                "disable_identical_warning": False
+            }
+        ):
         """
         Info:
 
@@ -636,11 +639,24 @@ class Converter():
             # If the date is already present and the data added are different
             # then it laounch an exception
             if str(self.observationsCheck[observation.getEventime()]) != str(observation):
-                msg = "Observation (%s: %s) is already present in the file (%s)." % (self.name, observation, self.executing['file'])
+                msg = "Observation (%s: %s) is already present in the file (%s)." % (
+                    self.name,
+                    observation,
+                    self.executing['file']
+                )
                 self.addException(msg)
                 raise RedundacyError(msg)
-            else:
-                self.addWarning("Identical observation (%s: %s) has been already processed (file %s), skipping." % (self.name, observation, self.executing['file']))
+            else if(
+                'disable_identical_warning' not in self.extra
+                or self.extra['disable_identical_warning'] = False
+            ):
+                self.addWarning(
+                    "Identical observation (%s: %s) has been already processed (file %s), skipping." % (
+                        self.name,
+                        observation,
+                        self.executing['file']
+                    )
+                )
         else:
             self.observations.append(observation)
             self.observationsCheck[observation.getEventime()] = observation
