@@ -653,7 +653,7 @@ class Converter():
 
                 elif (
                     'disable_redundancy_error' in self.extra
-                    or self.extra['disable_redundancy_error'] is True
+                    and self.extra['disable_redundancy_error'] is True
                 ):
                     self.addWarning(msg)
 
