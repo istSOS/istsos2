@@ -181,8 +181,14 @@ class Ecolog1k(raw2csv.Converter):
                         self.setEndPosition(date)
                         
                         values = {}
-                        
-                        values[self.config["observedProperty"]] = row[self.config["column"]]
+                        value = row[self.config["column"]]
+
+                        if value == '[10]':
+                            value = '-999.9'
+
+                        values[
+                            self.config["observedProperty"]
+                        ] = value
                         
                         self.addObservation(
                             raw2csv.Observation(date, values)
