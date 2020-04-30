@@ -245,142 +245,162 @@ After docker-compose down you can eventually delete all images:
 
 Go to the :ref:`ws_database` for instruction on how to configure the database.
 
-..
-    ---------------------------------------------------------------
-    Installation on Linux with docker-compose using official images
-    ---------------------------------------------------------------
 
-    The easiest way to install istSOS with PostgreSQL and PostGIS is to use docker-compose 
-    that uses official istSOS and PostGIS images.  
+---------------------------------------------------------------
+Installation on Linux with docker-compose using official images
+---------------------------------------------------------------
 
-    It is possible to use this docker-compose application on any system that supports 
-    docker with small variations.
+The easiest way to install istSOS with PostgreSQL and PostGIS is to use docker-compose 
+that uses official istSOS and PostGIS images.  
 
-    **Install Docker**
+It is possible to use this docker-compose application on any system that supports 
+docker with small variations.
 
-    Please refer to `https://docs.docker.com/install/linux/docker-ce/ubuntu/ <https://docs.docker.com/install/linux/docker-ce/ubuntu/>`_
-    to get information about how to install the latest docker engine. Use docker version >= 19.03.8.
+**Install Docker**
 
-    **Install docker-compose**
+Please refer to `https://docs.docker.com/install/linux/docker-ce/ubuntu/ <https://docs.docker.com/install/linux/docker-ce/ubuntu/>`_
+to get information about how to install the latest docker engine. Use docker version >= 19.03.8.
 
-    Please refer to `https://docs.docker.com/compose/install/ <https://docs.docker.com/compose/install/>`_
-    to get information about how to install the latest docker-compose release. Use docker-compose version >= 1.25.1.
+**Install docker-compose**
 
-    **Create docker-compose**
+Please refer to `https://docs.docker.com/compose/install/ <https://docs.docker.com/compose/install/>`_
+to get information about how to install the latest docker-compose release. Use docker-compose version >= 1.25.1.
 
-    Create a folder "istsos2", and inside it create a new file called "docker-compose.yml".
+**Create docker-compose**
 
-    **Configure docker-compose**
+Create a folder "istsos2", and inside it create and edit a new file called "docker-compose.yml".
 
-    Copy and paste the following configuration in docker-compose.yml and save.
+.. code-block:: bash
 
-    .. code-block:: docker-compose
+    mkdir istsos2 && cd istsos2
+    nano docker-compose.yml
 
-        version: '3.7'
-        services:
+**Configure docker-compose**
+
+Copy and paste the following configuration in docker-compose.yml and save.
+
+.. code-block:: docker-compose
+
+    version: '3.7'
+    services:
         istsos-db:
             image: postgis/postgis:12-2.5-alpine
             restart: always
             ports:
-            - 5432:5432
+                - 5432:5432
             environment:
-            POSTGRES_USER: postgres
-            POSTGRES_PASSWORD: postgres
-            POSTGRES_DB: istsos
-            TZ: Europe/Zurich
+                POSTGRES_USER: postgres
+                POSTGRES_PASSWORD: postgres
+                POSTGRES_DB: istsos
+                TZ: Europe/Zurich
             volumes:
-            - v-istsos-pgdata:/var/lib/postgresql/data
+                - v-istsos-pgdata:/var/lib/postgresql/data
         istsos:
-            image: geomatica/istsos:1.0.0
+            image: istsos/istsos:2.4.0-RC4
             restart: always
             ports:
-            - 80:80
+                - 80:80
             volumes:
-            - v-istsos-services:/usr/share/istsos/services
-        volumes:
+                - v-istsos-services:/usr/share/istsos/services
+    volumes:
         v-istsos-pgdata:
-            name: v-istsos-pgdata
         v-istsos-services:
-            name: v-istsos-services
 
-    **Run istSOS with docker-compose**
+**Create .env file**
 
-    .. code-block:: bash
+Create and edit a new file called ".env" to set environment for all services of the compose.
 
-        docker-compose -p istsos2 up -d
+.. code-block:: bash
 
-    .. note::
-
-        If everything has gone well, you should see the administration page at
-        this address:
-        `http://localhost/istsos/admin/ <http://localhost/istsos/admin/>`_
+    nano .env        
 
 
-    **Check running containers**
+**Configure .env**
 
-    If docker-compose is running you should see 2 container: istsos2_istsos_1 and istsos2_istsos-db_1.
+Copy and paste the following configuration and save.
 
-    .. code-block:: bash
+.. code-block:: bash
 
-        docker ps
+    COMPOSE_PROJECT_NAME=istsos2      
 
-    **List volumes**
+**Run istSOS with docker-compose**
 
-    Persistent data are stored in volumes. 
-    You can list and inspect volumes:
+.. code-block:: bash
 
-    .. code-block:: bash
+    docker-compose up -d
 
-        docker volume ls
-        docker volume inspect <volume-name>
+.. note::
 
-    **Stop istSOS and remove containers**
+    If everything has gone well, you should see the administration page at
+    this address:
+    `http://localhost/istsos/admin/ <http://localhost/istsos/admin/>`_
 
-    You can stop and delete istSOS and postgreSQL services, data will remain in 
-    persistent docker volumes.  
 
-    .. code-block:: bash
+**Check running containers**
 
-        docker-compose -p istsos2 down
+If docker-compose is running you should see 2 container: istsos2_istsos_1 and istsos2_istsos-db_1.
 
-    Note that you can re-run istSOS with the same data because 
-    we have not deleted any volumes.    
+.. code-block:: bash
 
-    **Remove docker volumes**
+    docker ps
 
-    After docker-compose down you can also delete all data in volumes:
+**List volumes**
 
-    .. code-block:: bash
+Persistent data are stored in volumes. 
+You can list and inspect volumes:
 
-        docker volume rm v-istsos-pgdata
-        docker volume rm v-istsos-services
+.. code-block:: bash
 
-    **List and delete images**
+    docker volume ls
+    docker volume inspect <volume-name>
 
-    After docker-compose down you can eventually delete all images:
+**Stop istSOS and remove containers**
 
-    .. code-block:: bash
+You can stop and delete istSOS and postgreSQL services, data will remain in 
+persistent docker volumes.  
 
-        docker images
-        docker rmi <images-name>
+.. code-block:: bash
 
-    .. warning::
+    docker-compose istsos2 down
 
-        Remember to disable services on your device that runs on port 80 and 5432 (e.g. 
-        postgreSQL, nginx/httpd) because docker-compose expose these ports.
-        
-        You can edit ports section on docker-compose.yml.
-        In this example we expose port 8081 instead of 80.   
+Note that you can re-run istSOS with the same data because 
+we have not deleted any volumes.    
 
-            ports:
+**Remove docker volumes**
 
-            - 8081:80
+After docker-compose down you can also delete all data in volumes:
 
-        If you have trouble in postgreSQL connection after a port change remember to 
-        edit Proxy Configuration section with <http://device-ip:istsos-port/istsos> at 
-        the administration page at this address:
-        `http://localhost/istsos/admin/ <http://localhost/istsos/admin/>`_
+.. code-block:: bash
 
-        Check also Proxy Configuration of the target service.
+    docker volume rm v-istsos-pgdata
+    docker volume rm v-istsos-services
 
-    Go to the :ref:`ws_database` for instruction on how to configure the database.
+**List and delete images**
+
+After docker-compose down you can eventually delete all images:
+
+.. code-block:: bash
+
+    docker images
+    docker rmi <images-name>
+
+.. warning::
+
+    Remember to disable services on your device that runs on port 80 and 5432 (e.g. 
+    postgreSQL, nginx/httpd) because docker-compose expose these ports.
+    
+    You can edit ports section on docker-compose.yml.
+    In this example we expose port 8081 instead of 80.   
+
+        ports:
+
+        - 8081:80
+
+    If you have trouble in postgreSQL connection after a port change remember to 
+    edit Proxy Configuration section with <http://device-ip:istsos-port/istsos> at 
+    the administration page at this address:
+    `http://localhost/istsos/admin/ <http://localhost/istsos/admin/>`_
+
+    Check also Proxy Configuration of the target service.
+
+Go to the :ref:`ws_database` for instruction on how to configure the database.
