@@ -646,7 +646,8 @@ class Converter():
                 )
                 self.addException(msg)
                 raise RedundacyError(msg)
-            else if(
+
+            elif(
                 'disable_identical_warning' not in self.extra
                 or self.extra['disable_identical_warning'] = False
             ):
