@@ -38,19 +38,23 @@ Usage example:
 # 101,2013,276,520,13.86,18.8,12.23,96.4,984
 # =====================================
 
-lugano = CampbellImporter('T_LUGANO', {
+lugano = CampbellImporter(
+    'T_LUGANO',
+    {
         "tz": "+02:00",
         "rowid": "99",
         "observedProperty": "urn:ogc:def:parameter:x-istsos:1.0:meteo:air:rainfall",
         "value": "0.2",
-        "date": [1,2,3,4]
-    }, 'http://localhost/istsos', 'demo',
+        "date": [1,2,3]
+    },
+    'http://localhost/istsos', 'demo',
     "test/scripts/data/in", 'LUGANO.dat', 
     "test/scripts/data/out",
-    debug=True)
+    debug=True
+)
 
 lugano.execute();
-    
+
 """
 
 from datetime import datetime

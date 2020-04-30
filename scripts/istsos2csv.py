@@ -143,9 +143,6 @@ def execute(args, logger=None):
             tmpBegin = tmpEnd
             tmpEnd = tmpBegin + step
 
-            print(" %s ************************** " % iso.datetime_isoformat(
-                tmpEnd))
-
         if tmpBegin < end:
             tmpEnd = end
             if tmpBegin == tmpEnd:
@@ -157,9 +154,6 @@ def execute(args, logger=None):
 
             res = req.get("%s?%s" % (url, urllib.parse.urlencode(params)), auth=auth)
             makeFile(res, procedure, observedProperty, d, qi, filename)
-
-            print(" %s ************************** " % iso.datetime_isoformat(
-                end))
 
         print("Finish.")
 
