@@ -184,7 +184,7 @@ class Ecolog1k(raw2csv.Converter):
                         values = {}
                         value = row[self.config["column"]]
 
-                        if value == '[10]':
+                        if value.find('['):
                             value = '-999.9'
 
                         values[
