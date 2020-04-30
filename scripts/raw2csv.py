@@ -644,8 +644,18 @@ class Converter():
                     observation,
                     self.executing['file']
                 )
-                self.addException(msg)
-                raise RedundacyError(msg)
+                if (
+                    'disable_redundancy_error' not in self.extra
+                    or self.extra['disable_redundancy_error'] is False
+                ):
+                    self.addException(msg)
+                    raise RedundacyError(msg)
+
+                elif (
+                    'disable_redundancy_error' in self.extra
+                    or self.extra['disable_redundancy_error'] is True
+                ):
+                    self.addWarning(msg)
 
             elif (
                 'disable_identical_warning' not in self.extra

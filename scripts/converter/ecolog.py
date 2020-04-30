@@ -126,7 +126,8 @@ class Ecolog1k(raw2csv.Converter):
             user, password, debug, csvlength,
             filenamecheck, archivefolder,
             extra={
-                "disable_identical_warning": True
+                "disable_identical_warning": True,
+                "disable_redundancy_error": True
             }
         )
 
