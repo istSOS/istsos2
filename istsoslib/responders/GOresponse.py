@@ -971,6 +971,7 @@ class Observation:
             csv_aggr_cols=["row_to_json(row(ts.sint))->>'f1'"]
             if 'text/plain' == filter.responseFormat:
                 csv_aggr_cols.append("'%s'" % self.name)
+
             aggrNotNull=[]
 
             valeFieldName = []
@@ -987,7 +988,8 @@ class Observation:
                         )
                     ]
                     csv_sql_cols += [
-                        "C%s.val_msr" % idx,
+                        #"C%s.val_msr" % idx,
+                        "COALESCE(C%s.val_msr, %s)" % (idx, filter.aggregate_nodata),
                         "COALESCE(C%s.id_qi_fk, %s)" % (idx, filter.aggregate_nodata_qi)
                     ]
 
