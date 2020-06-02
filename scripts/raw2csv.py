@@ -598,8 +598,13 @@ class Converter():
         else:
             #print "Sorting by date in file name"
             fs = {}
-            for f in files:
-                fs[self.getDateFromFileName(os.path.split(f)[1])] = f
+            try:
+                for f in files:
+                    fs[self.getDateFromFileName(os.path.split(f)[1])] = f
+            except Exception as x:
+                print(ex)
+                raise Exception("Error while parsing date from file name. Procedure %s" % self.name)
+
             fa = sorted(fs)
             files = []
             for f in fa:

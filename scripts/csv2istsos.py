@@ -35,6 +35,8 @@ import glob
 from datetime import datetime
 from datetime import timedelta
 import copy
+import urllib3
+urllib3.disable_warnings()
 
 sys.path.insert(0, path.abspath("."))
 try:
