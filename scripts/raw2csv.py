@@ -307,7 +307,7 @@ class Converter():
             dt = dt + self.fntd
         if ep is not None and ep < dt:
             return False
-        print("skipping %s" % name)
+
         return True
 
     def getDateTimeWithTimeZone(self, dt, tz):
@@ -387,7 +387,7 @@ class Converter():
 
         for fileObj in self.fileArray:
             if self.skipFile(os.path.split(fileObj)[1]):
-                self.log(" > Skipping file %s" % os.path.split(fileObj)[1])
+                # self.log(" > Skipping file %s" % os.path.split(fileObj)[1])
                 proclen = proclen - 1
                 continue
             self.log(" > Working on file %s" % os.path.split(fileObj)[1])
