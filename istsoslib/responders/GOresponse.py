@@ -1006,14 +1006,14 @@ class Observation:
                 if filter.aggregate_interval != None:
                     # This accept only numeric results
                     aggrCols.append(
-                        "COALESCE(%s(dt.c%s_v),'%s')" % (
+                        "COALESCE(%s(nullif(dt.c%s_v, 'NaN')),'%s')" % (
                             filter.aggregate_function,
                             idx,
                             filter.aggregate_nodata
                         )
                     )
                     csv_aggr_cols.append(
-                        "COALESCE(%s(dt.c%s_v),'%s')" % (
+                        "COALESCE(%s(nullif(dt.c%s_v, 'NaN')),'%s')" % (
                             filter.aggregate_function,
                             idx,
                             filter.aggregate_nodata
