@@ -26,8 +26,6 @@ RUN rm -rf _build && \
     rsync -a --exclude=*.pyc wnslib/* _build/istsos/wnslib && \
     cp *.py  _build/istsos/ && \
     cp *.txt  _build/istsos/ && \
-    #delete
-    cp istsos.conf _build/istsos/ && \
     cp httpd-istsos.conf _build/istsos/ && \
     cd _build && \
     rm -rf `find . -type d -name .svn`
@@ -39,8 +37,7 @@ WORKDIR /usr/share
 
 COPY --from=build-stage /app/_build/ /usr/share/
 
-RUN apk update && \
-    chmod 755 -R /usr/share/istsos && \
+RUN chmod 755 -R /usr/share/istsos && \
     chown -R daemon:daemon /usr/share/istsos/services && \
     chown -R daemon:daemon /usr/share/istsos/logs && \
     mkdir /usr/local/apache2/conf/sites-available /usr/local/apache2/conf/sites-enabled && \
@@ -51,26 +48,18 @@ RUN apk update && \
     ln -s /usr/local/apache2/conf/sites-available/httpd-istsos.conf /usr/local/apache2/conf/sites-enabled/httpd-istsos.conf
     
 RUN apk update && \
-    set -ex \   
-    # && apk add --no-cache --virtual .build-deps \
-    && apk add --no-cache \
+    set -ex && \   
+    apk add --no-cache \
         apache2-mod-wsgi \
-        #&& \
-        # cp /usr/share/istsos/istsos.conf /etc/apache2/conf.d/ && \
-        #cat /usr/share/istsos/httpd.conf  >> /usr/local/apache2/conf/httpd.conf
-        #lxml dependencies
         py3-pip \
         musl \
         xz-libs \
         zlib \
         libxml2-dev \
-        #libxml2 
         libxslt \
         libc-dev \
         py3-lxml \
-        #pkgconfig
-        libxslt-dev \
-        #psycopg dependencies    
+        libxslt-dev \ 
         postgresql-dev \
         gcc \
         python3-dev \
