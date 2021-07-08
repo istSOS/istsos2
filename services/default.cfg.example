@@ -76,12 +76,12 @@ x = x-position,east,easting,lon,longitude,x
 [provider]
 contactCountry = Switzerland
 providerName = Istitute Of Earth Science - SUPSI
-contactCity = Canobbio
+contactCity = Mendrisio
 contactVoice = +41586666200
 contactEmail = geoservice@supsi.ch
-contactDeliveryPoint = Campus Trevano
+contactDeliveryPoint = Via Flora Ruchat-Roncati 15
 contactName = Team Geomatica
-contactPostalCode = 6952
+contactPostalCode = 6850
 contactFax = +41586666209
 contactAdminArea = Canton Ticino
 providerSite = http://www.supsi.ch/ist
@@ -91,7 +91,7 @@ contactPosition = Data manager
 zAxisName = altitude
 xAxisName = easting
 yAxisName = northing
-allowedEPSG = 3857,21781
+allowedEPSG = 3857,2056,21781
 istsosepsg = 4326
 
 [initialization]

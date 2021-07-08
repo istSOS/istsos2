@@ -1,31 +1,26 @@
 version: '3.7'
 services:
   istsos-db:
-    # build:
-    #  context: ./db/
-    #  dockerfile: Dockerfile
     image: postgis/postgis:12-2.5-alpine
     restart: always
     ports:
-      - 5432:5432
+      - 9433:5432
+    container_name: istsos-db
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: istsos
-    # POSTGRES_HOST: istsos_istsos-db_1
       TZ: Europe/Zurich
     volumes:
-      - v-istsos-pgdata:/var/lib/postgresql/data
+      - /var/lib/postgresql/data
   istsos:
     # build: 
-    #  context: ./
-    #  dockerfile: Dockerfile
-    image: istsos/istsos:2.4.0-RC4
+    #   context: ./
+    #   dockerfile: Dockerfile
+    image: istsos/istsos:2.4.1
+    container_name: istsos-service
     restart: always
     ports:
       - 80:80
     volumes:
-      - v-istsos-services:/usr/share/istsos/services
-volumes:
-  v-istsos-pgdata:
-  v-istsos-services:
+      - ./services:/usr/share/istsos/services

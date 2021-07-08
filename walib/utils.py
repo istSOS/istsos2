@@ -768,8 +768,12 @@ def verifyxmlservice(url, waEnviron):
     from lxml import etree as et
     try:
         if 'HTTP_AUTHORIZATION' in waEnviron:
-            response = requests.get(url, headers={
-                'Authorization': waEnviron['HTTP_AUTHORIZATION']})
+            response = requests.get(
+                url,
+                headers={
+                    'Authorization': waEnviron['HTTP_AUTHORIZATION']
+                }
+            )
 
         else:
             response = requests.get(url)

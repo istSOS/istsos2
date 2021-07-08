@@ -6,6 +6,8 @@ ENV POSTGRES_PASSWORD='postgres'
 ENV POSTGRES_DB='istsos'
 ENV TZ='Europe/Zurich'
 
+EXPOSE 5432
+
 VOLUME  ["/var/lib/postgresql/data"]
 
 

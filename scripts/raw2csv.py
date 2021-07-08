@@ -545,9 +545,11 @@ class Converter():
         return None
 
     def getDSEndPosition(self):
-        if 'constraint' in self.describe['outputs'][0]:
+        if self.describe and 'constraint' in self.describe['outputs'][0]:
             return iso.parse_datetime(
                 self.describe['outputs'][0]['constraint']['interval'][1])
+        else:
+            print("getDSEndPosition not found: %s" % self.name)
         return None
 
     def isEmpty(self):

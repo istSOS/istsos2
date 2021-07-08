@@ -296,7 +296,7 @@ Copy and paste the following configuration in docker-compose.yml and save.
             volumes:
                 - v-istsos-pgdata:/var/lib/postgresql/data
         istsos:
-            image: istsos/istsos:2.4.0-RC4
+            image: istsos/istsos:2.4.1
             restart: always
             ports:
                 - 80:80

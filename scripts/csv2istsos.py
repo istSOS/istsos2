@@ -41,7 +41,8 @@ urllib3.disable_warnings()
 sys.path.insert(0, path.abspath("."))
 try:
     import argparse as argparse
-    import requests as requests
+    import requests
+    from requests.packages.urllib3.exceptions import InsecureRequestWarning
     from requests.auth import HTTPBasicAuth
     import isodate as iso
     from pytz import timezone
@@ -52,6 +53,7 @@ Error loading internal libs:
  >> did you run the script from the istSOS root folder?\n\n""")
     raise e
 
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 datacache = None
 isourn = 'urn:ogc:def:parameter:x-istsos:1.0:time:iso8601'
 
