@@ -51,7 +51,7 @@ ALTER SEQUENCE event_time_id_eti_seq OWNED BY event_time.id_eti;
 --=====================================
 
 CREATE TABLE feature_type (
-    name_fty character varying(25) NOT NULL,
+    name_fty character varying NOT NULL,
     id_fty integer NOT NULL
 );
 COMMENT ON TABLE feature_type IS 'Definition of FeatureOfInterest type.';
@@ -69,7 +69,7 @@ CREATE TABLE foi (
     desc_foi text,
     id_fty_fk integer NOT NULL,
     id_foi integer NOT NULL,
-    name_foi character varying(25) NOT NULL
+    name_foi character varying NOT NULL
 );
 SELECT AddGeometryColumn('foi', 'geom_foi', $SRID, 'POINT', 3);
 COMMENT ON TABLE foi IS 'Stores FeatureOfInterest type.';
