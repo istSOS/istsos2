@@ -32,6 +32,7 @@ import sys
 import os
 from os import path
 import glob
+import fnmatch
 from datetime import datetime
 from datetime import timedelta
 import decimal
@@ -591,6 +592,7 @@ class Converter():
             self.addException(msg)
             raise FileReaderError(msg)
 
+        print(" > Searching: %s" % os.path.join(self.folderIn, "%s" % (self.pattern)))
         files = list(filter(
             path.isfile,
             glob.glob(os.path.join(self.folderIn, "%s" % (self.pattern)))))
