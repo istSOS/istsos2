@@ -119,6 +119,9 @@ class Converter():
         self.service = service
         self.folderIn = folderIn
         self.pattern = pattern
+        
+        # keep file directory on exit
+        self.keepOutput = False
 
         # Messages collected during processing
         self.messages = []
@@ -193,7 +196,9 @@ class Converter():
       return self.name
 
     def __del__(self):
+        
         self.log(" > End of conversion 4 %s. Bye bye.. ;)" % self.name)
+        
         if self.debugfile:
             self.debugfile.flush()
             self.debugfile.close()
@@ -202,13 +207,15 @@ class Converter():
             self.log("  > Debug file closed..")
         if self.archivefolder:
             self.archive()
+
         # Deleting temporary working directory
-        for root, dirs, files in os.walk(self.folderOut, topdown=False):
-            for name in files:
-                os.remove(os.path.join(root, name))
-            for name in dirs:
-                os.rmdir(os.path.join(root, name))
-        os.rmdir(self.folderOut)
+        if self.keepOutput is False:
+            for root, dirs, files in os.walk(self.folderOut, topdown=False):
+                for name in files:
+                    os.remove(os.path.join(root, name))
+                for name in dirs:
+                    os.rmdir(os.path.join(root, name))
+            os.rmdir(self.folderOut)
 
     def log(self, message):
         if self.debugConverter:
@@ -370,7 +377,7 @@ class Converter():
 
         archive.close()
 
-    def execute(self, fileArray=None):
+    def execute(self, fileArray=None, forceCsv=False):
 
         self.observations = []
         self.observationsCheck = {}
@@ -430,13 +437,16 @@ class Converter():
         self.addMessage(" > Last observation; %s" % self.getIOEndPosition())
 
         # Save the CSV file in text/csv;subtype='istSOS/2.0.0'
-        if self.isEmpty():
-            # The procedure is registered but no observations are still
-            # inserted
-            self.save()
-            return True
-        elif isinstance(self.getIOEndPosition(), datetime) and (
-                self.getIOEndPosition() > self.getDSEndPosition()):
+        if (
+            self.isEmpty()
+            or (
+                isinstance(self.getIOEndPosition(), datetime)
+                and (
+                    self.getIOEndPosition() > self.getDSEndPosition()
+                )
+            )
+            or forceCsv is True
+        ):
             self.save()
             return True
         else:
@@ -694,11 +704,19 @@ class Converter():
         self.log("End position: %s" % self.getIOEndPosition())
         if len(self.observations) > 0:
             if self.getIOEndPosition() is None:
-                f = open(os.path.join(self.folderOut, "%s_%s.dat" % (
-                    self.name,
-                    datetime.strftime(
-                        self.observations[-1].getEventime().astimezone(
-                            timezone('UTC')), "%Y%m%d%H%M%S%f"))), 'w')
+                f = open(
+                    os.path.join(
+                        self.folderOut, "%s_%s.dat" % (
+                            self.name,
+                            datetime.strftime(
+                                self.observations[-1].getEventime().astimezone(
+                                    timezone('UTC')
+                                ),
+                                "%Y%m%d%H%M%S%f"
+                            )
+                        )
+                    ), 'w'
+                )
             else:
                 if self.getIOEndPosition() < self.observations[-1].getEventime():
                     raise IstSOSError(
@@ -715,9 +733,9 @@ class Converter():
             self.log(",".join(self.obsindex))
 
             self.observations = sorted(
-                self.observations, key=methodcaller('getEventime'))
+                self.observations, key=methodcaller('getEventime')
+            )
             for o in self.observations:
-                #self.log(o.csv(",", self.obsindex))
                 f.write("%s\n" % o.csv(",", self.obsindex))
         else:
             # End position is used to advance the sampling time in cases where
