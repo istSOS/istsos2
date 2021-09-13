@@ -24,6 +24,8 @@ Ext.define('istsos.view.ProcedureChart', {
         var me = this;
         this.sPrefix = "$_";
 
+        this.lock = false;
+
         Ext.create('istsos.store.ObservedProperties');
         Ext.create('istsos.store.ChartStyles');
         Ext.create('istsos.store.AggregateFunctionStore').loadData([
@@ -42,6 +44,10 @@ Ext.define('istsos.view.ProcedureChart', {
 
         //var tz = ((offset > 0) ? "+"+this.pad(offset) : this.pad(offset));
         //Ext.getCmp('oeBeginTime').format = 'H:i ['+tz+']';
+
+
+        Ext.getCmp("oeBegin").on("change", this.lockDate, this);
+        Ext.getCmp("oeEnd").on("change", this.lockDate, this);
 
         Ext.getCmp('oeTZ').setValue(istsos.utils.minutesToTz());
 
@@ -103,6 +109,9 @@ Ext.define('istsos.view.ProcedureChart', {
             this.fireEvent("observedPropertyIsSet", this, op);
         },this);
 
+    },
+    lockDate: function(field, newValue, oldValue, eOpts) {
+      this.lock = true;
     },
     pad: function(n){
         if (n>=0 && n<10) {
@@ -711,13 +720,16 @@ Ext.define('istsos.view.ProcedureChart', {
         delete this.procedures[procedure.getName()];
         this.reconfigure();
         if (this.chart) {
-            if (Ext.Object.getSize(this.procedures)==0) {
+            if (Ext.Object.getSize(this.procedures)===0) {
                 Ext.destroy(Ext.get('chartCnt-body').child('*'));
                 Ext.get('chartCnt-body').addCls("viewerChart");
                 delete this.chart;
             }else{
                 this.rederChart();
             }
+        }
+        if (Ext.Object.getSize(this.procedures)===0) {
+          this.lock = false;
         }
     },
     reconfigure: function(){
@@ -784,12 +796,11 @@ Ext.define('istsos.view.ProcedureChart', {
                 }
             }
 
-
             if (!Ext.isEmpty(end)) {
 
                 var endCopy = Ext.Date.add(Ext.Date.clone(end), Ext.Date.DAY, +1); //Ext.Date.clone(end);
                 var beginCopy = Ext.Date.add(Ext.Date.clone(end), Ext.Date.DAY, -7);
-                if(beginCopy<begin){
+                if (beginCopy<begin){
                   beginCopy = Ext.Date.clone(begin);
                 }
 
@@ -797,14 +808,26 @@ Ext.define('istsos.view.ProcedureChart', {
                     if (oeBegin.maxValue.getTime()<end.getTime()) {
                         oeBegin.setMaxValue(endCopy);
                         oeEnd.setMaxValue(endCopy);
-                        oeBegin.setValue(beginCopy);
-                        oeEnd.setValue(endCopy);//end);
+                        if (this.lock === false){
+                          Ext.getCmp("oeBegin").un("change", this.lockDate, this);
+                          Ext.getCmp("oeEnd").un("change", this.lockDate, this);
+                          oeBegin.setValue(beginCopy);
+                          oeEnd.setValue(endCopy);//end);
+                          Ext.getCmp("oeBegin").on("change", this.lockDate, this);
+                          Ext.getCmp("oeEnd").on("change", this.lockDate, this);
+                        }
                     }
-                }else{
+                } else {
                     oeBegin.setMaxValue(endCopy);
                     oeEnd.setMaxValue(endCopy);
-                    oeBegin.setValue(beginCopy);
-                    oeEnd.setValue(endCopy);
+                    if (this.lock === false){
+                      Ext.getCmp("oeBegin").un("change", this.lockDate, this);
+                      Ext.getCmp("oeEnd").un("change", this.lockDate, this);
+                      oeBegin.setValue(beginCopy);
+                      oeEnd.setValue(endCopy);
+                      Ext.getCmp("oeBegin").on("change", this.lockDate, this);
+                      Ext.getCmp("oeEnd").on("change", this.lockDate, this);
+                    }
                 }
 
             }
