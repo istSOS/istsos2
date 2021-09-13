@@ -17,7 +17,7 @@ services:
     # build: 
     #   context: ./
     #   dockerfile: Dockerfile
-    image: istsos/istsos:2.4.1
+    image: istsos/istsos:2.4.2
     container_name: istsos-service
     restart: always
     ports:

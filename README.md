@@ -33,7 +33,7 @@ services:
       - istsos-db-data:/var/lib/postgresql/data
 
   istsos:
-    image: istsos/istsos:2.4.1
+    image: istsos/istsos:2.4.2
     container_name: istsos
     restart: always
     ports:
