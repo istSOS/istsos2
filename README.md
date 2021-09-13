@@ -54,3 +54,19 @@ docker-compose up -d
 
 Open your browser and go to http://localhost/istsos/admin you should be able to see the web admin page.
 Before creating a new istsos service instance go to the "Database" page and set "istsos-db" as Host.
+
+## To build the docker image from source
+
+clone the repository
+
+```bash
+git clone https://github.com/istSOS/istsos2.git
+cd istsos2
+```
+
+Build the image with docker
+
+```bash
+version=$(cat ./VERSION.txt)
+docker build --no-cache -t istsos/istsos:$version .
+```
