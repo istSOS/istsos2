@@ -3,7 +3,8 @@
 Build the images
 
 ```bash
-docker build --no-cache -t docker push docker.pkg.github.com/istsos/istsos2/istsos-scripts:2.4.1 .
+docker build --no-cache \
+  -t docker.pkg.github.com/istsos/istsos2/istsos-scripts:2.4.1 .
 ```
 
 Publish
