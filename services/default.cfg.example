@@ -85,7 +85,7 @@ contactPostalCode = 6850
 contactFax = +41586666209
 contactAdminArea = Canton Ticino
 providerSite = http://www.supsi.ch/ist
-contactPosition = Data manager
+contactPosition = Geomatics division
 
 [geo]
 zAxisName = altitude
