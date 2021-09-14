@@ -15276,7 +15276,7 @@
             },
             "codeClass": null,
             "userConfig": {
-                "storeId": "chartStyles",
+                "storeId": "ChartStyles",
                 "data": "[\n    {\"id\": 1, \"name\": \"Line\"},\n    {\"id\": 2, \"name\": \"Dotted\"},\n    {\"id\": 3, \"name\": \"Line and Dots\"}\n]",
                 "designer|userClassName": "ChartStyles"
             },
@@ -15285,12 +15285,11 @@
                     "id": "ExtBox1-ext-gen32937",
                     "type": "ajaxproxy",
                     "reference": {
-                        "name": "fields",
-                        "type": "array"
+                        "name": "proxy",
+                        "type": "object"
                     },
                     "codeClass": null,
                     "userConfig": {
-                        "name": "id",
                         "designer|userClassName": "MyField92"
                     }
                 },
