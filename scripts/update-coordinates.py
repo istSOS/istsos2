@@ -1,7 +1,9 @@
+import traceback
 import psycopg2
 import sys
 import json
 import csv
+import yaml
 import xml.etree.ElementTree as et
 from os import path
 
@@ -15,6 +17,23 @@ A_BOL_R_PTC,PortoCeresio,712688,84295,290,21781
 A_BON_QUA,Quartino,713525,113128,201,21781
 A_CAL_AIR,Batola,692060,152560,1100,21781
 --
+
+And a yaml file like this:
+
+--
+database:
+    host: localhost
+    port: 5432
+    user: postgres
+    password: postgres
+    dbname: istsos
+    schema: sos
+
+folders:
+    services: /services
+    csv: /data/locations.csv
+--
+
 Update all the foi coordinates:
 
 Example:
@@ -32,21 +51,16 @@ ns = {
     'xsi': 'http://www.w3.org/2001/XMLSchema-instance'
 }
 
-"""
-input file:
+if len(sys.argv) != 2:
+    raise Exception("yaml config file not given.")
 
-name_prc,name_foi,st_x,st_y,st_z,st_srid
-A_AETCAN_AIR,AET,691140,153780,1140,21781
-A_BOL_PTC,PortoCeresio ,712688,84295,290,21781
-
-"""
-
-if len(sys.argv) != 4:
-    raise Exception("SOS instance name or CSV file not given.")
-
+config = None
+with open(sys.argv[1], 'r') as file:
+    config = yaml.load(file, Loader=yaml.FullLoader)
+    print(config)
 
 def red(message):
-    return(f"\033[91m{message}\033[0m")
+    return("\033[91m%s\033[0m" % message)
 
 # Check if there is a name_foi with more the one coordinates
 
@@ -56,8 +70,9 @@ print(" > Searching for name_foi duplicates:")
 
 fois = {}
 procedures = {}
-schema = sys.argv[1]
-xml_folder = sys.argv[3]
+schema = config['database']['schema']
+xml_folder = config['folders']['services']
+csvfile_path = config['folders']['csv']
 
 def check_foi(name_prc, name_foi, st_x, st_y, st_z, st_srid):
 
@@ -74,6 +89,7 @@ def check_foi(name_prc, name_foi, st_x, st_y, st_z, st_srid):
     if name_foi not in fois:
         fois[name_foi] = {
             'coords': coords,
+            'srid': st_srid,
             'cnt': 1,
             'procedures': [name_prc]
         }
@@ -81,7 +97,7 @@ def check_foi(name_prc, name_foi, st_x, st_y, st_z, st_srid):
     # If exists check for duplicate
     elif fois[name_foi]['coords'] != coords:
         # Create a new FOI
-        name_foi = f"{name_foi}_{fois[name_foi]['cnt']+1}"
+        name_foi = "%s_%s" % (name_foi, fois[name_foi]['cnt']+1)
         # Check recursivly
         name_foi = check_foi(name_prc, name_foi, st_x, st_y, st_z, st_srid)
 
@@ -91,7 +107,7 @@ def check_foi(name_prc, name_foi, st_x, st_y, st_z, st_srid):
         
     return name_foi
 
-with open(sys.argv[2], newline='') as csvfile:
+with open(csvfile_path) as csvfile:
 
     reader = csv.reader(csvfile, delimiter=',')
     for row in reader:
@@ -100,20 +116,22 @@ with open(sys.argv[2], newline='') as csvfile:
 
 
 for foi in sorted(fois.keys()):
-    print(f"{foi}: {json.dumps(fois[foi], indent=4)}")
+    print("%s: %s" % (foi, json.dumps(fois[foi], indent=4)))
     
     for procedure in fois[foi]['procedures']:
-        print(f" - {procedure}: {procedures[procedure]}")
+        print(" - %s: %s" % (procedure, procedures[procedure]))
 
 #print(json.dumps(procedures, indent=4))
 #print(sorted(procedures.values()))
 
 conn = psycopg2.connect(
-    "dbname=istsos "
-    "user=postgres "
-    "password=postgres "
-    "host=localhost "
-    "port=5432"
+    "dbname=%s user=%s password=%s host=%s port=%s" % (
+        config['database']['dbname'],
+        config['database']['user'],
+        config['database']['password'],
+        config['database']['host'],
+        config['database']['port']
+    )
 )
 
 cur = conn.cursor()
@@ -132,11 +150,11 @@ try:
         foi = fois[name_foi]
         
         # Check if foi exists
-        cur.execute(f"""
+        cur.execute("""
             SELECT
                 id_foi
             FROM
-                {schema}.foi
+                """ + schema + """.foi
             WHERE
                 name_foi = %s;
         """, (name_foi,))
@@ -144,32 +162,33 @@ try:
         foi_rec = cur.fetchone()
 
         if foi_rec is None:
-            print(f'Inserting "{name_foi}" new foi..')
+            print('Inserting "%s" new foi..' % name_foi)
 
-            cur.execute(f"""
-                INSERT INTO {schema}.foi(
+            cur.execute("""
+                INSERT INTO """ + schema + """.foi(
                     id_fty_fk, name_foi, geom_foi
                 )
                 VALUES (
-                    1, %s, ST_SetSRID(ST_MakePoint(%s, %s, %s), 21781)
+                    1, %s, ST_SetSRID(ST_MakePoint(%s, %s, %s), %s)
                 ) RETURNING id_foi;
             """, (
                 name_foi,    
                 foi['coords'][0],
                 foi['coords'][1],
-                foi['coords'][2]
+                foi['coords'][2],
+                foi['srid']
             ))
             id_foi = cur.fetchone()[0]
 
         else:
-            print(f'Updating "{name_foi}" coordinates..')
+            print('Updating "%s" coordinates..' % name_foi)
             
             id_foi = foi_rec[0]
             
             # Unlink foi related procedures 
-            cur.execute(f"""
+            cur.execute("""
                 UPDATE
-                    {schema}.procedures
+                    """ + schema + """.procedures
                 SET
                     id_foi_fk = NULL
                 WHERE
@@ -177,27 +196,28 @@ try:
             """, (id_foi,))
 
             # Update foi's coordinates
-            cur.execute(f"""
+            cur.execute("""
                 UPDATE
-                    {schema}.foi
+                    """ + schema + """.foi
 	            SET
-	                geom_foi = ST_SetSRID(ST_MakePoint(%s, %s, %s), 21781)
+	                geom_foi = ST_SetSRID(ST_MakePoint(%s, %s, %s), %s)
 	            WHERE
 	                id_foi = %s;
             """, (
                 foi['coords'][0],
                 foi['coords'][1],
                 foi['coords'][2],
+                foi['srid'],
                 id_foi
             ))
 
         for procedure in foi['procedures']:
 
-            cur.execute(f"""
+            cur.execute("""
                 SELECT
                     id_prc
                 FROM
-                    {schema}.procedures
+                    """ + schema + """.procedures
                 WHERE
                     name_prc = %s;
             """, (procedure,))
@@ -205,15 +225,14 @@ try:
             res = cur.fetchone()
 
             if res is None:
-#                raise Exception(f'Procedure {procedure} not found in db.')
-                print(f'Procedure {procedure} not found in db.')
+                print('Procedure %s not found in db.' % procedure)
                 continue
 
             id_prc = res[0]
 
-            cur.execute(f"""
+            cur.execute("""
                 UPDATE
-                    {schema}.procedures
+                    """ + schema + """.procedures
                 SET
                     id_foi_fk = %s
                 WHERE
@@ -221,7 +240,7 @@ try:
             """, (id_foi, id_prc))
 
             # Update XML
-            f = path.join(xml_folder, schema, 'sml', f'{procedure}.xml')
+            f = path.join(xml_folder, schema, 'sml', '%s.xml' % procedure)
             if path.isfile(f):
                 sml = et.parse(f)
                 root = sml.getroot()  # et.Element("{%s}SensorML" % ns['sml'])
@@ -238,16 +257,16 @@ try:
 
 #                print(et.tostring(point, encoding='utf8', method='xml'))
 
-                f = path.join(xml_folder, schema, 'sml', f'{procedure}.xml')
+                f = path.join(xml_folder, schema, 'sml', '%s.xml' % procedure)
                 sml.write(f)
 
             else:
-                print(f"Warning: SML not found ({f})")
+                print("Warning: SML not found (%s)" % f)
 
     # Check work in the database
     for procedure in sorted(procedures.keys()):
 
-        cur.execute(f"""
+        cur.execute("""
             SELECT
                 id_prc,
                 id_foi,
@@ -256,9 +275,9 @@ try:
                 st_y(geom_foi) as y,
                 st_z(geom_foi) as z
             FROM
-                {schema}.procedures
+                """ + schema + """.procedures
             INNER JOIN
-                {schema}.foi
+                """ + schema + """.foi
             ON
                 id_foi_fk = id_foi
             WHERE
@@ -268,7 +287,7 @@ try:
         res = cur.fetchone()
 
         if res is None:
-            print(f"skipping procedure {procedure} not in db")
+            print("skipping procedure %s not in db" % procedure)
             continue
 
         id_prc = res[0]
@@ -287,13 +306,17 @@ try:
         ):
 
             if db_name_foi != name_foi:
-                print(f"{procedure} foi not updated from {db_name_foi} to {name_foi}")
+                print("%s foi not updated from %s to %s" % (
+                    procedure, db_name_foi, name_foi
+                ))
 
             if db_coords != coords:
-                print(f"{procedure} coords not updated from {db_coords} to {coords}")
+                print("%s coords not updated from %s to %s" % (
+                    procedure, db_coords, coords
+                ))
 
         else:
-            print(f"{procedure} update correctly")
+            print("%s update correctly" % procedure)
 
 #    cur.execute("ROLLBACK;")
     cur.execute("COMMIT;")
@@ -302,6 +325,6 @@ try:
     
 
 except Exception as e:
-    print(str(e))
+    print(traceback.print_exc())
     cur.execute("ROLLBACK;")
 
