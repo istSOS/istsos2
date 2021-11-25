@@ -70,3 +70,18 @@ Build the image with docker
 version=$(cat ./VERSION.txt)
 docker build --no-cache -t istsos/istsos:$version .
 ```
+
+## Push to docker hub
+
+```bash
+version=$(cat ./VERSION.txt)
+docker build --no-cache -t istsos/istsos:$version .
+docker push istsos/istsos:$version
+```
+
+Tag latest an push
+
+```bash
+docker image tag istsos/istsos:$version istsos/istsos:latest
+docker push istsos/istsos:latest
+```
