@@ -7,3 +7,6 @@ requests==2.23.0
 six==1.14.0
 urllib3[secure]==1.25.7
 html==1.16
+lxml==4.6.3
+psycopg2-binary==2.8.4
+pyyaml==5.4.1

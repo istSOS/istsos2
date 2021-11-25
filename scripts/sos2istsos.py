@@ -33,15 +33,11 @@ import calendar
 import time
 from io import StringIO
 from os import path
-from parse_and_get import parse_and_get_ns
-
-#print path.abspath(".")
-#print path.normpath("%s/../" % path.abspath("."))
-#print path.abspath(path.dirname(__file__))
-#print path.normpath("%s/../../" % path.abspath(__file__))
+# from parse_and_get import parse_and_get_ns
 
 sys.path.insert(0, path.abspath("."))
 try:
+    from scripts.istsosutils import parse_and_get_ns
     import requests as req
     from requests.auth import HTTPBasicAuth
     import argparse as argparse
