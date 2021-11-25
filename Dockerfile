@@ -30,8 +30,7 @@ RUN rm -rf _build && \
     cd _build && \
     rm -rf `find . -type d -name .svn`
 
-
-FROM httpd:2.4.41-alpine
+FROM httpd:2.4.48-alpine3.14
 
 WORKDIR /usr/share
 
