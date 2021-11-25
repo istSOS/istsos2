@@ -54,8 +54,6 @@ import os
 from os import path
 import traceback
 import json
-import pprint
-import glob
 from datetime import datetime
 
 #print path.abspath(".")
@@ -133,26 +131,64 @@ def execute(args, logger=None):
             if line[17] != '':
                 proc.setAcquisitionInterval(line[17])
 
+
+            observer_property_name = ''
+
             o1 = line[10].split(',')
-            o2 = line[11].split(',')
-            o3 = line[12].split(',')
+
+            if line[11] != '':
+                o2 = line[11].split(',')
+            else:
+                o2 = [''] * len(o1)
+
+            if line[12] != '':
+                o3 = line[12].split(',')
+            else:
+                o3 = [''] * len(o1)
+
+            print(line)
+            print(o1, o2, o3)
+            print("--")
+
             uom = line[13].split(',')
+
             cLower = []
             if line[18] != '-':
                 cLower = line[18].split(',')
+
             cUpper = []
             if line[19] != '-':
                 cUpper = line[19].split(',')
 
             if len(cLower) + len(cUpper) > 0:
 
-                if (len(o1) + len(o2) +
-                        len(o3) + len(cLower) + len(cUpper)) != (len(o1)*5):
+                print("Adding with QI check")
+
+                if (
+                    len(o1) + len(o2) + len(o3)
+                    + len(cLower) + len(cUpper)
+                ) != (len(o1)*5):
                     raise Exception("observed property lenght missmatch")
 
                 for idx in range(0, len(o1)):
+                    print("Adding %s" % (
+                        'urn:ogc:def:parameter:x-istsos:1.0:%s:%s%s' % (
+                            o1[idx],
+                            o2[idx],
+                            ":%s" % o3[idx] if  o3[idx] != '' else ''
+                        )
+                    ))
+
+                    opname = o3[idx] if o3[idx].find(':') == -1 else o3[idx].replace(':', '-')
+
+                    if opname == '':
+                        opname = o2[idx] if o2[idx].find(':') == -1 else o2[idx].replace(':', '-')
+
+                    if opname == '':
+                        opname = o1[idx] if o1[idx].find(':') == -1 else o1[idx].replace(':', '-')
+
                     proc.addObservedProperty(
-                        o3[idx] if o3[idx].find(':') == -1 else o3[idx].replace(':', '-'),
+                        opname,
                         'urn:ogc:def:parameter:x-istsos:1.0:%s:%s%s' % (
                             o1[idx],
                             o2[idx],
@@ -163,12 +199,23 @@ def execute(args, logger=None):
                         lower=cLower[idx]
                     )
             else:
+                print("Adding without QI check")
+
                 if (len(o1) + len(o2) + len(o3)) != (len(o1)*3):
                     raise Exception("observed property lenght missmatch")
 
                 for idx in range(0, len(o1)):
+
+                    opname = o3[idx] if o3[idx].find(':') == -1 else o3[idx].replace(':', '-')
+
+                    if opname == '':
+                        opname = o2[idx] if o2[idx].find(':') == -1 else o2[idx].replace(':', '-')
+
+                    if opname == '':
+                        opname = o1[idx] if o1[idx].find(':') == -1 else o1[idx].replace(':', '-')
+
                     proc.addObservedProperty(
-                        o3[idx] if o3[idx].find(':') == -1 else o3[idx].replace(':', '-'),
+                        opname,
                         'urn:ogc:def:parameter:x-istsos:1.0:%s:%s%s' % (
                             o1[idx],
                             o2[idx],
@@ -177,6 +224,7 @@ def execute(args, logger=None):
                         uom[idx]
                     )
 
+            print(proc.toJson())
             service.registerProcedure(proc)
             # print proc.toJson()
             # Setting the begin position
