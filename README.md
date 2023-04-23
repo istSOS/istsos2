@@ -10,6 +10,8 @@ For further information, please refer to the istSOS website: <http://istsos.org/
 istSOS is released under the GPL License, and runs on all major platforms (Windows, Linux, Mac OS X), even though tests were conducted under a Linux environment.
 
 
+> Newer version of istSOS will contain Sensor Things API OGC service. Will be updated soon!
+
 ## Start istSOS with docker-compose
 
 The faste way to use istSOS is with docker.
