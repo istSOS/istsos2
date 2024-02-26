@@ -743,7 +743,6 @@ class waInsertobservation(waResourceService):
         if "ForceInsert" in self.json:
             ForceInsert = et.SubElement(root, "{%s}ForceInsert" % ns['sos'])
             ForceInsert.text = self.json["ForceInsert"]
-
         Observation = et.SubElement(root, "{%s}Observation" % ns['om'])
 
         procedure = et.SubElement(Observation, "{%s}procedure" % ns['om'])
@@ -825,7 +824,6 @@ class waInsertobservation(waResourceService):
         headers = {"Content-type": "text/xml"}
         if 'HTTP_AUTHORIZATION' in self.waEnviron:
             headers['Authorization'] = self.waEnviron['HTTP_AUTHORIZATION']
-
         response = requests.post(
             self.serviceconf.serviceurl["url"],
             data=iostring,
@@ -840,8 +838,8 @@ class waInsertobservation(waResourceService):
 
             else:
                 self.setException(
-                    "Insert observations failed - Communication: %s %s - "
-                    "Response: %s" % (response.status_code, e, response.text))
+                    "Insert observations failed - Communication: %s - "
+                    "Response: %s" % (response.status_code, response.text))
 
         except Exception as e:
             self.setException(
