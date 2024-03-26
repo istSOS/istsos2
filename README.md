@@ -81,7 +81,7 @@ docker build --no-cache -t istsos/istsos:$version .
 docker push istsos/istsos:$version
 ```
 
-Tag latest an push
+Tag latest and push
 
 ```bash
 docker image tag istsos/istsos:$version istsos/istsos:latest
