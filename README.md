@@ -1,4 +1,5 @@
 # istsos2
+GSoC skill test
 Easily manage your sensor network and distribute your data in a standard way
 
 istSOS is an OGC SOS server implementation written in Python. istSOS allows for managing and dispatch observations from monitoring sensors according to the Sensor Observation Service standard.
@@ -81,7 +82,7 @@ docker build --no-cache -t istsos/istsos:$version .
 docker push istsos/istsos:$version
 ```
 
-Tag latest an push
+Tag latest and push
 
 ```bash
 docker image tag istsos/istsos:$version istsos/istsos:latest
