@@ -21,24 +21,28 @@
 #
 # ===============================================================================
 import isodate as iso
+from lxml import etree as et
 #import sosConfig
 
 def render(GF,sosConfig):
-    r = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+    r = ""
     if GF.type.lower()=="station" or GF.type.lower()=="point":
         r += "<sa:SamplingPoint \n"
     elif GF.type=="surface":
         r += "<sa:SamplingSurface \n"
+    else:
+        r += "<sa:SamplingPoint \n"
     r += "gml:id=\"" + GF.name + "\" \n"
     r += "xmlns:sa=\"http://www.opengis.net/sampling/1.0\" \n"
     r += "xmlns:swe=\"http://www.opengis.net/swe/1.0.1\" \n"
-    r += "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \n" 
-    r += "xmlns:xlink=\"http://www.w3.org/1999/xlink\" \n" 
+    r += "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \n"
+    r += "xmlns:xlink=\"http://www.w3.org/1999/xlink\" \n"
     r += "xmlns:gml=\"http://www.opengis.net/gml\" \n"
     r += "xmlns:om=\"http://www.opengis.net/om/1.0\" \n"
     r += "xsi:schemaLocation=\"http://www.opengis.net/sampling/1.0 http://schemas.opengis.net/sampling/1.0.0/sampling.xsd\">\n"
 
-    r += "  <gml:description>" + GF.desc + "</gml:description>\n"
+    if GF.desc:
+        r += "  <gml:description>" + GF.desc + "</gml:description>\n"
     r += "  <gml:name>" + GF.name + "</gml:name> \n"
     r += "  <sa:sampledFeature/>\n"
     
@@ -98,11 +102,15 @@ def render(GF,sosConfig):
         r += "  </sa:relatedObservation>\n"
     
     r += "  <sa:position> \n"
-    r += "    " + GF.geom + "\n"
+    if GF.geom:
+        r += "    " + GF.geom + "\n"
     r += "  </sa:position>\n"
     if GF.type.lower()=="station" or GF.type.lower()=="point":
         r += "</sa:SamplingPoint> \n"
     elif GF.type=="surface":
         r += "</sa:SamplingSurface> \n"
-    
-    return r
+    else:
+        r += "</sa:SamplingPoint> \n"
+    tree = et.ElementTree(et.fromstring(r))
+    root = tree.getroot()
+    return b'<?xml version="1.0" encoding="UTF-8"?>' + et.tostring(root)

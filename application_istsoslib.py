@@ -22,6 +22,7 @@
 # =============================================================================
 
 import sys
+import os
 from os import path
 import traceback
 import waconf2sos
@@ -57,11 +58,11 @@ def executeSos(environ, start_response):
             sys.path.insert(0, sosConfig.istsos_librarypath)
 
         pgdb = sosDatabase.PgDB(
-            sosConfig.connection["user"],
-            sosConfig.connection["password"],
-            sosConfig.connection["dbname"],
-            sosConfig.connection["host"],
-            sosConfig.connection["port"]
+            os.environ["GROUNDWATER_DATABASE_USER"],
+            os.environ["GROUNDWATER_DATABASE_PASSWORD"],
+            os.environ["GROUNDWATER_DATABASE"],
+            os.environ["GROUNDWATER_DATABASE_HOST"],
+            os.environ["GROUNDWATER_DATABASE_PORT"]
         )
 
         req_filter = FF.sosFactoryFilter(environ, sosConfig)

@@ -29,6 +29,7 @@ __version__ = '1.0'
 __maintainer__ = 'Massimiliano Cannata, Milan Antonovic'
 __email__ = 'milan.antonovic@gmail.com'
 
+from html import unescape
 from istsoslib import sosException
 import cgi
 from urllib.parse import parse_qs, unquote
@@ -57,7 +58,7 @@ def sosFactoryFilter(environ, sosConfig):
         #  > keep_blank_values used in version 2.0.0 to check
         #  > null parameter exceptions
         rect = parse_qs(
-            environ['QUERY_STRING'],
+            unescape(environ['QUERY_STRING']),
             keep_blank_values=True
         )
         requestObject = {}

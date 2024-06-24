@@ -23,6 +23,8 @@
 import sys
 import isodate as iso
 
+from ..utils import escape
+
 def render(GC,sosConfig):
     r = '''<?xml version="1.0" encoding="UTF-8"?>
     <Capabilities
@@ -103,7 +105,7 @@ def render(GC,sosConfig):
                 r += "      <ows:AllowedValues>\n"
                 if len(p.allowedValues)>0:
                     for a in p.allowedValues:
-                        r += "        <ows:Value>" + str(a) + "</ows:Value>\n"
+                        r += "        <ows:Value>" + escape(a) + "</ows:Value>\n"
                 if len(p.range)>0:
                     r += "        <ows:Range>\n"
                     r += "          <ows:MinimumValue>"  

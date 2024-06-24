@@ -97,7 +97,10 @@ def render(DS,sosConfig):
         constraint =  et.SubElement(time, "{%s}constraint" % ns['swe'])
         allowedTimes =  et.SubElement(constraint, "{%s}AllowedTimes" % ns['swe'])
         interval = et.SubElement(allowedTimes, "{%s}interval" % ns['swe'])
-        interval.text = "%s %s" %(DS.stime.strftime("%Y-%m-%dT%H:%M:%S.%fZ"), DS.etime.strftime("%Y-%m-%dT%H:%M:%S.%fZ"))
+        begin = et.SubElement(interval, "{%s}begin" % ns['swe'])
+        begin.text = DS.stime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        end = et.SubElement(interval, "{%s}end" % ns['swe'])
+        end.text = DS.etime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
     if DS.procedureType=="insitu-mobile-point": # Adding 3d coordinates observation
 
@@ -127,6 +130,12 @@ def render(DS,sosConfig):
         if not (field["name_uom"]=="" or field["name_uom"]==None or field["name_uom"]=="NULL"):
             uom = et.SubElement(quantity,"{%s}uom" % ns["swe"])
             uom.attrib["code"] = field["name_uom"]
+
+        interval = et.SubElement(quantity, "{%s}interval" % ns['swe'])
+        begin = et.SubElement(interval, "{%s}begin" % ns['swe'])
+        begin.text = field['stime_prc'].strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        end = et.SubElement(interval, "{%s}end" % ns['swe'])
+        end.text = field['etime_prc'].strftime("%Y-%m-%dT%H:%M:%S.%fZ")
         """
         if not (field["desc_opr"]=="" or field["desc_opr"]==None or field["desc_opr"]=="NULL"):
             description = et.SubElement(quantity,"{%s}description" % ns["swe"])
@@ -252,6 +261,88 @@ def render(DS,sosConfig):
     root = tree.getroot()
     root.attrib["xmlns"]="http://www.opengis.net/sensorML/1.0.1"
     root.attrib["version"]="1.0.1"
+
+    # TODO:
+    #  Specifically for IGRAC
+    #--- Update well information ---#
+    for index, field in enumerate(DS.sensorProperties):
+        name = tree.find("{%s}member/{%s}System/{%s}name" % (ns['sml'], ns['sml'], ns['gml']))
+        name.text = field['name']
+
+        photo = et.Element("{%s}photo" % ns["gml"])
+        if field["photo"]:
+            photo.text = field["photo"]
+        name.addnext(photo)
+
+        org = et.Element("{%s}OriginatingOrganization" % ns["gml"])
+        if field["manager"]:
+            org.text = field["manager"]
+        photo.addnext(org)
+
+        # Hydrogeology
+        hydrogeology = et.Element("{%s}Hydrogeology" % ns["gml"])
+        aquifer = et.SubElement(hydrogeology, "{%s}Aquifer" % ns["gml"])
+        aquifer_name = et.SubElement(aquifer, "{%s}AquiferName" % ns["gml"])
+        if field["aquifer_name"]:
+            aquifer_name.text = field["aquifer_name"]
+        aquifer_material = et.SubElement(aquifer, "{%s}AquiferMaterial" % ns["gml"])
+        if field["aquifer_material"]:
+            aquifer_material.text = field["aquifer_material"]
+        aquifer_type = et.SubElement(aquifer, "{%s}AquiferType" % ns["gml"])
+        if field["aquifer_type"]:
+            aquifer_type.text = field["aquifer_type"]
+        aquifer_thickness = et.SubElement(aquifer, "{%s}AquiferThickness" % ns["gml"])
+        if field["aquifer_thickness"]:
+            aquifer_thickness.text = field["aquifer_thickness"]
+        confinement = et.SubElement(aquifer, "{%s}Confinement" % ns["gml"])
+        if field["confinement"]:
+            confinement.text = field["confinement"]
+        org.addnext(hydrogeology)
+
+        id = tree.find("{%s}member/{%s}System/{%s}identification/{%s}IdentifierList/{%s}identifier/{%s}Term/{%s}value" % (ns['sml'], ns['sml'], ns['sml'], ns['sml'], ns['sml'], ns['sml'], ns['sml']))
+        id.text = field['ggis_uid']
+        point = tree.find("{%s}member/{%s}System/{%s}location/{%s}Point" % (ns['sml'], ns['sml'], ns['sml'], ns['gml']))
+        point.attrib["{%s}id" % ns['gml']] = field['original_id']
+        location = tree.find("{%s}member/{%s}System/{%s}location" % (ns['sml'], ns['sml'], ns['sml']))
+        if field['country']:
+            country = et.SubElement(location, "{%s}country" % ns["gml"])
+            country.text = f"{field['country']}"
+
+        coordinates = tree.find("{%s}member/{%s}System/{%s}location/{%s}Point/{%s}coordinates" % (ns['sml'], ns['sml'], ns['sml'], ns['gml'], ns['gml']))
+        # if field['elevation_value']:
+        #     coordinates.text = f"{field['longitude']},{field['latitude']},{field['elevation_value']}"
+        # else:
+        #     coordinates.text = f"{field['longitude']},{field['latitude']}"
+        #
+        # # TODO: WE COMMENT THIS TO ASK FIRST
+        latitude = et.SubElement(coordinates, "{%s}latitude" % ns["gml"])
+        latitude.text = f"{field['latitude']}"
+        longitude = et.SubElement(coordinates, "{%s}longitude" % ns["gml"])
+        longitude.text = f"{field['longitude']}"
+        elevation = et.SubElement(coordinates, "{%s}elevation" % ns["gml"])
+        value = et.SubElement(elevation, "{%s}value" % ns["gml"])
+        value.text = f"{field['elevation_value'] if field['elevation_value'] else ''}"
+        unit = et.SubElement(elevation, "{%s}unit" % ns["gml"])
+        unit.text = f"{field['elevation_unit'] if field['elevation_unit'] else ''}"
+
+        license = tree.find("{%s}member/{%s}System/{%s}License" % (ns['sml'], ns['sml'], ns['gml']))
+        if 'license' in field and field['license']:
+            if 'summary' in field and field['summary']:
+                el = et.SubElement(license, "{%s}summary" % ns["gml"])
+                el.text = f"{field['summary']}"
+            el = et.SubElement(license, "{%s}name" % ns["gml"])
+            el.text = f"{field['license']}"
+            el = et.SubElement(license, "{%s}description" % ns["gml"])
+            el.text = f"{field['license_desc']}"
+
+        restriction = tree.find("{%s}member/{%s}System/{%s}Restriction" % (ns['sml'], ns['sml'], ns['gml']))
+        if 'restriction_code_type_desc' in field and field['restriction_code_type_desc']:
+            el = et.SubElement(restriction, "{%s}description" % ns["gml"])
+            el.text = f"{field['restriction_code_type_desc']}"
+            el = et.SubElement(restriction, "{%s}other" % ns["gml"])
+            el.text = f"{field['constraints_other']}"
+
+
     return b'<?xml version="1.0" encoding="UTF-8"?>' + et.tostring(root)
 
 

@@ -25,6 +25,7 @@ import os
 import sys
 import importlib
 from istsoslib.filters import DS_filter
+from ..utils import escape
 
 class ServiceIdentification:
     """Service identification of the GetCapabilities responseFormat
@@ -271,7 +272,8 @@ def BuildfeatureOfInterestList(pgdb,sosConfig):
     except:
         raise Exception("sql: %s" %(pgdb.mogrify(sql)))
     for row in rows:
-        list.append(sosConfig.urn["feature"] + row["nfoi"])
+        if row["nfoi"]:
+            list.append(sosConfig.urn["feature"] + row["nfoi"])
     return list
 
 def BuildOffEnvelope(pgdb,id,sosConfig):
@@ -299,6 +301,11 @@ def BuildOffEnvelope(pgdb,id,sosConfig):
     #----------------
     sql += " ) u"
     params=(id,id)
+
+    # TODO:
+    #  igrac specified
+    sql = "SELECT ST_asgml(Box2D(location)) as ext FROM mv_well"
+    params=None
     try:
         rows=pgdb.select(sql,params)
     except:
@@ -368,7 +375,7 @@ def BuildOffProcList(pgdb,id,sosConfig):
         raise Exception("sql: %s" %(pgdb.mogrify(sql,params)))
     for row in rows:
         #list.append(sosConfig.urn["procedure"] + row["name_prc"])
-        list.append(row["name_prc"])
+        list.append(escape(row["name_prc"]))
     return list
 
 def BuildOffObsPrList(pgdb,id,sosConfig):
@@ -423,7 +430,8 @@ def BuildOffFoiList(pgdb,id,sosConfig):
     except:
         raise Exception("sql: %s" %(pgdb.mogrify(sql,params)))
     for row in rows:
-        list.append(sosConfig.urn["feature"] + row["fois"])
+        if row["fois"]:
+            list.append(sosConfig.urn["feature"] + escape(row["fois"]))
     return list
 
 def BuildSensorList(pgdb,sosConfig):
@@ -843,10 +851,10 @@ class GetCapabilitiesResponse():
     def __init__(self,fil,pgdb):
         
         self.version = fil.version
-        
-        
+
+
         if "all" in fil.sections:
-            
+
             if self.version == '2.0.0':
                 self.ObservationOfferingList = ObservationOfferingList_2_0_0(pgdb,fil.sosConfig)
                 
@@ -864,7 +872,7 @@ class GetCapabilitiesResponse():
             self.FilterCapabilities = True
                 
         else:
-            
+
             if "contents" in fil.sections:
                 if self.version == '2.0.0':
                     self.ObservationOfferingList = ObservationOfferingList_2_0_0(pgdb,fil.sosConfig)

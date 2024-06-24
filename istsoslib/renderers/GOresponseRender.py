@@ -27,6 +27,8 @@ import hashlib
 import sys
 import datetime
 
+from ..utils import escape
+
 date_handler = lambda obj: (
     obj.isoformat()
     if isinstance(obj, (datetime.datetime, datetime.date))
@@ -103,7 +105,7 @@ def XMLformat(GO):
             r += "    <om:samplingTime/>\n"
         
         #PROCEDURE
-        r += "    <om:procedure xlink:href=\"" + ob.procedure + "\"/>\n"                
+        r += "    <om:procedure xlink:href=\"" + escape(ob.procedure) + "\"/>\n"
         
         #PROPRIETA OSSERVATA
         if ob.procedureType == "insitu-mobile-point":
@@ -128,7 +130,7 @@ def XMLformat(GO):
         r += "    </om:observedProperty>\n"      
     
         #FEATURE OF INTEREST
-        r += "    <om:featureOfInterest xlink:href=\"" + ob.foi_urn + "\">\n"
+        r += "    <om:featureOfInterest xlink:href=\"" + escape(ob.foi_urn) + "\">\n"
         r += "      <gml:FeatureCollection>\n"
         r += "        <gml:location>\n"
         r += "          " + ob.foiGml + "\n"
@@ -195,7 +197,13 @@ def XMLformat(GO):
         r += "        </swe:encoding>\n"
 
         if ob.csv:
-            r += "        <swe:values>%s</swe:values>" % ob.csv
+            values = ''
+            for row in ob.csv.split('@'):
+                val = row.split(',')
+                values += f'           <swe:value dateTime="{val[0]}">{val[1]}</swe:value>\n'
+            r += "        <swe:values>\n"
+            r += values
+            r += "        </swe:values>\n"
 
         elif len(ob.data) > 0:
             data=[]
